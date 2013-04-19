@@ -38,6 +38,7 @@ public class GzoltarTest {
 	 */
 	@Test
 	public void should_find_the_bug() throws IOException {
+
 		// GIVEN
 		GZoltar loc = new GZoltar("/");
 		loc.addClassToInstrument(Objects.class.getName());
