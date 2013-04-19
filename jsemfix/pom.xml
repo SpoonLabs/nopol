@@ -15,7 +15,22 @@
 			<scope>system</scope>
 			<systemPath>${project.build.directory}/../lib/com.gzoltar-0.0.3-jar-with-dependencies.jar</systemPath>
 		</dependency>
+		<dependency>
+			<groupId>sacha</groupId>
+			<artifactId>infra</artifactId>
+			<version>0.1</version>
+		</dependency>
 	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.11</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<plugins>
