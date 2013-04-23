@@ -13,56 +13,47 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix.gzoltar;
+package fr.inria.lille.jsemfix.sps;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
 
-import com.gzoltar.core.GZoltar;
-import com.gzoltar.core.components.Statement;
+import fr.inria.lille.jsemfix.gzoltar.Objects;
+import fr.inria.lille.jsemfix.gzoltar.ObjectsTest;
+import fr.inria.lille.jsemfix.sps.gzoltar.GZoltarSuspiciousProgramStatements;
 
 /**
  * @author Favio D. DeMarco
  * 
  */
-public class GZoltarTest {
+public class GZoltarSuspiciousProgramStatementsTest {
 
-	/**
-	 * Test method for {@link com.gzoltar.core.GZoltar#run()}.
-	 * 
-	 * @throws IOException
-	 */
 	@Test
-	public void should_find_the_bug() throws IOException {
+	public void sortBySusiciousness_returns_the_statements_in_the_correct_order() {
 
 		// GIVEN
-		GZoltar loc = new GZoltar("/");
-		loc.addClassToInstrument(Objects.class.getName());
-		loc.addTestToExecute(ObjectsTest.class.getName());
+		SuspiciousProgramStatements sps = GZoltarSuspiciousProgramStatements
+				.createWithPackageAndTestClasses(Objects.class.getPackage(), ObjectsTest.class);
 
 		// WHEN
-		loc.run();
+		List<Statement> statements = sps.sortBySusiciousness();
 
 		// THEN
-		List<Statement> suspiciousStatements = loc.getSuspiciousStatements();
-		assertEquals(4, suspiciousStatements.size());
+		assertEquals(4, statements.size());
 		for (int index = 0; index < 3; index++) {
-			Statement s = suspiciousStatements.get(index);
+			Statement s = statements.get(index);
 			int lineNumber = 52 + index;
 			assertEquals(lineNumber, s.getLineNumber());
-			assertEquals("fr.inria.lille.jsemfix.gzoltar.Objects{equal(Ljava/lang/Object;Ljava/lang/Object;)Z["
-					+ lineNumber, s.getLabel());
 			assertEquals(1D, s.getSuspiciousness(), 0D);
-			assertEquals("fr.inria.lille.jsemfix.gzoltar.Objects", s.getClazz().getLabel());
+			assertSame(Objects.class, s.getContainingClass());
 		}
-		Statement s = suspiciousStatements.get(3);
-		assertEquals("fr.inria.lille.jsemfix.gzoltar.Objects{hashCode([Ljava/lang/Object;)I[75", s.getLabel());
+		Statement s = statements.get(3);
 		assertEquals(75, s.getLineNumber());
 		assertEquals(0D, s.getSuspiciousness(), 0D);
-		assertEquals("fr.inria.lille.jsemfix.gzoltar.Objects", s.getClazz().getLabel());
+		assertSame(Objects.class, s.getContainingClass());
 	}
 }
