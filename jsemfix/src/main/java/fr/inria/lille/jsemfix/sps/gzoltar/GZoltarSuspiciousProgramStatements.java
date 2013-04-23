@@ -69,17 +69,18 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 	}
 
 	@Override
-	public List<Statement> sortBySusiciousness() {
+	public List<Statement> sortBySuspiciousness() {
 
 		List<Statement> sortedStatementsList = new ArrayList<>(statements);
 		Collections.sort(sortedStatementsList, new Comparator<Statement>() {
 			@Override
 			public int compare(Statement o1, Statement o2) {
 				return Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness()); // reversed parameters because we
-																						// want a descending order list
+				// want a descending order list
 			}
 		});
-		assert statements.equals(sortedStatementsList);
+		assert statements.equals(sortedStatementsList) : "The order does not match:\n" + statements + '\n'
+				+ sortedStatementsList;
 
 		return statements;
 	}

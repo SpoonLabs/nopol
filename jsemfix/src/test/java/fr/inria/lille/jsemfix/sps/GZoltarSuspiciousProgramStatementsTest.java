@@ -40,7 +40,7 @@ public class GZoltarSuspiciousProgramStatementsTest {
 				.createWithPackageAndTestClasses(Objects.class.getPackage(), ObjectsTest.class);
 
 		// WHEN
-		List<Statement> statements = sps.sortBySusiciousness();
+		List<Statement> statements = sps.sortBySuspiciousness();
 
 		// THEN
 		assertEquals(4, statements.size());

@@ -23,5 +23,5 @@ import java.util.List;
  */
 public interface SuspiciousProgramStatements {
 
-	List<Statement> sortBySusiciousness();
+	List<Statement> sortBySuspiciousness();
 }
