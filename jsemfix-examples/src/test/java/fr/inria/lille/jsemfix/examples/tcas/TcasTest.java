@@ -21,8 +21,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.lille.jsemfix.examples.tcas.Tcas;
-
 /**
  * @author Favio D. DeMarco
  * 
@@ -131,5 +129,4 @@ public class TcasTest {
 	public void tearDown() throws Exception {
 		this.tcas = null;
 	}
-
 }

@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix.sps;
+package fr.inria.lille.jsemfix.sps.gzoltar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -24,7 +24,8 @@ import org.junit.Test;
 
 import fr.inria.lille.jsemfix.gzoltar.Objects;
 import fr.inria.lille.jsemfix.gzoltar.ObjectsTest;
-import fr.inria.lille.jsemfix.sps.gzoltar.GZoltarSuspiciousProgramStatements;
+import fr.inria.lille.jsemfix.sps.Statement;
+import fr.inria.lille.jsemfix.sps.SuspiciousProgramStatements;
 
 /**
  * @author Favio D. DeMarco

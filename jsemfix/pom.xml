@@ -4,7 +4,7 @@
 	<groupId>fr.inria.lille.adam</groupId>
 	<artifactId>jsemfix</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>JSemFix</name>
+	<name>jSemFix</name>
 	<description>Java Program Repair via Semantic Analysis</description>
 
 	<dependencies>
@@ -24,6 +24,11 @@
 			<groupId>sacha</groupId>
 			<artifactId>infra</artifactId>
 			<version>0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.0.11</version>
 		</dependency>
 	</dependencies>
 
@@ -66,6 +71,20 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>fr.inria.lille.jsemfix.Main</mainClass>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
 				<version>1.2</version>
@@ -81,7 +100,7 @@
 									<version>3.0.4</version>
 								</requireMavenVersion>
 								<requireJavaVersion>
-									<version>1.7</version>
+									<version>[1.7.0-21,)</version>
 								</requireJavaVersion>
 								<requireUpperBoundDeps />
 								<dependencyConvergence />
@@ -111,10 +130,6 @@
 				<plugin>
 					<artifactId>maven-clean-plugin</artifactId>
 					<version>2.5</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.4</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
