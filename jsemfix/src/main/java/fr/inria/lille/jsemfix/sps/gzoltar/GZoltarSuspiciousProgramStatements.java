@@ -68,9 +68,10 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		statements = Lists.transform(gzoltar.getSuspiciousStatements(), GZoltarStatementWrapperFunction.INSTANCE);
 	}
 
-	@Override
-	public List<Statement> sortBySuspiciousness() {
-
+	/**
+	 * TODO delete this method
+	 */
+	private void assertExpectedOrder() {
 		List<Statement> sortedStatementsList = new ArrayList<>(statements);
 		Collections.sort(sortedStatementsList, new Comparator<Statement>() {
 			@Override
@@ -81,6 +82,13 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		});
 		assert statements.equals(sortedStatementsList) : "The order does not match:\n" + statements + '\n'
 				+ sortedStatementsList;
+	}
+
+	@Override
+	public List<Statement> sortBySuspiciousness() {
+
+		// TODO delete this method call
+		assertExpectedOrder();
 
 		return statements;
 	}
