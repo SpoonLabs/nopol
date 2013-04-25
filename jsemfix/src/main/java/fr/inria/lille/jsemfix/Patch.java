@@ -19,4 +19,28 @@ package fr.inria.lille.jsemfix;
  * @author Favio D. DeMarco
  *
  */
-public interface Patch {}
+public interface Patch {
+
+	/**
+	 * Class that represents the inability to find a working patch.
+	 * 
+	 * @author Favio D. DeMarco
+	 */
+	static final class NoPatch implements Patch {
+
+		private NoPatch() {}
+
+		/**
+		 * @see java.lang.Object#toString()
+		 */
+		@Override
+		public String toString() {
+			return "No viable patch found.";
+		}
+	}
+
+	/**
+	 * Singleton that represents the inability to find a working patch.
+	 */
+	public static final Patch NO_PATCH = new NoPatch();
+}
