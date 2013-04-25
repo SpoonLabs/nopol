@@ -21,7 +21,7 @@ package fr.inria.lille.jsemfix.examples.tcas;
  * 
  * @author Favio D. DeMarco
  */
-public class Tcas {
+public final class Tcas {
 
 	public int is_upward_preferred(final int inhibit, final int up_sep, final int down_sep) {
 		int bias;
