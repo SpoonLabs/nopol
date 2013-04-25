@@ -42,11 +42,15 @@ public final class Fixer {
 
 	public Patch createPatch() {
 
-		List<Class<?>> testClasses = Arrays.asList(new TestInClasspath().find());
+		List<Class<?>> testClasses = this.findTestClasses();
 
 		List<Statement> statements = GZoltarSuspiciousProgramStatements.createWithPackageAndTestClasses(
 				this.mainPackage, testClasses).sortBySuspiciousness();
 
 		return null;
+	}
+
+	private List<Class<?>> findTestClasses() {
+		return Arrays.asList(new TestInClasspath().find());
 	}
 }

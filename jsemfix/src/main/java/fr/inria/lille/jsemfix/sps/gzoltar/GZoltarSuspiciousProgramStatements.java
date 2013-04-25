@@ -72,7 +72,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 
 		Logger logger = LoggerFactory.getLogger(this.getClass());
 		if (logger.isDebugEnabled()) {
-			logger.debug(gzoltar.getSpectra().toString());
+			logger.debug("\n{}", gzoltar.getSpectra());
 		}
 
 		this.statements = Lists.transform(gzoltar.getSuspiciousStatements(), GZoltarStatementWrapperFunction.INSTANCE);

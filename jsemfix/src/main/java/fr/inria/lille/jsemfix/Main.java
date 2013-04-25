@@ -17,11 +17,26 @@ package fr.inria.lille.jsemfix;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Favio D. DeMarco
  * 
  */
 public final class Main {
+
+	/**
+	 * XXX FIXME TODO hack so @ java.lang.Package#getPackage(String)} can find the given package.
+	 */
+	private static void loadClassesInPackage(final String packageName) {
+		Reflections reflections = new Reflections(ClasspathHelper.forPackage(packageName),
+				new SubTypesScanner(false));
+		LoggerFactory.getLogger(Main.class).debug("Classes in given package: {}",
+				reflections.getSubTypesOf(Object.class));
+	}
 
 	/**
 	 * @param args
@@ -31,13 +46,16 @@ public final class Main {
 			printUsage();
 			return;
 		}
-		new Main(args[0]).run();
+		String pName = args[0];
+
+		// XXX FIXME TODO hack so Package.getPackage can find the given package
+		loadClassesInPackage(pName);
+
+		new Main(pName).run();
 	}
 
-	static void printUsage() {
-		// TODO Auto-generated method stub
-		//
-		throw new UnsupportedOperationException("Main.printUsage");
+	private static void printUsage() {
+		System.out.println("java " + Main.class.getName() + "<package>");
 	}
 
 	private final Package mainPackage;
