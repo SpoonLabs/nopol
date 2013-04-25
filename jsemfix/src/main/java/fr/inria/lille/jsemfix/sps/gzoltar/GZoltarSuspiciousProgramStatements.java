@@ -33,8 +33,10 @@ import fr.inria.lille.jsemfix.sps.Statement;
 import fr.inria.lille.jsemfix.sps.SuspiciousProgramStatements;
 
 /**
- * @author Favio D. DeMarco
  * 
+ * A list of potential bug root-cause.
+ * 
+ * @author Favio D. DeMarco
  */
 public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgramStatements {
 
@@ -94,6 +96,10 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		+ sortedStatementsList;
 	}
 
+	/**
+	 * @return a ranked list of potential bug root-cause.
+	 * @see fr.inria.lille.jsemfix.sps.SuspiciousProgramStatements#sortBySuspiciousness()
+	 */
 	@Override
 	public List<Statement> sortBySuspiciousness() {
 
