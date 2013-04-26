@@ -48,8 +48,8 @@ public final class GZoltarJava7 extends GZoltar {
 	private static final String PATH_SEPARATOR = System.getProperty("path.separator");
 	private static final String RUNNER = "com.gzoltar.core.instr.Runner";
 
-	private final File agent;
-	private Spectra spectra;
+	private transient final File agent;
+	private transient Spectra spectra;
 
 	public GZoltarJava7() throws IOException {
 		this(System.getProperty("user.dir"));
@@ -95,31 +95,31 @@ public final class GZoltarJava7 extends GZoltar {
 			IMessage message = new Message();
 			message.setClassParameters(this.getClassParameters());
 			message.setTestParameters(this.getTestParameters());
-			String id = UUID.randomUUID().toString();
-			RegistrySingleton.register(id, message);
-			StringBuilder localStringBuilder = new StringBuilder(System.getProperty("java.class.path") + PATH_SEPARATOR
-					+ this.getWorkingDirectory());
+			String uuid = UUID.randomUUID().toString();
+			RegistrySingleton.register(uuid, message);
+			StringBuilder classpath = new StringBuilder(System.getProperty("java.class.path")).append(PATH_SEPARATOR)
+					.append(this.getWorkingDirectory());
 			Iterable<String> classPaths = this.getClasspaths();
 			for (String path : classPaths) {
-				localStringBuilder.append(PATH_SEPARATOR + path);
+				classpath.append(PATH_SEPARATOR + path);
 			}
 
 			List<String> parameters = new ArrayList<>();
-			if (System.getProperty("os.name").toLowerCase().contains("windows") == true) {
+			if (System.getProperty("os.name").toLowerCase().contains("windows")) {
 				parameters.add(JAVA_EXECUTABLE + ".exe");
 			} else {
 				parameters.add(JAVA_EXECUTABLE);
 			}
 
-			parameters.add("-XX:-UseSplitVerifier"); // aaall this class to add this line... See
-			// http://stackoverflow.com/q/7936006
+			// aaall this class to add this line... See http://stackoverflow.com/q/7936006
+			parameters.add("-XX:-UseSplitVerifier");
 
 			parameters.add("-javaagent:" + this.agent.getAbsolutePath());
 			parameters.add("-cp");
-			parameters.add(localStringBuilder.toString());
+			parameters.add(classpath.toString());
 			parameters.add(RUNNER);
 			parameters.add(Integer.toString(RegistrySingleton.getPort()));
-			parameters.add(id);
+			parameters.add(uuid);
 
 			ProcessBuilder processBuilder = new ProcessBuilder(parameters);
 			processBuilder.directory(new File(this.getWorkingDirectory()));
