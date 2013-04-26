@@ -41,18 +41,13 @@ import fr.inria.lille.jsemfix.sps.SuspiciousProgramStatements;
 public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgramStatements {
 
 	public static GZoltarSuspiciousProgramStatements createWithPackageAndTestClasses(final Package sourcePackage,
-			final Class<?> testClass) {
-		return new GZoltarSuspiciousProgramStatements(sourcePackage, Collections.<Class<?>> singleton(testClass));
-	}
-
-	public static GZoltarSuspiciousProgramStatements createWithPackageAndTestClasses(final Package sourcePackage,
-			final Iterable<Class<?>> testClasses) {
+			final Class<?>... testClasses) {
 		return new GZoltarSuspiciousProgramStatements(sourcePackage, testClasses);
 	}
 
 	private final List<Statement> statements;
 
-	private GZoltarSuspiciousProgramStatements(final Package sourcePackage, final Iterable<Class<?>> testClasses) {
+	private GZoltarSuspiciousProgramStatements(final Package sourcePackage, final Class<?>... testClasses) {
 
 		GZoltar gzoltar;
 		try {

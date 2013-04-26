@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public final class Main {
 
 	/**
-	 * XXX FIXME TODO hack so @ java.lang.Package#getPackage(String)} can find the given package.
+	 * XXX FIXME TODO hack so {@link java.lang.Package#getPackage(String)} can find the given package.
 	 */
 	private static void loadClassesInPackage(final String packageName) {
 		Reflections reflections = new Reflections(ClasspathHelper.forPackage(packageName),
@@ -68,6 +68,6 @@ public final class Main {
 	}
 
 	void run() {
-		new Fixer(this.mainPackage).createPatch();
+		System.out.println(new Fixer(this.mainPackage).createPatch());
 	}
 }
