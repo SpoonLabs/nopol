@@ -6,6 +6,15 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>jSemFix</name>
 	<description>Java Program Repair via Semantic Analysis</description>
+	<inceptionYear>2013</inceptionYear>
+	<licenses>
+		<license>
+			<name>CeCILL-C</name>
+			<comments>French equivalent to LGPL</comments>
+			<url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<dependencies>
 		<dependency>
@@ -32,6 +41,11 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>fr.inria.gforge.spoon</groupId>
+			<artifactId>spoon-core</artifactId>
+			<version>1.5</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -162,5 +176,12 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+
+	<repositories>
+		<repository>
+			<id>inria</id>
+			<url>http://maven-repo.gforge.inria.fr/releases</url>
+		</repository>
+	</repositories>
 
 </project>
