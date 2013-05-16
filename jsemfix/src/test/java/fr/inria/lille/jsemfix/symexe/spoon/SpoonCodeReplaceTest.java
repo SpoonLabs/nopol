@@ -25,12 +25,9 @@ import spoon.SpoonClassLoader;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Builder;
 import spoon.processing.ProcessingManager;
-import spoon.reflect.Factory;
 import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLiteral;
-import spoon.support.DefaultCoreFactory;
-import spoon.support.RuntimeProcessingManager;
-import spoon.support.StandardEnvironment;
 import spoon.support.reflect.code.CtLiteralImpl;
 
 /**
@@ -39,21 +36,29 @@ import spoon.support.reflect.code.CtLiteralImpl;
  */
 public class SpoonCodeReplaceTest {
 
-	public static final class ReplaceProcessor extends AbstractProcessor<CtConditional<Object>> {
+	public static final class ReplaceConditionalProcessor extends AbstractProcessor<CtConditional<Object>> {
 
 		@Override
 		public void process(final CtConditional<Object> element) {
-			System.out.printf("Processing: %s %s: %s%n", element.getClass().getSimpleName(), element.getPosition(),
-					element);
-
 			// we declare a new snippet of code to be inserted
 			CtLiteral<Boolean> snippet = new CtLiteralImpl<>();
 			snippet.setFactory(this.getFactory());
 			snippet.setValue(true);
 
 			element.getCondition().replace(snippet);
+		}
+	}
 
-			System.out.printf("New value: %s%n", element);
+	public static final class ReplaceIfConditionProcessor extends AbstractProcessor<CtIf> {
+
+		@Override
+		public void process(final CtIf element) {
+			// we declare a new snippet of code to be inserted
+			CtLiteral<Boolean> snippet = new CtLiteralImpl<>();
+			snippet.setFactory(this.getFactory());
+			snippet.setValue(true);
+
+			element.getCondition().replace(snippet);
 		}
 	}
 
@@ -63,16 +68,14 @@ public class SpoonCodeReplaceTest {
 		SpoonClassLoader ccl = new SpoonClassLoader();
 
 		ProcessingManager processingManager = ccl.getProcessingManager();
-		processingManager.addProcessor(ReplaceProcessor.class);
+		processingManager.addProcessor(ReplaceConditionalProcessor.class);
 
 		Builder builder = ccl.getFactory().getBuilder();
-		builder.addInputSource(new File(
-				"src/test/java/fr/inria/lille/jsemfix/symexe/spoon/AMethodWithAConditional.java"));
+		builder.addInputSource(new File("src/spoon/java"));
 		builder.build();
 
-		processingManager.process();
-
-		Class<?> targetClass = ccl.loadClass(AMethodWithAConditional.class.getName());
+		// fragile...
+		Class<?> targetClass = ccl.loadClass("fr.inria.lille.jsemfix.symexe.spoon.AMethodWithAConditional");
 
 		int parameter = 1;
 		Object value = targetClass.getMethod("abs", int.class).invoke(null, parameter);
@@ -80,18 +83,22 @@ public class SpoonCodeReplaceTest {
 	}
 
 	@Test
-	public void testReplaceProcessor() throws Exception {
-		StandardEnvironment env = new StandardEnvironment();
-		Factory factory = new Factory(new DefaultCoreFactory(), env);
+	public void testReplaceIfCondition() throws Exception {
 
-		Builder builder = factory.getBuilder();
-		builder.addInputSource(new File(
-				"src/test/java/fr/inria/lille/jsemfix/symexe/spoon/AMethodWithAConditional.java"));
-		// builder.addInputSource(new File("src/test/java"));
+		SpoonClassLoader ccl = new SpoonClassLoader();
+
+		ProcessingManager processingManager = ccl.getProcessingManager();
+		processingManager.addProcessor(ReplaceIfConditionProcessor.class);
+
+		Builder builder = ccl.getFactory().getBuilder();
+		builder.addInputSource(new File("src/spoon/java"));
 		builder.build();
 
-		ProcessingManager processingManager = new RuntimeProcessingManager(factory);
-		processingManager.addProcessor(ReplaceProcessor.class);
-		processingManager.process();
+		// fragile...
+		Class<?> targetClass = ccl.loadClass("fr.inria.lille.jsemfix.symexe.spoon.AMethodWithAnIfThenElse");
+
+		int parameter = 1;
+		Object value = targetClass.getMethod("abs", int.class).invoke(null, parameter);
+		assertEquals(-parameter, value);
 	}
 }

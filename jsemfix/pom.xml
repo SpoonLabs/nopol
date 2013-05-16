@@ -45,7 +45,7 @@
 		<dependency>
 			<groupId>fr.inria.gforge.spoon</groupId>
 			<artifactId>spoon-core</artifactId>
-			<version>1.5</version>
+			<version>1.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -138,7 +138,9 @@
 								<requireUpperBoundDeps />
 								<dependencyConvergence />
 								<requirePluginVersions />
-								<requireReleaseDeps />
+								
+								<!-- spoon... -->
+								<!-- requireReleaseDeps / -->
 							</rules>
 						</configuration>
 					</execution>

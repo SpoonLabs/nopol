@@ -47,7 +47,8 @@ public class LoggingProcessorTest {
 		processingManager.addProcessor(LoggingProcessor.class);
 
 		Builder builder = ccl.getFactory().getBuilder();
-		builder.addInputSource(new File("src/test/java/fr/inria/lille/jsemfix/gzoltar/Objects.java"));
+		builder.addInputSource(new File(
+				"src/spoon/java/fr/inria/lille/jsemfix/symexe/spoon/AMethodWithAnIfThenElse.java"));
 		// builder.addInputSource(new File("src/test/java"));
 		builder.build();
 
