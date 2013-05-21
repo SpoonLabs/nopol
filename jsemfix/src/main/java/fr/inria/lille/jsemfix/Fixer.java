@@ -45,7 +45,6 @@ public final class Fixer {
 	 * @param mainPackage
 	 */
 	public Fixer(final Package mainPackage) {
-		super();
 		this.mainPackage = checkNotNull(mainPackage);
 	}
 
@@ -84,11 +83,11 @@ public final class Fixer {
 		// A test suite for repair generation
 		Set<Test> s = new HashSet<>();
 		Set<Test> tf = this.extractFailedTests();
-		Repair repair = this.createRepair(rc);
+		Patcher patcher = this.createPatcher(rc);
 		Patch newRepair = NO_PATCH;
 		while (!tf.isEmpty()) {
 			s.addAll(tf);
-			newRepair = repair.createPatch(s);
+			newRepair = patcher.createPatch(s);
 			if (NO_PATCH == newRepair) {
 				break;
 			}
@@ -98,8 +97,8 @@ public final class Fixer {
 		return newRepair;
 	}
 
-	private Repair createRepair(final Statement rc) {
-		return new SimpleRepair(rc);
+	private Patcher createPatcher(final Statement rc) {
+		return new SimplePatcher(rc);
 	}
 
 	private Set<Test> extractFailedTests() {

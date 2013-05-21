@@ -15,31 +15,15 @@
  */
 package fr.inria.lille.jsemfix;
 
-import static fr.inria.lille.jsemfix.Patch.NO_PATCH;
-
 import java.util.Set;
 
-import fr.inria.lille.jsemfix.sps.Statement;
 import fr.inria.lille.jsemfix.test.Test;
 
 /**
  * @author Favio D. DeMarco
  *
  */
-final class SimpleRepair implements Repair {
+public interface Patcher {
 
-	private final Statement rootCause;
-
-	SimpleRepair(final Statement rc) {
-		this.rootCause = rc;
-	}
-
-	/**
-	 * @see fr.inria.lille.jsemfix.Repair#createPatch(java.util.Set)
-	 */
-	@Override
-	public Patch createPatch(final Set<Test> s) {
-
-		return NO_PATCH;
-	}
+	Patch createPatch(Set<Test> s);
 }
