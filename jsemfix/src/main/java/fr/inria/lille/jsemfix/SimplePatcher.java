@@ -24,7 +24,7 @@ import fr.inria.lille.jsemfix.test.Test;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
 final class SimplePatcher implements Patcher {
 
@@ -39,7 +39,25 @@ final class SimplePatcher implements Patcher {
 	 */
 	@Override
 	public Patch createPatch(final Set<Test> s) {
+		RepairConstraint c = this.generateRepairConstraint(s);
+		Patch newRepair;
+		Level level = Level.CONSTANTS;
+		do {
+			newRepair = this.synthesize(c, level);
+			level = level.next();
+		} while (newRepair == NO_PATCH && level != Level.LOGIC_COMPARISON_ITERATION);
+		return newRepair;
+	}
 
-		return NO_PATCH;
+	private Patch synthesize(final RepairConstraint c, final Level level) {
+		// TODO Auto-generated method stub
+		// return null;
+		throw new UnsupportedOperationException("SimplePatcher.synthesize");
+	}
+
+	private RepairConstraint generateRepairConstraint(final Set<Test> s) {
+		// TODO Auto-generated method stub
+		// return null;
+		throw new UnsupportedOperationException("SimplePatcher.generateRepairConstraint");
 	}
 }
