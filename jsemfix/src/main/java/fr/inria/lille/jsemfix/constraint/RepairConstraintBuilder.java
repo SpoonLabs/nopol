@@ -13,22 +13,18 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix.sps.gzoltar;
+package fr.inria.lille.jsemfix.constraint;
 
-import com.google.common.base.Function;
+import java.util.Set;
 
 import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
+import fr.inria.lille.jsemfix.test.Test;
 
 /**
  * @author Favio D. DeMarco
  *
  */
-enum GZoltarStatementWrapperFunction implements Function<com.gzoltar.core.components.Statement, SuspiciousStatement> {
+public interface RepairConstraintBuilder {
 
-	INSTANCE;
-
-	@Override
-	public SuspiciousStatement apply(com.gzoltar.core.components.Statement statement) {
-		return new GZoltarStatement(statement);
-	}
+	RepairConstraint buildFor(SuspiciousStatement rootCause, Set<Test> s);
 }

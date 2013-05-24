@@ -16,20 +16,23 @@
 package fr.inria.lille.jsemfix.sps.gzoltar;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import fr.inria.lille.jsemfix.sps.Statement;
+
+import com.gzoltar.core.components.Statement;
+
+import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 
 /**
  * @author Favio D. DeMarco
  * 
  */
-final class GZoltarStatement implements Statement {
+final class GZoltarStatement implements SuspiciousStatement {
 
-	private final com.gzoltar.core.components.Statement statement;
+	private final Statement statement;
 
 	/**
 	 * @param statement
 	 */
-	GZoltarStatement(com.gzoltar.core.components.Statement statement) {
+	GZoltarStatement(final Statement statement) {
 		this.statement = checkNotNull(statement);
 	}
 
@@ -37,34 +40,34 @@ final class GZoltarStatement implements Statement {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}
 		if (obj == null) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (this.getClass() != obj.getClass()) {
 			return false;
 		}
 		GZoltarStatement other = (GZoltarStatement) obj;
-		if (statement == null) {
+		if (this.statement == null) {
 			if (other.statement != null) {
 				return false;
 			}
-		} else if (!statement.equals(other.statement)) {
+		} else if (!this.statement.equals(other.statement)) {
 			return false;
 		}
 		return true;
 	}
 
 	/**
-	 * @see fr.inria.lille.jsemfix.sps.Statement#getContainingClass()
+	 * @see fr.inria.lille.jsemfix.sps.SuspiciousStatement#getContainingClass()
 	 */
 	@Override
 	public Class<?> getContainingClass() {
 		try {
-			return Class.forName(statement.getClazz().getLabel());
+			return Class.forName(this.statement.getClazz().getLabel());
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
@@ -72,19 +75,19 @@ final class GZoltarStatement implements Statement {
 	}
 
 	/**
-	 * @see fr.inria.lille.jsemfix.sps.Statement#getLineNumber()
+	 * @see fr.inria.lille.jsemfix.sps.SuspiciousStatement#getLineNumber()
 	 */
 	@Override
 	public int getLineNumber() {
-		return statement.getLineNumber();
+		return this.statement.getLineNumber();
 	}
 
 	/**
-	 * @see fr.inria.lille.jsemfix.sps.Statement#getSuspiciousness()
+	 * @see fr.inria.lille.jsemfix.sps.SuspiciousStatement#getSuspiciousness()
 	 */
 	@Override
 	public double getSuspiciousness() {
-		return statement.getSuspiciousness();
+		return this.statement.getSuspiciousness();
 	}
 
 	/**
@@ -92,7 +95,7 @@ final class GZoltarStatement implements Statement {
 	 */
 	@Override
 	public int hashCode() {
-		return statement.getLabel().hashCode();
+		return this.statement.getLabel().hashCode();
 	}
 
 	/**
@@ -102,11 +105,11 @@ final class GZoltarStatement implements Statement {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("GZoltarStatement [getContainingClass()=");
-		builder.append(getContainingClass());
+		builder.append(this.getContainingClass());
 		builder.append(", getLineNumber()=");
-		builder.append(getLineNumber());
+		builder.append(this.getLineNumber());
 		builder.append(", getSuspiciousness()=");
-		builder.append(getSuspiciousness());
+		builder.append(this.getSuspiciousness());
 		builder.append("]");
 		return builder.toString();
 	}

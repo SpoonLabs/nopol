@@ -13,10 +13,39 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix;
+package fr.inria.lille.jsemfix.patch;
+
+import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 
 /**
  * @author Favio D. DeMarco
  *
  */
-public interface RepairConstraint {}
+final class SuspiciousIfStatement implements SuspiciousStatement {
+
+	/**
+	 * @see fr.inria.lille.jsemfix.sps.SuspiciousStatement#getContainingClass()
+	 */
+	@Override
+	public Class<?> getContainingClass() {
+		return Object.class;
+	}
+
+	/**
+	 * @see fr.inria.lille.jsemfix.sps.SuspiciousStatement#getLineNumber()
+	 */
+	@Override
+	public int getLineNumber() {
+		return 10;
+	}
+
+	/**
+	 * @see fr.inria.lille.jsemfix.sps.SuspiciousStatement#getSuspiciousness()
+	 */
+	@Override
+	public double getSuspiciousness() {
+		// TODO Auto-generated method stub
+		// return 0;
+		throw new UnsupportedOperationException("SuspiciousStatement.getSuspiciousness");
+	}
+}

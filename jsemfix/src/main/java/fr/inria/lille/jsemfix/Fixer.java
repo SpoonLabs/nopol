@@ -16,13 +16,16 @@
 package fr.inria.lille.jsemfix;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.inria.lille.jsemfix.Patch.NO_PATCH;
+import static fr.inria.lille.jsemfix.patch.Patch.NO_PATCH;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import sacha.finder.main.TestInClasspath;
-import fr.inria.lille.jsemfix.sps.Statement;
+import fr.inria.lille.jsemfix.patch.Patch;
+import fr.inria.lille.jsemfix.patch.Patcher;
+import fr.inria.lille.jsemfix.patch.SimplePatcher;
+import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 import fr.inria.lille.jsemfix.sps.gzoltar.GZoltarSuspiciousProgramStatements;
 import fr.inria.lille.jsemfix.test.Test;
 import fr.inria.lille.jsemfix.test.TestRunner;
@@ -61,14 +64,14 @@ public final class Fixer {
 		this.testSuite = new JUnitTestRunner(testClasses);
 
 		// A ranked list of potential bug root-cause.
-		Iterable<Statement> statements = GZoltarSuspiciousProgramStatements.createWithPackageAndTestClasses(
+		Iterable<SuspiciousStatement> statements = GZoltarSuspiciousProgramStatements.createWithPackageAndTestClasses(
 				this.mainPackage, testClasses).sortBySuspiciousness();
 
 		return this.createPatch(statements);
 	}
 
-	private Patch createPatch(final Iterable<Statement> statements) {
-		for (Statement rc : statements) {
+	private Patch createPatch(final Iterable<SuspiciousStatement> statements) {
+		for (SuspiciousStatement rc : statements) {
 
 			Patch newRepair = this.createPatchForStatement(rc);
 
@@ -79,7 +82,7 @@ public final class Fixer {
 		return NO_PATCH;
 	}
 
-	private Patch createPatchForStatement(final Statement rc) {
+	private Patch createPatchForStatement(final SuspiciousStatement rc) {
 		// A test suite for repair generation
 		Set<Test> s = new HashSet<>();
 		Set<Test> tf = this.extractFailedTests();
@@ -97,8 +100,8 @@ public final class Fixer {
 		return newRepair;
 	}
 
-	private Patcher createPatcher(final Statement rc) {
-		return new SimplePatcher(rc);
+	private Patcher createPatcher(final SuspiciousStatement rc) {
+		return new SimplePatcher(rc, null);
 	}
 
 	private Set<Test> extractFailedTests() {

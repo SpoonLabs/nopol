@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 import com.gzoltar.core.GZoltar;
 
-import fr.inria.lille.jsemfix.sps.Statement;
+import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 import fr.inria.lille.jsemfix.sps.SuspiciousProgramStatements;
 
 /**
@@ -45,7 +45,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		return new GZoltarSuspiciousProgramStatements(sourcePackage, testClasses);
 	}
 
-	private final List<Statement> statements;
+	private final List<SuspiciousStatement> statements;
 
 	private GZoltarSuspiciousProgramStatements(final Package sourcePackage, final Class<?>... testClasses) {
 
@@ -79,10 +79,10 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 	 * TODO delete this method
 	 */
 	private void assertExpectedOrder() {
-		List<Statement> sortedStatementsList = new ArrayList<Statement>(this.statements);
-		Collections.sort(sortedStatementsList, new Comparator<Statement>() {
+		List<SuspiciousStatement> sortedStatementsList = new ArrayList<SuspiciousStatement>(this.statements);
+		Collections.sort(sortedStatementsList, new Comparator<SuspiciousStatement>() {
 			@Override
-			public int compare(final Statement o1, final Statement o2) {
+			public int compare(final SuspiciousStatement o1, final SuspiciousStatement o2) {
 				return Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness()); // reversed parameters because we
 				// want a descending order list
 			}
@@ -96,7 +96,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 	 * @see fr.inria.lille.jsemfix.sps.SuspiciousProgramStatements#sortBySuspiciousness()
 	 */
 	@Override
-	public List<Statement> sortBySuspiciousness() {
+	public List<SuspiciousStatement> sortBySuspiciousness() {
 
 		// TODO delete this method call
 		this.assertExpectedOrder();

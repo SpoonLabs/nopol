@@ -13,7 +13,9 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix;
+package fr.inria.lille.jsemfix.patch;
+
+import java.io.File;
 
 /**
  * @author Favio D. DeMarco
@@ -30,6 +32,21 @@ public interface Patch {
 
 		private NoPatch() {}
 
+		@Override
+		public String asString() {
+			throw new UnsupportedOperationException(toString());
+		}
+
+		@Override
+		public File getFile() {
+			throw new UnsupportedOperationException(toString());
+		}
+
+		@Override
+		public int getLineNumber() {
+			throw new UnsupportedOperationException(toString());
+		}
+
 		/**
 		 * @see java.lang.Object#toString()
 		 */
@@ -43,4 +60,10 @@ public interface Patch {
 	 * Singleton that represents the inability to find a working patch.
 	 */
 	public static final Patch NO_PATCH = new NoPatch();
+
+	String asString();
+
+	File getFile();
+
+	int getLineNumber();
 }

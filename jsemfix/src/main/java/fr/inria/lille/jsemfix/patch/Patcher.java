@@ -13,16 +13,17 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix;
+package fr.inria.lille.jsemfix.patch;
+
+import java.util.Set;
+
+import fr.inria.lille.jsemfix.test.Test;
 
 /**
  * @author Favio D. DeMarco
- * 
+ *
  */
-public enum Level {
-	CONSTANTS, COMPARISON_ARITHMETIC, LOGIC_COMPARISON_ITERATION, ARITHMETIC_LOGIC, ITERATION_ARRAY_ACCESS, MULTIPLICATION;
+public interface Patcher {
 
-	public Level next() {
-		return values()[this.ordinal() + 1];
-	}
+	Patch createPatch(Set<Test> s);
 }

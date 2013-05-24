@@ -13,22 +13,10 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix.sps.gzoltar;
-
-import com.google.common.base.Function;
-
-import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
+package fr.inria.lille.jsemfix.constraint;
 
 /**
  * @author Favio D. DeMarco
  *
  */
-enum GZoltarStatementWrapperFunction implements Function<com.gzoltar.core.components.Statement, SuspiciousStatement> {
-
-	INSTANCE;
-
-	@Override
-	public SuspiciousStatement apply(com.gzoltar.core.components.Statement statement) {
-		return new GZoltarStatement(statement);
-	}
-}
+public interface RepairConstraint {}

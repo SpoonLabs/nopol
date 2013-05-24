@@ -13,9 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix;
-
-import java.util.Set;
+package fr.inria.lille.jsemfix.patch;
 
 import fr.inria.lille.jsemfix.test.Test;
 
@@ -23,7 +21,38 @@ import fr.inria.lille.jsemfix.test.Test;
  * @author Favio D. DeMarco
  *
  */
-public interface Patcher {
+final class FailingIfTest implements Test {
 
-	Patch createPatch(Set<Test> s);
+	static Test shouldBeFalse() {
+		return new FailingIfTest();
+	}
+
+	static Test shouldBeTrue() {
+		return new FailingIfTest();
+	}
+
+	/**
+	 * 
+	 */
+	private FailingIfTest() {}
+
+	/**
+	 * @see fr.inria.lille.jsemfix.test.Test#getClassName()
+	 */
+	@Override
+	public String getClassName() {
+		// TODO Auto-generated method stub
+		// return null;
+		throw new UnsupportedOperationException("FailingIfTest.getClassName");
+	}
+
+	/**
+	 * @see fr.inria.lille.jsemfix.test.Test#getMethodName()
+	 */
+	@Override
+	public String getMethodName() {
+		// TODO Auto-generated method stub
+		// return null;
+		throw new UnsupportedOperationException("FailingIfTest.getMethodName");
+	}
 }

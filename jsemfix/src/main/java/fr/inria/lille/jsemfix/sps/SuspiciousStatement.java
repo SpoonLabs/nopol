@@ -19,7 +19,7 @@ package fr.inria.lille.jsemfix.sps;
  * @author Favio D. DeMarco
  *
  */
-public interface Statement {
+public interface SuspiciousStatement {
 
 	Class<?> getContainingClass();
 

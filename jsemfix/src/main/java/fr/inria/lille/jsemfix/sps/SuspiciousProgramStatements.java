@@ -27,5 +27,5 @@ public interface SuspiciousProgramStatements {
 	/**
 	 * @return a ranked list of potential bug root-cause.
 	 */
-	List<Statement> sortBySuspiciousness();
+	List<SuspiciousStatement> sortBySuspiciousness();
 }
