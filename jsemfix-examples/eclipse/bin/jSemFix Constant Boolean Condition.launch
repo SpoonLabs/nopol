@@ -24,4 +24,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="jsemfix"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea"/>
+<stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:jsemfix-examples}"/>
 </launchConfiguration>

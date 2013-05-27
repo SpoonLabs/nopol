@@ -19,4 +19,7 @@ package fr.inria.lille.jsemfix.constraint;
  * @author Favio D. DeMarco
  *
  */
-public interface RepairConstraint {}
+public interface RepairConstraint<T> {
+
+	T getValue();
+}

@@ -15,7 +15,10 @@
  */
 package fr.inria.lille.jsemfix.constraint;
 
+import java.util.Iterator;
 import java.util.Set;
+
+import com.google.common.collect.Iterators;
 
 import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 import fr.inria.lille.jsemfix.test.Test;
@@ -24,7 +27,17 @@ import fr.inria.lille.jsemfix.test.Test;
  * @author Favio D. DeMarco
  *
  */
-public interface RepairConstraintBuilder<T> {
+public final class BooleanRepairConstraintBuilder implements RepairConstraintBuilder<Boolean> {
 
-	RepairConstraint<T> buildFor(SuspiciousStatement rootCause, Set<Test> s);
+	@SuppressWarnings("unchecked")
+	private final Iterator<RepairConstraint<Boolean>> constraints = Iterators.<RepairConstraint<Boolean>> forArray(
+			new ConstantRepairConstraint<Boolean>(true), new ConstantRepairConstraint<Boolean>(false));
+
+	/**
+	 * @see fr.inria.lille.jsemfix.constraint.RepairConstraintBuilder#buildFor(fr.inria.lille.jsemfix.sps.SuspiciousStatement, java.util.Set)
+	 */
+	@Override
+	public RepairConstraint<Boolean> buildFor(final SuspiciousStatement rootCause, final Set<Test> s) {
+		return this.constraints.next();
+	}
 }

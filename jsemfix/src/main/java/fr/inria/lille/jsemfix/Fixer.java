@@ -21,7 +21,11 @@ import static fr.inria.lille.jsemfix.patch.Patch.NO_PATCH;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import sacha.finder.main.TestInClasspath;
+import fr.inria.lille.jsemfix.constraint.BooleanRepairConstraintBuilder;
 import fr.inria.lille.jsemfix.patch.Patch;
 import fr.inria.lille.jsemfix.patch.Patcher;
 import fr.inria.lille.jsemfix.patch.SimplePatcher;
@@ -33,9 +37,13 @@ import fr.inria.lille.jsemfix.test.junit.JUnitTestRunner;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
 public final class Fixer {
+
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	private final boolean loggerEnabled = this.logger.isDebugEnabled();
 
 	private final Package mainPackage;
 
@@ -49,12 +57,6 @@ public final class Fixer {
 	 */
 	public Fixer(final Package mainPackage) {
 		this.mainPackage = checkNotNull(mainPackage);
-	}
-
-	private void applyRepair(final Patch newRepair) {
-		// TODO Auto-generated method stub
-		//
-		throw new UnsupportedOperationException("Fixer.applyRepair");
 	}
 
 	public Patch createPatch() {
@@ -71,41 +73,52 @@ public final class Fixer {
 	}
 
 	private Patch createPatch(final Iterable<SuspiciousStatement> statements) {
+		Program program = Program.DEFAULT;
 		for (SuspiciousStatement rc : statements) {
 
-			Patch newRepair = this.createPatchForStatement(rc);
+			Patch newRepair = this.createPatchForStatement(program, rc);
 
 			if (NO_PATCH != newRepair) {
+				this.log("Patch found: {}", newRepair);
 				return newRepair;
 			}
 		}
 		return NO_PATCH;
 	}
 
-	private Patch createPatchForStatement(final SuspiciousStatement rc) {
+	private Patcher createPatcher(final SuspiciousStatement rc) {
+		return new SimplePatcher(rc, new BooleanRepairConstraintBuilder());
+	}
+
+	private Patch createPatchForStatement(final Program program, final SuspiciousStatement rc) {
 		// A test suite for repair generation
 		Set<Test> s = new HashSet<>();
-		Set<Test> tf = this.extractFailedTests();
+		Set<Test> tf = this.extractFailedTests(program);
 		Patcher patcher = this.createPatcher(rc);
 		Patch newRepair = NO_PATCH;
 		while (!tf.isEmpty()) {
 			s.addAll(tf);
+			this.log("Tests: {}", s);
 			newRepair = patcher.createPatch(s);
 			if (NO_PATCH == newRepair) {
 				break;
+			} else {
+				this.log("Candidate patch: {}", newRepair);
 			}
-			this.applyRepair(newRepair);
-			tf = this.extractFailedTests();
+			Program patchedProgram = newRepair.apply(program);
+			tf = this.extractFailedTests(patchedProgram);
 		}
 		return newRepair;
 	}
 
-	private Patcher createPatcher(final SuspiciousStatement rc) {
-		return new SimplePatcher(rc, null);
+	private void log(final String msg, final Object... parameters) {
+		if (this.loggerEnabled) {
+			this.logger.debug(msg, parameters);
+		}
 	}
 
-	private Set<Test> extractFailedTests() {
-		return this.testSuite.run();
+	private Set<Test> extractFailedTests(final Program program) {
+		return this.testSuite.run(program);
 	}
 
 	private Class<?>[] findTestClasses() {

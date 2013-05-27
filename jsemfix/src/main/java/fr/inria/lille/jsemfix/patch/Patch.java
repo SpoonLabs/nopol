@@ -17,6 +17,8 @@ package fr.inria.lille.jsemfix.patch;
 
 import java.io.File;
 
+import fr.inria.lille.jsemfix.Program;
+
 /**
  * @author Favio D. DeMarco
  *
@@ -31,6 +33,11 @@ public interface Patch {
 	static final class NoPatch implements Patch {
 
 		private NoPatch() {}
+
+		@Override
+		public Program apply(final Program program) {
+			throw new UnsupportedOperationException(toString());
+		}
 
 		@Override
 		public String asString() {
@@ -60,6 +67,8 @@ public interface Patch {
 	 * Singleton that represents the inability to find a working patch.
 	 */
 	public static final Patch NO_PATCH = new NoPatch();
+
+	Program apply(Program program);
 
 	String asString();
 

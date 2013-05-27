@@ -13,22 +13,36 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix.test;
+package fr.inria.lille.jsemfix;
 
-import java.util.Set;
 
-import fr.inria.lille.jsemfix.Program;
 
 /**
  * @author Favio D. DeMarco
  *
  */
-public interface TestRunner {
+public interface Program {
+
+	static final Program DEFAULT = new Program() {
+
+		/**
+		 * XXX FIXME TODO it must not use reflection
+		 * 
+		 * @see fr.inria.lille.jsemfix.Program#executeInContext(java.lang.Class, java.lang.String, java.lang.Object)
+		 */
+		@Override
+		public Object executeInContext(final Class<?> class1, final String method, final Object parameter) {
+			try {
+				return class1.getMethod(method, parameter.getClass()).invoke(null, parameter);
+			} catch (ReflectiveOperationException e) {
+				// TODO Auto-generated catch block
+				throw new RuntimeException(e);
+			}
+		}
+	};
 
 	/**
-	 * Runs all tests.
-	 * 
-	 * @return the set of failing tests.
+	 * XXX FIXME TODO It's coupled to class loader context kind
 	 */
-	Set<Test> run(Program program);
+	Object executeInContext(Class<?> class1, String method, Object parameter);
 }

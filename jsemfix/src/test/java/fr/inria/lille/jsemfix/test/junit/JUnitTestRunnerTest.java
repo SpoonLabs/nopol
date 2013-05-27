@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import fr.inria.lille.jsemfix.Program;
 import fr.inria.lille.jsemfix.gzoltar.ObjectsTest;
 import fr.inria.lille.jsemfix.test.TestRunner;
 
@@ -18,7 +19,7 @@ public class JUnitTestRunnerTest {
 		TestRunner runner = new JUnitTestRunner(new Class<?>[] { ObjectsTest.class });
 
 		// WHEN
-		Set<fr.inria.lille.jsemfix.test.Test> failing = runner.run();
+		Set<fr.inria.lille.jsemfix.test.Test> failing = runner.run(Program.DEFAULT);
 
 		// THEN
 		assertEquals(1, failing.size());

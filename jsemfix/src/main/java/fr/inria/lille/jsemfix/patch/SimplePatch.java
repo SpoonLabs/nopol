@@ -20,6 +20,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
 
+import fr.inria.lille.jsemfix.Program;
+
 /**
  * @author Favio D. DeMarco
  * 
@@ -44,6 +46,13 @@ public final class SimplePatch implements Patch {
 		this.source = checkNotNull(source);
 		checkArgument(lineNumber > 0, "Line number (%s) should be greater than zero.", lineNumber);
 		this.lineNumber = lineNumber;
+	}
+
+	@Override
+	public Program apply(final Program program) {
+		// TODO Auto-generated method stub
+		//
+		throw new UnsupportedOperationException("Patch.apply");
 	}
 
 	/**

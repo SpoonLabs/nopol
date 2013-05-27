@@ -15,16 +15,20 @@
  */
 package fr.inria.lille.jsemfix.constraint;
 
-import java.util.Set;
-
-import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
-import fr.inria.lille.jsemfix.test.Test;
-
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
-public interface RepairConstraintBuilder<T> {
+public final class ConstantRepairConstraint<T> implements RepairConstraint<T> {
 
-	RepairConstraint<T> buildFor(SuspiciousStatement rootCause, Set<Test> s);
+	private final T value;
+
+	public ConstantRepairConstraint(final T value) {
+		this.value = value;
+	}
+
+	@Override
+	public T getValue() {
+		return this.value;
+	}
 }

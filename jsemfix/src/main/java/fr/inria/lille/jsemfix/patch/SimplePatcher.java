@@ -18,11 +18,11 @@ package fr.inria.lille.jsemfix.patch;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.inria.lille.jsemfix.patch.Patch.NO_PATCH;
 
-import java.io.File;
 import java.util.Set;
 
 import fr.inria.lille.jsemfix.constraint.RepairConstraint;
 import fr.inria.lille.jsemfix.constraint.RepairConstraintBuilder;
+import fr.inria.lille.jsemfix.patch.spoon.SpoonPatch;
 import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 import fr.inria.lille.jsemfix.test.Test;
 
@@ -32,11 +32,11 @@ import fr.inria.lille.jsemfix.test.Test;
  */
 public final class SimplePatcher implements Patcher {
 
-	private final RepairConstraintBuilder repairConstraintBuilder;
+	private final RepairConstraintBuilder<?> repairConstraintBuilder;
 
 	private final SuspiciousStatement rootCause;
 
-	public SimplePatcher(final SuspiciousStatement rc, final RepairConstraintBuilder repairConstraintBuilder) {
+	public SimplePatcher(final SuspiciousStatement rc, final RepairConstraintBuilder<?> repairConstraintBuilder) {
 		this.rootCause = checkNotNull(rc);
 		this.repairConstraintBuilder = checkNotNull(repairConstraintBuilder);
 	}
@@ -47,7 +47,7 @@ public final class SimplePatcher implements Patcher {
 	@Override
 	public Patch createPatch(final Set<Test> s) {
 		Patch newRepair;
-		RepairConstraint c = this.generateRepairConstraint(s);
+		RepairConstraint<?> c = this.generateRepairConstraint(s);
 		Level level = Level.CONSTANTS;
 		do {
 			newRepair = this.synthesize(c, level);
@@ -56,27 +56,11 @@ public final class SimplePatcher implements Patcher {
 		return newRepair;
 	}
 
-	private RepairConstraint generateRepairConstraint(final Set<Test> s) {
+	private RepairConstraint<?> generateRepairConstraint(final Set<Test> s) {
 		return this.repairConstraintBuilder.buildFor(this.rootCause, s);
 	}
 
-	private Patch synthesize(final RepairConstraint c, final Level level) {
-		return new Patch() {
-
-			@Override
-			public String asString() {
-				return c.toString();
-			}
-
-			@Override
-			public File getFile() {
-				return new File(SimplePatcher.this.rootCause.getContainingClass().getSimpleName() + ".java");
-			}
-
-			@Override
-			public int getLineNumber() {
-				return SimplePatcher.this.rootCause.getLineNumber();
-			}
-		};
+	private Patch synthesize(final RepairConstraint<?> c, final Level level) {
+		return new SpoonPatch();
 	}
 }
