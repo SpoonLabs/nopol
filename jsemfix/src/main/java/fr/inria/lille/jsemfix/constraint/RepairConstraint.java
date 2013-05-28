@@ -17,9 +17,17 @@ package fr.inria.lille.jsemfix.constraint;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
 public interface RepairConstraint<T> {
+
+	@SuppressWarnings("rawtypes")
+	static final RepairConstraint UNSATISFIABLE_REPAIR_CONSTRAINT = new RepairConstraint() {
+		@Override
+		public Object getValue() {
+			throw new UnsupportedOperationException("RepairConstraint.getValue");
+		}
+	};
 
 	T getValue();
 }

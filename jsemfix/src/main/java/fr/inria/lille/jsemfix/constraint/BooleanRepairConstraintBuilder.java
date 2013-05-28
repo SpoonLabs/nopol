@@ -38,6 +38,9 @@ public final class BooleanRepairConstraintBuilder implements RepairConstraintBui
 	 */
 	@Override
 	public RepairConstraint<Boolean> buildFor(final SuspiciousStatement rootCause, final Set<Test> s) {
-		return this.constraints.next();
+
+		RepairConstraint<Boolean> constraint = this.constraints.next();
+
+		return constraint;
 	}
 }

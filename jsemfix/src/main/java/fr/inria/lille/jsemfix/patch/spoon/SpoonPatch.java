@@ -21,7 +21,9 @@ import spoon.SpoonClassLoader;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Builder;
 import spoon.processing.ProcessingManager;
+import spoon.processing.Processor;
 import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLiteral;
 import spoon.support.reflect.code.CtLiteralImpl;
 import fr.inria.lille.jsemfix.Program;
@@ -44,14 +46,28 @@ public final class SpoonPatch  implements Patch {
 		}
 	}
 
-	private static final ConditionReplacer PROCESSOR = new ConditionReplacer();
+	private static final class ReplaceIfConditionProcessor extends AbstractProcessor<CtIf> {
+
+		@Override
+		public void process(final CtIf element) {
+			// we declare a new snippet of code to be inserted
+			CtLiteral<Boolean> snippet = new CtLiteralImpl<>();
+			snippet.setFactory(this.getFactory());
+			snippet.setValue(true);
+			element.getCondition().replace(snippet);
+		}
+	}
+
+	private static final Processor<?> CONDITION_PROCESSOR = new ConditionReplacer();
+	private static final Processor<?> IF_CONDITION_PROCESSOR = new ReplaceIfConditionProcessor();
 
 	@Override
 	public Program apply(final Program program) {
 		SpoonClassLoader ccl = new SpoonClassLoader();
 
 		ProcessingManager processingManager = ccl.getProcessingManager();
-		processingManager.addProcessor(PROCESSOR);
+		processingManager.addProcessor(CONDITION_PROCESSOR);
+		processingManager.addProcessor(IF_CONDITION_PROCESSOR);
 
 		Builder builder = ccl.getFactory().getBuilder();
 
