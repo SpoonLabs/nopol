@@ -25,7 +25,7 @@ import org.junit.runner.notification.Failure;
 
 import com.google.common.collect.Collections2;
 
-import fr.inria.lille.jsemfix.Program;
+import fr.inria.lille.jsemfix.JavaProgram;
 import fr.inria.lille.jsemfix.test.Test;
 import fr.inria.lille.jsemfix.test.TestRunner;
 
@@ -45,7 +45,7 @@ public final class JUnitTestRunner implements TestRunner {
 	}
 
 	@Override
-	public Set<Test> run(final Program program) {
+	public Set<Test> run(final JavaProgram program) {
 
 		Result result = (Result) program.executeInContext(JUnitCore.class, "runClasses", this.tests);
 

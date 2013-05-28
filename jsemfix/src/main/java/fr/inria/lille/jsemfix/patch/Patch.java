@@ -17,7 +17,7 @@ package fr.inria.lille.jsemfix.patch;
 
 import java.io.File;
 
-import fr.inria.lille.jsemfix.Program;
+import fr.inria.lille.jsemfix.JavaProgram;
 
 /**
  * @author Favio D. DeMarco
@@ -35,7 +35,7 @@ public interface Patch {
 		private NoPatch() {}
 
 		@Override
-		public Program apply(final Program program) {
+		public JavaProgram apply(final JavaProgram program) {
 			throw new UnsupportedOperationException(toString());
 		}
 
@@ -68,7 +68,7 @@ public interface Patch {
 	 */
 	public static final Patch NO_PATCH = new NoPatch();
 
-	Program apply(Program program);
+	JavaProgram apply(JavaProgram program);
 
 	String asString();
 

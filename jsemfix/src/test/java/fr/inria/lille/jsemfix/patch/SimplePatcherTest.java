@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import fr.inria.lille.jsemfix.constraint.RepairConstraint;
 import fr.inria.lille.jsemfix.constraint.RepairConstraintBuilder;
+import fr.inria.lille.jsemfix.patch.spoon.SpoonPatcher;
 import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 
 /**
@@ -67,7 +68,7 @@ public class SimplePatcherTest {
 	}
 
 	/**
-	 * Test method for {@link fr.inria.lille.jsemfix.patch.SimplePatcher#createPatch(java.util.Set)}.
+	 * Test method for {@link fr.inria.lille.jsemfix.patch.spoon.SpoonPatcher#createPatch(java.util.Set)}.
 	 */
 	private void testCreatePatch(final fr.inria.lille.jsemfix.test.Test test, final String source) {
 
@@ -77,7 +78,7 @@ public class SimplePatcherTest {
 		RepairConstraintBuilder<Void> rcb = new ToStringConstraintBuilder(source);
 
 		// WHEN
-		Patch patch = new SimplePatcher(rc, rcb).createPatch(tests);
+		Patch patch = new SpoonPatcher(rc, rcb).createPatch(tests);
 
 		// THEN
 		assertNotSame(NO_PATCH, patch);
@@ -87,7 +88,7 @@ public class SimplePatcherTest {
 	}
 
 	/**
-	 * Test method for {@link fr.inria.lille.jsemfix.patch.SimplePatcher#createPatch(java.util.Set)}.
+	 * Test method for {@link fr.inria.lille.jsemfix.patch.spoon.SpoonPatcher#createPatch(java.util.Set)}.
 	 */
 	@Test
 	@Ignore
@@ -97,7 +98,7 @@ public class SimplePatcherTest {
 	}
 
 	/**
-	 * Test method for {@link fr.inria.lille.jsemfix.patch.SimplePatcher#createPatch(java.util.Set)}.
+	 * Test method for {@link fr.inria.lille.jsemfix.patch.spoon.SpoonPatcher#createPatch(java.util.Set)}.
 	 */
 	@Test
 	@Ignore

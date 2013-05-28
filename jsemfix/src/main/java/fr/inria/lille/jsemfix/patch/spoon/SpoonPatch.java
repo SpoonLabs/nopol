@@ -26,7 +26,7 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLiteral;
 import spoon.support.reflect.code.CtLiteralImpl;
-import fr.inria.lille.jsemfix.Program;
+import fr.inria.lille.jsemfix.JavaProgram;
 import fr.inria.lille.jsemfix.patch.Patch;
 
 /**
@@ -62,7 +62,7 @@ public final class SpoonPatch  implements Patch {
 	private static final Processor<?> IF_CONDITION_PROCESSOR = new ReplaceIfConditionProcessor();
 
 	@Override
-	public Program apply(final Program program) {
+	public JavaProgram apply(final JavaProgram program) {
 		SpoonClassLoader ccl = new SpoonClassLoader();
 
 		ProcessingManager processingManager = ccl.getProcessingManager();

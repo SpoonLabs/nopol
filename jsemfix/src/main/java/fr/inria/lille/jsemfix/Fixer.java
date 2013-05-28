@@ -18,6 +18,8 @@ package fr.inria.lille.jsemfix;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.inria.lille.jsemfix.patch.Patch.NO_PATCH;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,10 +27,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import sacha.finder.main.TestInClasspath;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+
 import fr.inria.lille.jsemfix.constraint.BooleanRepairConstraintBuilder;
 import fr.inria.lille.jsemfix.patch.Patch;
 import fr.inria.lille.jsemfix.patch.Patcher;
-import fr.inria.lille.jsemfix.patch.SimplePatcher;
+import fr.inria.lille.jsemfix.patch.spoon.SpoonPatcher;
 import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 import fr.inria.lille.jsemfix.sps.gzoltar.GZoltarSuspiciousProgramStatements;
 import fr.inria.lille.jsemfix.test.Test;
@@ -41,11 +47,28 @@ import fr.inria.lille.jsemfix.test.junit.JUnitTestRunner;
  */
 public final class Fixer {
 
+	private static final class SamePackage implements Predicate<Class<?>> {
+
+		final Package rootPackage;
+
+		/**
+		 * @param rootPackage
+		 */
+		SamePackage(final Package rootPackage) {
+			this.rootPackage = rootPackage;
+		}
+
+		@Override
+		public boolean apply(final Class<?> input) {
+			return this.rootPackage.equals(input.getPackage());
+		}
+	}
+
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final boolean loggerEnabled = this.logger.isDebugEnabled();
 
-	private final Package mainPackage;
+	private final JavaProgram mainProgram;
 
 	/**
 	 * A test suite.
@@ -55,8 +78,8 @@ public final class Fixer {
 	/**
 	 * @param mainPackage
 	 */
-	public Fixer(final Package mainPackage) {
-		this.mainPackage = checkNotNull(mainPackage);
+	public Fixer(final JavaProgram mainProgram) {
+		this.mainProgram = checkNotNull(mainProgram);
 	}
 
 	public Patch createPatch() {
@@ -67,16 +90,15 @@ public final class Fixer {
 
 		// A ranked list of potential bug root-cause.
 		Iterable<SuspiciousStatement> statements = GZoltarSuspiciousProgramStatements.createWithPackageAndTestClasses(
-				this.mainPackage, testClasses).sortBySuspiciousness();
+				this.mainProgram.getRootPackage(), testClasses).sortBySuspiciousness();
 
 		return this.createPatch(statements);
 	}
 
 	private Patch createPatch(final Iterable<SuspiciousStatement> statements) {
-		Program program = Program.DEFAULT;
 		for (SuspiciousStatement rc : statements) {
 
-			Patch newRepair = this.createPatchForStatement(program, rc);
+			Patch newRepair = this.createPatchForStatement(rc);
 
 			if (NO_PATCH != newRepair) {
 				this.log("Patch found: {}", newRepair);
@@ -87,13 +109,13 @@ public final class Fixer {
 	}
 
 	private Patcher createPatcher(final SuspiciousStatement rc) {
-		return new SimplePatcher(rc, new BooleanRepairConstraintBuilder());
+		return new SpoonPatcher(rc, new BooleanRepairConstraintBuilder());
 	}
 
-	private Patch createPatchForStatement(final Program program, final SuspiciousStatement rc) {
+	private Patch createPatchForStatement(final SuspiciousStatement rc) {
 		// A test suite for repair generation
 		Set<Test> s = new HashSet<>();
-		Set<Test> tf = this.extractFailedTests(program);
+		Set<Test> tf = this.extractFailedTests(this.mainProgram);
 		Patcher patcher = this.createPatcher(rc);
 		Patch newRepair = NO_PATCH;
 		while (!tf.isEmpty()) {
@@ -105,23 +127,26 @@ public final class Fixer {
 			} else {
 				this.log("Candidate patch: {}", newRepair);
 			}
-			Program patchedProgram = newRepair.apply(program);
+			JavaProgram patchedProgram = newRepair.apply(this.mainProgram);
 			tf = this.extractFailedTests(patchedProgram);
 		}
 		return newRepair;
+	}
+
+	private Set<Test> extractFailedTests(final JavaProgram program) {
+		return this.testSuite.run(program);
+	}
+
+	private Class<?>[] findTestClasses() {
+
+		Collection<Class<?>> filtered = Collections2.filter(Arrays.asList(new TestInClasspath().find()),
+				new SamePackage(this.mainProgram.getRootPackage()));
+		return filtered.toArray(new Class[] {});
 	}
 
 	private void log(final String msg, final Object... parameters) {
 		if (this.loggerEnabled) {
 			this.logger.debug(msg, parameters);
 		}
-	}
-
-	private Set<Test> extractFailedTests(final Program program) {
-		return this.testSuite.run(program);
-	}
-
-	private Class<?>[] findTestClasses() {
-		return new TestInClasspath().find();
 	}
 }

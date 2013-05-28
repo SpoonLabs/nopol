@@ -13,34 +13,34 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix.patch.spoon;
+package fr.inria.lille.jsemfix;
 
-import spoon.SpoonClassLoader;
-import fr.inria.lille.jsemfix.JavaProgram;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
-class SpoonedProgram implements JavaProgram {
+public final class InClasspathJavaProgram implements JavaProgram {
 
-	private final SpoonClassLoader classLoader;
+	private final Package rootPackage;
 
-	SpoonedProgram(final SpoonClassLoader ccl) {
-		this.classLoader = ccl;
+	/**
+	 * @param rootPackage
+	 */
+	public InClasspathJavaProgram(final Package rootPackage) {
+		this.rootPackage = checkNotNull(rootPackage);
 	}
 
 	/**
-	 * XXX FIXME TODO fat interface
+	 * XXX FIXME TODO it must not use reflection
 	 * 
 	 * @see fr.inria.lille.jsemfix.JavaProgram#executeInContext(java.lang.Class, java.lang.String, java.lang.Object)
 	 */
 	@Override
 	public Object executeInContext(final Class<?> class1, final String method, final Object parameter) {
 		try {
-			// XXX FIXME TODO law of Demeter
-			return this.classLoader.loadClass(class1.getName()).getMethod(method, parameter.getClass())
-					.invoke(null, parameter);
+			return class1.getMethod(method, parameter.getClass()).invoke(null, parameter);
 		} catch (ReflectiveOperationException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
@@ -49,8 +49,6 @@ class SpoonedProgram implements JavaProgram {
 
 	@Override
 	public Package getRootPackage() {
-		// TODO Auto-generated method stub
-		// return null;
-		throw new UnsupportedOperationException("JavaProgram.getRootPackage");
+		return this.rootPackage;
 	}
 }

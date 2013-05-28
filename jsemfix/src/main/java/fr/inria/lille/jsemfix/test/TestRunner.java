@@ -17,7 +17,7 @@ package fr.inria.lille.jsemfix.test;
 
 import java.util.Set;
 
-import fr.inria.lille.jsemfix.Program;
+import fr.inria.lille.jsemfix.JavaProgram;
 
 /**
  * @author Favio D. DeMarco
@@ -30,5 +30,5 @@ public interface TestRunner {
 	 * 
 	 * @return the set of failing tests.
 	 */
-	Set<Test> run(Program program);
+	Set<Test> run(JavaProgram program);
 }

@@ -15,34 +15,16 @@
  */
 package fr.inria.lille.jsemfix;
 
-
-
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
-public interface Program {
-
-	static final Program DEFAULT = new Program() {
-
-		/**
-		 * XXX FIXME TODO it must not use reflection
-		 * 
-		 * @see fr.inria.lille.jsemfix.Program#executeInContext(java.lang.Class, java.lang.String, java.lang.Object)
-		 */
-		@Override
-		public Object executeInContext(final Class<?> class1, final String method, final Object parameter) {
-			try {
-				return class1.getMethod(method, parameter.getClass()).invoke(null, parameter);
-			} catch (ReflectiveOperationException e) {
-				// TODO Auto-generated catch block
-				throw new RuntimeException(e);
-			}
-		}
-	};
+public interface JavaProgram {
 
 	/**
 	 * XXX FIXME TODO It's coupled to class loader context kind
 	 */
 	Object executeInContext(Class<?> class1, String method, Object parameter);
+
+	Package getRootPackage();
 }

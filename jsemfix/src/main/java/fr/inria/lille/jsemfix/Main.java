@@ -68,6 +68,6 @@ public final class Main {
 	}
 
 	void run() {
-		System.out.println(new Fixer(this.mainPackage).createPatch());
+		System.out.println(new Fixer(new InClasspathJavaProgram(this.mainPackage)).createPatch());
 	}
 }

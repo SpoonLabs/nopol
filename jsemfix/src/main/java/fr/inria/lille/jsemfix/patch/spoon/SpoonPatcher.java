@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix.patch;
+package fr.inria.lille.jsemfix.patch.spoon;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.inria.lille.jsemfix.patch.Patch.NO_PATCH;
@@ -22,7 +22,9 @@ import java.util.Set;
 
 import fr.inria.lille.jsemfix.constraint.RepairConstraint;
 import fr.inria.lille.jsemfix.constraint.RepairConstraintBuilder;
-import fr.inria.lille.jsemfix.patch.spoon.SpoonPatch;
+import fr.inria.lille.jsemfix.patch.Level;
+import fr.inria.lille.jsemfix.patch.Patch;
+import fr.inria.lille.jsemfix.patch.Patcher;
 import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 import fr.inria.lille.jsemfix.test.Test;
 
@@ -30,13 +32,13 @@ import fr.inria.lille.jsemfix.test.Test;
  * @author Favio D. DeMarco
  * 
  */
-public final class SimplePatcher implements Patcher {
+public final class SpoonPatcher implements Patcher {
 
 	private final RepairConstraintBuilder<?> repairConstraintBuilder;
 
 	private final SuspiciousStatement rootCause;
 
-	public SimplePatcher(final SuspiciousStatement rc, final RepairConstraintBuilder<?> repairConstraintBuilder) {
+	public SpoonPatcher(final SuspiciousStatement rc, final RepairConstraintBuilder<?> repairConstraintBuilder) {
 		this.rootCause = checkNotNull(rc);
 		this.repairConstraintBuilder = checkNotNull(repairConstraintBuilder);
 	}

@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import fr.inria.lille.jsemfix.Program;
+import fr.inria.lille.jsemfix.InClasspathJavaProgram;
 import fr.inria.lille.jsemfix.gzoltar.ObjectsTest;
 import fr.inria.lille.jsemfix.test.TestRunner;
 
@@ -16,16 +16,17 @@ public class JUnitTestRunnerTest {
 	public void testRun() {
 
 		// GIVEN
-		TestRunner runner = new JUnitTestRunner(new Class<?>[] { ObjectsTest.class });
+		Class<ObjectsTest> testClass = ObjectsTest.class;
+		TestRunner runner = new JUnitTestRunner(new Class<?>[] { testClass });
 
 		// WHEN
-		Set<fr.inria.lille.jsemfix.test.Test> failing = runner.run(Program.DEFAULT);
+		Set<fr.inria.lille.jsemfix.test.Test> failing = runner.run(new InClasspathJavaProgram(testClass.getPackage()));
 
 		// THEN
 		assertEquals(1, failing.size());
 
 		fr.inria.lille.jsemfix.test.Test test = failing.iterator().next();
-		assertEquals(ObjectsTest.class.getName(), test.getClassName());
+		assertEquals(testClass.getName(), test.getClassName());
 		assertEquals("testEqual", test.getMethodName());
 	}
 }
