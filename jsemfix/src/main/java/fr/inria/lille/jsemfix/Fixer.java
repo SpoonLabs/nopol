@@ -18,18 +18,11 @@ package fr.inria.lille.jsemfix;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static fr.inria.lille.jsemfix.patch.Patch.NO_PATCH;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import sacha.finder.main.TestInClasspath;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 
 import fr.inria.lille.jsemfix.constraint.BooleanRepairConstraintBuilder;
 import fr.inria.lille.jsemfix.patch.Patch;
@@ -38,6 +31,7 @@ import fr.inria.lille.jsemfix.patch.spoon.SpoonPatcher;
 import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 import fr.inria.lille.jsemfix.sps.gzoltar.GZoltarSuspiciousProgramStatements;
 import fr.inria.lille.jsemfix.test.Test;
+import fr.inria.lille.jsemfix.test.TestClassesFinder;
 import fr.inria.lille.jsemfix.test.TestRunner;
 import fr.inria.lille.jsemfix.test.junit.JUnitTestRunner;
 
@@ -46,23 +40,6 @@ import fr.inria.lille.jsemfix.test.junit.JUnitTestRunner;
  * 
  */
 public final class Fixer {
-
-	private static final class SamePackage implements Predicate<Class<?>> {
-
-		final Package rootPackage;
-
-		/**
-		 * @param rootPackage
-		 */
-		SamePackage(final Package rootPackage) {
-			this.rootPackage = rootPackage;
-		}
-
-		@Override
-		public boolean apply(final Class<?> input) {
-			return this.rootPackage.equals(input.getPackage());
-		}
-	}
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -138,10 +115,7 @@ public final class Fixer {
 	}
 
 	private Class<?>[] findTestClasses() {
-
-		Collection<Class<?>> filtered = Collections2.filter(Arrays.asList(new TestInClasspath().find()),
-				new SamePackage(this.mainProgram.getRootPackage()));
-		return filtered.toArray(new Class[] {});
+		return new TestClassesFinder(this.mainProgram.getRootPackage()).find().toArray(new Class[] {});
 	}
 
 	private void log(final String msg, final Object... parameters) {
