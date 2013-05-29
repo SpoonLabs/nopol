@@ -55,7 +55,7 @@ public final class Main {
 	}
 
 	private static void printUsage() {
-		System.out.println("java " + Main.class.getName() + "<package>");
+		System.out.println("java " + Main.class.getName() + " <package>");
 	}
 
 	private final Package mainPackage;
