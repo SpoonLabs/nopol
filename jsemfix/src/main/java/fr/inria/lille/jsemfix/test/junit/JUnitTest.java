@@ -25,7 +25,7 @@ import fr.inria.lille.jsemfix.test.Test;
  * @author Favio D. DeMarco
  *
  */
-final class JUnitTest implements Test {
+public final class JUnitTest implements Test {
 
 	private final Description failure;
 
@@ -33,7 +33,7 @@ final class JUnitTest implements Test {
 	 * @param failure
 	 * 
 	 */
-	JUnitTest(final Description failure) {
+	public JUnitTest(final Description failure) {
 		this.failure = checkNotNull(failure);
 	}
 
