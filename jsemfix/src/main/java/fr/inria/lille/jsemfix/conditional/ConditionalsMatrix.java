@@ -19,14 +19,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sacha.finder.main.TestInClasspath;
 import spoon.SpoonClassLoader;
 import spoon.processing.Builder;
 import spoon.processing.ProcessingManager;
@@ -35,8 +34,6 @@ import spoon.support.DefaultCoreFactory;
 import spoon.support.QueueProcessingManager;
 import spoon.support.StandardEnvironment;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
@@ -82,29 +79,26 @@ final class ConditionalsMatrix {
 		return table;
 	}
 
-	private static final class SamePackage implements Predicate<Class<?>> {
-
-		final String rootPackage;
-
-		/**
-		 * @param rootPackage
-		 */
-		SamePackage(final String rootPackage) {
-			this.rootPackage = rootPackage;
-		}
-
-		@Override
-		public boolean apply(final Class<?> input) {
-			return this.rootPackage.equals(input.getPackage().getName());
-		}
-	}
 
 	private Class<?>[] findTestClasses() {
 
-		// Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(new SpoonClassLoader()));
+		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(
+				new SpoonClassLoader()));
 
-		return Collections2.filter(Arrays.asList(new TestInClasspath().find()), new SamePackage(this.rootPackage))
-				.toArray(new Class[] {});
+		Class<?>[] testClasses;
+		try {
+			testClasses = executor.submit(new TestClassesFinder(this.rootPackage)).get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		}
+
+		executor.shutdown();
+
+		return testClasses;
 	}
 
 	private File getSourceFile(final Class<?> problemClass) {
