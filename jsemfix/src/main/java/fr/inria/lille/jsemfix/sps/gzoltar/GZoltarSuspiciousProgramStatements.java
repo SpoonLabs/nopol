@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 import com.gzoltar.core.GZoltar;
 
-import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 import fr.inria.lille.jsemfix.sps.SuspiciousProgramStatements;
+import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 
 /**
  * 
@@ -42,12 +42,17 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 
 	public static GZoltarSuspiciousProgramStatements createWithPackageAndTestClasses(final Package sourcePackage,
 			final Class<?>... testClasses) {
+		return createWithPackageAndTestClasses(sourcePackage.getName(), testClasses);
+	}
+
+	public static GZoltarSuspiciousProgramStatements createWithPackageAndTestClasses(final String sourcePackage,
+			final Class<?>... testClasses) {
 		return new GZoltarSuspiciousProgramStatements(sourcePackage, testClasses);
 	}
 
 	private final List<SuspiciousStatement> statements;
 
-	private GZoltarSuspiciousProgramStatements(final Package sourcePackage, final Class<?>... testClasses) {
+	private GZoltarSuspiciousProgramStatements(final String sourcePackage, final Class<?>... testClasses) {
 
 		GZoltar gzoltar;
 		try {
@@ -57,7 +62,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 			throw new RuntimeException(e);
 		}
 
-		gzoltar.addPackageToInstrument(checkNotNull(sourcePackage).getName()); // TODO see if GZoltar instruments
+		gzoltar.addPackageToInstrument(checkNotNull(sourcePackage)); // TODO see if GZoltar instruments
 		// recursively
 
 		for (Class<?> testClass : checkNotNull(testClasses)) {

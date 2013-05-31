@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/jsemfix/src/main/java/fr/inria/lille/jsemfix/Conditionals.java"/>
+<listEntry value="/jsemfix/src/main/java/fr/inria/lille/jsemfix/conditional/Conditionals.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
@@ -14,7 +14,7 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
 <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="fr.inria.lille.jsemfix.Conditionals"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="fr.inria.lille.jsemfix.conditional.Conditionals"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="fr.inria.lille.jsemfix.examples.bool.constant&#10;src/main/java"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="jsemfix"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
