@@ -84,7 +84,7 @@ public class SimplePatcherTest {
 		assertNotSame(NO_PATCH, patch);
 		assertEquals(rc.getLineNumber(), patch.getLineNumber());
 		assertEquals(source, patch.asString());
-		assertEquals(rc.getContainingClass().getSimpleName() + ".java", patch.getFile().getName());
+		assertEquals(rc.getContainingClassName() + ".java", patch.getFile().getName());
 	}
 
 	/**

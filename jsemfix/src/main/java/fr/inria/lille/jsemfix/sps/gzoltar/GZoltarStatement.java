@@ -65,13 +65,8 @@ final class GZoltarStatement implements SuspiciousStatement {
 	 * @see fr.inria.lille.jsemfix.sps.SuspiciousStatement#getContainingClass()
 	 */
 	@Override
-	public Class<?> getContainingClass() {
-		try {
-			return Class.forName(this.statement.getClazz().getLabel());
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException(e);
-		}
+	public String getContainingClassName() {
+		return this.statement.getClazz().getLabel();
 	}
 
 	/**
@@ -104,11 +99,11 @@ final class GZoltarStatement implements SuspiciousStatement {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("GZoltarStatement [getContainingClass()=");
-		builder.append(this.getContainingClass());
-		builder.append(", getLineNumber()=");
+		builder.append("GZoltarStatement [ContainingClass=");
+		builder.append(this.getContainingClassName());
+		builder.append(", LineNumber=");
 		builder.append(this.getLineNumber());
-		builder.append(", getSuspiciousness()=");
+		builder.append(", Suspiciousness=");
 		builder.append(this.getSuspiciousness());
 		builder.append("]");
 		return builder.toString();

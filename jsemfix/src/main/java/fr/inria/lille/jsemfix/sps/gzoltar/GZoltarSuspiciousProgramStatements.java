@@ -18,9 +18,11 @@ package fr.inria.lille.jsemfix.sps.gzoltar;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -40,6 +42,19 @@ import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
  */
 public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgramStatements {
 
+	/**
+	 * XXX FIXME TODO too many arguments. Builder?
+	 * 
+	 * @param sourcePackage
+	 * @param classpath
+	 * @param testClasses
+	 * @return
+	 */
+	public static GZoltarSuspiciousProgramStatements create(final String sourcePackage, final URL[] classpath,
+			final Class<?>... testClasses) {
+		return new GZoltarSuspiciousProgramStatements(sourcePackage, classpath, testClasses);
+	}
+
 	public static GZoltarSuspiciousProgramStatements createWithPackageAndTestClasses(final Package sourcePackage,
 			final Class<?>... testClasses) {
 		return createWithPackageAndTestClasses(sourcePackage.getName(), testClasses);
@@ -53,6 +68,11 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 	private final List<SuspiciousStatement> statements;
 
 	private GZoltarSuspiciousProgramStatements(final String sourcePackage, final Class<?>... testClasses) {
+		this(sourcePackage, (URL[]) null, testClasses);
+	}
+
+	private GZoltarSuspiciousProgramStatements(final String sourcePackage, final URL[] classpath,
+			final Class<?>... testClasses) {
 
 		GZoltar gzoltar;
 		try {
@@ -62,6 +82,13 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 			throw new RuntimeException(e);
 		}
 
+		if (null != classpath) {
+			HashSet<String> classpaths = gzoltar.getClasspaths();
+			for (URL url : classpath) {
+				classpaths.add(url.toExternalForm());
+			}
+			gzoltar.setClassPaths(classpaths);
+		}
 		gzoltar.addPackageToInstrument(checkNotNull(sourcePackage)); // TODO see if GZoltar instruments
 		// recursively
 

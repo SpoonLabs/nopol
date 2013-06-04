@@ -21,7 +21,7 @@ package fr.inria.lille.jsemfix.sps;
  */
 public interface SuspiciousStatement {
 
-	Class<?> getContainingClass();
+	String getContainingClassName();
 
 	int getLineNumber();
 

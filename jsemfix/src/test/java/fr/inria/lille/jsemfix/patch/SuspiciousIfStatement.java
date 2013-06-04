@@ -27,8 +27,8 @@ final class SuspiciousIfStatement implements SuspiciousStatement {
 	 * @see fr.inria.lille.jsemfix.sps.SuspiciousStatement#getContainingClass()
 	 */
 	@Override
-	public Class<?> getContainingClass() {
-		return Object.class;
+	public String getContainingClassName() {
+		return Object.class.getName();
 	}
 
 	/**

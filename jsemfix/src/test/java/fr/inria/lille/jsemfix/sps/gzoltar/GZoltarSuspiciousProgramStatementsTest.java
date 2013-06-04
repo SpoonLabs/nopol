@@ -16,7 +16,6 @@
 package fr.inria.lille.jsemfix.sps.gzoltar;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 
 import java.util.List;
 
@@ -24,8 +23,8 @@ import org.junit.Test;
 
 import fr.inria.lille.jsemfix.gzoltar.Objects;
 import fr.inria.lille.jsemfix.gzoltar.ObjectsTest;
-import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 import fr.inria.lille.jsemfix.sps.SuspiciousProgramStatements;
+import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 
 /**
  * @author Favio D. DeMarco
@@ -50,11 +49,11 @@ public class GZoltarSuspiciousProgramStatementsTest {
 			int lineNumber = 52 + index;
 			assertEquals(lineNumber, s.getLineNumber());
 			assertEquals(1D, s.getSuspiciousness(), 0D);
-			assertSame(Objects.class, s.getContainingClass());
+			assertEquals(Objects.class.getName(), s.getContainingClassName());
 		}
 		SuspiciousStatement s = statements.get(3);
 		assertEquals(75, s.getLineNumber());
 		assertEquals(0D, s.getSuspiciousness(), 0D);
-		assertSame(Objects.class, s.getContainingClass());
+		assertEquals(Objects.class.getName(), s.getContainingClassName());
 	}
 }
