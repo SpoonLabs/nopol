@@ -19,6 +19,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Favio D. DeMarco
@@ -30,7 +34,7 @@ public final class Conditionals {
 	 * @param args
 	 */
 	public static void main(final String[] args) {
-		if (2 != args.length) {
+		if (3 != args.length) {
 			printUsage();
 			return;
 		}
@@ -41,7 +45,9 @@ public final class Conditionals {
 		checkArgument(sourceFolder.exists(), "%s: does not exist.", sourceFolder);
 		checkArgument(sourceFolder.isDirectory(), "%s: is not a directory.", sourceFolder);
 
-		new Conditionals(pName, sourceFolder).run();
+		String[] paths = args[2].split(Character.toString(File.pathSeparatorChar));
+
+		new Conditionals(pName, sourceFolder, paths).run();
 	}
 
 	private static void printUsage() {
@@ -52,15 +58,30 @@ public final class Conditionals {
 
 	private final File sourceFolder;
 
+	private final String[] classpath;
+
 	/**
 	 * 
 	 */
-	private Conditionals(final String pName, final File sourceFolder) {
+	private Conditionals(final String pName, final File sourceFolder, final String[] classpath) {
 		this.mainPackage = checkNotNull(pName);
 		this.sourceFolder = checkNotNull(sourceFolder);
+		this.classpath = checkNotNull(classpath);
 	}
 
 	void run() {
-		System.out.println(new ConditionalsMatrix(this.mainPackage, this.sourceFolder).build());
+
+		List<URL> urls = new ArrayList<>();
+		for (String path : this.classpath) {
+			try {
+				urls.add(new File(path).toURI().toURL());
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				throw new RuntimeException(e);
+			}
+		}
+
+		System.out.println(new ConditionalsMatrix(this.mainPackage, this.sourceFolder,
+				urls.toArray(new URL[urls.size()])).build());
 	}
 }

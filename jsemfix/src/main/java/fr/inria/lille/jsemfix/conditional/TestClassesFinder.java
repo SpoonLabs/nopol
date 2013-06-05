@@ -15,10 +15,13 @@
  */
 package fr.inria.lille.jsemfix.conditional;
 
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 
-import sacha.finder.main.TestInClasspath;
+import sacha.finder.classes.impl.ClassloaderFinder;
+import sacha.finder.filters.impl.TestFilter;
+import sacha.finder.processor.Processor;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -51,14 +54,17 @@ final class TestClassesFinder implements Callable<Class<?>[]> {
 	/**
 	 * @param rootPackage
 	 */
-	TestClassesFinder(final String rootPackage) {
+	public TestClassesFinder(final String rootPackage) {
 		this.rootPackage = rootPackage;
 	}
 
 	@Override
 	public Class<?>[] call() throws Exception {
 
-		return Collections2.filter(Arrays.asList(new TestInClasspath().find()), new SamePackage(this.rootPackage))
+		Class<?>[] classes = new Processor(new ClassloaderFinder((URLClassLoader) Thread.currentThread()
+				.getContextClassLoader()), new TestFilter()).process();
+
+		return Collections2.filter(Arrays.asList(classes), new SamePackage(this.rootPackage))
 				.toArray(new Class<?>[] {});
 	}
 }

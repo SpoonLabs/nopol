@@ -19,6 +19,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,6 +52,8 @@ final class ConditionalsMatrix {
 	private final String rootPackage;
 
 	private final File sourceFolder;
+	private final URL[] classpath;
+	private final URLClassLoader classLoader;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final boolean debug = this.logger.isDebugEnabled();
@@ -58,17 +62,24 @@ final class ConditionalsMatrix {
 	 * @param rootPackage
 	 * @param sourceFolder
 	 */
-	ConditionalsMatrix(final String rootPackage, final File sourceFolder) {
+	ConditionalsMatrix(final String rootPackage, final File sourceFolder, final URL[] paths) {
 		this.rootPackage = checkNotNull(rootPackage);
 		this.sourceFolder = checkNotNull(sourceFolder);
+		this.classpath = checkNotNull(paths);
+		this.classLoader = new URLClassLoader(this.classpath);
 	}
+
+	/**
+	 * XXX FIXME TODO wtf!?
+	 */
+	private Class<?>[] testClasses;
 
 	public Table<Test, Boolean, Result> build() {
 
 		// A ranked list of potential bug root-cause.
-		Class<?>[] testClasses = this.findTestClasses();
-		Iterable<SuspiciousStatement> statements = GZoltarSuspiciousProgramStatements.createWithPackageAndTestClasses(
-				this.rootPackage, testClasses).sortBySuspiciousness();
+		this.testClasses = this.findTestClasses();
+		Iterable<SuspiciousStatement> statements = GZoltarSuspiciousProgramStatements.create(this.rootPackage,
+				this.classpath, this.testClasses).sortBySuspiciousness();
 		Table<Test, Boolean, Result> table = HashBasedTable.create();
 		for (SuspiciousStatement rc : statements) {
 			if (this.isConditional(rc)) {
@@ -79,11 +90,10 @@ final class ConditionalsMatrix {
 		return table;
 	}
 
-
 	private Class<?>[] findTestClasses() {
 
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(
-				new SpoonClassLoader()));
+				this.classLoader));
 
 		Class<?>[] testClasses;
 		try {
@@ -101,8 +111,8 @@ final class ConditionalsMatrix {
 		return testClasses;
 	}
 
-	private File getSourceFile(final Class<?> problemClass) {
-		String classPath = problemClass.getName().replace('.', File.separatorChar);
+	private File getSourceFile(final String problemClass) {
+		String classPath = problemClass.replace('.', File.separatorChar);
 		File sourceFile = new File(this.sourceFolder, classPath + ".java");
 		checkState(sourceFile.exists(), "%s: does not exist.", sourceFile);
 		return sourceFile;
@@ -114,7 +124,7 @@ final class ConditionalsMatrix {
 		env.setDebug(this.debug);
 		Factory factory = new Factory(new DefaultCoreFactory(), env);
 		ProcessingManager processing = new QueueProcessingManager(factory);
-		ConditionalDetector detector = new ConditionalDetector(this.getSourceFile(rc.getContainingClass()),
+		ConditionalDetector detector = new ConditionalDetector(this.getSourceFile(rc.getContainingClassName()),
 				rc.getLineNumber());
 		processing.addProcessor(detector);
 		Builder builder = factory.getBuilder();
@@ -135,19 +145,19 @@ final class ConditionalsMatrix {
 		ccl.getEnvironment().setDebug(this.debug);
 
 		ProcessingManager processingManager = ccl.getProcessingManager();
-		processingManager.addProcessor(new ConditionalReplacer(this.getSourceFile(rc.getContainingClass()), rc
+		processingManager.addProcessor(new ConditionalReplacer(this.getSourceFile(rc.getContainingClassName()), rc
 				.getLineNumber(), value));
-		processingManager.addProcessor(new IfCoConditionalReplacer(this.getSourceFile(rc.getContainingClass()), rc
+		processingManager.addProcessor(new IfCoConditionalReplacer(this.getSourceFile(rc.getContainingClassName()), rc
 				.getLineNumber(), value));
 		Builder builder = ccl.getFactory().getBuilder();
 
-		Runnable runner = new JUnitRunner(new ResultMatrixBuilderListener(table, value), this.findTestClasses());
+		Runnable runner = new JUnitRunner(new ResultMatrixBuilderListener(table, value), this.testClasses);
 
 		try {
 			builder.addInputSource(this.sourceFolder);
 			builder.build();
 
-			ccl.loadClass(rc.getContainingClass().getName());
+			// ccl.loadClass(rc.getContainingClassName());
 
 			// XXX FIXME TODO law of Demeter
 			ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(ccl));
