@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -28,9 +29,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.gzoltar.core.GZoltar;
 
+import fr.inria.lille.jsemfix.functors.ClassName;
 import fr.inria.lille.jsemfix.sps.SuspiciousProgramStatements;
 import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 
@@ -51,7 +54,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 	 * @return
 	 */
 	public static GZoltarSuspiciousProgramStatements create(final String sourcePackage, final URL[] classpath,
-			final Class<?>... testClasses) {
+			final String... testClasses) {
 		return new GZoltarSuspiciousProgramStatements(sourcePackage, classpath, testClasses);
 	}
 
@@ -62,17 +65,19 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 
 	public static GZoltarSuspiciousProgramStatements createWithPackageAndTestClasses(final String sourcePackage,
 			final Class<?>... testClasses) {
-		return new GZoltarSuspiciousProgramStatements(sourcePackage, testClasses);
+
+		return new GZoltarSuspiciousProgramStatements(sourcePackage, Collections2.transform(Arrays.asList(testClasses),
+				ClassName.INSTANCE).toArray(new String[testClasses.length]));
 	}
 
 	private final List<SuspiciousStatement> statements;
 
-	private GZoltarSuspiciousProgramStatements(final String sourcePackage, final Class<?>... testClasses) {
+	private GZoltarSuspiciousProgramStatements(final String sourcePackage, final String... testClasses) {
 		this(sourcePackage, (URL[]) null, testClasses);
 	}
 
 	private GZoltarSuspiciousProgramStatements(final String sourcePackage, final URL[] classpath,
-			final Class<?>... testClasses) {
+			final String... testClasses) {
 
 		GZoltar gzoltar;
 		try {
@@ -92,8 +97,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		gzoltar.addPackageToInstrument(checkNotNull(sourcePackage)); // TODO see if GZoltar instruments
 		// recursively
 
-		for (Class<?> testClass : checkNotNull(testClasses)) {
-			String className = testClass.getName();
+		for (String className : checkNotNull(testClasses)) {
 			gzoltar.addTestToExecute(className); // we want to execute the test
 			gzoltar.addClassNotToInstrument(className); // we don't want to include the test as root-cause candidate
 		}

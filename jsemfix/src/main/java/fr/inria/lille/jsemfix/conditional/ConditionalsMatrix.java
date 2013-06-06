@@ -19,6 +19,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.concurrent.ExecutionException;
@@ -72,7 +73,7 @@ final class ConditionalsMatrix {
 	/**
 	 * XXX FIXME TODO wtf!?
 	 */
-	private Class<?>[] testClasses;
+	private String[] testClasses;
 
 	public Table<Test, Boolean, Result> build() {
 
@@ -90,12 +91,12 @@ final class ConditionalsMatrix {
 		return table;
 	}
 
-	private Class<?>[] findTestClasses() {
+	private String[] findTestClasses() {
 
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(
 				this.classLoader));
 
-		Class<?>[] testClasses;
+		String[] testClasses;
 		try {
 			testClasses = executor.submit(new TestClassesFinder(this.rootPackage)).get();
 		} catch (InterruptedException e) {
@@ -151,16 +152,21 @@ final class ConditionalsMatrix {
 				.getLineNumber(), value));
 		Builder builder = ccl.getFactory().getBuilder();
 
-		Runnable runner = new JUnitRunner(new ResultMatrixBuilderListener(table, value), this.testClasses);
+		ClassLoader cl = new URLClassLoader(this.classpath, ccl);
 
 		try {
+
+			Class<?> runnerClass = cl.loadClass(JUnitRunner.class.getName());
+			@SuppressWarnings("unchecked")
+			Constructor<Runnable> constructor = (Constructor<Runnable>) runnerClass.getConstructors()[0];
+			Runnable runner = constructor.newInstance(new ResultMatrixBuilderListener(table, value), this.testClasses);
+
 			builder.addInputSource(this.sourceFolder);
 			builder.build();
 
-			// ccl.loadClass(rc.getContainingClassName());
+			ccl.loadClass(rc.getContainingClassName());
 
-			// XXX FIXME TODO law of Demeter
-			ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(ccl));
+			ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
 			executor.execute(runner);
 			executor.shutdown();
 
