@@ -13,7 +13,7 @@ import spoon.support.reflect.code.CtLiteralImpl;
  * 
  * @author Favio D. DeMarco
  */
-final class IfCoConditionalReplacer extends AbstractProcessor<CtIf> {
+final class IfConditionalReplacer extends AbstractProcessor<CtIf> {
 
 	final File file;
 	final int line;
@@ -23,7 +23,7 @@ final class IfCoConditionalReplacer extends AbstractProcessor<CtIf> {
 	 * @param file
 	 * @param line
 	 */
-	IfCoConditionalReplacer(final File file, final int line, final boolean value) {
+	IfConditionalReplacer(final File file, final int line, final boolean value) {
 		this.file = file;
 		this.line = line;
 		this.value = value;

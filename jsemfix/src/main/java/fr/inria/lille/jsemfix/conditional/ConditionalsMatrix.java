@@ -148,7 +148,7 @@ final class ConditionalsMatrix {
 		ProcessingManager processingManager = ccl.getProcessingManager();
 		processingManager.addProcessor(new ConditionalReplacer(this.getSourceFile(rc.getContainingClassName()), rc
 				.getLineNumber(), value));
-		processingManager.addProcessor(new IfCoConditionalReplacer(this.getSourceFile(rc.getContainingClassName()), rc
+		processingManager.addProcessor(new IfConditionalReplacer(this.getSourceFile(rc.getContainingClassName()), rc
 				.getLineNumber(), value));
 		Builder builder = ccl.getFactory().getBuilder();
 
