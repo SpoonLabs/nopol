@@ -19,7 +19,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.concurrent.ExecutionException;
@@ -156,18 +155,14 @@ final class ConditionalsMatrix {
 
 		try {
 
-			Class<?> runnerClass = cl.loadClass(JUnitRunner.class.getName());
-			@SuppressWarnings("unchecked")
-			Constructor<Runnable> constructor = (Constructor<Runnable>) runnerClass.getConstructors()[0];
-			Runnable runner = constructor.newInstance(new ResultMatrixBuilderListener(table, value), this.testClasses);
-
 			builder.addInputSource(this.sourceFolder);
 			builder.build();
-
+			// should be loaded by the spoon class loader
 			ccl.loadClass(rc.getContainingClassName());
 
+			// should use the url class loader
 			ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
-			executor.execute(runner);
+			executor.execute(new JUnitRunner(new ResultMatrixBuilderListener(table, value), this.testClasses));
 			executor.shutdown();
 
 		} catch (Exception e) {
