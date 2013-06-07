@@ -53,7 +53,6 @@ final class ConditionalsMatrix {
 
 	private final File sourceFolder;
 	private final URL[] classpath;
-	private final URLClassLoader classLoader;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final boolean debug = this.logger.isDebugEnabled();
@@ -66,7 +65,6 @@ final class ConditionalsMatrix {
 		this.rootPackage = checkNotNull(rootPackage);
 		this.sourceFolder = checkNotNull(sourceFolder);
 		this.classpath = checkNotNull(paths);
-		this.classLoader = new URLClassLoader(this.classpath);
 	}
 
 	/**
@@ -93,7 +91,7 @@ final class ConditionalsMatrix {
 	private String[] findTestClasses() {
 
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(
-				this.classLoader));
+				new URLClassLoader(this.classpath)));
 
 		String[] testClasses;
 		try {
@@ -104,10 +102,9 @@ final class ConditionalsMatrix {
 		} catch (ExecutionException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
+		} finally {
+			executor.shutdown();
 		}
-
-		executor.shutdown();
-
 		return testClasses;
 	}
 
