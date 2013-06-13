@@ -37,7 +37,7 @@
 		</dependency>
 		<dependency>
 			<groupId>fr.inria.gforge.spoon</groupId>
-			<artifactId>spoon-core</artifactId>
+			<artifactId>spoon-loadtime</artifactId>
 			<version>1.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -50,7 +50,10 @@
 		<dependency>
 			<groupId>org.smtlib</groupId>
 			<artifactId>smtlib</artifactId>
-			<version>alpha</version>
+
+			<!-- org.smtlib.Version.VERSION_ID -->
+			<version>0.9.7</version>
+
 			<scope>system</scope>
 			<systemPath>${project.build.directory}/../lib/jSMTLIB.jar</systemPath>
 		</dependency>
