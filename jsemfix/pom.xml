@@ -48,6 +48,13 @@
 			<systemPath>${project.build.directory}/../lib/com.gzoltar-0.0.3-jar-with-dependencies.jar</systemPath>
 		</dependency>
 		<dependency>
+			<groupId>org.smtlib</groupId>
+			<artifactId>smtlib</artifactId>
+			<version>alpha</version>
+			<scope>system</scope>
+			<systemPath>${project.build.directory}/../lib/jSMTLIB.jar</systemPath>
+		</dependency>
+		<dependency>
 			<groupId>com.google.code.findbugs</groupId>
 			<artifactId>jsr305</artifactId>
 			<version>2.0.1</version>
