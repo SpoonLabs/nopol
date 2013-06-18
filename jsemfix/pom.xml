@@ -61,12 +61,7 @@
 		<dependency>
 			<groupId>org.smtlib</groupId>
 			<artifactId>smtlib</artifactId>
-
-			<!-- org.smtlib.Version.VERSION_ID -->
-			<version>0.9.7</version>
-
-			<scope>system</scope>
-			<systemPath>${project.build.directory}/../lib/jSMTLIB.jar</systemPath>
+			<version>0.9.7.1</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
