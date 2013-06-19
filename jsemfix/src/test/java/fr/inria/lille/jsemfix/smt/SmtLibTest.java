@@ -15,11 +15,13 @@
  */
 package fr.inria.lille.jsemfix.smt;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.smtlib.Utils.PRODUCE_MODELS;
 import static org.smtlib.Utils.TRUE;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,12 +31,15 @@ import org.smtlib.ICommand;
 import org.smtlib.ICommand.IScript;
 import org.smtlib.IExpr;
 import org.smtlib.IExpr.IStringLiteral;
+import org.smtlib.IResponse;
 import org.smtlib.ISolver;
 import org.smtlib.ISort;
 import org.smtlib.IVisitor.VisitorException;
 import org.smtlib.SMT;
 import org.smtlib.SMT.Configuration;
+import org.smtlib.impl.Response;
 import org.smtlib.logic.QF_UF;
+import org.smtlib.solvers.Solver_cvc4;
 import org.smtlib.solvers.Solver_test;
 
 /**
@@ -42,6 +47,8 @@ import org.smtlib.solvers.Solver_test;
  * 
  */
 public final class SmtLibTest {
+
+	private static final String CVC4_BINARY_PATH = "/usr/bin/cvc4";
 
 	/**
 	 * {@code (set-option :produce-models true)(set-logic QF_UF)(declare-fun p () Bool)}
@@ -114,5 +121,52 @@ public final class SmtLibTest {
 		assertTrue(solver.start().isOK());
 		assertFalse(script.execute(solver).isOK());
 		assertTrue(solver.exit().isOK());
+	}
+
+	@Test
+	public void test_cvc4() throws VisitorException {
+
+		// GIVEN
+		SMT smt = new SMT();
+
+		Configuration smtConfig = smt.smtConfig;
+
+		// debug
+		// smtConfig.verbose = 1;
+
+		ICommand.IFactory commandFactory = smtConfig.commandFactory;
+		IExpr.IFactory efactory = smtConfig.exprFactory;
+		ISort.IFactory sortfactory = smtConfig.sortFactory;
+
+		List<ICommand> commands = new ArrayList<>();
+
+		commands.add(commandFactory.set_option(efactory.keyword(PRODUCE_MODELS), TRUE));
+		commands.add(commandFactory.set_logic(efactory.symbol(QF_UF.class.getSimpleName())));
+		commands.add(commandFactory.declare_fun(efactory.symbol("p"), Collections.<ISort> emptyList(),
+				sortfactory.Bool()));
+		IExpr.ISymbol p = efactory.symbol("p");
+		IExpr notp = efactory.fcn(efactory.symbol("not"), new IExpr[] { p });
+		IExpr and = efactory.fcn(efactory.symbol("and"), new IExpr[] { p, notp });
+		commands.add(commandFactory.assertCommand(and));
+
+		// WHEN
+		IScript script = commandFactory.script((IStringLiteral) null, commands);
+
+		if (new File(CVC4_BINARY_PATH).exists()) {
+
+			ISolver solver = new Solver_cvc4(smtConfig, CVC4_BINARY_PATH);
+
+			// THEN
+			assertTrue(solver.start().isOK());
+			assertTrue(script.execute(solver).isOK());
+			IResponse sat = solver.check_sat();
+
+			// unsat
+			assertFalse(sat.isOK());
+			assertFalse(sat.isError());
+			assertEquals(Response.UNSAT, sat);
+
+			assertTrue(solver.exit().isOK());
+		}
 	}
 }
