@@ -149,7 +149,7 @@
 									<version>3.0.4</version>
 								</requireMavenVersion>
 								<requireJavaVersion>
-									<version>[1.7.0-21,)</version>
+									<version>[1.7.0-25,)</version>
 								</requireJavaVersion>
 								<requireUpperBoundDeps />
 								<dependencyConvergence />
