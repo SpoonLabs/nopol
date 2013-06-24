@@ -65,6 +65,9 @@ public final class XXX {
 	private final ISort.IFactory sortfactory = this.smtConfig.sortFactory;
 	private final ISort intSort = this.sortfactory.createSortExpression(this.efactory.symbol("Int"));
 	private final IQualifiedIdentifier distinct = this.efactory.symbol("distinct");
+	private final IQualifiedIdentifier and = this.efactory.symbol("and");
+	private final IQualifiedIdentifier lessThan = this.efactory.symbol("<");
+	private final IQualifiedIdentifier lessOrEqualThan = this.efactory.symbol("<=");
 
 	@Test
 	public void xxx() {
@@ -89,8 +92,7 @@ public final class XXX {
 		this.addOperandsFunctionsTo(binaryOperators, commands);
 		this.addVariablesFunctionsTo(values, commands);
 
-		this.addConsistencyConstraint(binaryOperators, commands);
-		this.addAcyclicityConstraint(binaryOperators, commands);
+		this.addWellFormedProgramConstraint(binaryOperators, commands);
 
 		this.print(commands);
 
@@ -111,6 +113,37 @@ public final class XXX {
 		}
 	}
 
+	private void addWellFormedProgramConstraint(final List<BinaryOperator> binaryOperators,
+			final List<ICommand> commands) {
+		this.addConsistencyConstraint(binaryOperators, commands);
+		this.addAcyclicityConstraint(binaryOperators, commands);
+
+		long numberOfInputs = this.constants.size() + this.variables.size();
+		long numberOfComponents = this.operators.size() + numberOfInputs;
+
+		for (BinaryOperator operator : binaryOperators) {
+			IExpr leftInputRange = this.createRangeExpression(operator.getLeftInputLine(), 0L, numberOfComponents - 1L);
+			// XXX FIXME TODO should we use individual asserts or (assert (and ... ... ...))?
+			commands.add(this.commandFactory.assertCommand(leftInputRange));
+
+			IExpr rightInputRange = this.createRangeExpression(operator.getRightInputLine(), 0L,
+					numberOfComponents - 1L);
+			// XXX FIXME TODO should we use individual asserts or (assert (and ... ... ...))?
+			commands.add(this.commandFactory.assertCommand(rightInputRange));
+
+			IExpr outputRange = this
+					.createRangeExpression(operator.getOutputLine(), numberOfInputs, numberOfComponents);
+			// XXX FIXME TODO should we use individual asserts or (assert (and ... ... ...))?
+			commands.add(this.commandFactory.assertCommand(outputRange));
+		}
+	}
+
+	private IExpr createRangeExpression(final IQualifiedIdentifier identifier, final long from, final long to) {
+		IExpr leftInput = this.efactory.fcn(this.lessOrEqualThan, this.efactory.numeral(from), identifier);
+		IExpr rightInput = this.efactory.fcn(this.lessThan, identifier, this.efactory.numeral(to));
+		return this.efactory.fcn(this.and, leftInput, rightInput);
+	}
+
 	private void solve(final IScript script, final List<BinaryOperator> binaryOperators) {
 		ISolver solver = new Solver_cvc4(this.smtConfig, CVC4_BINARY_PATH);
 
@@ -126,17 +159,16 @@ public final class XXX {
 		for (BinaryOperator op : binaryOperators) {
 			System.out.println(solver.get_value(op.getOutputLine(), op.getLeftInputLine(), op.getRightInputLine()));
 		}
-
 		assertTrue(solver.exit().isOK());
 	}
 
 	private void addAcyclicityConstraint(final List<BinaryOperator> binaryOperators, final List<ICommand> commands) {
 		for (BinaryOperator operator : binaryOperators) {
-			IExpr leftInput = this.efactory.fcn(this.efactory.symbol("<"), operator.getLeftInputLine(),
+			IExpr leftInput = this.efactory.fcn(this.lessThan, operator.getLeftInputLine(),
 					operator.getOutputLine());
-			IExpr rightInput = this.efactory.fcn(this.efactory.symbol("<"), operator.getRightInputLine(),
+			IExpr rightInput = this.efactory.fcn(this.lessThan, operator.getRightInputLine(),
 					operator.getOutputLine());
-			IExpr constraint = this.efactory.fcn(this.efactory.symbol("and"), leftInput, rightInput);
+			IExpr constraint = this.efactory.fcn(this.and, leftInput, rightInput);
 
 			// XXX FIXME TODO should we use individual asserts or (assert (and ... ... ...))?
 			commands.add(this.commandFactory.assertCommand(constraint));
@@ -190,5 +222,4 @@ public final class XXX {
 	private void addIntegerFunctionTo(final ISymbol symbol, final Collection<ICommand> commands) {
 		commands.add(this.commandFactory.declare_fun(symbol, Collections.<ISort> emptyList(), this.intSort));
 	}
-
 }
