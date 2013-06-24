@@ -16,12 +16,12 @@
 package fr.inria.lille.jsemfix.synth;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.smtlib.Utils.PRODUCE_MODELS;
 import static org.smtlib.Utils.TRUE;
 import static org.smtlib.impl.Response.SAT;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,8 +40,10 @@ import org.smtlib.ISolver;
 import org.smtlib.ISort;
 import org.smtlib.SMT;
 import org.smtlib.SMT.Configuration;
+import org.smtlib.impl.Response;
 import org.smtlib.logic.AUFLIA;
 import org.smtlib.solvers.Solver_cvc4;
+import org.smtlib.solvers.Solver_test;
 
 /**
  * @author Favio D. DeMarco
@@ -68,9 +70,8 @@ public final class XXX {
 	public void xxx() {
 
 		List<BinaryOperator> binaryOperators = new ArrayList<>(this.operators.size());
-		int order = 0;
-		for (String operator : this.operators) {
-			binaryOperators.add(BinaryOperator.createForLine(order++, this.efactory));
+		for (int order = 0; order < this.operators.size(); order++) {
+			binaryOperators.add(BinaryOperator.createForLine(order, this.efactory));
 		}
 
 		List<ISymbol> values = new ArrayList<>(this.variables.size() + this.constants.size());
@@ -89,13 +90,28 @@ public final class XXX {
 		this.addVariablesFunctionsTo(values, commands);
 
 		this.addConsistencyConstraint(binaryOperators, commands);
-		this.addConsistencyConstraint(binaryOperators, commands);
+		this.addAcyclicityConstraint(binaryOperators, commands);
 
 		this.print(commands);
 
 		// WHEN
 		IScript script = this.commandFactory.script((IStringLiteral) null, commands);
 
+		ISolver solver = new Solver_test(this.smtConfig, (String) null);
+		// THEN
+		assertTrue(solver.start().isOK());
+		assertTrue(script.execute(solver).isOK());
+		// sat
+		IResponse sat = solver.check_sat();
+		assertEquals(Response.UNKNOWN, sat);
+		assertTrue(solver.exit().isOK());
+
+		if (new File(CVC4_BINARY_PATH).exists()) {
+			this.solve(script, binaryOperators);
+		}
+	}
+
+	private void solve(final IScript script, final List<BinaryOperator> binaryOperators) {
 		ISolver solver = new Solver_cvc4(this.smtConfig, CVC4_BINARY_PATH);
 
 		// THEN
@@ -103,9 +119,7 @@ public final class XXX {
 		assertTrue(script.execute(solver).isOK());
 
 		// sat
-		IResponse sat = solver.check_sat();
-		assertFalse(sat.isError());
-		assertEquals(SAT, sat);
+		assertEquals(SAT, solver.check_sat());
 
 		System.out.println();
 		System.out.println("Model:");
@@ -114,6 +128,19 @@ public final class XXX {
 		}
 
 		assertTrue(solver.exit().isOK());
+	}
+
+	private void addAcyclicityConstraint(final List<BinaryOperator> binaryOperators, final List<ICommand> commands) {
+		for (BinaryOperator operator : binaryOperators) {
+			IExpr leftInput = this.efactory.fcn(this.efactory.symbol("<"), operator.getLeftInputLine(),
+					operator.getOutputLine());
+			IExpr rightInput = this.efactory.fcn(this.efactory.symbol("<"), operator.getRightInputLine(),
+					operator.getOutputLine());
+			IExpr constraint = this.efactory.fcn(this.efactory.symbol("and"), leftInput, rightInput);
+
+			// XXX FIXME TODO should we use individual asserts or (assert (and ... ... ...))?
+			commands.add(this.commandFactory.assertCommand(constraint));
+		}
 	}
 
 	private void print(final Iterable<ICommand> commands) {
