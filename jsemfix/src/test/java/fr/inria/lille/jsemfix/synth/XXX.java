@@ -71,7 +71,8 @@ public final class XXX {
 	private final List<String> operators = Arrays.asList("=", "distinct", "<", "<=");
 	private final List<String> variables = Arrays.asList("a", "b");
 
-	private void addAcyclicityConstraint(final List<BinaryOperator> binaryOperators, final List<ICommand> commands) {
+	private void addAcyclicityConstraint(final Iterable<BinaryOperator> binaryOperators,
+			final Collection<ICommand> commands) {
 		for (BinaryOperator operator : binaryOperators) {
 			IExpr leftInput = this.efactory.fcn(this.lessThan, operator.getLeftInputLine(), operator.getOutputLine());
 			IExpr rightInput = this.efactory.fcn(this.lessThan, operator.getRightInputLine(), operator.getOutputLine());
@@ -112,7 +113,7 @@ public final class XXX {
 	 * @param binaryOperators
 	 * @param commands
 	 */
-	private void addLibConstraint(final List<BinaryOperator> binaryOperators, final List<ICommand> commands) {
+	private void addLibConstraint(final List<BinaryOperator> binaryOperators, final Collection<ICommand> commands) {
 		for (int index = 0; index < this.operators.size(); index++) {
 			String symbol = this.operators.get(index);
 			BinaryOperator operator = binaryOperators.get(index);
@@ -142,7 +143,7 @@ public final class XXX {
 	}
 
 	private void addWellFormedProgramConstraint(final List<BinaryOperator> binaryOperators,
-			final List<ICommand> commands) {
+			final Collection<ICommand> commands) {
 		this.addConsistencyConstraint(binaryOperators, commands);
 		this.addAcyclicityConstraint(binaryOperators, commands);
 
@@ -204,7 +205,7 @@ public final class XXX {
 			binaryOperators.add(BinaryOperator.createForLine(order, this.efactory));
 		}
 
-		List<ISymbol> values = new ArrayList<>(this.variables.size() + this.constants.size());
+		Collection<ISymbol> values = new ArrayList<>(this.variables.size() + this.constants.size());
 		for (String variable : this.variables) {
 			values.add(this.efactory.symbol("var" + variable));
 		}
@@ -221,6 +222,7 @@ public final class XXX {
 
 		this.addWellFormedProgramConstraint(binaryOperators, commands);
 		this.addLibConstraint(binaryOperators, commands);
+		this.addConnectivityConstraint(binaryOperators, values, commands);
 
 		this.print(commands);
 
@@ -238,6 +240,27 @@ public final class XXX {
 
 		if (new File(CVC4_BINARY_PATH).exists()) {
 			this.solve(script, binaryOperators);
+		}
+	}
+
+	private void addConnectivityConstraint(final Iterable<BinaryOperator> binaryOperators,
+			final Iterable<ISymbol> values,
+			final Collection<ICommand> commands) {
+		for (BinaryOperator operator : binaryOperators) {
+			this.addConnectivityConstraintFor(operator.getLeftInputLine(), operator.getLeftInput(), values, commands);
+			this.addConnectivityConstraintFor(operator.getRightInputLine(), operator.getRightInput(), values, commands);
+		}
+	}
+
+	private void addConnectivityConstraintFor(final ISymbol inputLine, final ISymbol input,
+			final Iterable<ISymbol> values,
+			final Collection<ICommand> commands) {
+		long line = 0L;
+		for (ISymbol value : values) {
+			IExpr lines = this.efactory.fcn(this.equals, inputLine, this.efactory.numeral(line++));
+			IExpr vars = this.efactory.fcn(this.equals, input, value);
+			IExpr then = this.efactory.fcn(this.efactory.symbol("=>"), lines, vars);
+			commands.add(this.commandFactory.assertCommand(then));
 		}
 	}
 }

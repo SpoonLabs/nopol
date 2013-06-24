@@ -25,8 +25,8 @@ import org.smtlib.IExpr.ISymbol;
 final class BinaryOperator {
 
 	static BinaryOperator createForLine(final int line, final IFactory efactory) {
-		return new BinaryOperator(efactory.symbol("I" + line + "-0"), efactory.symbol("LI" + line + "-0"),
-				efactory.symbol("I" + line + "-1"), efactory.symbol("LI" + line + "-1"), efactory.symbol("O" + line),
+		return new BinaryOperator(efactory.symbol("I" + line + "-L"), efactory.symbol("LI" + line + "-L"),
+				efactory.symbol("I" + line + "-R"), efactory.symbol("LI" + line + "-R"), efactory.symbol("O" + line),
 				efactory.symbol("LO" + line));
 	}
 
