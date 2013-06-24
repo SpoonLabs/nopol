@@ -51,7 +51,7 @@ public final class SmtLibTest {
 	private static final String CVC4_BINARY_PATH = "/usr/bin/cvc4";
 
 	/**
-	 * {@code (set-option :produce-models true)(set-logic QF_UF)(declare-fun p () Bool)}
+	 * {@code (set-option :produce-models true)(set-logic QF_UF)(declare-fun p () Bool)(assert (and p (not p)))}
 	 * 
 	 * @throws VisitorException
 	 */
