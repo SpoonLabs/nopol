@@ -53,63 +53,91 @@ public final class XXX {
 
 	private static final String CVC4_BINARY_PATH = "/usr/bin/cvc4";
 
-	private final List<String> operators = Arrays.asList("=", "distinct", "<", "<=");
+	private final Configuration smtConfig = new SMT().smtConfig;
+
+	private final IExpr.IFactory efactory = this.smtConfig.exprFactory;
+	private final ISort.IFactory sortfactory = this.smtConfig.sortFactory;
+	private final ICommand.IFactory commandFactory = this.smtConfig.commandFactory;
+
+	private final ISort intSort = this.sortfactory.createSortExpression(this.efactory.symbol("Int"));
+
+	private final IQualifiedIdentifier and = this.efactory.symbol("and");
+	private final IQualifiedIdentifier distinct = this.efactory.symbol("distinct");
+	private final IQualifiedIdentifier equals = this.efactory.symbol("=");
+	private final IQualifiedIdentifier lessOrEqualThan = this.efactory.symbol("<=");
+	private final IQualifiedIdentifier lessThan = this.efactory.symbol("<");
 
 	private final List<String> constants = Arrays.asList("0", "1", "-1");
-
+	private final List<String> operators = Arrays.asList("=", "distinct", "<", "<=");
 	private final List<String> variables = Arrays.asList("a", "b");
 
-	private final Configuration smtConfig = new SMT().smtConfig;
-	private final IExpr.IFactory efactory = this.smtConfig.exprFactory;
-	private final ICommand.IFactory commandFactory = this.smtConfig.commandFactory;
-	private final ISort.IFactory sortfactory = this.smtConfig.sortFactory;
-	private final ISort intSort = this.sortfactory.createSortExpression(this.efactory.symbol("Int"));
-	private final IQualifiedIdentifier distinct = this.efactory.symbol("distinct");
-	private final IQualifiedIdentifier and = this.efactory.symbol("and");
-	private final IQualifiedIdentifier lessThan = this.efactory.symbol("<");
-	private final IQualifiedIdentifier lessOrEqualThan = this.efactory.symbol("<=");
+	private void addAcyclicityConstraint(final List<BinaryOperator> binaryOperators, final List<ICommand> commands) {
+		for (BinaryOperator operator : binaryOperators) {
+			IExpr leftInput = this.efactory.fcn(this.lessThan, operator.getLeftInputLine(), operator.getOutputLine());
+			IExpr rightInput = this.efactory.fcn(this.lessThan, operator.getRightInputLine(), operator.getOutputLine());
+			IExpr constraint = this.efactory.fcn(this.and, leftInput, rightInput);
 
-	@Test
-	public void xxx() {
-
-		List<BinaryOperator> binaryOperators = new ArrayList<>(this.operators.size());
-		for (int order = 0; order < this.operators.size(); order++) {
-			binaryOperators.add(BinaryOperator.createForLine(order, this.efactory));
+			// XXX FIXME TODO should we use individual asserts or (assert (and ... ... ...))?
+			commands.add(this.commandFactory.assertCommand(constraint));
 		}
+	}
 
-		List<ISymbol> values = new ArrayList<>(this.variables.size() + this.constants.size());
-		for (String variable : this.variables) {
-			values.add(this.efactory.symbol("var" + variable));
+	private void addBooleanFunctionTo(final ISymbol symbol, final Collection<ICommand> commands) {
+		commands.add(this.commandFactory.declare_fun(symbol, Collections.<ISort> emptyList(), this.sortfactory.Bool()));
+	}
+
+	private void addConsistencyConstraint(final List<BinaryOperator> binaryOperators,
+			final Collection<ICommand> commands) {
+		int i = 1;
+		int size = binaryOperators.size();
+		for (BinaryOperator leftOperator : binaryOperators) {
+			Iterable<BinaryOperator> subList = binaryOperators.subList(i++, size);
+			for (BinaryOperator rightOperator : subList) {
+				IExpr comparison = this.efactory.fcn(this.distinct, leftOperator.getOutputLine(),
+						rightOperator.getOutputLine());
+
+				// XXX FIXME TODO should we use individual asserts or (assert (and ... ... ...))?
+				commands.add(this.commandFactory.assertCommand(comparison));
+			}
 		}
+	}
 
-		List<ICommand> commands = new ArrayList<>();
+	private void addIntegerFunctionTo(final ISymbol symbol, final Collection<ICommand> commands) {
+		commands.add(this.commandFactory.declare_fun(symbol, Collections.<ISort> emptyList(), this.intSort));
+	}
 
-		// initialize solver
-		commands.add(this.commandFactory.set_option(this.efactory.keyword(PRODUCE_MODELS), TRUE));
-		commands.add(this.commandFactory.set_logic(this.efactory.symbol(AUFLIA.class.getSimpleName())));
+	/**
+	 * XXX FIXME TODO Does List mean fat interface?
+	 * 
+	 * @param binaryOperators
+	 * @param commands
+	 */
+	private void addLibConstraint(final List<BinaryOperator> binaryOperators, final List<ICommand> commands) {
+		for (int index = 0; index < this.operators.size(); index++) {
+			String symbol = this.operators.get(index);
+			BinaryOperator operator = binaryOperators.get(index);
+			IExpr term = this.efactory.fcn(this.efactory.symbol(symbol), operator.getLeftInput(),
+					operator.getRightInput());
+			IExpr output = this.efactory.fcn(this.equals, operator.getOutput(), term);
+			commands.add(this.commandFactory.assertCommand(output));
+		}
+	}
 
-		// initialize symbols (variables)
-		this.addOperandsFunctionsTo(binaryOperators, commands);
-		this.addVariablesFunctionsTo(values, commands);
+	private void addOperandsFunctionsTo(final Iterable<BinaryOperator> binaryOperators,
+			final Collection<ICommand> commands) {
+		for (BinaryOperator binaryOperator : binaryOperators) {
+			this.addBooleanFunctionTo(binaryOperator.getOutput(), commands);
+			this.addIntegerFunctionTo(binaryOperator.getLeftInput(), commands);
+			this.addIntegerFunctionTo(binaryOperator.getRightInput(), commands);
+			this.addIntegerFunctionTo(binaryOperator.getOutputLine(), commands);
+			this.addIntegerFunctionTo(binaryOperator.getLeftInputLine(), commands);
+			this.addIntegerFunctionTo(binaryOperator.getRightInputLine(), commands);
+		}
+	}
 
-		this.addWellFormedProgramConstraint(binaryOperators, commands);
-
-		this.print(commands);
-
-		// WHEN
-		IScript script = this.commandFactory.script((IStringLiteral) null, commands);
-
-		ISolver solver = new Solver_test(this.smtConfig, (String) null);
-		// THEN
-		assertTrue(solver.start().isOK());
-		assertTrue(script.execute(solver).isOK());
-		// sat
-		IResponse sat = solver.check_sat();
-		assertEquals(Response.UNKNOWN, sat);
-		assertTrue(solver.exit().isOK());
-
-		if (new File(CVC4_BINARY_PATH).exists()) {
-			this.solve(script, binaryOperators);
+	private void addVariablesFunctionsTo(final Iterable<ISymbol> values, final Collection<ICommand> commands) {
+		for (ISymbol symbol : values) {
+			this.addIntegerFunctionTo(symbol, commands);
 		}
 	}
 
@@ -144,6 +172,12 @@ public final class XXX {
 		return this.efactory.fcn(this.and, leftInput, rightInput);
 	}
 
+	private void print(final Iterable<ICommand> commands) {
+		for (ICommand command : commands) {
+			System.out.println(command);
+		}
+	}
+
 	private void solve(final IScript script, final List<BinaryOperator> binaryOperators) {
 		ISolver solver = new Solver_cvc4(this.smtConfig, CVC4_BINARY_PATH);
 
@@ -162,64 +196,48 @@ public final class XXX {
 		assertTrue(solver.exit().isOK());
 	}
 
-	private void addAcyclicityConstraint(final List<BinaryOperator> binaryOperators, final List<ICommand> commands) {
-		for (BinaryOperator operator : binaryOperators) {
-			IExpr leftInput = this.efactory.fcn(this.lessThan, operator.getLeftInputLine(),
-					operator.getOutputLine());
-			IExpr rightInput = this.efactory.fcn(this.lessThan, operator.getRightInputLine(),
-					operator.getOutputLine());
-			IExpr constraint = this.efactory.fcn(this.and, leftInput, rightInput);
+	@Test
+	public void xxx() {
 
-			// XXX FIXME TODO should we use individual asserts or (assert (and ... ... ...))?
-			commands.add(this.commandFactory.assertCommand(constraint));
+		List<BinaryOperator> binaryOperators = new ArrayList<>(this.operators.size());
+		for (int order = 0; order < this.operators.size(); order++) {
+			binaryOperators.add(BinaryOperator.createForLine(order, this.efactory));
 		}
-	}
 
-	private void print(final Iterable<ICommand> commands) {
-		for (ICommand command : commands) {
-			System.out.println(command);
+		List<ISymbol> values = new ArrayList<>(this.variables.size() + this.constants.size());
+		for (String variable : this.variables) {
+			values.add(this.efactory.symbol("var" + variable));
 		}
-	}
 
-	private void addConsistencyConstraint(final List<BinaryOperator> binaryOperators,
-			final Collection<ICommand> commands) {
-		int i = 1;
-		int size = binaryOperators.size();
-		for (BinaryOperator leftOperator : binaryOperators) {
-			Iterable<BinaryOperator> subList = binaryOperators.subList(i++, size);
-			for (BinaryOperator rightOperator : subList) {
-				IExpr comparison = this.efactory.fcn(this.distinct, leftOperator.getOutputLine(),
-						rightOperator.getOutputLine());
+		List<ICommand> commands = new ArrayList<>();
 
-				// XXX FIXME TODO should we use individual asserts or (assert (and ... ... ...))?
-				commands.add(this.commandFactory.assertCommand(comparison));
-			}
+		// initialize solver
+		commands.add(this.commandFactory.set_option(this.efactory.keyword(PRODUCE_MODELS), TRUE));
+		commands.add(this.commandFactory.set_logic(this.efactory.symbol(AUFLIA.class.getSimpleName())));
+
+		// initialize symbols (variables)
+		this.addOperandsFunctionsTo(binaryOperators, commands);
+		this.addVariablesFunctionsTo(values, commands);
+
+		this.addWellFormedProgramConstraint(binaryOperators, commands);
+		this.addLibConstraint(binaryOperators, commands);
+
+		this.print(commands);
+
+		// WHEN
+		IScript script = this.commandFactory.script((IStringLiteral) null, commands);
+
+		ISolver solver = new Solver_test(this.smtConfig, (String) null);
+		// THEN
+		assertTrue(solver.start().isOK());
+		assertTrue(script.execute(solver).isOK());
+		// sat
+		IResponse sat = solver.check_sat();
+		assertEquals(Response.UNKNOWN, sat);
+		assertTrue(solver.exit().isOK());
+
+		if (new File(CVC4_BINARY_PATH).exists()) {
+			this.solve(script, binaryOperators);
 		}
-	}
-
-	private void addVariablesFunctionsTo(final Iterable<ISymbol> values, final Collection<ICommand> commands) {
-		for (ISymbol symbol : values) {
-			this.addIntegerFunctionTo(symbol, commands);
-		}
-	}
-
-	private void addOperandsFunctionsTo(final Iterable<BinaryOperator> binaryOperators,
-			final Collection<ICommand> commands) {
-		for (BinaryOperator binaryOperator : binaryOperators) {
-			this.addBooleanFunctionTo(binaryOperator.getOutput(), commands);
-			this.addIntegerFunctionTo(binaryOperator.getLeftInput(), commands);
-			this.addIntegerFunctionTo(binaryOperator.getRightInput(), commands);
-			this.addIntegerFunctionTo(binaryOperator.getOutputLine(), commands);
-			this.addIntegerFunctionTo(binaryOperator.getLeftInputLine(), commands);
-			this.addIntegerFunctionTo(binaryOperator.getRightInputLine(), commands);
-		}
-	}
-
-	private void addBooleanFunctionTo(final ISymbol symbol, final Collection<ICommand> commands) {
-		commands.add(this.commandFactory.declare_fun(symbol, Collections.<ISort> emptyList(), this.sortfactory.Bool()));
-	}
-
-	private void addIntegerFunctionTo(final ISymbol symbol, final Collection<ICommand> commands) {
-		commands.add(this.commandFactory.declare_fun(symbol, Collections.<ISort> emptyList(), this.intSort));
 	}
 }
