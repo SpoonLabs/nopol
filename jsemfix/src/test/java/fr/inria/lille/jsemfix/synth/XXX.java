@@ -168,6 +168,10 @@ public final class XXX {
 			// XXX FIXME TODO should we use individual asserts or (assert (and ... ... ...))?
 			commands.add(this.commandFactory.assertCommand(outputRange));
 		}
+
+		IExpr outputRange = this.createRangeExpression(this.outputLine, numberOfInputs, numberOfComponents);
+		// XXX FIXME TODO should we use individual asserts or (assert (and ... ... ...))?
+		commands.add(this.commandFactory.assertCommand(outputRange));
 	}
 
 	private IExpr createRangeExpression(final IQualifiedIdentifier identifier, final long from, final long to) {
@@ -201,6 +205,9 @@ public final class XXX {
 		for (Long value : this.constants) {
 			System.out.printf("%d:\t%d%n", i++, value);
 		}
+		for (String operator : this.operators) {
+			System.out.printf("%d:\t... %s ...%n", i++, operator);
+		}
 
 		System.out.println();
 		System.out.println("Model:");
@@ -208,7 +215,7 @@ public final class XXX {
 			System.out.println(solver.get_value(op.getOutputLine(), op.getLeftInputLine(), op.getRightInputLine(),
 					op.getOutput(), op.getLeftInput(), op.getRightInput()));
 		}
-		System.out.println(solver.get_value(this.output, this.outputLine));
+		System.out.println(solver.get_value(this.outputLine, this.output));
 		assertTrue(solver.exit().isOK());
 	}
 
