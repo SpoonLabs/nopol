@@ -67,7 +67,10 @@ public final class XXX {
 	private final IQualifiedIdentifier lessOrEqualThan = this.efactory.symbol("<=");
 	private final IQualifiedIdentifier lessThan = this.efactory.symbol("<");
 
-	private final List<String> constants = Arrays.asList("0", "1", "-1");
+	private final ISymbol output = this.efactory.symbol("O");
+	private final ISymbol outputLine = this.efactory.symbol("LO");
+
+	private final List<Long> constants = Arrays.asList(0L, 1L);
 	private final List<String> operators = Arrays.asList("=", "distinct", "<", "<=");
 	private final List<String> variables = Arrays.asList("a", "b");
 
@@ -151,12 +154,11 @@ public final class XXX {
 		long numberOfComponents = this.operators.size() + numberOfInputs;
 
 		for (BinaryOperator operator : binaryOperators) {
-			IExpr leftInputRange = this.createRangeExpression(operator.getLeftInputLine(), 0L, numberOfComponents - 1L);
+			IExpr leftInputRange = this.createRangeExpression(operator.getLeftInputLine(), 0L, numberOfInputs - 1L);
 			// XXX FIXME TODO should we use individual asserts or (assert (and ... ... ...))?
 			commands.add(this.commandFactory.assertCommand(leftInputRange));
 
-			IExpr rightInputRange = this.createRangeExpression(operator.getRightInputLine(), 0L,
-					numberOfComponents - 1L);
+			IExpr rightInputRange = this.createRangeExpression(operator.getRightInputLine(), 0L, numberOfInputs - 1L);
 			// XXX FIXME TODO should we use individual asserts or (assert (and ... ... ...))?
 			commands.add(this.commandFactory.assertCommand(rightInputRange));
 
@@ -190,10 +192,22 @@ public final class XXX {
 		assertEquals(SAT, solver.check_sat());
 
 		System.out.println();
+
+		int i = 0;
+		for (String variable : this.variables) {
+			System.out.printf("%d:\t%s%n", i++, variable);
+		}
+		for (Long value : this.constants) {
+			System.out.printf("%d:\t%d%n", i++, value);
+		}
+
+		System.out.println();
 		System.out.println("Model:");
 		for (BinaryOperator op : binaryOperators) {
-			System.out.println(solver.get_value(op.getOutputLine(), op.getLeftInputLine(), op.getRightInputLine()));
+			System.out.println(solver.get_value(op.getOutputLine(), op.getLeftInputLine(), op.getRightInputLine(),
+					op.getOutput(), op.getLeftInput(), op.getRightInput()));
 		}
+		System.out.println(solver.get_value(this.output, this.outputLine));
 		assertTrue(solver.exit().isOK());
 	}
 
@@ -205,7 +219,7 @@ public final class XXX {
 			binaryOperators.add(BinaryOperator.createForLine(order, this.efactory));
 		}
 
-		Collection<ISymbol> values = new ArrayList<>(this.variables.size() + this.constants.size());
+		Collection<ISymbol> values = new ArrayList<>(this.variables.size());
 		for (String variable : this.variables) {
 			values.add(this.efactory.symbol("var" + variable));
 		}
@@ -217,6 +231,8 @@ public final class XXX {
 		commands.add(this.commandFactory.set_logic(this.efactory.symbol(AUFLIA.class.getSimpleName())));
 
 		// initialize symbols (variables)
+		this.addBooleanFunctionTo(this.output, commands);
+		this.addIntegerFunctionTo(this.outputLine, commands);
 		this.addOperandsFunctionsTo(binaryOperators, commands);
 		this.addVariablesFunctionsTo(values, commands);
 
@@ -244,21 +260,30 @@ public final class XXX {
 	}
 
 	private void addConnectivityConstraint(final Iterable<BinaryOperator> binaryOperators,
-			final Iterable<ISymbol> values,
-			final Collection<ICommand> commands) {
+			final Iterable<ISymbol> values, final Collection<ICommand> commands) {
 		for (BinaryOperator operator : binaryOperators) {
 			this.addConnectivityConstraintFor(operator.getLeftInputLine(), operator.getLeftInput(), values, commands);
 			this.addConnectivityConstraintFor(operator.getRightInputLine(), operator.getRightInput(), values, commands);
+
+			IExpr lines = this.efactory.fcn(this.equals, this.outputLine, operator.getOutputLine());
+			IExpr vars = this.efactory.fcn(this.equals, this.output, operator.getOutput());
+			IExpr then = this.efactory.fcn(this.efactory.symbol("=>"), lines, vars);
+			commands.add(this.commandFactory.assertCommand(then));
 		}
 	}
 
 	private void addConnectivityConstraintFor(final ISymbol inputLine, final ISymbol input,
-			final Iterable<ISymbol> values,
-			final Collection<ICommand> commands) {
+			final Iterable<ISymbol> values, final Collection<ICommand> commands) {
 		long line = 0L;
 		for (ISymbol value : values) {
 			IExpr lines = this.efactory.fcn(this.equals, inputLine, this.efactory.numeral(line++));
 			IExpr vars = this.efactory.fcn(this.equals, input, value);
+			IExpr then = this.efactory.fcn(this.efactory.symbol("=>"), lines, vars);
+			commands.add(this.commandFactory.assertCommand(then));
+		}
+		for (Long constant : this.constants) {
+			IExpr lines = this.efactory.fcn(this.equals, inputLine, this.efactory.numeral(line++));
+			IExpr vars = this.efactory.fcn(this.equals, input, this.efactory.numeral(constant));
 			IExpr then = this.efactory.fcn(this.efactory.symbol("=>"), lines, vars);
 			commands.add(this.commandFactory.assertCommand(then));
 		}
