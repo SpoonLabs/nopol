@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
@@ -239,6 +240,7 @@ public final class XXX {
 		this.addWellFormedProgramConstraint(binaryOperators, commands);
 		this.addLibConstraint(binaryOperators, commands);
 		this.addConnectivityConstraint(binaryOperators, values, commands);
+		this.addSpecificationConstraint(values, commands);
 
 		this.print(commands);
 
@@ -259,16 +261,34 @@ public final class XXX {
 		}
 	}
 
+	private void addSpecificationConstraint(final Iterable<ISymbol> variables, final Collection<ICommand> commands) {
+		commands.add(this.createSpecificationConstraintFor(variables, Arrays.asList(1L, 6L), true));
+		commands.add(this.createSpecificationConstraintFor(variables, Arrays.asList(22L, 7L), false));
+		commands.add(this.createSpecificationConstraintFor(variables, Arrays.asList(8L, 8L), false));
+	}
+
+	private ICommand createSpecificationConstraintFor(final Iterable<ISymbol> variables, final Iterable<Long> values,
+			final boolean result) {
+
+		Iterator<ISymbol> variablesIter = variables.iterator();
+		Iterator<Long> valuesIter = values.iterator();
+
+		IExpr varA = this.efactory.fcn(this.equals, variablesIter.next(), this.efactory.numeral(valuesIter.next()));
+		IExpr varB = this.efactory.fcn(this.equals, variablesIter.next(), this.efactory.numeral(valuesIter.next()));
+		IExpr and = this.efactory.fcn(this.and, varA, varB);
+		IExpr out = result ? this.output : this.efactory.fcn(this.efactory.symbol("not"), this.output);
+		IExpr then = this.efactory.fcn(this.efactory.symbol("=>"), and, out);
+		return this.commandFactory.assertCommand(then);
+	}
+
 	private void addConnectivityConstraint(final Iterable<BinaryOperator> binaryOperators,
 			final Iterable<ISymbol> values, final Collection<ICommand> commands) {
 		for (BinaryOperator operator : binaryOperators) {
 			this.addConnectivityConstraintFor(operator.getLeftInputLine(), operator.getLeftInput(), values, commands);
 			this.addConnectivityConstraintFor(operator.getRightInputLine(), operator.getRightInput(), values, commands);
 
-			IExpr lines = this.efactory.fcn(this.equals, this.outputLine, operator.getOutputLine());
-			IExpr vars = this.efactory.fcn(this.equals, this.output, operator.getOutput());
-			IExpr then = this.efactory.fcn(this.efactory.symbol("=>"), lines, vars);
-			commands.add(this.commandFactory.assertCommand(then));
+			commands.add(this.createConnectivityConstraintFor(this.outputLine, operator.getOutputLine(), this.output,
+					operator.getOutput()));
 		}
 	}
 
@@ -276,16 +296,19 @@ public final class XXX {
 			final Iterable<ISymbol> values, final Collection<ICommand> commands) {
 		long line = 0L;
 		for (ISymbol value : values) {
-			IExpr lines = this.efactory.fcn(this.equals, inputLine, this.efactory.numeral(line++));
-			IExpr vars = this.efactory.fcn(this.equals, input, value);
-			IExpr then = this.efactory.fcn(this.efactory.symbol("=>"), lines, vars);
-			commands.add(this.commandFactory.assertCommand(then));
+			commands.add(this.createConnectivityConstraintFor(inputLine, this.efactory.numeral(line++), input, value));
 		}
 		for (Long constant : this.constants) {
-			IExpr lines = this.efactory.fcn(this.equals, inputLine, this.efactory.numeral(line++));
-			IExpr vars = this.efactory.fcn(this.equals, input, this.efactory.numeral(constant));
-			IExpr then = this.efactory.fcn(this.efactory.symbol("=>"), lines, vars);
-			commands.add(this.commandFactory.assertCommand(then));
+			commands.add(this.createConnectivityConstraintFor(inputLine, this.efactory.numeral(line++), input,
+					this.efactory.numeral(constant)));
 		}
+	}
+
+	private ICommand createConnectivityConstraintFor(final IExpr line, final IExpr lineNumber, final IExpr input,
+			final IExpr value) {
+		IExpr lines = this.efactory.fcn(this.equals, line, lineNumber);
+		IExpr vars = this.efactory.fcn(this.equals, input, value);
+		IExpr then = this.efactory.fcn(this.efactory.symbol("=>"), lines, vars);
+		return this.commandFactory.assertCommand(then);
 	}
 }
