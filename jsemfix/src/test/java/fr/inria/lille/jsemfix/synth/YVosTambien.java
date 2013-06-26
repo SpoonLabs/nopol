@@ -270,6 +270,18 @@ public final class YVosTambien {
 	}
 
 	private void print(final Iterable<ICommand> commands) {
+		int i = 0;
+		for (String variable : this.variables) {
+			System.out.printf("%d:\t%s%n", i++, variable);
+		}
+		for (Long value : this.constants) {
+			System.out.printf("%d:\t%d%n", i++, value);
+		}
+		int j = 0;
+		for (String operator : this.operators) {
+			System.out.printf("O%d:\t... %s ...%n", j++, operator);
+		}
+		System.out.println();
 		for (ICommand command : commands) {
 			System.out.println(this.pretty(command.toString()));
 		}
@@ -280,8 +292,10 @@ public final class YVosTambien {
 		String tabs = "";
 		for (char c : string.toCharArray()) {
 			if (c == '(') {
-				builder.append(System.lineSeparator());
-				builder.append(tabs);
+				if (!tabs.isEmpty()) {
+					builder.append(System.lineSeparator());
+					builder.append(tabs);
+				}
 				tabs += '\t';
 			} else if (c == ')') {
 				tabs = tabs.substring(1);
@@ -300,20 +314,6 @@ public final class YVosTambien {
 
 		// sat
 		assertEquals(SAT, solver.check_sat());
-
-		System.out.println();
-
-		int i = 0;
-		for (String variable : this.variables) {
-			System.out.printf("%d:\t%s%n", i++, variable);
-		}
-		for (Long value : this.constants) {
-			System.out.printf("%d:\t%d%n", i++, value);
-		}
-		int j = 0;
-		for (String operator : this.operators) {
-			System.out.printf("O%d:\t... %s ...%n", j++, operator);
-		}
 
 		System.out.println();
 		System.out.println("Model:");
