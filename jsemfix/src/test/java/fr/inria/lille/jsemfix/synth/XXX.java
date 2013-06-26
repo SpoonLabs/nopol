@@ -205,8 +205,9 @@ public final class XXX {
 		for (Long value : this.constants) {
 			System.out.printf("%d:\t%d%n", i++, value);
 		}
+		int j = 0;
 		for (String operator : this.operators) {
-			System.out.printf("%d:\t... %s ...%n", i++, operator);
+			System.out.printf("O%d:\t... %s ...%n", j++, operator);
 		}
 
 		System.out.println();
@@ -272,20 +273,29 @@ public final class XXX {
 		commands.add(this.createSpecificationConstraintFor(variables, Arrays.asList(1L, 6L), true));
 		commands.add(this.createSpecificationConstraintFor(variables, Arrays.asList(22L, 7L), false));
 		commands.add(this.createSpecificationConstraintFor(variables, Arrays.asList(8L, 8L), false));
+
+		IExpr first = this.createValuesSpecificationConstraintFor(variables, Arrays.asList(1L, 6L));
+		IExpr second = this.createValuesSpecificationConstraintFor(variables, Arrays.asList(22L, 7L));
+		IExpr third = this.createValuesSpecificationConstraintFor(variables, Arrays.asList(8L, 8L));
+		IExpr or = this.efactory.fcn(this.efactory.symbol("or"), first, second, third);
+		commands.add(this.commandFactory.assertCommand(or));
 	}
 
 	private ICommand createSpecificationConstraintFor(final Iterable<ISymbol> variables, final Iterable<Long> values,
 			final boolean result) {
+		IExpr and = this.createValuesSpecificationConstraintFor(variables, values);
+		IExpr out = result ? this.output : this.efactory.fcn(this.efactory.symbol("not"), this.output);
+		IExpr then = this.efactory.fcn(this.efactory.symbol("=>"), and, out);
+		return this.commandFactory.assertCommand(then);
+	}
 
+	private IExpr createValuesSpecificationConstraintFor(final Iterable<ISymbol> variables, final Iterable<Long> values) {
 		Iterator<ISymbol> variablesIter = variables.iterator();
 		Iterator<Long> valuesIter = values.iterator();
 
 		IExpr varA = this.efactory.fcn(this.equals, variablesIter.next(), this.efactory.numeral(valuesIter.next()));
 		IExpr varB = this.efactory.fcn(this.equals, variablesIter.next(), this.efactory.numeral(valuesIter.next()));
-		IExpr and = this.efactory.fcn(this.and, varA, varB);
-		IExpr out = result ? this.output : this.efactory.fcn(this.efactory.symbol("not"), this.output);
-		IExpr then = this.efactory.fcn(this.efactory.symbol("=>"), and, out);
-		return this.commandFactory.assertCommand(then);
+		return this.efactory.fcn(this.and, varA, varB);
 	}
 
 	private void addConnectivityConstraint(final Iterable<BinaryOperator> binaryOperators,
