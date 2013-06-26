@@ -271,8 +271,24 @@ public final class YVosTambien {
 
 	private void print(final Iterable<ICommand> commands) {
 		for (ICommand command : commands) {
-			System.out.println(command);
+			System.out.println(this.pretty(command.toString()));
 		}
+	}
+
+	private CharSequence pretty(final String string) {
+		StringBuilder builder = new StringBuilder(string.length() * 2);
+		String tabs = "";
+		for (char c : string.toCharArray()) {
+			if (c == '(') {
+				builder.append(System.lineSeparator());
+				builder.append(tabs);
+				tabs += '\t';
+			} else if (c == ')') {
+				tabs = tabs.substring(1);
+			}
+			builder.append(c);
+		}
+		return builder;
 	}
 
 	private void solve(final IScript script, final List<BinaryOperator> binaryOperators) {
