@@ -32,7 +32,7 @@ import org.smtlib.logic.AUFLIA;
 import org.smtlib.solvers.Solver_cvc4;
 import org.smtlib.solvers.Solver_test;
 
-public final class YVosTambien {
+public final class VosTambien {
 
 	private static final String CVC4_BINARY_PATH = "/usr/bin/cvc4";
 
@@ -54,7 +54,7 @@ public final class YVosTambien {
 	private final ISymbol outputLine = this.efactory.symbol("LO");
 
 	private final List<Long> constants = Arrays.asList(0L, 1L);
-	private final List<String> operators = Arrays.asList("=", "distinct", "<", "<=");
+	private final List<String> operators = Arrays.asList("=", "<", "distinct", "<=");
 	private final List<String> variables = Arrays.asList("a", "b");
 
 	@Test
