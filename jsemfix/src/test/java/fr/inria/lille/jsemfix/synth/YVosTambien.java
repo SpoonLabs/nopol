@@ -193,7 +193,7 @@ public final class YVosTambien {
 			IExpr output = this.efactory.fcn(this.equals, operator.getOutput(), term);
 			constraints.add(output);
 		}
-		return this.efactory.fcn(this.and, constraints);
+		return this.simplify(constraints);
 	}
 
 	private IExpr createWellFormedProgramConstraint(final List<BinaryOperator> binaryOperators) {
@@ -235,7 +235,7 @@ public final class YVosTambien {
 			IExpr constraint = this.efactory.fcn(this.and, leftInput, rightInput);
 			constraints.add(constraint);
 		}
-		return this.efactory.fcn(this.and, constraints);
+		return this.simplify(constraints);
 	}
 
 	private IExpr createConsistencyConstraint(final List<BinaryOperator> binaryOperators) {
@@ -250,7 +250,17 @@ public final class YVosTambien {
 				constraints.add(comparison);
 			}
 		}
-		return this.efactory.fcn(this.and, constraints);
+		return this.simplify(constraints);
+	}
+
+	private IExpr simplify(final List<IExpr> constraints) {
+		if (constraints.isEmpty()) {
+			return this.efactory.symbol("true");
+		} else if (constraints.size() == 1) {
+			return constraints.get(0);
+		} else {
+			return this.efactory.fcn(this.and, constraints);
+		}
 	}
 
 	private List<IDeclaration> createInputOutputPAndRDeclarations(final Iterable<ISymbol> values,
