@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
@@ -78,6 +77,8 @@ public final class FilosofiaBarata {
 
 		commands.add(this.createWellFormedProgramFunction(binaryOperators, outputLine));
 		commands.add(this.createLibFunction(binaryOperators));
+		commands.add(this.createConnectivityFunction(binaryOperators, outputLine));
+		this.addLocationsFunctionsTo(binaryOperators, outputLine, commands);
 
 		List<IDeclaration> iot = this.createInputOutputPAndRDeclarations(binaryOperators, outputLine);
 		IExpr exists = this.efactory.exists(iot, this.createConstraint(binaryOperators, outputLine));
@@ -100,6 +101,38 @@ public final class FilosofiaBarata {
 
 		if (new File(CVC4_BINARY_PATH).exists()) {
 			this.solve(script, binaryOperators, outputLine);
+		}
+	}
+
+	private ICommand createConnectivityFunction(final List<BinaryOperator> binaryOperators, final ISymbol outputLine) {
+		List<IDeclaration> parameters = new ArrayList<>();
+		for (BinaryOperator operator : binaryOperators) {
+			parameters.add(this.efactory.declaration(operator.getLeftInput(), this.intSort));
+			parameters.add(this.efactory.declaration(operator.getLeftInputLine(), this.intSort));
+			parameters.add(this.efactory.declaration(operator.getRightInput(), this.intSort));
+			parameters.add(this.efactory.declaration(operator.getRightInputLine(), this.intSort));
+			parameters.add(this.efactory.declaration(operator.getOutput(), this.sortfactory.Bool()));
+			parameters.add(this.efactory.declaration(operator.getOutputLine(), this.intSort));
+		}
+		List<ISymbol> values = new ArrayList<>();
+		for (String var : this.variables) {
+			ISymbol symbol = this.efactory.symbol(var);
+			values.add(symbol);
+			parameters.add(this.efactory.declaration(symbol, this.intSort));
+		}
+		parameters.add(this.efactory.declaration(this.output, this.sortfactory.Bool()));
+		parameters.add(this.efactory.declaration(outputLine, this.intSort));
+		return this.commandFactory.define_fun(this.efactory.symbol("conn"), parameters, this.sortfactory.Bool(),
+				this.createConnectivityConstraint(binaryOperators, outputLine, values));
+	}
+
+	private void addLocationsFunctionsTo(final Iterable<BinaryOperator> binaryOperators, final ISymbol outputLine,
+			final Collection<ICommand> commands) {
+		this.addIntegerFunctionTo(outputLine, commands);
+		for (BinaryOperator binaryOperator : binaryOperators) {
+			this.addIntegerFunctionTo(binaryOperator.getOutputLine(), commands);
+			this.addIntegerFunctionTo(binaryOperator.getLeftInputLine(), commands);
+			this.addIntegerFunctionTo(binaryOperator.getRightInputLine(), commands);
 		}
 	}
 
@@ -133,10 +166,31 @@ public final class FilosofiaBarata {
 
 		for (int i = 0; i < this.results.size(); i++) {
 			constraints.add(this.callLibConstraint(binaryOperators, i));
-			// constraints.add(this.createConnectivityConstraint(binaryOperators, outputLine, values));
-			// constraints.add(this.createSpecificationConstraint(values));
+			constraints.add(this.callConnectivityConstraint(binaryOperators, outputLine, i));
 		}
 		return this.efactory.fcn(this.and, constraints);
+	}
+
+	private IExpr callConnectivityConstraint(final List<BinaryOperator> binaryOperators, final ISymbol outputLine,
+			final int i) {
+
+		List<IExpr> parameters = new ArrayList<>();
+		for (BinaryOperator operator : binaryOperators) {
+			parameters.add(this.efactory.symbol(operator.getLeftInput().value() + '_' + i));
+			parameters.add(operator.getLeftInputLine());
+			parameters.add(this.efactory.symbol(operator.getRightInput().value() + '_' + i));
+			parameters.add(operator.getRightInputLine());
+			parameters.add(this.efactory.symbol(operator.getOutput().value() + '_' + i));
+			parameters.add(operator.getOutputLine());
+		}
+
+		for (Long value : this.parameters.get(i)) {
+			parameters.add(this.efactory.numeral(value));
+		}
+		parameters.add(this.efactory.symbol(this.results.get(i).toString()));
+		parameters.add(outputLine);
+
+		return this.efactory.fcn(this.efactory.symbol("conn"), parameters);
 	}
 
 	private IExpr callLibConstraint(final List<BinaryOperator> binaryOperators, final int i) {
@@ -158,30 +212,6 @@ public final class FilosofiaBarata {
 		}
 		parameters.add(outputLine);
 		return this.efactory.fcn(this.efactory.symbol("wfp"), parameters);
-	}
-
-	private IExpr createSpecificationConstraint(final Iterable<ISymbol> variables) {
-		List<IExpr> constraints = new ArrayList<>();
-		constraints.add(this.createSpecificationConstraintFor(variables, asList(1L, 6L), true));
-		constraints.add(this.createSpecificationConstraintFor(variables, asList(22L, 7L), false));
-		constraints.add(this.createSpecificationConstraintFor(variables, asList(8L, 8L), false));
-		return this.efactory.fcn(this.and, constraints);
-	}
-
-	private IExpr createSpecificationConstraintFor(final Iterable<ISymbol> variables, final Iterable<Long> values,
-			final boolean result) {
-		IExpr and = this.createValuesSpecificationConstraintFor(variables, values);
-		IExpr out = result ? this.output : this.efactory.fcn(this.efactory.symbol("not"), this.output);
-		return this.efactory.fcn(this.efactory.symbol("=>"), and, out);
-	}
-
-	private IExpr createValuesSpecificationConstraintFor(final Iterable<ISymbol> variables, final Iterable<Long> values) {
-		Iterator<ISymbol> variablesIter = variables.iterator();
-		Iterator<Long> valuesIter = values.iterator();
-
-		IExpr varA = this.efactory.fcn(this.equals, variablesIter.next(), this.efactory.numeral(valuesIter.next()));
-		IExpr varB = this.efactory.fcn(this.equals, variablesIter.next(), this.efactory.numeral(valuesIter.next()));
-		return this.efactory.fcn(this.and, varA, varB);
 	}
 
 	private IExpr createConnectivityConstraint(final List<BinaryOperator> binaryOperators, final ISymbol outputLine,
@@ -306,11 +336,6 @@ public final class FilosofiaBarata {
 	private List<IDeclaration> createInputOutputPAndRDeclarations(final Iterable<BinaryOperator> binaryOperators,
 			final ISymbol outputLine) {
 		List<IDeclaration> declarations = new ArrayList<>();
-		for (BinaryOperator operator : binaryOperators) {
-			declarations.add(this.efactory.declaration(operator.getLeftInputLine(), this.intSort));
-			declarations.add(this.efactory.declaration(operator.getRightInputLine(), this.intSort));
-			declarations.add(this.efactory.declaration(operator.getOutputLine(), this.intSort));
-		}
 		for (int i = 0; i < this.parameters.size(); i++) {
 			for (BinaryOperator operator : binaryOperators) {
 				declarations.add(this.efactory.declaration(
@@ -321,7 +346,6 @@ public final class FilosofiaBarata {
 						this.efactory.symbol(operator.getOutput().value() + '_' + i), this.sortfactory.Bool()));
 			}
 		}
-		declarations.add(this.efactory.declaration(outputLine, this.intSort));
 		return declarations;
 	}
 
