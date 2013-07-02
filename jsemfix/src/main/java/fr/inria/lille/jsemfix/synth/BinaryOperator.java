@@ -22,7 +22,7 @@ import org.smtlib.IExpr.ISymbol;
  * @author Favio D. DeMarco
  * 
  */
-final class BinaryOperator {
+public final class BinaryOperator {
 
 	static BinaryOperator createForLine(final int line, final IFactory efactory) {
 		return new BinaryOperator(efactory.symbol("I" + line + "-L"), efactory.symbol("LI" + line + "-L"),
@@ -60,42 +60,42 @@ final class BinaryOperator {
 	/**
 	 * @return the leftInput
 	 */
-	ISymbol getLeftInput() {
+	public ISymbol getLeftInput() {
 		return this.leftInput;
 	}
 
 	/**
 	 * @return the leftInputLine
 	 */
-	ISymbol getLeftInputLine() {
+	public ISymbol getLeftInputLine() {
 		return this.leftInputLine;
 	}
 
 	/**
 	 * @return the output
 	 */
-	ISymbol getOutput() {
+	public ISymbol getOutput() {
 		return this.output;
 	}
 
 	/**
 	 * @return the outputLine
 	 */
-	ISymbol getOutputLine() {
+	public ISymbol getOutputLine() {
 		return this.outputLine;
 	}
 
 	/**
 	 * @return the rightInput
 	 */
-	ISymbol getRightInput() {
+	public ISymbol getRightInput() {
 		return this.rightInput;
 	}
 
 	/**
 	 * @return the rightInputLine
 	 */
-	ISymbol getRightInputLine() {
+	public ISymbol getRightInputLine() {
 		return this.rightInputLine;
 	}
 }

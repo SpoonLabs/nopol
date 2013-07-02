@@ -1,4 +1,4 @@
-package fr.inria.lille.jsemfix.synth;
+package fr.inria.lille.jsemfix.synth.constraint;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -11,6 +11,8 @@ import org.smtlib.IExpr.IDeclaration;
 import org.smtlib.IExpr.ISymbol;
 import org.smtlib.ISort;
 import org.smtlib.SMT.Configuration;
+
+import fr.inria.lille.jsemfix.synth.BinaryOperator;
 
 final class WellFormedProgram {
 
