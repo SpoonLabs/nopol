@@ -23,7 +23,7 @@ import org.smtlib.ISort.IFactory;
 
 import com.google.common.base.Function;
 
-import fr.inria.lille.jsemfix.synth.component.Type;
+import fr.inria.lille.jsemfix.synth.model.Type;
 
 /**
  * @author Favio D. DeMarco

@@ -30,8 +30,7 @@ import org.smtlib.IExpr.ISymbol;
 import org.smtlib.ISort;
 import org.smtlib.SMT.Configuration;
 
-import fr.inria.lille.jsemfix.synth.component.Function;
-import fr.inria.lille.jsemfix.synth.component.Type;
+import fr.inria.lille.jsemfix.synth.model.Component;
 
 /**
  * @author Favio D. DeMarco
@@ -47,37 +46,36 @@ final class Acyclicity {
 	private final IExpr.IFactory efactory;
 	private final IQualifiedIdentifier lessThan;
 	private final ISort.IFactory sortfactory;
-	private final com.google.common.base.Function<Type, ISort> typeToSort;
+	private final ISort intSort;
 
 	Acyclicity(@Nonnull final Configuration smtConfig) {
 		this.efactory = smtConfig.exprFactory;
 		this.sortfactory = smtConfig.sortFactory;
 		this.commandFactory = smtConfig.commandFactory;
 		this.lessThan = this.efactory.symbol("<");
-		this.typeToSort = new TypeToSort(this.sortfactory, this.efactory);
+		this.intSort = this.sortfactory.createSortExpression(this.efactory.symbol("Int"));
 	}
 
-	ICommand createFunctionDefinitionFor(@Nonnull final List<Function> operators) {
-		checkArgument(!operators.isEmpty(), "The number of operators should be greater than 0.");
-		List<IDeclaration> parameters = new ArrayList<>(operators.size() * 3);
-		int i = 0;
-		for (Function operator : operators) {
-			int j = 0;
-			for (Type type : operator.getParameterTypes()) {
-				ISymbol symbol = this.efactory.symbol(String.format(INPUT_LINE_FORMAT, i, j++));
-				parameters.add(this.efactory.declaration(symbol, this.typeToSort.apply(type)));
+	ICommand createFunctionDefinitionFor(@Nonnull final List<Component> components) {
+		checkArgument(!components.isEmpty(), "The number of operators should be greater than 0.");
+		List<IDeclaration> parameters = new ArrayList<>(components.size() * 3);
+		int componentIndex = 0;
+		for (Component component : components) {
+			for (int parameterIndex = 0; parameterIndex < component.getParameterTypes().size(); parameterIndex++) {
+				ISymbol symbol = this.efactory.symbol(String.format(INPUT_LINE_FORMAT, componentIndex, parameterIndex));
+				parameters.add(this.efactory.declaration(symbol, this.intSort));
 			}
-			ISymbol symbol = this.efactory.symbol(OUTPUT_LINE_PREFIX + i++);
-			parameters.add(this.efactory.declaration(symbol, this.typeToSort.apply(operator.getOutputType())));
+			ISymbol symbol = this.efactory.symbol(OUTPUT_LINE_PREFIX + componentIndex++);
+			parameters.add(this.efactory.declaration(symbol, this.intSort));
 		}
 		return this.commandFactory.define_fun(this.efactory.symbol(FUNCTION_NAME), parameters, this.sortfactory.Bool(),
-				this.createConstraint(operators));
+				this.createConstraint(components));
 	}
 
-	private IExpr createConstraint(final List<Function> operators) {
+	private IExpr createConstraint(final List<Component> operators) {
 		List<IExpr> constraints = new ArrayList<>();
 		int i = 0;
-		for (Function operator : operators) {
+		for (Component operator : operators) {
 			ISymbol output = this.efactory.symbol(OUTPUT_LINE_PREFIX + i);
 			for (int j = 0; j < operator.getParameterTypes().size(); j++) {
 				ISymbol symbol = this.efactory.symbol(String.format(INPUT_LINE_FORMAT, i, j));

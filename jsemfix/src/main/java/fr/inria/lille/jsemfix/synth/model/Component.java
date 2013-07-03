@@ -1,8 +1,8 @@
-package fr.inria.lille.jsemfix.synth.component;
+package fr.inria.lille.jsemfix.synth.model;
 
 import java.util.List;
 
-public interface Function {
+public interface Component {
 
 	/**
 	 * @return the name

@@ -15,9 +15,6 @@ import org.smtlib.IExpr.ISymbol;
 import org.smtlib.ISort;
 import org.smtlib.SMT.Configuration;
 
-import fr.inria.lille.jsemfix.synth.component.Function;
-import fr.inria.lille.jsemfix.synth.component.Type;
-
 final class Consistency {
 
 	private static final String FUNCTION_NAME = "cons";
@@ -27,13 +24,13 @@ final class Consistency {
 	private final IQualifiedIdentifier distinct;
 	private final IExpr.IFactory efactory;
 	private final ISort.IFactory sortfactory;
-	private final com.google.common.base.Function<Type, ISort> typeToSort;
+	private final ISort intSort;
 
 	Consistency(@Nonnull final Configuration smtConfig) {
 		this.efactory = smtConfig.exprFactory;
 		this.sortfactory = smtConfig.sortFactory;
 		this.commandFactory = smtConfig.commandFactory;
-		this.typeToSort = new TypeToSort(this.sortfactory, this.efactory);
+		this.intSort = this.sortfactory.createSortExpression(this.efactory.symbol("Int"));
 		this.distinct = this.efactory.symbol("distinct");
 	}
 
@@ -50,15 +47,14 @@ final class Consistency {
 		return new Simplifier(this.efactory).simplify(constraints);
 	}
 
-	ICommand createFunctionDefinitionFor(@Nonnull final List<Function> operators) {
-		checkArgument(!operators.isEmpty(), "The number of operators should be greater than 0.");
-		List<IDeclaration> parameters = new ArrayList<>(operators.size());
-		List<ISymbol> variables = new ArrayList<>(operators.size());
-		int i = 0;
-		for (Function operator : operators) {
-			ISymbol symbol = this.efactory.symbol(OUTPUT_LINE_PREFIX + i++);
+	ICommand createFunctionDefinitionFor(@Nonnull final int operators) {
+		checkArgument(operators > 0, "The number of operators should be greater than 0: %s.", operators);
+		List<IDeclaration> parameters = new ArrayList<>(operators);
+		List<ISymbol> variables = new ArrayList<>(operators);
+		for (int i = 0; i < operators; i++) {
+			ISymbol symbol = this.efactory.symbol(OUTPUT_LINE_PREFIX + i);
 			variables.add(symbol);
-			parameters.add(this.efactory.declaration(symbol, this.typeToSort.apply(operator.getOutputType())));
+			parameters.add(this.efactory.declaration(symbol, this.intSort));
 		}
 		return this.commandFactory.define_fun(this.efactory.symbol(FUNCTION_NAME), parameters, this.sortfactory.Bool(),
 				this.createConstraint(variables));

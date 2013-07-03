@@ -1,8 +1,8 @@
-package fr.inria.lille.jsemfix.synth.component;
+package fr.inria.lille.jsemfix.synth.model;
 
 import java.util.List;
 
-final class NAryFunction implements Function {
+final class NAryFunction implements Component {
 
 	private final String name;
 
@@ -22,7 +22,7 @@ final class NAryFunction implements Function {
 	}
 
 	/**
-	 * @see fr.inria.lille.jsemfix.synth.component.Function#getName()
+	 * @see fr.inria.lille.jsemfix.synth.model.Component#getName()
 	 */
 	@Override
 	public String getName() {
@@ -30,7 +30,7 @@ final class NAryFunction implements Function {
 	}
 
 	/**
-	 * @see fr.inria.lille.jsemfix.synth.component.Function#getOutputType()
+	 * @see fr.inria.lille.jsemfix.synth.model.Component#getOutputType()
 	 */
 	@Override
 	public Type getOutputType() {
@@ -38,7 +38,7 @@ final class NAryFunction implements Function {
 	}
 
 	/**
-	 * @see fr.inria.lille.jsemfix.synth.component.Function#getParameters()
+	 * @see fr.inria.lille.jsemfix.synth.model.Component#getParameters()
 	 */
 	@Override
 	public List<Type> getParameterTypes() {

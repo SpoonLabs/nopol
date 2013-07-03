@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix.synth.component;
+package fr.inria.lille.jsemfix.synth.model;
 
 /**
  * @author Favio D. DeMarco
