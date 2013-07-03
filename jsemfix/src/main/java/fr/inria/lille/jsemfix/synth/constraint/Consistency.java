@@ -38,7 +38,7 @@ final class Consistency {
 	}
 
 	private IExpr createConstraint(final List<ISymbol> variables) {
-		List<IExpr> constraints = new ArrayList<>();
+		List<IExpr> constraints = new ArrayList<>(2 * (variables.size() - 1));
 		int i = 1;
 		int size = variables.size();
 		for (ISymbol leftOperand : variables) {
@@ -52,8 +52,8 @@ final class Consistency {
 
 	ICommand createFunctionDefinitionFor(@Nonnull final List<Function> operators) {
 		checkArgument(!operators.isEmpty(), "The number of operators should be greater than 0.");
-		List<IDeclaration> parameters = new ArrayList<>(2 * operators.size());
-		List<ISymbol> variables = new ArrayList<>(2 * operators.size());
+		List<IDeclaration> parameters = new ArrayList<>(operators.size());
+		List<ISymbol> variables = new ArrayList<>(operators.size());
 		int i = 0;
 		for (Function operator : operators) {
 			ISymbol symbol = this.efactory.symbol(OUTPUT_LINE_PREFIX + i++);
