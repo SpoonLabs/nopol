@@ -17,7 +17,7 @@ import org.smtlib.SMT.Configuration;
 
 final class Consistency {
 
-	private static final String FUNCTION_NAME = "cons";
+	static final String FUNCTION_NAME = "cons";
 	private static final String OUTPUT_LINE_PREFIX = "LO_";
 
 	private final ICommand.IFactory commandFactory;
@@ -58,9 +58,5 @@ final class Consistency {
 		}
 		return this.commandFactory.define_fun(this.efactory.symbol(FUNCTION_NAME), parameters, this.sortfactory.Bool(),
 				this.createConstraint(variables));
-	}
-
-	IExpr createFunctionCallFor(final List<IExpr> parameters) {
-		return this.efactory.fcn(this.efactory.symbol(FUNCTION_NAME), parameters);
 	}
 }

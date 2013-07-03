@@ -39,7 +39,7 @@ import fr.inria.lille.jsemfix.synth.model.Component;
 final class Acyclicity {
 
 	private static final String OUTPUT_LINE_PREFIX = "LO_";
-	private static final String FUNCTION_NAME = "acyc";
+	static final String FUNCTION_NAME = "acyc";
 	private static final String INPUT_LINE_FORMAT = "L_I%d_%d";
 
 	private final ICommand.IFactory commandFactory;
@@ -84,9 +84,5 @@ final class Acyclicity {
 			i++;
 		}
 		return new Simplifier(this.efactory).simplify(constraints);
-	}
-
-	IExpr createFunctionCallFor(final List<IExpr> parameters) {
-		return this.efactory.fcn(this.efactory.symbol(FUNCTION_NAME), parameters);
 	}
 }
