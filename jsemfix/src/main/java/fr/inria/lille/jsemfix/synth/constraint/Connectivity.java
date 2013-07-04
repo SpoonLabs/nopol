@@ -1,10 +1,10 @@
 package fr.inria.lille.jsemfix.synth.constraint;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import org.smtlib.ICommand;
 import org.smtlib.IExpr;
@@ -14,18 +14,22 @@ import org.smtlib.IExpr.ISymbol;
 import org.smtlib.ISort;
 import org.smtlib.SMT.Configuration;
 
+import com.google.common.base.Function;
+
+import fr.inria.lille.jsemfix.synth.model.Component;
+import fr.inria.lille.jsemfix.synth.model.InputModel;
+import fr.inria.lille.jsemfix.synth.model.Type;
+
 final class Connectivity {
 
-	private static final String OUTPUT_LINE = "LO";
-	private static final String OUTPUT = "O";
 	private static final String FUNCTION_NAME = "conn";
-	private static final String INPUT_PREFIX = "I_";
-	private static final String LEFT_INPUT_LINE_PREFIX = "L_Il";
-	private static final String LEFT_INPUT_PREFIX = "Il_";
-	private static final String OUTPUT_LINE_PREFIX = "L_O";
+	private static final String INPUT_FORMAT = "I%d_%d";
+	private static final String INPUT_LINE_FORMAT = "L_I%d_%d";
+	private static final String OUTPUT = "O";
+	private static final String OUTPUT_LINE = "LO";
+	private static final String OUTPUT_LINE_PREFIX = "LO_";
 	private static final String OUTPUT_PREFIX = "O_";
-	private static final String RIGHT_INPUT_LINE_PREFIX = "L_Ir";
-	private static final String RIGHT_INPUT_PREFIX = "Ir_";
+	private static final String INPUT_PREFIX = "I_";
 
 	private final ISymbol and;
 	private final ICommand.IFactory commandFactory;
@@ -33,36 +37,64 @@ final class Connectivity {
 	private final IQualifiedIdentifier equals;
 	private final ISort intSort;
 	private final ISort.IFactory sortfactory;
+	private final Function<Type, ISort> typeToSort;
 
-	Connectivity(final Configuration smtConfig) {
+	Connectivity(@Nonnull final Configuration smtConfig) {
 		this.efactory = smtConfig.exprFactory;
 		this.sortfactory = smtConfig.sortFactory;
 		this.commandFactory = smtConfig.commandFactory;
 		this.intSort = this.sortfactory.createSortExpression(this.efactory.symbol("Int"));
 		this.and = this.efactory.symbol("and");
 		this.equals = this.efactory.symbol("=");
+		this.typeToSort = new TypeToSort(this.sortfactory, this.efactory);
 	}
 
-	private void addConnectivityConstraintFor(final ISymbol inputLine, final ISymbol input, final int numberOfInputs,
-			final Collection<IExpr> constraints) {
+	private void addConnectivityConstraintFor(final Type type, final ISymbol inputLine, final ISymbol input,
+			final InputModel model, @Nonnull final Collection<IExpr> constraints) {
 		long line = 0L;
-		for (int i = 0; i < numberOfInputs; i++) {
-			constraints.add(this.createConnectivityConstraintFor(inputLine, this.efactory.numeral(line++), input,
-					this.efactory.symbol(INPUT_PREFIX + i)));
+		for (Type inputType : model.getInputTypes()) {
+			if (type == inputType) {
+				constraints.add(this.createConnectivityConstraintFor(inputLine, this.efactory.numeral(line), input,
+						this.efactory.symbol(INPUT_PREFIX + line)));
+			}
+			line++;
+		}
+		int componentIndex = 0;
+		for (Component component : model.getComponents()) {
+			if (type == component.getOutputType()) {
+				constraints.add(this.createConnectivityConstraintFor(inputLine,
+						this.efactory.symbol(OUTPUT_LINE_PREFIX + componentIndex), input,
+						this.efactory.symbol(OUTPUT_PREFIX + componentIndex)));
+			}
+			componentIndex++;
 		}
 	}
 
-	private IExpr createConnectivityConstraint(final int numberOfInputs, final int numberOperators) {
+	/**
+	 * XXX FIXME TODO cyclomatic complexity
+	 * 
+	 * @param model
+	 * @return
+	 */
+	private IExpr createConnectivityConstraint(@Nonnull final InputModel model) {
 		List<IExpr> constraints = new ArrayList<>();
-		for (int i = 0; i < numberOperators; i++) {
-			this.addConnectivityConstraintFor(this.efactory.symbol(LEFT_INPUT_LINE_PREFIX + i),
-					this.efactory.symbol(LEFT_INPUT_PREFIX + i), numberOfInputs, constraints);
-			this.addConnectivityConstraintFor(this.efactory.symbol(RIGHT_INPUT_LINE_PREFIX + i),
-					this.efactory.symbol(RIGHT_INPUT_PREFIX + i), numberOfInputs, constraints);
-
-			constraints.add(this.createConnectivityConstraintFor(this.efactory.symbol(OUTPUT_LINE),
-					this.efactory.symbol(OUTPUT_LINE_PREFIX + i), this.efactory.symbol(OUTPUT),
-					this.efactory.symbol(OUTPUT_PREFIX + i)));
+		Type outputType = model.getOutputType();
+		int componentIndex = 0;
+		for (Component component : model.getComponents()) {
+			int parameterIndex = 0;
+			for (Type type : component.getParameterTypes()) {
+				this.addConnectivityConstraintFor(type,
+						this.efactory.symbol(String.format(INPUT_LINE_FORMAT, componentIndex, parameterIndex)),
+						this.efactory.symbol(String.format(INPUT_FORMAT, componentIndex, parameterIndex)), model,
+						constraints);
+				parameterIndex++;
+			}
+			if (outputType == component.getOutputType()) {
+				constraints.add(this.createConnectivityConstraintFor(this.efactory.symbol(OUTPUT_LINE),
+						this.efactory.symbol(OUTPUT_LINE_PREFIX + componentIndex), this.efactory.symbol(OUTPUT),
+						this.efactory.symbol(OUTPUT_PREFIX + componentIndex)));
+			}
+			componentIndex++;
 		}
 		return this.efactory.fcn(this.and, constraints);
 	}
@@ -74,24 +106,36 @@ final class Connectivity {
 		return this.efactory.fcn(this.efactory.symbol("=>"), lines, vars);
 	}
 
-	ICommand createFunctionDefinitionFor(final int numberOfInputs, final int numberOperators) {
-		checkArgument(numberOfInputs > 0, "The number of inputs should be greater than 0: %s", numberOfInputs);
-		checkArgument(numberOperators > 0, "The number of operators should be greater than 0: %s", numberOperators);
-		List<IDeclaration> parameters = new ArrayList<>(6 * numberOperators + numberOfInputs + 2);
-		for (int i = 0; i < numberOperators; i++) {
-			parameters.add(this.efactory.declaration(this.efactory.symbol(LEFT_INPUT_PREFIX + i), this.intSort));
-			parameters.add(this.efactory.declaration(this.efactory.symbol(LEFT_INPUT_LINE_PREFIX + i), this.intSort));
-			parameters.add(this.efactory.declaration(this.efactory.symbol(RIGHT_INPUT_PREFIX + i), this.intSort));
-			parameters.add(this.efactory.declaration(this.efactory.symbol(RIGHT_INPUT_LINE_PREFIX + i), this.intSort));
-			parameters.add(this.efactory.declaration(this.efactory.symbol(OUTPUT_PREFIX + i), this.sortfactory.Bool()));
-			parameters.add(this.efactory.declaration(this.efactory.symbol(OUTPUT_LINE_PREFIX + i), this.intSort));
+	ICommand createFunctionDefinitionFor(@Nonnull final InputModel model) {
+		List<Type> inputTypes = model.getInputTypes();
+		List<Component> components = model.getComponents();
+		List<IDeclaration> parameters = new ArrayList<>(6 * components.size() + inputTypes.size() + 2);
+		int inputIndex = 0;
+		for (Type type : inputTypes) {
+			ISymbol input = this.efactory.symbol(String.format(INPUT_PREFIX + inputIndex));
+			parameters.add(this.efactory.declaration(input, this.typeToSort.apply(type)));
+			inputIndex++;
 		}
-		for (int i = 0; i < numberOfInputs; i++) {
-			parameters.add(this.efactory.declaration(this.efactory.symbol(INPUT_PREFIX + i), this.intSort));
+		int componentIndex = 0;
+		for (Component component : components) {
+			int parameterIndex = 0;
+			for (Type type : component.getParameterTypes()) {
+				ISymbol input = this.efactory.symbol(String.format(INPUT_FORMAT, componentIndex, parameterIndex));
+				parameters.add(this.efactory.declaration(input, this.typeToSort.apply(type)));
+				ISymbol line = this.efactory.symbol(String.format(INPUT_LINE_FORMAT, componentIndex, parameterIndex));
+				parameters.add(this.efactory.declaration(line, this.intSort));
+				parameterIndex++;
+			}
+			ISymbol output = this.efactory.symbol(OUTPUT_PREFIX + componentIndex);
+			parameters.add(this.efactory.declaration(output, this.typeToSort.apply(component.getOutputType())));
+			ISymbol outputLine = this.efactory.symbol(OUTPUT_LINE_PREFIX + componentIndex);
+			parameters.add(this.efactory.declaration(outputLine, this.intSort));
+			componentIndex++;
 		}
-		parameters.add(this.efactory.declaration(this.efactory.symbol(OUTPUT), this.sortfactory.Bool()));
+		parameters.add(this.efactory.declaration(this.efactory.symbol(OUTPUT),
+				this.typeToSort.apply(model.getOutputType())));
 		parameters.add(this.efactory.declaration(this.efactory.symbol(OUTPUT_LINE), this.intSort));
 		return this.commandFactory.define_fun(this.efactory.symbol(FUNCTION_NAME), parameters, this.sortfactory.Bool(),
-				this.createConnectivityConstraint(numberOfInputs, numberOperators));
+				this.createConnectivityConstraint(model));
 	}
 }
