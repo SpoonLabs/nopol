@@ -83,6 +83,6 @@ final class Acyclicity {
 			}
 			i++;
 		}
-		return new Simplifier(this.efactory).simplify(constraints);
+		return new Simplifier(this.efactory).simplifyAnd(constraints);
 	}
 }

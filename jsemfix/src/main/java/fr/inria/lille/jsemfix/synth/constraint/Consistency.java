@@ -44,7 +44,7 @@ final class Consistency {
 				constraints.add(this.efactory.fcn(this.distinct, leftOperand, rightOperand));
 			}
 		}
-		return new Simplifier(this.efactory).simplify(constraints);
+		return new Simplifier(this.efactory).simplifyAnd(constraints);
 	}
 
 	ICommand createFunctionDefinitionFor(@Nonnull final int operators) {

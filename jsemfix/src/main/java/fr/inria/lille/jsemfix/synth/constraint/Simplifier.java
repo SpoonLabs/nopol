@@ -17,6 +17,8 @@ package fr.inria.lille.jsemfix.synth.constraint;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import org.smtlib.IExpr;
 import org.smtlib.IExpr.IFactory;
 
@@ -31,17 +33,25 @@ final class Simplifier {
 	/**
 	 * @param factory
 	 */
-	Simplifier(final IFactory factory) {
+	Simplifier(@Nonnull final IFactory factory) {
 		this.factory = factory;
 	}
 
-	IExpr simplify(final List<IExpr> constraints) {
+	private IExpr simplify(@Nonnull final String joiner, @Nonnull final List<IExpr> constraints) {
 		if (constraints.isEmpty()) {
 			return this.factory.symbol("true");
 		} else if (constraints.size() == 1) {
 			return constraints.get(0);
 		} else {
-			return this.factory.fcn(this.factory.symbol("and"), constraints);
+			return this.factory.fcn(this.factory.symbol(joiner), constraints);
 		}
+	}
+
+	IExpr simplifyAnd(@Nonnull final List<IExpr> constraints) {
+		return this.simplify("and", constraints);
+	}
+
+	IExpr simplifyOr(@Nonnull final List<IExpr> constraints) {
+		return this.simplify("or", constraints);
 	}
 }
