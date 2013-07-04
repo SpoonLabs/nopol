@@ -1,10 +1,9 @@
 package fr.inria.lille.jsemfix.synth.constraint;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 import org.smtlib.ICommand;
 import org.smtlib.IExpr;
@@ -14,75 +13,63 @@ import org.smtlib.IExpr.ISymbol;
 import org.smtlib.ISort;
 import org.smtlib.SMT.Configuration;
 
-import fr.inria.lille.jsemfix.synth.BinaryOperator;
+import com.google.common.base.Function;
+
+import fr.inria.lille.jsemfix.synth.model.Component;
+import fr.inria.lille.jsemfix.synth.model.Type;
 
 final class Library {
 
 	private static final String FUNCTION_NAME = "lib";
-	private static final String LEFT_INPUT_PREFIX = "Il_";
 	private static final String OUTPUT_PREFIX = "O_";
-	private static final String RIGHT_INPUT_PREFIX = "Ir_";
+	private static final String INPUT_FORMAT = "I%d_%d";
 
-	private final ISymbol and;
 	private final ICommand.IFactory commandFactory;
 	private final IExpr.IFactory efactory;
 	private final IQualifiedIdentifier equals;
-	private final ISort intSort;
 	private final ISort.IFactory sortfactory;
+	private final Function<Type, ISort> typeToSort;
 
 	Library(final Configuration smtConfig) {
 		this.efactory = smtConfig.exprFactory;
 		this.sortfactory = smtConfig.sortFactory;
 		this.commandFactory = smtConfig.commandFactory;
-		this.intSort = this.sortfactory.createSortExpression(this.efactory.symbol("Int"));
-		this.and = this.efactory.symbol("and");
 		this.equals = this.efactory.symbol("=");
+		this.typeToSort = new TypeToSort(this.sortfactory, this.efactory);
 	}
 
-	IExpr createFunctionCallFor(final List<BinaryOperator> binaryOperators) {
-		List<IExpr> parameters = new ArrayList<>();
-		for (BinaryOperator operator : binaryOperators) {
-			parameters.add(operator.getLeftInput());
-			parameters.add(operator.getRightInput());
-			parameters.add(operator.getOutput());
-		}
-		return this.efactory.fcn(this.efactory.symbol(FUNCTION_NAME), parameters);
-	}
-
-	ICommand createFunctionDefinitionFor(final Iterable<String> binaryOperators) {
+	ICommand createFunctionDefinitionFor(@Nonnull final Iterable<Component> components) {
 		List<IDeclaration> parameters = new ArrayList<>();
-		Iterator<String> iterator = checkNotNull(binaryOperators).iterator();
-		int i = 0;
-		while (iterator.hasNext()) {
-			parameters.add(this.efactory.declaration(this.efactory.symbol(LEFT_INPUT_PREFIX + i), this.intSort));
-			parameters.add(this.efactory.declaration(this.efactory.symbol(RIGHT_INPUT_PREFIX + i), this.intSort));
-			parameters.add(this.efactory.declaration(this.efactory.symbol(OUTPUT_PREFIX + i), this.sortfactory.Bool()));
-			iterator.next();
-			i++;
+		int componentIndex = 0;
+		for (Component component : components) {
+			int parameterIndex = 0;
+			for (Type type : component.getParameterTypes()) {
+				ISymbol symbol = this.efactory.symbol(String.format(INPUT_FORMAT, componentIndex, parameterIndex));
+				parameters.add(this.efactory.declaration(symbol, this.typeToSort.apply(type)));
+				parameterIndex++;
+			}
+			ISymbol symbol = this.efactory.symbol(OUTPUT_PREFIX + componentIndex);
+			parameters.add(this.efactory.declaration(symbol, this.typeToSort.apply(component.getOutputType())));
+			componentIndex++;
 		}
 		return this.commandFactory.define_fun(this.efactory.symbol(FUNCTION_NAME), parameters, this.sortfactory.Bool(),
-				this.createLibConstraint(binaryOperators));
+				this.createLibConstraint(components));
 	}
 
-	private IExpr createLibConstraint(final Iterable<String> binaryOperators) {
+	private IExpr createLibConstraint(@Nonnull final Iterable<Component> components) {
 		List<IExpr> constraints = new ArrayList<>();
-		int i = 0;
-		for (String symbol : binaryOperators) {
-			IExpr term = this.efactory.fcn(this.efactory.symbol(symbol), this.efactory.symbol(LEFT_INPUT_PREFIX + i),
-					this.efactory.symbol(RIGHT_INPUT_PREFIX + i));
-			IExpr output = this.efactory.fcn(this.equals, this.efactory.symbol(OUTPUT_PREFIX + i), term);
+		int componentIndex = 0;
+		for (Component component : components) {
+			List<IExpr> parameters = new ArrayList<>();
+			for (int parameterIndex = 0; parameterIndex < component.getParameterTypes().size(); parameterIndex++) {
+				parameters.add(this.efactory.symbol(String.format(INPUT_FORMAT, componentIndex, parameterIndex)));
+			}
+			IExpr term = this.efactory.fcn(this.efactory.symbol(component.getName()), parameters);
+			IExpr output = this.efactory.fcn(this.equals, this.efactory.symbol(OUTPUT_PREFIX + componentIndex), term);
 			constraints.add(output);
-			i++;
-		}
-		return this.simplify(constraints);
-	}
 
-	private IExpr simplify(final List<IExpr> constraints) {
-		if (constraints.isEmpty()) {
-			return this.efactory.symbol("true");
-		} else if (constraints.size() == 1) {
-			return constraints.get(0);
+			componentIndex++;
 		}
-		return this.efactory.fcn(this.and, constraints);
+		return new Simplifier(this.efactory).simplifyAnd(constraints);
 	}
 }
