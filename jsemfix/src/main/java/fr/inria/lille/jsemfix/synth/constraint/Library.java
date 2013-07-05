@@ -20,7 +20,7 @@ import fr.inria.lille.jsemfix.synth.model.Type;
 
 final class Library {
 
-	private static final String FUNCTION_NAME = "lib";
+	static final String FUNCTION_NAME = "lib";
 	private static final String OUTPUT_PREFIX = "O_";
 	private static final String INPUT_FORMAT = "I%d_%d";
 

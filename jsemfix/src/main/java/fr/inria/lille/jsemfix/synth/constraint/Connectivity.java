@@ -22,7 +22,7 @@ import fr.inria.lille.jsemfix.synth.model.Type;
 
 final class Connectivity {
 
-	private static final String FUNCTION_NAME = "conn";
+	static final String FUNCTION_NAME = "conn";
 	private static final String INPUT_FORMAT = "I%d_%d";
 	private static final String INPUT_LINE_FORMAT = "L_I%d_%d";
 	private static final String OUTPUT = "O";
