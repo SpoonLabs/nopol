@@ -71,7 +71,7 @@ final class WellFormedProgram {
 		}
 	}
 
-	private static final String FUNCTION_NAME = "wfp";
+	static final String FUNCTION_NAME = "wfp";
 	private static final String INPUT_LINE_FORMAT = "L_I%d_%d";
 	private static final String OUTPUT_LINE = "LO";
 	private static final String OUTPUT_LINE_PREFIX = "LO_";

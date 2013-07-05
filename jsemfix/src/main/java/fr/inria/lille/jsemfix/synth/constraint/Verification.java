@@ -104,12 +104,6 @@ final class Verification {
 		List<Component> components = model.getComponents();
 		checkArgument(!components.isEmpty(), "The number of operators should be greater than 0.");
 		List<IDeclaration> parameters = new ArrayList<>(components.size() * 3);
-		int inputIndex = 0;
-		for (Type type : model.getInputTypes()) {
-			ISymbol input = this.efactory.symbol(String.format(INPUT_PREFIX + inputIndex));
-			parameters.add(this.efactory.declaration(input, this.typeToSort.apply(type)));
-			inputIndex++;
-		}
 		int componentIndex = 0;
 		for (Component component : components) {
 			for (int parameterIndex = 0; parameterIndex < component.getParameterTypes().size(); parameterIndex++) {
@@ -119,10 +113,16 @@ final class Verification {
 			ISymbol symbol = this.efactory.symbol(OUTPUT_LINE_PREFIX + componentIndex++);
 			parameters.add(this.efactory.declaration(symbol, this.intSort));
 		}
-		parameters.add(this.efactory.declaration(this.efactory.symbol(OUTPUT),
-				this.typeToSort.apply(model.getOutputType())));
 		ISymbol symbol = this.efactory.symbol(OUTPUT_LINE);
 		parameters.add(this.efactory.declaration(symbol, this.intSort));
+		int inputIndex = 0;
+		for (Type type : model.getInputTypes()) {
+			ISymbol input = this.efactory.symbol(String.format(INPUT_PREFIX + inputIndex));
+			parameters.add(this.efactory.declaration(input, this.typeToSort.apply(type)));
+			inputIndex++;
+		}
+		parameters.add(this.efactory.declaration(this.efactory.symbol(OUTPUT),
+				this.typeToSort.apply(model.getOutputType())));
 		return this.commandFactory.define_fun(this.efactory.symbol(FUNCTION_NAME), parameters, this.sortfactory.Bool(),
 				this.createConstraint(model));
 	}
