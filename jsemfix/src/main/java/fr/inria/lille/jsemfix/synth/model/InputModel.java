@@ -16,6 +16,7 @@
 package fr.inria.lille.jsemfix.synth.model;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.collect.ImmutableList.copyOf;
 
 import java.util.List;
 
@@ -41,8 +42,8 @@ public final class InputModel {
 			@Nonnull final Type outputType) {
 		checkArgument(!inputTypes.isEmpty(), "Input types cannot be empty.");
 		checkArgument(!components.isEmpty(), "Components cannot be empty.");
-		this.inputTypes = inputTypes;
-		this.components = components;
+		this.inputTypes = copyOf(inputTypes);
+		this.components = copyOf(components);
 		this.outputType = outputType;
 	}
 
