@@ -146,7 +146,7 @@ final class ConditionalsMatrix {
 		int lineNumber = rc.getLineNumber();
 		processingManager.addProcessor(new ConditionalReplacer(sourceFile, lineNumber, value));
 		processingManager.addProcessor(new IfConditionalReplacer(sourceFile, lineNumber, value));
-		processingManager.addProcessor(new ConditionalLoggingInstrumenter(sourceFile, lineNumber, value));
+		processingManager.addProcessor(new ConditionalLoggingInstrumenter(sourceFile, lineNumber));
 		Builder builder = ccl.getFactory().getBuilder();
 
 		ClassLoader cl = new URLClassLoader(this.classpath, ccl);

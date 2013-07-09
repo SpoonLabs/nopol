@@ -94,18 +94,18 @@ final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtStatement
 		}
 	}
 
-	final File file;
-	final int line;
-	final boolean value;
+	private static final String VALUES_COLLECTOR_CALL = ValuesCollector.class.getName() + ".add(\"";
+
+	private final File file;
+	private final int line;
 
 	/**
 	 * @param file
 	 * @param line
 	 */
-	ConditionalLoggingInstrumenter(final File file, final int line, final boolean value) {
+	ConditionalLoggingInstrumenter(final File file, final int line) {
 		this.file = file;
 		this.line = line;
-		this.value = value;
 	}
 
 	/**
@@ -198,13 +198,9 @@ final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtStatement
 						continue;
 					}
 				}
-
-				// we remove the "final" for solving "may have not been in initialized" in constructor code
-				// this does not work for case statements
-				// var.getModifiers().remove(ModifierKind.FINAL);
-
-				snippet.append(ValuesCollector.class.getName()).append(".add(\"").append(var.getSimpleName())
-				.append("\", ").append(var.getSimpleName()).append(");");
+				String varName = var.getSimpleName();
+				snippet.append(VALUES_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(");")
+				.append(System.lineSeparator());
 			}
 		}
 		if (snippet.length() > 0) {
