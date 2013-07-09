@@ -29,6 +29,15 @@ final class IfConditionalReplacer extends AbstractProcessor<CtIf> {
 		this.value = value;
 	}
 
+	/**
+	 * @see spoon.processing.AbstractProcessor#isToBeProcessed(spoon.reflect.declaration.CtElement)
+	 */
+	@Override
+	public boolean isToBeProcessed(final CtIf candidate) {
+		SourcePosition position = candidate.getPosition();
+		return position.getLine() == this.line && position.getFile().equals(this.file);
+	}
+
 	@Override
 	public void process(final CtIf element) {
 

@@ -29,15 +29,21 @@ final class ConditionalReplacer extends AbstractProcessor<CtConditional<Object>>
 		this.value = value;
 	}
 
+	/**
+	 * @see spoon.processing.AbstractProcessor#isToBeProcessed(spoon.reflect.declaration.CtElement)
+	 */
+	@Override
+	public boolean isToBeProcessed(final CtConditional<Object> candidate) {
+		SourcePosition position = candidate.getPosition();
+		return position.getLine() == this.line && position.getFile().equals(this.file);
+	}
+
 	@Override
 	public void process(final CtConditional<Object> element) {
-		SourcePosition position = element.getPosition();
-		if (position.getLine() == this.line && position.getFile().equals(this.file)) {
-			// we declare a new snippet of code to be inserted
-			CtLiteral<Boolean> snippet = new CtLiteralImpl<>();
-			snippet.setFactory(this.getFactory());
-			snippet.setValue(this.value);
-			element.getCondition().replace(snippet);
-		}
+		// we declare a new snippet of code to be inserted
+		CtLiteral<Boolean> snippet = new CtLiteralImpl<>();
+		snippet.setFactory(this.getFactory());
+		snippet.setValue(this.value);
+		element.getCondition().replace(snippet);
 	}
 }

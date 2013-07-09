@@ -142,10 +142,11 @@ final class ConditionalsMatrix {
 		ccl.getEnvironment().setDebug(this.debug);
 
 		ProcessingManager processingManager = ccl.getProcessingManager();
-		processingManager.addProcessor(new ConditionalReplacer(this.getSourceFile(rc.getContainingClassName()), rc
-				.getLineNumber(), value));
-		processingManager.addProcessor(new IfConditionalReplacer(this.getSourceFile(rc.getContainingClassName()), rc
-				.getLineNumber(), value));
+		File sourceFile = this.getSourceFile(rc.getContainingClassName());
+		int lineNumber = rc.getLineNumber();
+		processingManager.addProcessor(new ConditionalReplacer(sourceFile, lineNumber, value));
+		processingManager.addProcessor(new IfConditionalReplacer(sourceFile, lineNumber, value));
+		processingManager.addProcessor(new ConditionalLoggingInstrumenter(sourceFile, lineNumber, value));
 		Builder builder = ccl.getFactory().getBuilder();
 
 		ClassLoader cl = new URLClassLoader(this.classpath, ccl);
@@ -166,5 +167,7 @@ final class ConditionalsMatrix {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
+
+		System.err.println(ValuesCollector.getValues());
 	}
 }
