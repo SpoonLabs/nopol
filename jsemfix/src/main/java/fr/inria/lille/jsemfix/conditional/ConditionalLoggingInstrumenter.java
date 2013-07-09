@@ -182,16 +182,14 @@ final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtStatement
 	public void process(final CtStatement statement) {
 
 		boolean inStaticCode = this.hasStaticParent(statement);
-
 		StringBuilder snippet = new StringBuilder();
 
-		int nVisibleVariables = 0;
 		for (CtVariable<?> var : this.getVariablesInScope(statement)) {
 			boolean isStaticVar = var.getModifiers().contains(STATIC);
 
 			// we only add if the code is non static
 			// or if code is static and the variable as well
-			if (!inStaticCode || inStaticCode && (isStaticVar || var instanceof CtParameter)) {
+			if (!inStaticCode || inStaticCode && (isStaticVar || !(var instanceof CtField))) {
 				// if the local var is not initialized, it might be a compilation problem
 				// because of "not initialized"
 				if (var instanceof CtLocalVariable) {
@@ -201,22 +199,15 @@ final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtStatement
 					}
 				}
 
-				nVisibleVariables++;
-
 				// we remove the "final" for solving "may have not been in initialized" in constructor code
 				// this does not work for case statements
 				// var.getModifiers().remove(ModifierKind.FINAL);
 
 				snippet.append(ValuesCollector.class.getName()).append(".add(\"").append(var.getSimpleName())
-						.append("\", ").append(var.getSimpleName()).append(");");
+				.append("\", ").append(var.getSimpleName()).append(");");
 			}
 		}
-		if (nVisibleVariables > 0 // do not add the monitoring if nothing to ignore
-				&&
-				// too many variables and too many ifs
-				// may cause the following:
-				// The code of method populateFromBibtex(BibtexEntry) is exceeding the 65535 bytes limit
-				nVisibleVariables < 50) {
+		if (snippet.length() > 0) {
 			statement.insertBefore(this.getFactory().Code().createCodeSnippetStatement(snippet.toString()));
 		}
 	}
