@@ -30,7 +30,7 @@ public final class Components {
 	public static final Component AND = createFunction("and", Type.BOOLEAN, Type.BOOLEAN, Type.BOOLEAN);
 	public static final Component OR = createFunction("or", Type.BOOLEAN, Type.BOOLEAN, Type.BOOLEAN);
 
-	public static final Component ITE = createFunction("ite", Type.BOOLEAN, Type.BOOLEAN, Type.BOOLEAN, Type.BOOLEAN);
+	public static final Component ITE = createFunction("ite", Type.INTEGER, Type.BOOLEAN, Type.INTEGER, Type.INTEGER);
 
 	public static final Component DISTINCT = createFunction("distinct", Type.BOOLEAN, Type.INTEGER, Type.INTEGER);
 	public static final Component EQUALS = createFunction("=", Type.BOOLEAN, Type.INTEGER, Type.INTEGER);
