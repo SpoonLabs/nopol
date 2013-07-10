@@ -24,6 +24,7 @@ import java.net.URLClassLoader;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,19 +36,16 @@ import spoon.reflect.Factory;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.QueueProcessingManager;
 import spoon.support.StandardEnvironment;
-
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
-
 import fr.inria.lille.jsemfix.sps.SuspiciousStatement;
 import fr.inria.lille.jsemfix.sps.gzoltar.GZoltarSuspiciousProgramStatements;
-import fr.inria.lille.jsemfix.test.Test;
 
 /**
  * @author Favio D. DeMarco
  * 
  */
 final class ConditionalsMatrix {
+
+	private static final long TIME_OUT_SECONDS = 1800L;
 
 	private final String rootPackage;
 
@@ -72,13 +70,13 @@ final class ConditionalsMatrix {
 	 */
 	private String[] testClasses;
 
-	public Table<Test, Boolean, Result> build() {
+	public InputOutputData build() {
 
 		// A ranked list of potential bug root-cause.
 		this.testClasses = this.findTestClasses();
 		Iterable<SuspiciousStatement> statements = GZoltarSuspiciousProgramStatements.create(this.rootPackage,
 				this.classpath, this.testClasses).sortBySuspiciousness();
-		Table<Test, Boolean, Result> table = HashBasedTable.create();
+		InputOutputData table = new InputOutputData();
 		for (SuspiciousStatement rc : statements) {
 			if (this.isConditional(rc)) {
 				this.runFor(rc, true, table);
@@ -103,7 +101,12 @@ final class ConditionalsMatrix {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		} finally {
-			executor.shutdown();
+			try {
+				this.shutdownAndWait(executor);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				throw new RuntimeException(e);
+			}
 		}
 		return testClasses;
 	}
@@ -135,7 +138,7 @@ final class ConditionalsMatrix {
 		return detector.isConditional();
 	}
 
-	private void runFor(final SuspiciousStatement rc, final boolean value, final Table<Test, Boolean, Result> table) {
+	private void runFor(final SuspiciousStatement rc, final boolean value, final InputOutputData table) {
 
 		SpoonClassLoader ccl = new SpoonClassLoader();
 
@@ -161,13 +164,22 @@ final class ConditionalsMatrix {
 			// should use the url class loader
 			ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
 			executor.execute(new JUnitRunner(new ResultMatrixBuilderListener(table, value), this.testClasses));
-			executor.shutdown();
-
+			this.shutdownAndWait(executor);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
+		System.err.println(value);
+		System.err.println(table.getInputvalues());
+		System.err.println(table.getOutputValues());
+	}
 
-		System.err.println(ValuesCollector.getValues());
+	/**
+	 * @param executor
+	 * @throws InterruptedException
+	 */
+	private void shutdownAndWait(final ExecutorService executor) throws InterruptedException {
+		executor.shutdown();
+		executor.awaitTermination(TIME_OUT_SECONDS, TimeUnit.SECONDS);
 	}
 }

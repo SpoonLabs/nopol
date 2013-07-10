@@ -1,26 +1,42 @@
 package fr.inria.lille.jsemfix.conditional;
 
+import java.util.Map.Entry;
+
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
-import com.google.common.collect.Table;
-
-import fr.inria.lille.jsemfix.test.Test;
-import fr.inria.lille.jsemfix.test.junit.JUnitTest;
-
 final class ResultMatrixBuilderListener extends RunListener {
 
-	final Table<Test, Boolean, Result> matrix;
+	final InputOutputData matrix;
+
+	/**
+	 * Optimist...
+	 */
+	boolean success = true;
 
 	final boolean value;
 
 	/**
 	 * @param matrix
 	 */
-	ResultMatrixBuilderListener(final Table<Test, Boolean, Result> matrix, final boolean value) {
+	ResultMatrixBuilderListener(final InputOutputData matrix, final boolean value) {
 		this.matrix = matrix;
 		this.value = value;
+	}
+
+	private void cleanUp() {
+		ValuesCollector.clear();
+	}
+
+	/**
+	 *
+	 */
+	private void processSuccessfulRun() {
+		this.matrix.addOutputValue(this.value);
+		for (Entry<String, Object> entry : ValuesCollector.getValues()) {
+			this.matrix.addInputValue(entry.getKey(), entry.getValue());
+		}
 	}
 
 	/**
@@ -28,7 +44,7 @@ final class ResultMatrixBuilderListener extends RunListener {
 	 */
 	@Override
 	public void testFailure(final Failure failure) throws Exception {
-		this.matrix.put(new JUnitTest(failure.getDescription()), this.value, Result.FAIL);
+		this.success = false;
 	}
 
 	/**
@@ -36,9 +52,12 @@ final class ResultMatrixBuilderListener extends RunListener {
 	 */
 	@Override
 	public void testFinished(final Description description) throws Exception {
-		JUnitTest desc = new JUnitTest(description);
-		if (null == this.matrix.get(desc, this.value)) {
-			this.matrix.put(desc, this.value, Result.OK);
+		if (this.success) {
+			this.processSuccessfulRun();
+		} else {
+			// hope for the best
+			this.success = true;
 		}
+		this.cleanUp();
 	}
 }

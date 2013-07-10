@@ -80,8 +80,6 @@ public final class Conditionals {
 				throw new RuntimeException(e);
 			}
 		}
-
-		System.out.println(new ConditionalsMatrix(this.mainPackage, this.sourceFolder,
-				urls.toArray(new URL[urls.size()])).build());
+		new ConditionalsMatrix(this.mainPackage, this.sourceFolder, urls.toArray(new URL[urls.size()])).build();
 	}
 }

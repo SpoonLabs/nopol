@@ -15,14 +15,8 @@
  */
 package fr.inria.lille.jsemfix.conditional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import com.google.common.base.Supplier;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Favio D. DeMarco
@@ -30,23 +24,18 @@ import com.google.common.collect.Multimaps;
  */
 public final class ValuesCollector {
 
-	private enum ListSupplier implements Supplier<List<Object>> {
-		INSTANCE;
-		@Override
-		public List<Object> get() {
-			return new ArrayList<>();
-		}
-	}
+	private static final Map<String, Object> values = new HashMap<String, Object>();
 
-	private static final Multimap<String, Object> values = Multimaps.newListMultimap(
-			new LinkedHashMap<String, Collection<Object>>(), ListSupplier.INSTANCE);
-
-	public static boolean add(final String name, final Object value) {
+	public static Object add(final String name, final Object value) {
 		return values.put(name, value);
 	}
 
-	public static final Multimap<String, Object> getValues() {
-		return values;
+	public static void clear() {
+		values.clear();
+	}
+
+	public static Iterable<Map.Entry<String, Object>> getValues() {
+		return values.entrySet();
 	}
 
 	/**
