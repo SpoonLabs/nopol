@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.inria.lille.adam</groupId>
-	<artifactId>jsemfix</artifactId>
+	<artifactId>jefix</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>jSemFix</name>
-	<description>Java Program Repair via Semantic Analysis</description>
+	<name>jEFix</name>
+	<description>Java Program Repair via Expectations Analysis</description>
 	<inceptionYear>2013</inceptionYear>
 	<licenses>
 		<license>
