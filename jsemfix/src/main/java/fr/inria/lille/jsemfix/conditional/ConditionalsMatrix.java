@@ -169,9 +169,6 @@ final class ConditionalsMatrix {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
-		System.err.println(value);
-		System.err.println(table.getInputvalues());
-		System.err.println(table.getOutputValues());
 	}
 
 	/**
