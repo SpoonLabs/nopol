@@ -51,7 +51,7 @@ public final class Conditionals {
 	}
 
 	private static void printUsage() {
-		System.out.println("java " + Conditionals.class.getName() + " <package> <source folder>");
+		System.out.println("java " + Conditionals.class.getName() + " <package> <source folder> <classpath>");
 	}
 
 	private final String mainPackage;
