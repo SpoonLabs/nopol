@@ -13,17 +13,38 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.sps;
-
-import fr.inria.lille.jefix.SourceLocation;
+package fr.inria.lille.jefix;
 
 /**
  * @author Favio D. DeMarco
  *
  */
-public interface SuspiciousStatement {
+public final class SourceLocation {
 
-	SourceLocation getSourceLocation();
+	private final String containingClassName;
 
-	double getSuspiciousness();
+	private final int lineNumber;
+
+	/**
+	 * @param containingClassName
+	 * @param lineNumber
+	 */
+	public SourceLocation(final String containingClassName, final int lineNumber) {
+		this.containingClassName = containingClassName;
+		this.lineNumber = lineNumber;
+	}
+
+	/**
+	 * @return the containingClassName
+	 */
+	public String getContainingClassName() {
+		return this.containingClassName;
+	}
+
+	/**
+	 * @return the lineNumber
+	 */
+	public int getLineNumber() {
+		return this.lineNumber;
+	}
 }

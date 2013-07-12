@@ -20,7 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -29,11 +29,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.gzoltar.core.GZoltar;
 
-import fr.inria.lille.jefix.functors.ClassName;
 import fr.inria.lille.jefix.sps.SuspiciousProgramStatements;
 import fr.inria.lille.jefix.sps.SuspiciousStatement;
 
@@ -46,76 +44,40 @@ import fr.inria.lille.jefix.sps.SuspiciousStatement;
 public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgramStatements {
 
 	/**
-	 * XXX FIXME TODO too many arguments. Builder?
-	 * 
 	 * @param sourcePackage
 	 * @param classpath
-	 * @param testClasses
 	 * @return
 	 */
-	public static GZoltarSuspiciousProgramStatements create(final String sourcePackage, final URL[] classpath,
-			final String... testClasses) {
-		return new GZoltarSuspiciousProgramStatements(sourcePackage, classpath, testClasses);
+	public static GZoltarSuspiciousProgramStatements create(final String sourcePackage, final URL[] classpath) {
+		return new GZoltarSuspiciousProgramStatements(sourcePackage, classpath);
 	}
 
-	public static GZoltarSuspiciousProgramStatements createWithPackageAndTestClasses(final Package sourcePackage,
-			final Class<?>... testClasses) {
-		return createWithPackageAndTestClasses(sourcePackage.getName(), testClasses);
-	}
+	private final GZoltar gzoltar;
 
-	public static GZoltarSuspiciousProgramStatements createWithPackageAndTestClasses(final String sourcePackage,
-			final Class<?>... testClasses) {
-
-		return new GZoltarSuspiciousProgramStatements(sourcePackage, Collections2.transform(Arrays.asList(testClasses),
-				ClassName.INSTANCE).toArray(new String[testClasses.length]));
-	}
-
-	private final List<SuspiciousStatement> statements;
-
-	private GZoltarSuspiciousProgramStatements(final String sourcePackage, final String... testClasses) {
-		this(sourcePackage, (URL[]) null, testClasses);
-	}
-
-	private GZoltarSuspiciousProgramStatements(final String sourcePackage, final URL[] classpath,
-			final String... testClasses) {
-
-		GZoltar gzoltar;
+	private GZoltarSuspiciousProgramStatements(final String sourcePackage, final URL[] classpath) {
 		try {
-			gzoltar = new GZoltarJava7();
+			this.gzoltar = new GZoltarJava7();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
 
 		if (null != classpath) {
-			HashSet<String> classpaths = gzoltar.getClasspaths();
+			HashSet<String> classpaths = this.gzoltar.getClasspaths();
 			for (URL url : classpath) {
 				classpaths.add(url.toExternalForm());
 			}
-			gzoltar.setClassPaths(classpaths);
+			this.gzoltar.setClassPaths(classpaths);
 		}
-		gzoltar.addPackageToInstrument(checkNotNull(sourcePackage)); // TODO see if GZoltar instruments
+		this.gzoltar.addPackageToInstrument(checkNotNull(sourcePackage)); // TODO see if GZoltar instruments
 		// recursively
-
-		for (String className : checkNotNull(testClasses)) {
-			gzoltar.addTestToExecute(className); // we want to execute the test
-			gzoltar.addClassNotToInstrument(className); // we don't want to include the test as root-cause candidate
-		}
-		gzoltar.run();
-
-		Logger logger = LoggerFactory.getLogger(this.getClass());
-		if (logger.isDebugEnabled()) {
-			logger.debug("\n{}", gzoltar.getSpectra());
-		}
-
-		this.statements = Lists.transform(gzoltar.getSuspiciousStatements(), GZoltarStatementWrapperFunction.INSTANCE);
 	}
 
 	/**
 	 * TODO delete this method
 	 */
-	private void assertExpectedOrder() {
-		List<SuspiciousStatement> sortedStatementsList = new ArrayList<SuspiciousStatement>(this.statements);
+	private void assertExpectedOrder(final Collection<SuspiciousStatement> statements) {
+		List<SuspiciousStatement> sortedStatementsList = new ArrayList<SuspiciousStatement>(statements);
 		Collections.sort(sortedStatementsList, new Comparator<SuspiciousStatement>() {
 			@Override
 			public int compare(final SuspiciousStatement o1, final SuspiciousStatement o2) {
@@ -123,20 +85,36 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 				// want a descending order list
 			}
 		});
-		assert this.statements.equals(sortedStatementsList) : "The order does not match:\n" + this.statements + '\n'
+		assert statements.equals(sortedStatementsList) : "The order does not match:\n" + statements + '\n'
 		+ sortedStatementsList;
 	}
 
 	/**
+	 * @param testClasses
 	 * @return a ranked list of potential bug root-cause.
 	 * @see fr.inria.lille.jsemfix.sps.SuspiciousProgramStatements#sortBySuspiciousness()
 	 */
 	@Override
-	public List<SuspiciousStatement> sortBySuspiciousness() {
+	public List<SuspiciousStatement> sortBySuspiciousness(final String... testClasses) {
+
+		for (String className : checkNotNull(testClasses)) {
+			this.gzoltar.addTestToExecute(className); // we want to execute the test
+			this.gzoltar.addClassNotToInstrument(className); // we don't want to include the test as root-cause
+																// candidate
+		}
+		this.gzoltar.run();
+
+		Logger logger = LoggerFactory.getLogger(this.getClass());
+		if (logger.isDebugEnabled()) {
+			logger.debug("\n{}", this.gzoltar.getSpectra());
+		}
+
+		List<SuspiciousStatement> statements = Lists.transform(this.gzoltar.getSuspiciousStatements(),
+				GZoltarStatementWrapperFunction.INSTANCE);
 
 		// TODO delete this method call
-		this.assertExpectedOrder();
+		this.assertExpectedOrder(statements);
 
-		return this.statements;
+		return statements;
 	}
 }

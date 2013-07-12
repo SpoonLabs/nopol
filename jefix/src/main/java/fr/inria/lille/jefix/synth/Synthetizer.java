@@ -13,17 +13,31 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.sps;
+package fr.inria.lille.jefix.synth;
 
-import fr.inria.lille.jefix.SourceLocation;
+import static fr.inria.lille.jefix.patch.Patch.NO_PATCH;
+
+import java.net.URL;
+
+import fr.inria.lille.jefix.patch.Patch;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
-public interface SuspiciousStatement {
+public interface Synthetizer {
 
-	SourceLocation getSourceLocation();
+	static final class DummySynthetizer implements Synthetizer {
 
-	double getSuspiciousness();
+		private DummySynthetizer() {}
+
+		@Override
+		public Patch buildPatch(final URL[] classpath, final String[] testClasses) {
+			return NO_PATCH;
+		}
+	}
+
+	static final Synthetizer NO_OP_SYNTHETIZER = new DummySynthetizer();
+
+	Patch buildPatch(URL[] classpath, String[] testClasses);
 }

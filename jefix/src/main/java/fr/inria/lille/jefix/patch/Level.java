@@ -13,17 +13,16 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.sps;
-
-import fr.inria.lille.jefix.SourceLocation;
+package fr.inria.lille.jefix.patch;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
-public interface SuspiciousStatement {
+public enum Level {
+	CONSTANTS, COMPARISON_ARITHMETIC, LOGIC_COMPARISON_ITERATION, ARITHMETIC_LOGIC, ITERATION_ARRAY_ACCESS, MULTIPLICATION;
 
-	SourceLocation getSourceLocation();
-
-	double getSuspiciousness();
+	public Level next() {
+		return values()[this.ordinal() + 1];
+	}
 }

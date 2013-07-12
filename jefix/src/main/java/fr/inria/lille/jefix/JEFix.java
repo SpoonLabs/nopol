@@ -15,50 +15,50 @@
  */
 package fr.inria.lille.jefix;
 
+import static fr.inria.lille.jefix.patch.Patch.NO_PATCH;
+
 import java.io.File;
 import java.net.URL;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import fr.inria.lille.jefix.junit.TestClassesFinder;
+import fr.inria.lille.jefix.patch.Patch;
 import fr.inria.lille.jefix.sps.SuspiciousStatement;
 import fr.inria.lille.jefix.sps.gzoltar.GZoltarSuspiciousProgramStatements;
+import fr.inria.lille.jefix.synth.SynthetizerFactory;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
 final class JEFix {
 
-	private static final long TIME_OUT_SECONDS = 1800L;
-
-	private final String rootPackage;
-
-	private final File sourceFolder;
 	private final URL[] classpath;
-
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private final boolean debug = this.logger.isDebugEnabled();
+	private final GZoltarSuspiciousProgramStatements gZoltar;
+	private final String rootPackage;
+	private final SynthetizerFactory synthetizerFactory;
 
 	/**
 	 * @param rootPackage
 	 * @param sourceFolder
 	 * @param classpath
 	 */
-	JEFix(final String rootPackage, final File sourceFolder, final URL[] classpath) {
+	public JEFix(final String rootPackage, final File sourceFolder, final URL[] classpath) {
 		this.rootPackage = rootPackage;
-		this.sourceFolder = sourceFolder;
 		this.classpath = classpath;
+		this.gZoltar = GZoltarSuspiciousProgramStatements.create(this.rootPackage, this.classpath);
+		this.synthetizerFactory = new SynthetizerFactory(sourceFolder);
 	}
 
-	Object build() {
-
+	public Patch build() {
 		String[] testClasses = new TestClassesFinder(this.rootPackage).findIn(this.classpath);
-
-		Iterable<SuspiciousStatement> statements = GZoltarSuspiciousProgramStatements.create(this.rootPackage,
-				this.classpath, testClasses).sortBySuspiciousness();
-
-		return new Object();
+		Iterable<SuspiciousStatement> statements = this.gZoltar.sortBySuspiciousness(testClasses);
+		for (SuspiciousStatement statement : statements) {
+			Patch newRepair = this.synthetizerFactory.getFor(statement.getSourceLocation()).buildPatch(this.classpath,
+					testClasses);
+			if (newRepair != NO_PATCH) {
+				return newRepair;
+			}
+		}
+		return NO_PATCH;
 	}
 }

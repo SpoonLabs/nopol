@@ -19,6 +19,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.gzoltar.core.components.Statement;
 
+import fr.inria.lille.jefix.SourceLocation;
 import fr.inria.lille.jefix.sps.SuspiciousStatement;
 
 /**
@@ -26,6 +27,8 @@ import fr.inria.lille.jefix.sps.SuspiciousStatement;
  * 
  */
 final class GZoltarStatement implements SuspiciousStatement {
+
+	private SourceLocation location;
 
 	private final Statement statement;
 
@@ -61,20 +64,12 @@ final class GZoltarStatement implements SuspiciousStatement {
 		return true;
 	}
 
-	/**
-	 * @see fr.inria.lille.jsemfix.sps.SuspiciousStatement#getContainingClass()
-	 */
 	@Override
-	public String getContainingClassName() {
-		return this.statement.getClazz().getLabel();
-	}
-
-	/**
-	 * @see fr.inria.lille.jsemfix.sps.SuspiciousStatement#getLineNumber()
-	 */
-	@Override
-	public int getLineNumber() {
-		return this.statement.getLineNumber();
+	public SourceLocation getSourceLocation() {
+		if (null == this.location) {
+			this.location = new SourceLocation(this.statement.getClazz().getLabel(), this.statement.getLineNumber());
+		}
+		return this.location;
 	}
 
 	/**
@@ -100,9 +95,9 @@ final class GZoltarStatement implements SuspiciousStatement {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("GZoltarStatement [ContainingClass=");
-		builder.append(this.getContainingClassName());
+		builder.append(this.getSourceLocation().getContainingClassName());
 		builder.append(", LineNumber=");
-		builder.append(this.getLineNumber());
+		builder.append(this.location.getLineNumber());
 		builder.append(", Suspiciousness=");
 		builder.append(this.getSuspiciousness());
 		builder.append("]");
