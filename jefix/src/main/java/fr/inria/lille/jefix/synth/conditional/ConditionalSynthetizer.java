@@ -41,9 +41,7 @@ public final class ConditionalSynthetizer implements Synthetizer {
 	 */
 	@Override
 	public Patch buildPatch(final URL[] classpath, final String[] testClasses) {
-		// TODO Auto-generated method stub
-		// return null;
+
 		throw new UnsupportedOperationException("Undefined method ConditionalSynthetizer.buildPatch");
 	}
-
 }

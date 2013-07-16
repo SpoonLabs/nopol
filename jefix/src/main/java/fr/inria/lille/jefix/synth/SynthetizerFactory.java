@@ -15,7 +15,6 @@
  */
 package fr.inria.lille.jefix.synth;
 
-import static com.google.common.base.Preconditions.checkState;
 import static fr.inria.lille.jefix.synth.Synthetizer.NO_OP_SYNTHETIZER;
 
 import java.io.File;
@@ -33,7 +32,7 @@ import fr.inria.lille.jefix.synth.conditional.ConditionalSynthetizer;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
 public final class SynthetizerFactory {
 
@@ -59,8 +58,7 @@ public final class SynthetizerFactory {
 		env.setDebug(this.debug);
 		Factory factory = new Factory(new DefaultCoreFactory(), env);
 		ProcessingManager processing = new QueueProcessingManager(factory);
-		ConditionalDetector detector = new ConditionalDetector(this.getSourceFile(rc.getContainingClassName()),
-				rc.getLineNumber());
+		ConditionalDetector detector = new ConditionalDetector(rc.getSourceFile(this.sourceFolder), rc.getLineNumber());
 		processing.addProcessor(detector);
 		Builder builder = factory.getBuilder();
 		try {
@@ -71,12 +69,5 @@ public final class SynthetizerFactory {
 		}
 		processing.process();
 		return detector.isConditional();
-	}
-
-	private File getSourceFile(final String problemClass) {
-		String classPath = problemClass.replace('.', File.separatorChar);
-		File sourceFile = new File(this.sourceFolder, classPath + ".java");
-		checkState(sourceFile.exists(), "%s: does not exist.", sourceFile);
-		return sourceFile;
 	}
 }

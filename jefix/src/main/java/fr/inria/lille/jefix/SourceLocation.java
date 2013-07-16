@@ -15,9 +15,13 @@
  */
 package fr.inria.lille.jefix;
 
+import static com.google.common.base.Preconditions.checkState;
+
+import java.io.File;
+
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
 public final class SourceLocation {
 
@@ -46,5 +50,16 @@ public final class SourceLocation {
 	 */
 	public int getLineNumber() {
 		return this.lineNumber;
+	}
+
+	public File getSourceFile(final File sourceFolder) {
+		return this.getSourceFile(sourceFolder.getAbsolutePath());
+	}
+
+	public File getSourceFile(final String sourceFolder) {
+		String classPath = this.containingClassName.replace('.', File.separatorChar);
+		File sourceFile = new File(sourceFolder, classPath + ".java");
+		checkState(sourceFile.exists(), "%s: does not exist.", sourceFile);
+		return sourceFile;
 	}
 }
