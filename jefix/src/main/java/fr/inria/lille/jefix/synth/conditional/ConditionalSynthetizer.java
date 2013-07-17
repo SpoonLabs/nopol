@@ -28,12 +28,10 @@ import fr.inria.lille.jefix.synth.Synthetizer;
  */
 public final class ConditionalSynthetizer implements Synthetizer {
 
-	private final File sourceFolder;
-	private final SourceLocation sourceLocation;
+	private final ConditionalsConstraintModelBuilder constraintbuilder;
 
 	public ConditionalSynthetizer(final File sourceFolder, final SourceLocation sourceLocation) {
-		this.sourceFolder = sourceFolder;
-		this.sourceLocation = sourceLocation;
+		this.constraintbuilder = new ConditionalsConstraintModelBuilder(sourceFolder, sourceLocation);
 	}
 
 	/**
@@ -41,6 +39,8 @@ public final class ConditionalSynthetizer implements Synthetizer {
 	 */
 	@Override
 	public Patch buildPatch(final URL[] classpath, final String[] testClasses) {
+
+		InputOutputData model = this.constraintbuilder.buildFor(classpath, testClasses);
 
 		throw new UnsupportedOperationException("Undefined method ConditionalSynthetizer.buildPatch");
 	}
