@@ -28,7 +28,7 @@ import com.google.common.collect.Multimaps;
  * @author Favio D. DeMarco
  * 
  */
-class InputOutputData {
+class InputOutputValues {
 
 	private enum ListSupplier implements Supplier<List<Object>> {
 		INSTANCE;

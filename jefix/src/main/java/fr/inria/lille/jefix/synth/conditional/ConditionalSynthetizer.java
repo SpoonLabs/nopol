@@ -40,7 +40,8 @@ public final class ConditionalSynthetizer implements Synthetizer {
 	@Override
 	public Patch buildPatch(final URL[] classpath, final String[] testClasses) {
 
-		InputOutputData model = this.constraintbuilder.buildFor(classpath, testClasses);
+		InputOutputValues data = this.constraintbuilder.buildFor(classpath, testClasses);
+
 
 		throw new UnsupportedOperationException("Undefined method ConditionalSynthetizer.buildPatch");
 	}

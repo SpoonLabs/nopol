@@ -64,11 +64,11 @@ final class ConditionalsConstraintModelBuilder {
 		this.spooner = scl;
 	}
 
-	InputOutputData buildFor(final URL[] classpath, final String[] testClasses) {
+	InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
 		ClassLoader cl = new URLClassLoader(classpath, this.spooner);
 		// should use the url class loader
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
-		InputOutputData model = new InputOutputData();
+		InputOutputValues model = new InputOutputValues();
 		try {
 			this.conditionalReplacer.setValue(true);
 			executor.execute(new JUnitRunner(new ResultMatrixBuilderListener(model, true), testClasses));

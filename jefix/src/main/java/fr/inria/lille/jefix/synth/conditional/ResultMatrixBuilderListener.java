@@ -6,9 +6,11 @@ import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
+import fr.inria.lille.jefix.synth.collector.ValuesCollector;
+
 final class ResultMatrixBuilderListener extends RunListener {
 
-	final InputOutputData matrix;
+	final InputOutputValues matrix;
 
 	/**
 	 * Optimist...
@@ -20,7 +22,7 @@ final class ResultMatrixBuilderListener extends RunListener {
 	/**
 	 * @param matrix
 	 */
-	ResultMatrixBuilderListener(final InputOutputData matrix, final boolean value) {
+	ResultMatrixBuilderListener(final InputOutputValues matrix, final boolean value) {
 		this.matrix = matrix;
 		this.value = value;
 	}

@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import fr.inria.lille.jefix.synth.collector.ValuesCollector;
+
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConditional;

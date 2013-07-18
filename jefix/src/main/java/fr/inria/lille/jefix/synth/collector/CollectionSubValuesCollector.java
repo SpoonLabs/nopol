@@ -13,16 +13,21 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.synth.conditional;
+package fr.inria.lille.jefix.synth.collector;
 
-import java.net.URLClassLoader;
+import java.util.Collection;
 
 /**
  * @author Favio D. DeMarco
  *
  */
-final class ConditionalsModelValuesCollector {
+final class CollectionSubValuesCollector implements SubValuesCollector {
 
-	ConditionalsModelValuesCollector(final URLClassLoader urlClassLoader, final String[] testClasses) {}
-
+	/**
+	 * @see fr.inria.lille.jefix.synth.collector.SubValuesCollector#addSubValues(java.lang.String, java.lang.Object)
+	 */
+	@Override
+	public void addSubValues(final String name, final Object value) {
+		ValuesCollector.add(name + ".size()", ((Collection<?>) value).size());
+	}
 }
