@@ -28,6 +28,7 @@ import spoon.SpoonClassLoader;
 import spoon.processing.Builder;
 import spoon.processing.ProcessingManager;
 import fr.inria.lille.jefix.SourceLocation;
+import fr.inria.lille.jefix.synth.InputOutputValues;
 import fr.inria.lille.jefix.threads.ProvidedClassLoaderThreadFactory;
 
 /**

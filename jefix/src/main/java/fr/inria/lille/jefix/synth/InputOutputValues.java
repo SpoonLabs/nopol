@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.synth.conditional;
+package fr.inria.lille.jefix.synth;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +28,7 @@ import com.google.common.collect.Multimaps;
  * @author Favio D. DeMarco
  * 
  */
-class InputOutputValues {
+public class InputOutputValues {
 
 	private enum ListSupplier implements Supplier<List<Object>> {
 		INSTANCE;
@@ -43,25 +43,25 @@ class InputOutputValues {
 
 	private final List<Object> outputValues = new ArrayList<>();
 
-	void addInputValue(final String varName, final Object value) {
+	public void addInputValue(final String varName, final Object value) {
 		this.inputValues.put(varName, value);
 	}
 
-	boolean addOutputValue(final Object output) {
+	public boolean addOutputValue(final Object output) {
 		return this.outputValues.add(output);
 	}
 
 	/**
 	 * @return the inputvalues
 	 */
-	Multimap<String, Object> getInputvalues() {
+	public Multimap<String, Object> getInputvalues() {
 		return this.inputValues;
 	}
 
 	/**
 	 * @return the outputValues
 	 */
-	Iterable<Object> getOutputValues() {
+	public Iterable<Object> getOutputValues() {
 		return this.outputValues;
 	}
 }

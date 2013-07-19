@@ -13,16 +13,29 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.patch;
+package fr.inria.lille.jefix.synth.smt.model;
+
+import com.google.common.base.Function;
 
 /**
  * @author Favio D. DeMarco
  * 
  */
-public enum Level {
-	CONSTANTS, COMPARISON, LOGIC, ARITHMETIC, ITE_ARRAY_ACCESS, MULTIPLICATION;
+public enum Type {
 
-	public Level next() {
-		return values()[this.ordinal() + 1];
+	BOOLEAN, INTEGER;
+
+	enum ValueToType implements Function<Object, Type> {
+		INSTANCE;
+		@Override
+		public Type apply(final Object value) {
+			if (value instanceof Boolean) {
+				return BOOLEAN;
+			} else if (value instanceof Long || value instanceof Integer || value instanceof Short
+					|| value instanceof Byte) {
+				return INTEGER;
+			}
+			throw new IllegalStateException("Can't find a sort for class " + value.getClass());
+		}
 	}
 }

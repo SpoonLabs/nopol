@@ -13,12 +13,32 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.synth.constraint;
+package fr.inria.lille.jefix.synth.smt.model;
+
+import java.util.ArrayList;
+
+import fr.inria.lille.jefix.patch.Level;
+import fr.inria.lille.jefix.synth.InputOutputValues;
 
 /**
  * @author Favio D. DeMarco
  *
  */
-public final class ConstraintModel {
+public final class InputModelBuilder {
 
+	private final InputOutputValues data;
+
+	public InputModelBuilder(final InputOutputValues data) {
+		this.data = data;
+	}
+
+	public InputModel buildFor(final Level level) {
+
+		// XXX FIXME TODO Law of Demeter
+		Type outputType = Type.ValueToType.INSTANCE.apply(this.data.getOutputValues().iterator().next());
+
+		InputModel model = new InputModel(new ArrayList<Type>(), new ArrayList<Component>(), outputType);
+
+		return model;
+	}
 }

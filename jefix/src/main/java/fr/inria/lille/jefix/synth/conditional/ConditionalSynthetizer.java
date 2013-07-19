@@ -19,8 +19,12 @@ import java.io.File;
 import java.net.URL;
 
 import fr.inria.lille.jefix.SourceLocation;
+import fr.inria.lille.jefix.patch.Level;
 import fr.inria.lille.jefix.patch.Patch;
+import fr.inria.lille.jefix.synth.InputOutputValues;
 import fr.inria.lille.jefix.synth.Synthetizer;
+import fr.inria.lille.jefix.synth.smt.model.InputModel;
+import fr.inria.lille.jefix.synth.smt.model.InputModelBuilder;
 
 /**
  * @author Favio D. DeMarco
@@ -42,6 +46,11 @@ public final class ConditionalSynthetizer implements Synthetizer {
 
 		InputOutputValues data = this.constraintbuilder.buildFor(classpath, testClasses);
 
+		InputModelBuilder modelBuilder = new InputModelBuilder(data);
+
+		Level level = Level.CONSTANTS;
+
+		InputModel model = modelBuilder.buildFor(level);
 
 		throw new UnsupportedOperationException("Undefined method ConditionalSynthetizer.buildPatch");
 	}
