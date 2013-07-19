@@ -16,29 +16,68 @@
 package fr.inria.lille.jefix.synth.smt.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import com.google.common.collect.ImmutableList;
 
 import fr.inria.lille.jefix.patch.Level;
 import fr.inria.lille.jefix.synth.InputOutputValues;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
 public final class InputModelBuilder {
 
-	private final InputOutputValues data;
+	private final ValuesModel data;
+
+	private static final List<Object> CONSTANTS = ImmutableList.<Object> of(-1, 0, 1, true, false);
 
 	public InputModelBuilder(final InputOutputValues data) {
-		this.data = data;
+		this.data = new ValuesModel(data, CONSTANTS);
 	}
 
 	public InputModel buildFor(final Level level) {
 
+		InputModel model = this.createModel();
+
+		switch (level) {
+
+		case MULTIPLICATION:
+
+		case ITE_ARRAY_ACCESS:
+
+		case ARITHMETIC:
+
+		case LOGIC:
+
+		case COMPARISON:
+
+		case CONSTANTS:
+			new ConstantsModelBuilder(this.data).addTo(model);
+			break;
+		default:
+			throw new IllegalStateException("Unknown level: " + level);
+		}
+
+		return model;
+	}
+
+	/**
+	 * @param outputType
+	 * @return
+	 */
+	private InputModel createModel() {
+
 		// XXX FIXME TODO Law of Demeter
 		Type outputType = Type.ValueToType.INSTANCE.apply(this.data.getOutputValues().iterator().next());
 
-		InputModel model = new InputModel(new ArrayList<Type>(), new ArrayList<Component>(), outputType);
+		List<Type> inputTypes = new ArrayList<>();
+		for (Collection<Object> values : this.data.getInputvalues().asMap().values()) {
+			inputTypes.add(Type.ValueToType.INSTANCE.apply(values.iterator().next()));
+		}
 
-		return model;
+		return new InputModel(inputTypes, new ArrayList<Component>(), outputType);
 	}
 }
