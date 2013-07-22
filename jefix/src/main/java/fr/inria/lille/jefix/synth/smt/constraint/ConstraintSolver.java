@@ -15,19 +15,43 @@
  */
 package fr.inria.lille.jefix.synth.smt.constraint;
 
+import static org.smtlib.impl.Response.SAT;
+
+import org.smtlib.ICommand.IScript;
+import org.smtlib.IExpr;
+import org.smtlib.IExpr.IStringLiteral;
+import org.smtlib.IResponse;
+import org.smtlib.ISolver;
+import org.smtlib.SMT;
+import org.smtlib.SMT.Configuration;
+import org.smtlib.solvers.Solver_cvc4;
+
 import fr.inria.lille.jefix.synth.RepairCandidate;
 import fr.inria.lille.jefix.synth.smt.model.InputModel;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
 public final class ConstraintSolver {
 
-	public RepairCandidate solve(final InputModel model) {
-		// TODO Auto-generated method stub
-		// return null;
-		throw new UnsupportedOperationException("Undefined method ConstraintSolver.solve");
-	}
+	/**
+	 * XXX FIXME TODO should be a parameter
+	 */
+	private static final String CVC4_BINARY_PATH = "/usr/bin/cvc4";
 
+	public RepairCandidate solve(final InputModel model) {
+		Configuration smtConfig = new SMT().smtConfig;
+		ISolver solver = new Solver_cvc4(smtConfig, CVC4_BINARY_PATH);
+		solver.start();
+		Synthesis synthesis = new Synthesis(smtConfig, model);
+		IScript script = smtConfig.commandFactory.script((IStringLiteral) null, synthesis.createScript());
+		script.execute(solver);
+		if (SAT.equals(solver.check_sat())) {
+			IResponse solverResponse = solver.get_value(synthesis.getModel().toArray(new IExpr[] {}));
+			return new RepairCandidateBuilder(model, solverResponse).build();
+		} else {
+			return null;
+		}
+	}
 }

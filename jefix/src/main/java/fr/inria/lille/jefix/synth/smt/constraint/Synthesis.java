@@ -15,6 +15,10 @@
  */
 package fr.inria.lille.jefix.synth.smt.constraint;
 
+import static org.smtlib.Utils.FALSE;
+import static org.smtlib.Utils.PRODUCE_MODELS;
+import static org.smtlib.Utils.TRUE;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,19 +33,25 @@ import org.smtlib.IExpr.IIdentifier;
 import org.smtlib.IExpr.IQualifiedIdentifier;
 import org.smtlib.ISort;
 import org.smtlib.SMT.Configuration;
+import org.smtlib.logic.AUFLIA;
+
+import com.google.common.collect.Iterables;
 
 import fr.inria.lille.jefix.synth.smt.model.Component;
 import fr.inria.lille.jefix.synth.smt.model.InputModel;
+import fr.inria.lille.jefix.synth.smt.model.Type;
+import fr.inria.lille.jefix.synth.smt.model.ValuesModel;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
 final class Synthesis {
 
 	private static final String INPUT_LINE_FORMAT = "L_I%d_%d";
 	private static final String OUTPUT_LINE = "LO";
 	private static final String OUTPUT_LINE_PREFIX = "LO_";
+
 
 	private final IQualifiedIdentifier and;
 	private final ICommand.IFactory commandFactory;
@@ -82,8 +92,7 @@ final class Synthesis {
 		}
 	}
 
-	private IExpr createConstraint(final Iterable<List<IExpr>> inputValues,
-			final Iterable<IExpr> outputValues) {
+	private IExpr createConstraint(final Iterable<List<IExpr>> inputValues, final Iterable<IExpr> outputValues) {
 		List<IExpr> constraints = new ArrayList<>();
 		List<IExpr> ioModel = this.getModel();
 		constraints.add(this.efactory.fcn(this.efactory.symbol(WellFormedProgram.FUNCTION_NAME), ioModel));
@@ -99,14 +108,68 @@ final class Synthesis {
 		return this.efactory.fcn(this.and, constraints);
 	}
 
+	List<ICommand> createScript() {
+
+		Iterable<List<IExpr>> inputValues = this.getInputValues();
+		Iterable<IExpr> outputValues = this.getOutputValues();
+
+		return this.createScriptFor(inputValues, outputValues);
+	}
+
+	private Iterable<IExpr> getOutputValues() {
+		return this.iExprCollectionFromObjects(this.model.getValues().getOutputValues());
+	}
+
+	private List<IExpr> iExprCollectionFromObjects(final Iterable<Object> values) {
+		List<IExpr> expressions = new ArrayList<>();
+		for (Object value : values) {
+			expressions.add(this.objectToIExpr(value));
+		}
+		return expressions;
+	}
+
+	private IExpr objectToIExpr(final Object value) {
+		Type type = Type.ValueToType.INSTANCE.apply(value);
+		if (Type.BOOLEAN == type) {
+			return (Boolean) value ? TRUE : FALSE;
+		} else if (Type.INTEGER == type) {
+			long longValue = ((Number) value).longValue();
+			if (longValue < 0) {
+				return this.efactory.fcn(this.efactory.symbol("-"), this.efactory.numeral(Math.abs(longValue)));
+			} else {
+				return this.efactory.numeral(longValue);
+			}
+		}
+		throw new IllegalStateException("Unknown type: " + type);
+	}
+
+	private Iterable<List<IExpr>> getInputValues() {
+		Collection<List<IExpr>> expressions = new ArrayList<>();
+		ValuesModel valuesModel = this.model.getValues();
+		for (Collection<Object> values : valuesModel.getInputvalues().asMap().values()) {
+			expressions.add(this.iExprCollectionFromObjects(values));
+		}
+
+		// XXX FIXME TODO
+		int size = Iterables.size(valuesModel.getOutputValues());
+
+		for (Object constant : valuesModel.getConstants()) {
+			expressions.add(Collections.nCopies(size, this.objectToIExpr(constant)));
+		}
+		return expressions;
+	}
+
 	/**
 	 * 
 	 * @param inputValues
 	 * @param outputValues
 	 * @return
 	 */
-	Collection<ICommand> createScriptFor(final Iterable<List<IExpr>> inputValues, final Iterable<IExpr> outputValues) {
-		Collection<ICommand> script = new ArrayList<>(this.model.getComponents().size() * 3);
+	private List<ICommand> createScriptFor(final Iterable<List<IExpr>> inputValues,
+			final Iterable<IExpr> outputValues) {
+		List<ICommand> script = new ArrayList<>(this.model.getComponents().size() * 3);
+		script.add(this.commandFactory.set_option(this.efactory.keyword(PRODUCE_MODELS), TRUE));
+		script.add(this.commandFactory.set_logic(this.efactory.symbol(AUFLIA.class.getSimpleName())));
 		this.addFunctionDeclarationsTo(script);
 		this.addLocationFunctionsTo(script);
 		script.add(this.commandFactory.assertCommand(this.createConstraint(inputValues, outputValues)));

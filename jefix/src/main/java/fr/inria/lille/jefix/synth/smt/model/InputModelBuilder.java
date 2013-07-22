@@ -78,6 +78,6 @@ public final class InputModelBuilder {
 			inputTypes.add(Type.ValueToType.INSTANCE.apply(values.iterator().next()));
 		}
 
-		return new InputModel(inputTypes, new ArrayList<Component>(), outputType);
+		return new InputModel(inputTypes, new ArrayList<Component>(), outputType, this.data);
 	}
 }

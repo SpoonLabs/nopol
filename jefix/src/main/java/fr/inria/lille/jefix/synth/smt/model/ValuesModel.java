@@ -27,7 +27,7 @@ import fr.inria.lille.jefix.synth.InputOutputValues;
  * @author Favio D. DeMarco
  * 
  */
-final class ValuesModel {
+public final class ValuesModel {
 
 	private final List<Object> constants;
 
@@ -41,21 +41,21 @@ final class ValuesModel {
 	/**
 	 * @return the constants
 	 */
-	List<Object> getConstants() {
+	public List<Object> getConstants() {
 		return this.constants;
 	}
 
 	/**
 	 * @return the inputvalues
 	 */
-	Multimap<String, Object> getInputvalues() {
+	public Multimap<String, Object> getInputvalues() {
 		return this.data.getInputvalues();
 	}
 
 	/**
 	 * @return the outputValues
 	 */
-	Iterable<Object> getOutputValues() {
+	public Iterable<Object> getOutputValues() {
 		return this.data.getOutputValues();
 	}
 }

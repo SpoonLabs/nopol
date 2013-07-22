@@ -13,29 +13,28 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.synth.smt.model;
+package fr.inria.lille.jefix.synth.smt.constraint;
 
-import com.google.common.base.Function;
+import org.smtlib.IResponse;
+
+import fr.inria.lille.jefix.synth.RepairCandidate;
+import fr.inria.lille.jefix.synth.smt.model.InputModel;
 
 /**
  * @author Favio D. DeMarco
- * 
+ *
  */
-public enum Type {
+final class RepairCandidateBuilder {
 
-	BOOLEAN, INTEGER;
+	private final InputModel model;
+	private final IResponse response;
 
-	public enum ValueToType implements Function<Object, Type> {
-		INSTANCE;
-		@Override
-		public Type apply(final Object value) {
-			if (value instanceof Boolean) {
-				return BOOLEAN;
-			} else if (value instanceof Long || value instanceof Integer || value instanceof Short
-					|| value instanceof Byte) {
-				return INTEGER;
-			}
-			throw new IllegalStateException("Can't find a sort for class " + value.getClass());
-		}
+	RepairCandidateBuilder(final InputModel model, final IResponse solverResponse) {
+		this.model = model;
+		this.response = solverResponse;
+	}
+
+	RepairCandidate build() {
+		return new RepairCandidate();
 	}
 }

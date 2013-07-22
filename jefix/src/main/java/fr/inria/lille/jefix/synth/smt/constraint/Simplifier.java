@@ -15,6 +15,8 @@
  */
 package fr.inria.lille.jefix.synth.smt.constraint;
 
+import static org.smtlib.Utils.TRUE;
+
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -39,7 +41,7 @@ final class Simplifier {
 
 	private IExpr simplify(@Nonnull final String joiner, @Nonnull final List<IExpr> constraints) {
 		if (constraints.isEmpty()) {
-			return this.factory.symbol("true");
+			return TRUE;
 		} else if (constraints.size() == 1) {
 			return constraints.get(0);
 		} else {

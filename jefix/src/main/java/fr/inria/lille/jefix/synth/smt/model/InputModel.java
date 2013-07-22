@@ -33,17 +33,21 @@ public final class InputModel {
 
 	private final Type outputType;
 
+	private final ValuesModel values;
+
 	/**
 	 * @param inputTypes
 	 * @param components
+	 * @param data
 	 */
 	public InputModel(@Nonnull final List<Type> inputTypes, @Nonnull final List<Component> components,
-			@Nonnull final Type outputType) {
+			@Nonnull final Type outputType, final ValuesModel data) {
 		checkArgument(!inputTypes.isEmpty(), "Input types cannot be empty.");
 		checkArgument(!components.isEmpty(), "Components cannot be empty.");
 		this.inputTypes = inputTypes;
 		this.components = components;
 		this.outputType = outputType;
+		this.values = data;
 	}
 
 	/**
@@ -65,5 +69,12 @@ public final class InputModel {
 	 */
 	public Type getOutputType() {
 		return this.outputType;
+	}
+
+	/**
+	 * @return the values
+	 */
+	public ValuesModel getValues() {
+		return this.values;
 	}
 }
