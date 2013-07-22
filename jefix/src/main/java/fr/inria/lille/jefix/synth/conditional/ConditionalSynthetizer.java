@@ -22,13 +22,15 @@ import fr.inria.lille.jefix.SourceLocation;
 import fr.inria.lille.jefix.patch.Level;
 import fr.inria.lille.jefix.patch.Patch;
 import fr.inria.lille.jefix.synth.InputOutputValues;
+import fr.inria.lille.jefix.synth.RepairCandidate;
 import fr.inria.lille.jefix.synth.Synthetizer;
+import fr.inria.lille.jefix.synth.smt.constraint.ConstraintSolver;
 import fr.inria.lille.jefix.synth.smt.model.InputModel;
 import fr.inria.lille.jefix.synth.smt.model.InputModelBuilder;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
 public final class ConditionalSynthetizer implements Synthetizer {
 
@@ -45,13 +47,17 @@ public final class ConditionalSynthetizer implements Synthetizer {
 	public Patch buildPatch(final URL[] classpath, final String[] testClasses) {
 
 		InputOutputValues data = this.constraintbuilder.buildFor(classpath, testClasses);
-
 		InputModelBuilder modelBuilder = new InputModelBuilder(data);
-
+		ConstraintSolver constraintSolver = new ConstraintSolver();
 		Level level = Level.CONSTANTS;
-
 		InputModel model = modelBuilder.buildFor(level);
+		RepairCandidate newRepair = constraintSolver.solve(model);
 
+		while (null != newRepair && level != Level.MULTIPLICATION) {
+			level = level.next();
+			model = modelBuilder.buildFor(level);
+			newRepair = constraintSolver.solve(model);
+		}
 		throw new UnsupportedOperationException("Undefined method ConditionalSynthetizer.buildPatch");
 	}
 }

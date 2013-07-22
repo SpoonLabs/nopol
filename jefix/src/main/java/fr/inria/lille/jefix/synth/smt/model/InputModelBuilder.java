@@ -45,15 +45,15 @@ public final class InputModelBuilder {
 		switch (level) {
 
 		case MULTIPLICATION:
-
+			new MultiplicationModelBuilder().addTo(model);
 		case ITE_ARRAY_ACCESS:
-
+			new IfThenElseModelBuilder().addTo(model);
 		case ARITHMETIC:
-
+			new ArithmeticModelBuilder().addTo(model);
 		case LOGIC:
-
+			new LogicModelBuilder().addTo(model);
 		case COMPARISON:
-
+			new ComparisonModelBuilder().addTo(model);
 		case CONSTANTS:
 			new ConstantsModelBuilder(this.data).addTo(model);
 			break;

@@ -37,6 +37,10 @@ public final class Components {
 	public static final Component LESS_OR_EQUAL_THAN = createFunction("<=", Type.BOOLEAN, Type.INTEGER, Type.INTEGER);
 	public static final Component LESS_THAN = createFunction("<", Type.BOOLEAN, Type.INTEGER, Type.INTEGER);
 
+	public static final Component PLUS = createFunction("+", Type.INTEGER, Type.INTEGER, Type.INTEGER);
+	public static final Component MINUS = createFunction("-", Type.INTEGER, Type.INTEGER, Type.INTEGER);
+	public static final Component MULTIPLICATION = createFunction("*", Type.INTEGER, Type.INTEGER, Type.INTEGER);
+
 	public static Component createFunction(final String name, final Type outputType, final Type parameter) {
 		return new NAryFunction(name, Collections.singletonList(parameter), outputType);
 	}
