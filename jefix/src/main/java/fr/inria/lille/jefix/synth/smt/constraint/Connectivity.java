@@ -31,7 +31,6 @@ final class Connectivity {
 	private static final String OUTPUT_PREFIX = "O_";
 	private static final String INPUT_PREFIX = "I_";
 
-	private final ISymbol and;
 	private final ICommand.IFactory commandFactory;
 	private final IExpr.IFactory efactory;
 	private final IQualifiedIdentifier equals;
@@ -44,7 +43,6 @@ final class Connectivity {
 		this.sortfactory = smtConfig.sortFactory;
 		this.commandFactory = smtConfig.commandFactory;
 		this.intSort = this.sortfactory.createSortExpression(this.efactory.symbol("Int"));
-		this.and = this.efactory.symbol("and");
 		this.equals = this.efactory.symbol("=");
 		this.typeToSort = new TypeToSort(this.sortfactory, this.efactory);
 	}
@@ -96,7 +94,7 @@ final class Connectivity {
 			}
 			componentIndex++;
 		}
-		return this.efactory.fcn(this.and, constraints);
+		return new Simplifier(this.efactory).simplifyAnd(constraints);
 	}
 
 	private IExpr createConnectivityConstraintFor(final IExpr line, final IExpr lineNumber, final IExpr input,

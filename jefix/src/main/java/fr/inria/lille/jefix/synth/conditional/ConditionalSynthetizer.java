@@ -52,7 +52,7 @@ public final class ConditionalSynthetizer implements Synthetizer {
 		InputModel model = modelBuilder.buildFor(level);
 		ConstraintSolver constraintSolver = new ConstraintSolver();
 		RepairCandidate newRepair = constraintSolver.solve(model);
-		while (null != newRepair && level != Level.MULTIPLICATION) {
+		while (null == newRepair && level != Level.MULTIPLICATION) {
 			level = level.next();
 			model = modelBuilder.buildFor(level);
 			newRepair = constraintSolver.solve(model);

@@ -15,7 +15,6 @@
  */
 package fr.inria.lille.jefix.synth.smt.constraint;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
@@ -102,7 +101,6 @@ final class Verification {
 
 	ICommand createFunctionDefinitionFor(@Nonnull final InputModel model) {
 		List<Component> components = model.getComponents();
-		checkArgument(!components.isEmpty(), "The number of operators should be greater than 0.");
 		List<IDeclaration> parameters = new ArrayList<>(components.size() * 3);
 		int componentIndex = 0;
 		for (Component component : components) {

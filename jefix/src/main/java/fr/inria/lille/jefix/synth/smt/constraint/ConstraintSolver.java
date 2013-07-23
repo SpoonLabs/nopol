@@ -17,6 +17,9 @@ package fr.inria.lille.jefix.synth.smt.constraint;
 
 import static org.smtlib.impl.Response.SAT;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.smtlib.ICommand;
 import org.smtlib.ICommand.IScript;
 import org.smtlib.IExpr;
 import org.smtlib.IExpr.IStringLiteral;
@@ -40,17 +43,51 @@ public final class ConstraintSolver {
 	 */
 	private static final String CVC4_BINARY_PATH = "/usr/bin/cvc4";
 
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	private void log(final Iterable<ICommand> script) {
+		for (ICommand command : script) {
+			this.logger.debug(this.pretty(command.toString()).toString());
+		}
+	}
+
+	private CharSequence pretty(final String string) {
+		StringBuilder builder = new StringBuilder(string.length() * 2);
+		builder.append(System.lineSeparator());
+		String tabs = "";
+		for (char c : string.toCharArray()) {
+			if (c == '(') {
+				if (!tabs.isEmpty()) {
+					builder.append(System.lineSeparator());
+					builder.append(tabs);
+				}
+				tabs += '\t';
+			} else if (c == ')') {
+				tabs = tabs.substring(1);
+			}
+			builder.append(c);
+		}
+		return builder;
+	}
+
 	public RepairCandidate solve(final InputModel model) {
 		Configuration smtConfig = new SMT().smtConfig;
 		ISolver solver = new Solver_cvc4(smtConfig, CVC4_BINARY_PATH);
 		solver.start();
 		Synthesis synthesis = new Synthesis(smtConfig, model);
 		IScript script = smtConfig.commandFactory.script((IStringLiteral) null, synthesis.createScript());
+
+		if (this.logger.isDebugEnabled()) {
+			this.log(script.commands());
+		}
+
 		script.execute(solver);
 		if (SAT.equals(solver.check_sat())) {
 			IResponse solverResponse = solver.get_value(synthesis.getModel().toArray(new IExpr[] {}));
+			this.logger.debug("Model: {}", solverResponse);
 			return new RepairCandidateBuilder(model, solverResponse).build();
 		} else {
+			this.logger.debug("UNSAT");
 			return null;
 		}
 	}

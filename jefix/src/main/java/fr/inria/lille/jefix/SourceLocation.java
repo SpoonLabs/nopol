@@ -62,4 +62,13 @@ public final class SourceLocation {
 		checkState(sourceFile.exists(), "%s: does not exist.", sourceFile);
 		return sourceFile;
 	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return String.format("SourceLocation [containingClassName=%s, lineNumber=%d]", this.containingClassName,
+				this.lineNumber);
+	}
 }

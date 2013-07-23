@@ -15,8 +15,6 @@
  */
 package fr.inria.lille.jefix.synth.smt.model;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -42,8 +40,9 @@ public final class InputModel {
 	 */
 	public InputModel(@Nonnull final List<Type> inputTypes, @Nonnull final List<Component> components,
 			@Nonnull final Type outputType, final ValuesModel data) {
-		checkArgument(!inputTypes.isEmpty(), "Input types cannot be empty.");
-		checkArgument(!components.isEmpty(), "Components cannot be empty.");
+		// XXX FIXME TODO
+		// checkArgument(!inputTypes.isEmpty(), "Input types cannot be empty.");
+		// checkArgument(!components.isEmpty(), "Components cannot be empty.");
 		this.inputTypes = inputTypes;
 		this.components = components;
 		this.outputType = outputType;

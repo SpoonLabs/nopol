@@ -1,7 +1,5 @@
 package fr.inria.lille.jefix.synth.smt.constraint;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +33,7 @@ final class Consistency {
 	}
 
 	private IExpr createConstraint(final List<ISymbol> variables) {
-		List<IExpr> constraints = new ArrayList<>(2 * (variables.size() - 1));
+		List<IExpr> constraints = new ArrayList<>(2 * variables.size());
 		int i = 1;
 		int size = variables.size();
 		for (ISymbol leftOperand : variables) {
@@ -48,7 +46,6 @@ final class Consistency {
 	}
 
 	ICommand createFunctionDefinitionFor(@Nonnull final int operators) {
-		checkArgument(operators > 0, "The number of operators should be greater than 0: %s.", operators);
 		List<IDeclaration> parameters = new ArrayList<>(operators);
 		List<ISymbol> variables = new ArrayList<>(operators);
 		for (int i = 0; i < operators; i++) {

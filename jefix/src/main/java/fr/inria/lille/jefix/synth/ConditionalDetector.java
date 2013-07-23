@@ -32,14 +32,19 @@ final class ConditionalDetector extends AbstractProcessor<CtExpression<Boolean>>
 		return this.answer;
 	}
 
+	/**
+	 * @see spoon.processing.AbstractProcessor#isToBeProcessed(spoon.reflect.declaration.CtElement)
+	 */
+	@Override
+	public boolean isToBeProcessed(final CtExpression<Boolean> candidate) {
+		SourcePosition position = candidate.getPosition();
+		return position.getLine() == this.line
+				&& position.getFile().getAbsolutePath().equals(this.file.getAbsolutePath());
+	}
+
 	@Override
 	public void process(final CtExpression<Boolean> element) {
-		SourcePosition position = element.getPosition();
-		if (position.getLine() == this.line && position.getFile().equals(this.file)) {
-			CtElement parent = element.getParent();
-			if (parent instanceof CtConditional || parent instanceof CtIf) {
-				this.answer = true;
-			}
-		}
+		CtElement parent = element.getParent();
+		this.answer = this.answer || parent instanceof CtConditional || parent instanceof CtIf;
 	}
 }

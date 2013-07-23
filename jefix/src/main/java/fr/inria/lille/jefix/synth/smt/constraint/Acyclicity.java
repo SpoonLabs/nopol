@@ -15,8 +15,6 @@
  */
 package fr.inria.lille.jefix.synth.smt.constraint;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +55,6 @@ final class Acyclicity {
 	}
 
 	ICommand createFunctionDefinitionFor(@Nonnull final List<Component> components) {
-		checkArgument(!components.isEmpty(), "The number of operators should be greater than 0.");
 		List<IDeclaration> parameters = new ArrayList<>(components.size() * 3);
 		int componentIndex = 0;
 		for (Component component : components) {
