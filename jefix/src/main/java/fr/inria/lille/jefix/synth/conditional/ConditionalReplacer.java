@@ -53,7 +53,8 @@ final class ConditionalReplacer extends AbstractProcessor<CtCodeElement> {
 	public boolean isToBeProcessed(final CtCodeElement candidate) {
 		SourcePosition position = candidate.getPosition();
 		boolean isConditional = candidate instanceof CtIf || candidate instanceof CtConditional;
-		return isConditional && position.getLine() == this.line && position.getFile().equals(this.file);
+		return isConditional && position.getLine() == this.line
+				&& position.getFile().getAbsolutePath().equals(this.file.getAbsolutePath());
 	}
 
 	@Override
