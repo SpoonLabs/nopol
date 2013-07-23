@@ -34,10 +34,12 @@ import fr.inria.lille.jefix.synth.smt.model.InputModelBuilder;
  */
 public final class ConditionalSynthetizer implements Synthetizer {
 
-	private final ConditionalsConstraintModelBuilder constraintBuilder;
+	private final File sourceFolder;
+	private final SourceLocation sourceLocation;
 
 	public ConditionalSynthetizer(final File sourceFolder, final SourceLocation sourceLocation) {
-		this.constraintBuilder = new ConditionalsConstraintModelBuilder(sourceFolder, sourceLocation);
+		this.sourceFolder = sourceFolder;
+		this.sourceLocation = sourceLocation;
 	}
 
 	/**
@@ -46,7 +48,14 @@ public final class ConditionalSynthetizer implements Synthetizer {
 	@Override
 	public Patch buildPatch(final URL[] classpath, final String[] testClasses) {
 
-		InputOutputValues data = this.constraintBuilder.buildFor(classpath, testClasses);
+		InputOutputValues data = new InputOutputValues();
+
+		// XXX FIXME TODO wtf!?
+		data = new ConditionalsConstraintModelBuilder(this.sourceFolder, this.sourceLocation, true).buildFor(classpath,
+				testClasses, data);
+		data = new ConditionalsConstraintModelBuilder(this.sourceFolder, this.sourceLocation, false).buildFor(
+				classpath, testClasses, data);
+
 		InputModelBuilder modelBuilder = new InputModelBuilder(data);
 		Level level = Level.CONSTANTS;
 		InputModel model = modelBuilder.buildFor(level);

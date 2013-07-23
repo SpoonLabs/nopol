@@ -18,15 +18,16 @@ final class ConditionalReplacer extends AbstractProcessor<CtCodeElement> {
 
 	private final File file;
 	private final int line;
-	private boolean value;
+	private final boolean value;
 
 	/**
 	 * @param file
 	 * @param line
 	 */
-	ConditionalReplacer(final File file, final int line) {
+	ConditionalReplacer(final File file, final int line, final boolean value) {
 		this.file = file;
 		this.line = line;
+		this.value = value;
 	}
 
 	/**
@@ -63,13 +64,5 @@ final class ConditionalReplacer extends AbstractProcessor<CtCodeElement> {
 		snippet.setValue(this.value);
 		CtExpression<Boolean> condition = this.getCondition(element);
 		condition.replace(snippet);
-	}
-
-	/**
-	 * @param value
-	 *            the value to set
-	 */
-	void setValue(final boolean value) {
-		this.value = value;
 	}
 }

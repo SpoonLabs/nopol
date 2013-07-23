@@ -43,13 +43,13 @@ final class ConditionalsConstraintModelBuilder {
 	private final boolean debug = LoggerFactory.getLogger(this.getClass()).isDebugEnabled();
 	private final ClassLoader spooner;
 
-	ConditionalsConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation) {
+	ConditionalsConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation, final boolean value) {
 		SpoonClassLoader scl = new SpoonClassLoader();
 		scl.getEnvironment().setDebug(this.debug);
 		ProcessingManager processingManager = scl.getProcessingManager();
 		File sourceFile = sourceLocation.getSourceFile(sourceFolder);
 		int lineNumber = sourceLocation.getLineNumber();
-		this.conditionalReplacer = new ConditionalReplacer(sourceFile, lineNumber);
+		this.conditionalReplacer = new ConditionalReplacer(sourceFile, lineNumber, value);
 		processingManager.addProcessor(this.conditionalReplacer);
 		processingManager.addProcessor(new ConditionalLoggingInstrumenter(sourceFile, lineNumber));
 		Builder builder;
@@ -65,17 +65,12 @@ final class ConditionalsConstraintModelBuilder {
 		this.spooner = scl;
 	}
 
-	InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
+	InputOutputValues buildFor(final URL[] classpath, final String[] testClasses, final InputOutputValues model) {
 		ClassLoader cl = new URLClassLoader(classpath, this.spooner);
 		// should use the url class loader
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
-		InputOutputValues model = new InputOutputValues();
 		try {
-			this.conditionalReplacer.setValue(true);
 			executor.execute(new JUnitRunner(new ResultMatrixBuilderListener(model, true), testClasses));
-
-			this.conditionalReplacer.setValue(false);
-			executor.execute(new JUnitRunner(new ResultMatrixBuilderListener(model, false), testClasses));
 
 			this.shutdownAndWait(executor);
 		} catch (Exception e) {
