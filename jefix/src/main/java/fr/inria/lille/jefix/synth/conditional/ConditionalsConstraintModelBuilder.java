@@ -42,8 +42,10 @@ final class ConditionalsConstraintModelBuilder {
 	private final ConditionalReplacer conditionalReplacer;
 	private final boolean debug = LoggerFactory.getLogger(this.getClass()).isDebugEnabled();
 	private final ClassLoader spooner;
+	private final boolean value;
 
 	ConditionalsConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation, final boolean value) {
+		this.value = value;
 		SpoonClassLoader scl = new SpoonClassLoader();
 		scl.getEnvironment().setDebug(this.debug);
 		ProcessingManager processingManager = scl.getProcessingManager();
@@ -69,23 +71,21 @@ final class ConditionalsConstraintModelBuilder {
 		ClassLoader cl = new URLClassLoader(classpath, this.spooner);
 		// should use the url class loader
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
-		try {
-			executor.execute(new JUnitRunner(new ResultMatrixBuilderListener(model, true), testClasses));
-
-			this.shutdownAndWait(executor);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException(e);
-		}
+		executor.execute(new JUnitRunner(new ResultMatrixBuilderListener(model, this.value), testClasses));
+		this.shutdownAndWait(executor);
 		return model;
 	}
 
 	/**
 	 * @param executor
-	 * @throws InterruptedException
 	 */
-	private void shutdownAndWait(final ExecutorService executor) throws InterruptedException {
+	private void shutdownAndWait(final ExecutorService executor) {
 		executor.shutdown();
-		executor.awaitTermination(TIME_OUT_SECONDS, TimeUnit.SECONDS);
+		try {
+			executor.awaitTermination(TIME_OUT_SECONDS, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		}
 	}
 }
