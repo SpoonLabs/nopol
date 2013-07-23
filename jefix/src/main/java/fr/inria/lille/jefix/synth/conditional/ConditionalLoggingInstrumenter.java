@@ -22,8 +22,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import fr.inria.lille.jefix.synth.collector.ValuesCollector;
-
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtConditional;
@@ -45,6 +43,7 @@ import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.visitor.CtAbstractVisitor;
+import fr.inria.lille.jefix.synth.collector.ValuesCollector;
 
 /**
  * 
@@ -177,7 +176,7 @@ final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtStatement
 	public boolean isToBeProcessed(final CtStatement candidate) {
 		SourcePosition position = candidate.getPosition();
 		return (candidate instanceof CtIf || candidate instanceof CtConditional) && position.getLine() == this.line
-				&& position.getFile().equals(this.file);
+				&& position.getFile().getAbsolutePath().equals(this.file.getAbsolutePath());
 	}
 
 	@Override

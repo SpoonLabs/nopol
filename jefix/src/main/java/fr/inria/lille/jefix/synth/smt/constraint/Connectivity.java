@@ -76,7 +76,6 @@ final class Connectivity {
 	 */
 	private IExpr createConnectivityConstraint(@Nonnull final InputModel model) {
 		List<IExpr> constraints = new ArrayList<>();
-		Type outputType = model.getOutputType();
 		int componentIndex = 0;
 		for (Component component : model.getComponents()) {
 			int parameterIndex = 0;
@@ -87,13 +86,10 @@ final class Connectivity {
 						constraints);
 				parameterIndex++;
 			}
-			if (outputType == component.getOutputType()) {
-				constraints.add(this.createConnectivityConstraintFor(this.efactory.symbol(OUTPUT_LINE),
-						this.efactory.symbol(OUTPUT_LINE_PREFIX + componentIndex), this.efactory.symbol(OUTPUT),
-						this.efactory.symbol(OUTPUT_PREFIX + componentIndex)));
-			}
 			componentIndex++;
 		}
+		this.addConnectivityConstraintFor(model.getOutputType(), this.efactory.symbol(OUTPUT_LINE),
+				this.efactory.symbol(OUTPUT), model, constraints);
 		return new Simplifier(this.efactory).simplifyAnd(constraints);
 	}
 
