@@ -90,7 +90,11 @@ final class Verification {
 
 	private IExpr createConstraint(@Nonnull final InputModel model) {
 		List<IDeclaration> iot = this.createInputOutputPAndRDeclarations(model.getComponents());
-		return this.efactory.exists(iot, this.createConstraint(model, iot));
+		IExpr constraint = this.createConstraint(model, iot);
+		if (iot.isEmpty()) {
+			return constraint;
+		}
+		return this.efactory.exists(iot, constraint);
 	}
 
 	private IExpr createConstraint(@Nonnull final InputModel model, @Nonnull final List<IDeclaration> iot) {
