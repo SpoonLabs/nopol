@@ -81,14 +81,21 @@ public final class ConstraintSolver {
 			this.log(script.commands());
 		}
 
-		script.execute(solver);
+		this.handleResponse(script.execute(solver));
+
 		if (SAT.equals(solver.check_sat())) {
-			IResponse solverResponse = solver.get_value(synthesis.getModel().toArray(new IExpr[] {}));
-			this.logger.debug("Model: {}", solverResponse);
-			return new RepairCandidateBuilder(model, solverResponse).build();
+			IResponse modelResponse = solver.get_value(synthesis.getModel().toArray(new IExpr[] {}));
+			this.logger.debug("Model: {}", modelResponse);
+			return new RepairCandidateBuilder(model, modelResponse).build();
 		} else {
 			this.logger.debug("UNSAT");
 			return null;
+		}
+	}
+
+	private void handleResponse(final IResponse response) {
+		if (response.isError()) {
+			this.logger.error(response.toString());
 		}
 	}
 }
