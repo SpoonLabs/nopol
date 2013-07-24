@@ -28,6 +28,7 @@ import org.smtlib.IExpr.IDeclaration;
 import org.smtlib.IExpr.ISymbol;
 import org.smtlib.ISort;
 import org.smtlib.SMT.Configuration;
+import org.smtlib.Utils;
 
 import com.google.common.base.Function;
 
@@ -156,6 +157,9 @@ final class Verification {
 			}
 			parameters.add(this.efactory.symbol(OUTPUT_PREFIX + componentIndex));
 			componentIndex++;
+		}
+		if (parameters.isEmpty()) {
+			return Utils.TRUE;
 		}
 		return this.efactory.fcn(this.efactory.symbol(Library.FUNCTION_NAME), parameters);
 	}

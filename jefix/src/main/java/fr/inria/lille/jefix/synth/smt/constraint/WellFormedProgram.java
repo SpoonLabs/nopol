@@ -16,6 +16,7 @@ import org.smtlib.IExpr.IQualifiedIdentifier;
 import org.smtlib.IExpr.ISymbol;
 import org.smtlib.ISort;
 import org.smtlib.SMT.Configuration;
+import org.smtlib.Utils;
 
 import com.google.common.base.Supplier;
 import com.google.common.collect.Maps;
@@ -101,6 +102,9 @@ final class WellFormedProgram {
 			}
 			parameters.add(this.efactory.symbol(OUTPUT_LINE_PREFIX + componentIndex++));
 		}
+		if (parameters.isEmpty()) {
+			return Utils.TRUE;
+		}
 		return this.efactory.fcn(this.efactory.symbol(Acyclicity.FUNCTION_NAME), parameters);
 	}
 
@@ -108,6 +112,9 @@ final class WellFormedProgram {
 		List<IExpr> parameters = new ArrayList<>(size);
 		for (int i = 0; i < size; i++) {
 			parameters.add(this.efactory.symbol(OUTPUT_LINE_PREFIX + i));
+		}
+		if (parameters.isEmpty()) {
+			return Utils.TRUE;
 		}
 		return this.efactory.fcn(this.efactory.symbol(Consistency.FUNCTION_NAME), parameters);
 	}
