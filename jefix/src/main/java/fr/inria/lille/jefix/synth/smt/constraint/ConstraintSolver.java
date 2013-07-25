@@ -27,9 +27,9 @@ import org.smtlib.IResponse;
 import org.smtlib.ISolver;
 import org.smtlib.SMT;
 import org.smtlib.SMT.Configuration;
-import org.smtlib.solvers.Solver_cvc4;
 
 import fr.inria.lille.jefix.synth.RepairCandidate;
+import fr.inria.lille.jefix.synth.smt.SolverFactory;
 import fr.inria.lille.jefix.synth.smt.model.InputModel;
 
 /**
@@ -38,12 +38,13 @@ import fr.inria.lille.jefix.synth.smt.model.InputModel;
  */
 public final class ConstraintSolver {
 
-	/**
-	 * XXX FIXME TODO should be a parameter
-	 */
-	private static final String CVC4_BINARY_PATH = "/usr/bin/cvc4";
-
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	private void handleResponse(final IResponse response) {
+		if (response.isError()) {
+			this.logger.error(response.toString());
+		}
+	}
 
 	private void log(final Iterable<ICommand> script) {
 		for (ICommand command : script) {
@@ -72,7 +73,7 @@ public final class ConstraintSolver {
 
 	public RepairCandidate solve(final InputModel model) {
 		Configuration smtConfig = new SMT().smtConfig;
-		ISolver solver = new Solver_cvc4(smtConfig, CVC4_BINARY_PATH);
+		ISolver solver = new SolverFactory(smtConfig).create();
 		solver.start();
 		Synthesis synthesis = new Synthesis(smtConfig, model);
 		IScript script = smtConfig.commandFactory.script((IStringLiteral) null, synthesis.createScript());
@@ -90,12 +91,6 @@ public final class ConstraintSolver {
 		} else {
 			this.logger.debug("UNSAT");
 			return null;
-		}
-	}
-
-	private void handleResponse(final IResponse response) {
-		if (response.isError()) {
-			this.logger.error(response.toString());
 		}
 	}
 }
