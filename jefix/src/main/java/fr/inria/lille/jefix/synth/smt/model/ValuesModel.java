@@ -33,7 +33,8 @@ public final class ValuesModel {
 
 	private final InputOutputValues data;
 
-	ValuesModel(final InputOutputValues data, final List<Object> constants) {
+	// XXX FIXME TODO should be package...
+	public ValuesModel(final InputOutputValues data, final List<Object> constants) {
 		this.data = data;
 		this.constants = copyOf(constants);
 	}
