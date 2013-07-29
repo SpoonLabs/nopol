@@ -16,6 +16,8 @@
 package fr.inria.lille.jefix.synth.smt.constraint;
 
 import org.smtlib.IResponse;
+import org.smtlib.IVisitor.VisitorException;
+import org.smtlib.sexpr.ISexpr;
 
 import fr.inria.lille.jefix.synth.RepairCandidate;
 import fr.inria.lille.jefix.synth.smt.model.InputModel;
@@ -35,6 +37,14 @@ final class RepairCandidateBuilder {
 	}
 
 	RepairCandidate build() {
+
+		try {
+			Iterable<ISexpr> valueList = new SeqToSexprCollectionVisitor().visit(this.response);
+		} catch (VisitorException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		}
+
 		return new RepairCandidate();
 	}
 }
