@@ -43,12 +43,14 @@ public class InputOutputValues {
 
 	private final List<Object> outputValues = new ArrayList<>();
 
-	public void addInputValue(final String varName, final Object value) {
+	public InputOutputValues addInputValue(final String varName, final Object value) {
 		this.inputValues.put(varName, value);
+		return this;
 	}
 
-	public boolean addOutputValue(final Object output) {
-		return this.outputValues.add(output);
+	public InputOutputValues addOutputValue(final Object output) {
+		this.outputValues.add(output);
+		return this;
 	}
 
 	/**
@@ -63,5 +65,14 @@ public class InputOutputValues {
 	 */
 	public Iterable<Object> getOutputValues() {
 		return this.outputValues;
+	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return String.format("InputOutputValues [inputValues=%s,%noutputValues=%s]", this.inputValues,
+				this.outputValues);
 	}
 }

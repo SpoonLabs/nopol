@@ -34,6 +34,15 @@ public final class InputModel {
 	private final ValuesModel values;
 
 	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return String.format("InputModel [components=%s,%ninputTypes=%s,%noutputType=%s,%nvalues=%s]", this.components,
+				this.inputTypes, this.outputType, this.values);
+	}
+
+	/**
 	 * @param inputTypes
 	 * @param components
 	 * @param data

@@ -58,4 +58,12 @@ public final class ValuesModel {
 	public Iterable<Object> getOutputValues() {
 		return this.data.getOutputValues();
 	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return String.format("ValuesModel [constants=%s,%ndata=%s]", this.constants, this.data);
+	}
 }

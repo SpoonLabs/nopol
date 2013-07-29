@@ -11,6 +11,14 @@ final class NAryFunction implements Component {
 	private final List<Type> parameters;
 
 	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return this.name;
+	}
+
+	/**
 	 * @param name
 	 * @param parameters
 	 * @param outputType
