@@ -97,12 +97,12 @@ final class Synthesis {
 		int index = 0;
 		for (IExpr output : outputValues) {
 			List<IExpr> parameters = new ArrayList<>(ioModel.size() + 1);
-			parameters.addAll(ioModel);
 			for (List<IExpr> inputs : inputValues) {
 				parameters.add(inputs.get(index));
 			}
 			index++;
 			parameters.add(output);
+			parameters.addAll(ioModel);
 			constraints.add(this.efactory.fcn(this.efactory.symbol(Verification.FUNCTION_NAME), parameters));
 		}
 		return this.efactory.fcn(this.and, constraints);
@@ -156,14 +156,15 @@ final class Synthesis {
 	List<IExpr> getModel() {
 		Collection<Component> components = this.model.getComponents();
 		List<IExpr> parameters = new ArrayList<>(components.size() * 3);
+		parameters.add(this.efactory.symbol(OUTPUT_LINE));
 		int componentIndex = 0;
 		for (Component component : components) {
+			parameters.add(this.efactory.symbol(OUTPUT_LINE_PREFIX + componentIndex));
 			for (int parameterIndex = 0; parameterIndex < component.getParameterTypes().size(); parameterIndex++) {
 				parameters.add(this.efactory.symbol(String.format(INPUT_LINE_FORMAT, componentIndex, parameterIndex)));
 			}
-			parameters.add(this.efactory.symbol(OUTPUT_LINE_PREFIX + componentIndex++));
+			componentIndex++;
 		}
-		parameters.add(this.efactory.symbol(OUTPUT_LINE));
 		return parameters;
 	}
 

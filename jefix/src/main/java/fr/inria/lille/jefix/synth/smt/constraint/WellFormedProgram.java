@@ -153,17 +153,19 @@ final class WellFormedProgram {
 	ICommand createFunctionDefinitionFor(@Nonnull final InputModel model) {
 		List<Component> components = model.getComponents();
 		List<IDeclaration> parameters = new ArrayList<>(components.size() * 3);
+		ISymbol outputLine = this.efactory.symbol(OUTPUT_LINE);
+		parameters.add(this.efactory.declaration(outputLine, this.intSort));
 		int componentIndex = 0;
 		for (Component component : components) {
+			ISymbol componentOutput = this.efactory.symbol(OUTPUT_LINE_PREFIX + componentIndex);
+			parameters.add(this.efactory.declaration(componentOutput, this.intSort));
 			for (int parameterIndex = 0; parameterIndex < component.getParameterTypes().size(); parameterIndex++) {
-				ISymbol symbol = this.efactory.symbol(String.format(INPUT_LINE_FORMAT, componentIndex, parameterIndex));
-				parameters.add(this.efactory.declaration(symbol, this.intSort));
+				ISymbol componentInput = this.efactory.symbol(String.format(INPUT_LINE_FORMAT, componentIndex,
+						parameterIndex));
+				parameters.add(this.efactory.declaration(componentInput, this.intSort));
 			}
-			ISymbol symbol = this.efactory.symbol(OUTPUT_LINE_PREFIX + componentIndex++);
-			parameters.add(this.efactory.declaration(symbol, this.intSort));
+			componentIndex++;
 		}
-		ISymbol symbol = this.efactory.symbol(OUTPUT_LINE);
-		parameters.add(this.efactory.declaration(symbol, this.intSort));
 		return this.commandFactory.define_fun(this.efactory.symbol(FUNCTION_NAME), parameters, this.sortfactory.Bool(),
 				this.createConstraint(model));
 	}
