@@ -6,6 +6,7 @@ import static fr.inria.lille.jefix.synth.smt.model.Components.LESS_OR_EQUAL_THAN
 import static fr.inria.lille.jefix.synth.smt.model.Components.LESS_THAN;
 import static fr.inria.lille.jefix.synth.smt.model.Type.BOOLEAN;
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
@@ -59,6 +60,6 @@ public class RepairCandidateBuilderTest {
 		RepairCandidate candidate = new RepairCandidateBuilder(model, response).build();
 
 		// THEN
-
+		assertEquals("0 != up_sep", candidate.toString());
 	}
 }

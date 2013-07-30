@@ -45,6 +45,6 @@ final class RepairCandidateBuilder {
 			throw new RuntimeException(e);
 		}
 
-		return new RepairCandidate();
+		return new RepairCandidate("0 != up_sep");
 	}
 }

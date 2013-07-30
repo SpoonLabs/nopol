@@ -17,8 +17,24 @@ package fr.inria.lille.jefix.synth;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
 public final class RepairCandidate {
 
+	private final String value;
+
+	/**
+	 * @param value
+	 */
+	public RepairCandidate(final String value) {
+		this.value = value;
+	}
+
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return this.value;
+	}
 }
