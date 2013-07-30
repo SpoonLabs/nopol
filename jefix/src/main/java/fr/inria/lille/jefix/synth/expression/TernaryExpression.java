@@ -15,19 +15,23 @@
  */
 package fr.inria.lille.jefix.synth.expression;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Favio D. DeMarco
  * 
  */
-public final class TernaryExpression implements Expression {
+public final class TernaryExpression implements CompositeExpression {
 
-	private final Expression leftExpression;
+	private Expression centerExpression;
+	private Expression leftExpression;
 	private final String leftOperator;
-	private final Expression centerExpression;
+	private Expression rightExpression;
 	private final String rightOperator;
-	private final Expression rightExpression;
 
 	/**
 	 * @param leftExpression
@@ -36,13 +40,30 @@ public final class TernaryExpression implements Expression {
 	 * @param rightOperator
 	 * @param rightExpression
 	 */
-	public TernaryExpression(final Expression leftExpression, final String leftOperator,
-			final Expression centerExpression, final String rightOperator, final Expression rightExpression) {
-		this.leftExpression = checkNotNull(leftExpression);
+	public TernaryExpression(final String leftOperator, final String rightOperator) {
 		this.leftOperator = checkNotNull(leftOperator);
-		this.centerExpression = checkNotNull(centerExpression);
 		this.rightOperator = checkNotNull(rightOperator);
-		this.rightExpression = checkNotNull(rightExpression);
+	}
+
+	@Override
+	public String asGuardedString() {
+		return '(' + this.asString() + ')';
+	}
+
+	@Override
+	public String asString() {
+		return this.leftExpression + this.leftOperator + this.centerExpression + this.rightOperator
+				+ this.rightExpression;
+	}
+
+	@Override
+	public CompositeExpression setSubExpressions(final List<Expression> subExpressions) {
+		Iterator<Expression> expressions = subExpressions.iterator();
+		this.leftExpression = checkNotNull(expressions.next());
+		this.centerExpression = checkNotNull(expressions.next());
+		this.rightExpression = checkNotNull(expressions.next());
+		checkArgument(!expressions.hasNext(), "More than 3 subexpressions.");
+		return this;
 	}
 
 	/**
@@ -50,7 +71,6 @@ public final class TernaryExpression implements Expression {
 	 */
 	@Override
 	public String toString() {
-		return this.leftExpression + this.leftOperator + this.centerExpression + this.rightOperator
-				+ this.rightExpression;
+		return this.asString();
 	}
 }

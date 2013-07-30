@@ -32,11 +32,21 @@ public final class SimpleExpression implements Expression {
 		this.value = checkNotNull(value);
 	}
 
+	@Override
+	public String asGuardedString() {
+		return this.asString();
+	}
+
+	@Override
+	public String asString() {
+		return this.value;
+	}
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return this.value;
+		return this.asString();
 	}
 }

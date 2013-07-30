@@ -21,6 +21,7 @@ package fr.inria.lille.jefix.synth.expression;
  */
 public interface Expression {
 
-	@Override
-	String toString();
+	String asString();
+
+	String asGuardedString();
 }

@@ -25,6 +25,19 @@ public final class ForwardingExpression implements Expression {
 
 	private Expression expression;
 
+	@Override
+	public String asGuardedString() {
+		return this.asString();
+	}
+
+	@Override
+	public String asString() {
+		if (null == this.expression) {
+			throw new IllegalStateException("No expression given.");
+		}
+		return this.expression.asString();
+	}
+
 	/**
 	 * @param expression
 	 *            the expression to set
@@ -38,9 +51,6 @@ public final class ForwardingExpression implements Expression {
 	 */
 	@Override
 	public String toString() {
-		if (null == this.expression) {
-			throw new IllegalStateException("No expression given.");
-		}
-		return this.expression.toString();
+		return "Wrapped: " + this.expression;
 	}
 }

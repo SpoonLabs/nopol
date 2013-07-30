@@ -15,27 +15,48 @@
  */
 package fr.inria.lille.jefix.synth.expression;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Favio D. DeMarco
  * 
  */
-public final class InfixExpression implements Expression {
+public final class InfixExpression implements CompositeExpression {
 
-	private final Expression leftExpression;
+	private Expression leftExpression;
 	private final String operator;
-	private final Expression rightExpression;
+	private Expression rightExpression;
 
 	/**
 	 * @param leftExpression
 	 * @param operator
 	 * @param rightExpression
 	 */
-	public InfixExpression(final Expression leftExpression, final String operator, final Expression rightExpression) {
-		this.leftExpression = checkNotNull(leftExpression);
+	public InfixExpression(final String operator) {
 		this.operator = checkNotNull(operator);
-		this.rightExpression = checkNotNull(rightExpression);
+	}
+
+	@Override
+	public String asGuardedString() {
+		return '(' + this.asString() + ')';
+	}
+
+	@Override
+	public String asString() {
+		return this.leftExpression + this.operator + this.rightExpression;
+	}
+
+	@Override
+	public CompositeExpression setSubExpressions(final List<Expression> subExpressions) {
+		Iterator<Expression> expressions = subExpressions.iterator();
+		this.leftExpression = checkNotNull(expressions.next());
+		this.rightExpression = checkNotNull(expressions.next());
+		checkArgument(!expressions.hasNext(), "More than two subexpressions.");
+		return this;
 	}
 
 	/**
@@ -43,6 +64,6 @@ public final class InfixExpression implements Expression {
 	 */
 	@Override
 	public String toString() {
-		return this.leftExpression + this.operator + this.rightExpression;
+		return this.asString();
 	}
 }

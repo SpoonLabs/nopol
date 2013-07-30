@@ -23,8 +23,8 @@ import org.smtlib.sexpr.ISexpr;
 
 import fr.inria.lille.jefix.synth.RepairCandidate;
 import fr.inria.lille.jefix.synth.expression.Expression;
+import fr.inria.lille.jefix.synth.expression.ForwardingExpression;
 import fr.inria.lille.jefix.synth.expression.SimpleExpression;
-import fr.inria.lille.jefix.synth.smt.model.Component;
 import fr.inria.lille.jefix.synth.smt.model.InputModel;
 import fr.inria.lille.jefix.synth.smt.model.ValuesModel;
 
@@ -58,7 +58,7 @@ final class RepairCandidateBuilder {
 
 			this.fillWith(expressions, inputValues, 0);
 			this.fillWith(expressions, constants, inputValuesCount);
-			this.addOperationsLines(expressions, this.model.getComponents(), simpleValuesCount);
+			this.addOperationsLines(expressions, simpleValuesCount);
 
 		} catch (VisitorException e) {
 			// TODO Auto-generated catch block
@@ -68,9 +68,11 @@ final class RepairCandidateBuilder {
 		return new RepairCandidate("0 != up_sep");
 	}
 
-	private void addOperationsLines(final Expression[] expressions, final Iterable<Component> components,
+	private void addOperationsLines(final Expression[] expressions,
 			final int simpleValuesCount) {
-
+		for (int index = simpleValuesCount; index < expressions.length; index++) {
+			expressions[index] = new ForwardingExpression();
+		}
 	}
 
 	private void fillWith(final Expression[] expressions, final Iterable<?> values,
