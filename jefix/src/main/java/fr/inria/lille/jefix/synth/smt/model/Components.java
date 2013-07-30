@@ -19,34 +19,52 @@ import static java.util.Arrays.asList;
 
 import java.util.Collections;
 
+import fr.inria.lille.jefix.synth.expression.CompositeExpression;
+import fr.inria.lille.jefix.synth.expression.InfixExpression;
+import fr.inria.lille.jefix.synth.expression.TernaryExpression;
+import fr.inria.lille.jefix.synth.expression.UnaryExpression;
+
 /**
  * @author Favio D. DeMarco
  * 
  */
 public final class Components {
 
-	public static final Component NOT = createFunction("not", Type.BOOLEAN, Type.BOOLEAN);
+	public static final Component NOT = createFunction("not", new UnaryExpression("!"), Type.BOOLEAN, Type.BOOLEAN);
 
-	public static final Component AND = createFunction("and", Type.BOOLEAN, Type.BOOLEAN, Type.BOOLEAN);
-	public static final Component OR = createFunction("or", Type.BOOLEAN, Type.BOOLEAN, Type.BOOLEAN);
+	public static final Component AND = createFunction("and", new InfixExpression("&&"), Type.BOOLEAN, Type.BOOLEAN,
+			Type.BOOLEAN);
+	public static final Component OR = createFunction("or", new InfixExpression("||"), Type.BOOLEAN, Type.BOOLEAN,
+			Type.BOOLEAN);
 
-	public static final Component ITE = createFunction("ite", Type.INTEGER, Type.BOOLEAN, Type.INTEGER, Type.INTEGER);
+	public static final Component ITE = createFunction("ite", new TernaryExpression("?", ":"), Type.INTEGER,
+			Type.BOOLEAN, Type.INTEGER, Type.INTEGER);
 
-	public static final Component DISTINCT = createFunction("distinct", Type.BOOLEAN, Type.INTEGER, Type.INTEGER);
-	public static final Component EQUALS = createFunction("=", Type.BOOLEAN, Type.INTEGER, Type.INTEGER);
-	public static final Component LESS_OR_EQUAL_THAN = createFunction("<=", Type.BOOLEAN, Type.INTEGER, Type.INTEGER);
-	public static final Component LESS_THAN = createFunction("<", Type.BOOLEAN, Type.INTEGER, Type.INTEGER);
+	public static final Component DISTINCT = createFunction("distinct", new InfixExpression("!="), Type.BOOLEAN,
+			Type.INTEGER, Type.INTEGER);
+	public static final Component EQUALS = createFunction("=", new InfixExpression("=="), Type.BOOLEAN, Type.INTEGER,
+			Type.INTEGER);
+	public static final Component LESS_OR_EQUAL_THAN = createFunction("<=", new InfixExpression("<="), Type.BOOLEAN,
+			Type.INTEGER, Type.INTEGER);
+	public static final Component LESS_THAN = createFunction("<", new InfixExpression("<"), Type.BOOLEAN, Type.INTEGER,
+			Type.INTEGER);
 
-	public static final Component PLUS = createFunction("+", Type.INTEGER, Type.INTEGER, Type.INTEGER);
-	public static final Component MINUS = createFunction("-", Type.INTEGER, Type.INTEGER, Type.INTEGER);
-	public static final Component MULTIPLICATION = createFunction("*", Type.INTEGER, Type.INTEGER, Type.INTEGER);
+	public static final Component PLUS = createFunction("+", new InfixExpression("+"), Type.INTEGER, Type.INTEGER,
+			Type.INTEGER);
+	public static final Component MINUS = createFunction("-", new InfixExpression("-"), Type.INTEGER, Type.INTEGER,
+			Type.INTEGER);
 
-	public static Component createFunction(final String name, final Type outputType, final Type parameter) {
-		return new NAryFunction(name, Collections.singletonList(parameter), outputType);
+	public static final Component MULTIPLICATION = createFunction("*", new InfixExpression("*"), Type.INTEGER,
+			Type.INTEGER, Type.INTEGER);
+
+	public static Component createFunction(final String name, final CompositeExpression expression,
+			final Type outputType, final Type parameter) {
+		return new NAryFunction(name, expression, Collections.singletonList(parameter), outputType);
 	}
 
-	public static Component createFunction(final String name, final Type outputType, final Type... parameters) {
-		return new NAryFunction(name, asList(parameters), outputType);
+	public static Component createFunction(final String name, final CompositeExpression expression,
+			final Type outputType, final Type... parameters) {
+		return new NAryFunction(name, expression, asList(parameters), outputType);
 	}
 
 	private Components() {}

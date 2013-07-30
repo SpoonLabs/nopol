@@ -37,49 +37,51 @@ final class RepairCandidateBuilder {
 	private final InputModel model;
 	private final IResponse response;
 
+	private final Expression[] expressions;
+
 	RepairCandidateBuilder(final InputModel model, final IResponse solverResponse) {
 		this.model = model;
 		this.response = solverResponse;
+
+		ValuesModel values = this.model.getValues();
+		Collection<String> inputValues = values.getInputvalues().keySet();
+		Collection<Object> constants = values.getConstants();
+		int inputValuesCount = inputValues.size();
+		int simpleValuesCount = inputValuesCount + constants.size();
+		int linesCount = simpleValuesCount + this.model.getComponents().size();
+
+		this.expressions = new Expression[linesCount];
+
+		this.fillExpressionsArrayWith(inputValues, 0);
+		this.fillExpressionsArrayWith(constants, inputValuesCount);
+		this.addOperationsLines(simpleValuesCount);
 	}
 
 	RepairCandidate build() {
 
 		try {
 			Iterable<ISexpr> valueList = new SeqToSexprCollectionVisitor().visit(this.response);
-
-			ValuesModel values = this.model.getValues();
-			Collection<String> inputValues = values.getInputvalues().keySet();
-			Collection<Object> constants = values.getConstants();
-			int inputValuesCount = inputValues.size();
-			int simpleValuesCount = inputValuesCount + constants.size();
-			int linesCount = simpleValuesCount + this.model.getComponents().size();
-
-			Expression[] expressions = new Expression[linesCount];
-
-			this.fillWith(expressions, inputValues, 0);
-			this.fillWith(expressions, constants, inputValuesCount);
-			this.addOperationsLines(expressions, simpleValuesCount);
-
 		} catch (VisitorException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
 
+
 		return new RepairCandidate("0 != up_sep");
 	}
 
-	private void addOperationsLines(final Expression[] expressions,
+	private void addOperationsLines(
 			final int simpleValuesCount) {
-		for (int index = simpleValuesCount; index < expressions.length; index++) {
-			expressions[index] = new ForwardingExpression();
+		for (int index = simpleValuesCount; index < this.expressions.length; index++) {
+			this.expressions[index] = new ForwardingExpression();
 		}
 	}
 
-	private void fillWith(final Expression[] expressions, final Iterable<?> values,
+	private void fillExpressionsArrayWith(final Iterable<?> values,
 			final int position) {
 		int index = position;
 		for (Object value : values) {
-			expressions[index] = new SimpleExpression(value.toString());
+			this.expressions[index] = new SimpleExpression(value.toString());
 			index++;
 		}
 	}
