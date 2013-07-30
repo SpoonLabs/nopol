@@ -15,12 +15,18 @@
  */
 package fr.inria.lille.jefix.synth.smt.constraint;
 
+import java.util.Collection;
+
 import org.smtlib.IResponse;
 import org.smtlib.IVisitor.VisitorException;
 import org.smtlib.sexpr.ISexpr;
 
 import fr.inria.lille.jefix.synth.RepairCandidate;
+import fr.inria.lille.jefix.synth.expression.Expression;
+import fr.inria.lille.jefix.synth.expression.SimpleExpression;
+import fr.inria.lille.jefix.synth.smt.model.Component;
 import fr.inria.lille.jefix.synth.smt.model.InputModel;
+import fr.inria.lille.jefix.synth.smt.model.ValuesModel;
 
 /**
  * @author Favio D. DeMarco
@@ -40,11 +46,39 @@ final class RepairCandidateBuilder {
 
 		try {
 			Iterable<ISexpr> valueList = new SeqToSexprCollectionVisitor().visit(this.response);
+
+			ValuesModel values = this.model.getValues();
+			Collection<String> inputValues = values.getInputvalues().keySet();
+			Collection<Object> constants = values.getConstants();
+			int inputValuesCount = inputValues.size();
+			int simpleValuesCount = inputValuesCount + constants.size();
+			int linesCount = simpleValuesCount + this.model.getComponents().size();
+
+			Expression[] expressions = new Expression[linesCount];
+
+			this.fillWith(expressions, inputValues, 0);
+			this.fillWith(expressions, constants, inputValuesCount);
+			this.addOperationsLines(expressions, this.model.getComponents(), simpleValuesCount);
+
 		} catch (VisitorException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
 
 		return new RepairCandidate("0 != up_sep");
+	}
+
+	private void addOperationsLines(final Expression[] expressions, final Iterable<Component> components,
+			final int simpleValuesCount) {
+
+	}
+
+	private void fillWith(final Expression[] expressions, final Iterable<?> values,
+			final int position) {
+		int index = position;
+		for (Object value : values) {
+			expressions[index] = new SimpleExpression(value.toString());
+			index++;
+		}
 	}
 }

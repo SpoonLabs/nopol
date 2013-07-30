@@ -44,7 +44,7 @@ public class RepairCandidateBuilderTest {
 		SMT.Configuration smtConfig = new SMT().smtConfig;
 		ISource source = smtConfig.smtFactory
 				.createSource(
-						"( ( L_I0_0 0 ) ( L_I0_1 1 ) ( LO_0 10 ) ( L_I1_0 4 ) ( L_I1_1 1 ) ( LO_1 8 ) ( L_I2_0 1 ) ( L_I2_1 1 ) ( LO_2 11 ) ( L_I3_0 4 ) ( L_I3_1 0 ) ( LO_3 9 ) ( LO 9 ) )",
+						"( ( LO 9 ) ( LO_0 10 ) ( L_I0_0 0 ) ( L_I0_1 1 ) ( LO_1 8 ) ( L_I1_0 4 ) ( L_I1_1 1 ) ( LO_2 11 ) ( L_I2_0 1 ) ( L_I2_1 1 ) ( LO_3 9 ) ( L_I3_0 4 ) ( L_I3_1 0 ) )",
 						null);
 		Parser parser = (Parser) smtConfig.smtFactory.createParser(smtConfig, source);
 		return parser.parseSexpr();
