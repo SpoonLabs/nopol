@@ -18,6 +18,8 @@ package fr.inria.lille.jefix.synth.conditional;
 import java.io.File;
 import java.net.URL;
 
+import org.slf4j.LoggerFactory;
+
 import fr.inria.lille.jefix.SourceLocation;
 import fr.inria.lille.jefix.patch.Level;
 import fr.inria.lille.jefix.patch.Patch;
@@ -66,6 +68,7 @@ public final class ConditionalSynthetizer implements Synthetizer {
 			model = modelBuilder.buildFor(level);
 			newRepair = constraintSolver.solve(model);
 		}
+		LoggerFactory.getLogger(this.getClass()).debug("Suggested condition: " + newRepair.toString());
 		throw new UnsupportedOperationException("Undefined method ConditionalSynthetizer.buildPatch");
 	}
 }
