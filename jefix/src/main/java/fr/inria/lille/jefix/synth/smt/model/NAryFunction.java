@@ -32,6 +32,7 @@ public final class NAryFunction implements Component {
 	/**
 	 * @return the expression
 	 */
+	@Override
 	public CompositeExpression getExpression() {
 		return this.expression;
 	}

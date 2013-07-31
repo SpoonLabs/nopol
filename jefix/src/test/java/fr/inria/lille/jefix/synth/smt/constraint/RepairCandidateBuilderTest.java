@@ -60,6 +60,6 @@ public class RepairCandidateBuilderTest {
 		RepairCandidate candidate = new RepairCandidateBuilder(model, response).build();
 
 		// THEN
-		assertEquals("0 != up_sep", candidate.toString());
+		assertEquals("0!=up_sep", candidate.toString());
 	}
 }

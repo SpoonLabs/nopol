@@ -15,16 +15,23 @@
  */
 package fr.inria.lille.jefix.synth.smt.constraint;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
+import org.smtlib.IExpr.INumeral;
 import org.smtlib.IResponse;
 import org.smtlib.IVisitor.VisitorException;
 import org.smtlib.sexpr.ISexpr;
+import org.smtlib.sexpr.ISexpr.ISeq;
 
 import fr.inria.lille.jefix.synth.RepairCandidate;
+import fr.inria.lille.jefix.synth.expression.CompositeExpression;
 import fr.inria.lille.jefix.synth.expression.Expression;
 import fr.inria.lille.jefix.synth.expression.ForwardingExpression;
 import fr.inria.lille.jefix.synth.expression.SimpleExpression;
+import fr.inria.lille.jefix.synth.smt.model.Component;
 import fr.inria.lille.jefix.synth.smt.model.InputModel;
 import fr.inria.lille.jefix.synth.smt.model.ValuesModel;
 
@@ -36,7 +43,6 @@ final class RepairCandidateBuilder {
 
 	private final InputModel model;
 	private final IResponse response;
-
 	private final Expression[] expressions;
 
 	RepairCandidateBuilder(final InputModel model, final IResponse solverResponse) {
@@ -58,16 +64,50 @@ final class RepairCandidateBuilder {
 	}
 
 	RepairCandidate build() {
-
+		Iterator<ISexpr> lineNumbers;
 		try {
-			Iterable<ISexpr> valueList = new SeqToSexprCollectionVisitor().visit(this.response);
+			lineNumbers = new SeqToSexprCollectionVisitor().visit(this.response).iterator();
 		} catch (VisitorException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
+		Expression outputExpression = this.createOutputExpression(lineNumbers);
 
+		return new RepairCandidate(outputExpression.asString());
+	}
 
-		return new RepairCandidate("0 != up_sep");
+	/**
+	 * XXX FIXME TODO temporal coupling
+	 * 
+	 * @param lineNumbers
+	 * @return
+	 */
+	private Expression createOutputExpression(final Iterator<ISexpr> lineNumbers) {
+		Expression outputExpression = this.getExpression(lineNumbers.next());
+		// XXX FIXME TODO temporal coupling
+		this.fillExpressions(lineNumbers);
+		return outputExpression;
+	}
+
+	private void fillExpressions(final Iterator<ISexpr> lineNumbers) {
+		Iterable<Component> components = this.model.getComponents();
+		for (Component component : components) {
+			CompositeExpression expression = component.getExpression();
+			ForwardingExpression wrapper = (ForwardingExpression) this.getExpression(lineNumbers.next());
+			List<Expression> parameters = new ArrayList<>();
+			for (int index = 0; index < component.getParameterTypes().size(); index++) {
+				parameters.add(this.getExpression(lineNumbers.next()));
+			}
+			expression.setSubExpressions(parameters);
+			wrapper.setExpression(expression);
+		}
+	}
+
+	private Expression getExpression(final ISexpr sExpression) {
+		ISeq outputSeq = (ISeq) sExpression;
+		List<ISexpr> expressions = outputSeq.sexprs();
+		int index = ((INumeral) expressions.get(1)).intValue();
+		return this.expressions[index];
 	}
 
 	private void addOperationsLines(
