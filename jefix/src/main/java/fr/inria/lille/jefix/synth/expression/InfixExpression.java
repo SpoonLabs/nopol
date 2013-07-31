@@ -47,7 +47,7 @@ public final class InfixExpression implements CompositeExpression {
 
 	@Override
 	public String asString() {
-		return this.leftExpression + this.operator + this.rightExpression;
+		return this.leftExpression.asGuardedString() + this.operator + this.rightExpression.asGuardedString();
 	}
 
 	@Override

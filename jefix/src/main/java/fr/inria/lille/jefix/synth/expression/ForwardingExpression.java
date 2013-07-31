@@ -27,7 +27,10 @@ public final class ForwardingExpression implements Expression {
 
 	@Override
 	public String asGuardedString() {
-		return this.asString();
+		if (null == this.expression) {
+			throw new IllegalStateException("No expression given.");
+		}
+		return this.expression.asGuardedString();
 	}
 
 	@Override

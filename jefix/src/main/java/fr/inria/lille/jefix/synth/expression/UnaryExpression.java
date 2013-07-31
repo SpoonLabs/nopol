@@ -46,7 +46,7 @@ public final class UnaryExpression implements CompositeExpression {
 
 	@Override
 	public String asString() {
-		return this.operator + this.subExpression;
+		return this.operator + this.subExpression.asGuardedString();
 	}
 
 	@Override

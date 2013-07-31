@@ -52,8 +52,8 @@ public final class TernaryExpression implements CompositeExpression {
 
 	@Override
 	public String asString() {
-		return this.leftExpression + this.leftOperator + this.centerExpression + this.rightOperator
-				+ this.rightExpression;
+		return this.leftExpression.asGuardedString() + this.leftOperator + this.centerExpression.asGuardedString()
+				+ this.rightOperator + this.rightExpression.asGuardedString();
 	}
 
 	@Override
