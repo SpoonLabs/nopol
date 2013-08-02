@@ -38,7 +38,7 @@ public interface Patch {
 		}
 
 		@Override
-		public File getFile() {
+		public File getFile(final String sourcePath) {
 			throw new UnsupportedOperationException(toString());
 		}
 
@@ -63,7 +63,7 @@ public interface Patch {
 
 	String asString();
 
-	File getFile();
+	File getFile(String sourcePath);
 
 	int getLineNumber();
 }

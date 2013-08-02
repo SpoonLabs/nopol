@@ -81,6 +81,7 @@ public class Main {
 				throw new RuntimeException(e);
 			}
 		}
-		System.out.println(new JEFix(this.mainPackage, this.sourceFolder, urls.toArray(new URL[urls.size()])).build());
+		System.out.println("Suggested patch: "
+				+ new JEFix(this.mainPackage, this.sourceFolder, urls.toArray(new URL[urls.size()])).build());
 	}
 }

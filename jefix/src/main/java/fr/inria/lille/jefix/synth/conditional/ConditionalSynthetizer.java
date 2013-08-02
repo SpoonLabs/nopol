@@ -15,14 +15,17 @@
  */
 package fr.inria.lille.jefix.synth.conditional;
 
+import static fr.inria.lille.jefix.patch.Level.CONSTANTS;
+import static fr.inria.lille.jefix.patch.Level.MULTIPLICATION;
+import static fr.inria.lille.jefix.patch.Patch.NO_PATCH;
+
 import java.io.File;
 import java.net.URL;
-
-import org.slf4j.LoggerFactory;
 
 import fr.inria.lille.jefix.SourceLocation;
 import fr.inria.lille.jefix.patch.Level;
 import fr.inria.lille.jefix.patch.Patch;
+import fr.inria.lille.jefix.patch.StringPatch;
 import fr.inria.lille.jefix.synth.InputOutputValues;
 import fr.inria.lille.jefix.synth.RepairCandidate;
 import fr.inria.lille.jefix.synth.Synthetizer;
@@ -59,16 +62,18 @@ public final class ConditionalSynthetizer implements Synthetizer {
 				classpath, testClasses, data);
 
 		InputModelBuilder modelBuilder = new InputModelBuilder(data);
-		Level level = Level.CONSTANTS;
+		Level level = CONSTANTS;
 		InputModel model = modelBuilder.buildFor(level);
 		ConstraintSolver constraintSolver = new ConstraintSolver();
 		RepairCandidate newRepair = constraintSolver.solve(model);
-		while (null == newRepair && level != Level.MULTIPLICATION) {
+		while (null == newRepair && level != MULTIPLICATION) {
 			level = level.next();
 			model = modelBuilder.buildFor(level);
 			newRepair = constraintSolver.solve(model);
 		}
-		LoggerFactory.getLogger(this.getClass()).debug("Suggested condition: " + newRepair.toString());
-		throw new UnsupportedOperationException("Undefined method ConditionalSynthetizer.buildPatch");
+		if (null == newRepair) {
+			return NO_PATCH;
+		}
+		return new StringPatch(newRepair.toString(), this.sourceLocation);
 	}
 }
