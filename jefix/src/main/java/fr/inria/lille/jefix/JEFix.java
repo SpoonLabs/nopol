@@ -20,11 +20,12 @@ import static fr.inria.lille.jefix.patch.Patch.NO_PATCH;
 import java.io.File;
 import java.net.URL;
 
-import fr.inria.lille.jefix.junit.TestClassesFinder;
 import fr.inria.lille.jefix.patch.Patch;
 import fr.inria.lille.jefix.sps.SuspiciousStatement;
 import fr.inria.lille.jefix.sps.gzoltar.GZoltarSuspiciousProgramStatements;
 import fr.inria.lille.jefix.synth.SynthetizerFactory;
+import fr.inria.lille.jefix.test.junit.TestClassesFinder;
+import fr.inria.lille.jefix.test.junit.TestPatch;
 
 /**
  * @author Favio D. DeMarco
@@ -36,6 +37,7 @@ final class JEFix {
 	private final GZoltarSuspiciousProgramStatements gZoltar;
 	private final String rootPackage;
 	private final SynthetizerFactory synthetizerFactory;
+	private final TestPatch testPatch;
 
 	/**
 	 * @param rootPackage
@@ -47,6 +49,7 @@ final class JEFix {
 		this.classpath = classpath;
 		this.gZoltar = GZoltarSuspiciousProgramStatements.create(this.rootPackage, this.classpath);
 		this.synthetizerFactory = new SynthetizerFactory(sourceFolder);
+		this.testPatch = new TestPatch(sourceFolder, classpath);
 	}
 
 	public Patch build() {
@@ -55,10 +58,21 @@ final class JEFix {
 		for (SuspiciousStatement statement : statements) {
 			Patch newRepair = this.synthetizerFactory.getFor(statement.getSourceLocation()).buildPatch(this.classpath,
 					testClasses);
-			if (newRepair != NO_PATCH) {
+			if (this.isOk(newRepair, testClasses)) {
 				return newRepair;
 			}
 		}
 		return NO_PATCH;
+	}
+
+	private boolean isOk(final Patch newRepair, final String[] testClasses) {
+		if (newRepair == NO_PATCH) {
+			return false;
+		}
+		return this.passesAllTests(newRepair, testClasses);
+	}
+
+	private boolean passesAllTests(final Patch newRepair, final String[] testClasses) {
+		return this.testPatch.passesAllTests(newRepair, testClasses);
 	}
 }

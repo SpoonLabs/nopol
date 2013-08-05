@@ -20,11 +20,13 @@ import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 
 import com.google.common.base.Function;
@@ -35,7 +37,7 @@ import com.google.common.collect.ComputationException;
  * @author Favio D. DeMarco
  * 
  */
-public final class JUnitRunner implements Runnable {
+public final class JUnitRunner implements Callable<Result> {
 
 	private enum StringToClass implements Function<String, Class<?>> {
 		INSTANCE;
@@ -58,17 +60,17 @@ public final class JUnitRunner implements Runnable {
 
 	/**
 	 * @param classes
-	 * @param listener
 	 */
-	public JUnitRunner(@Nonnull final String[] classes, @Nonnull final RunListener listener) {
-		this.listeners.add(checkNotNull(listener));
+	public JUnitRunner(@Nonnull final String[] classes) {
 		this.classes = checkNotNull(classes);
 	}
 
 	/**
 	 * @param classes
+	 * @param listener
 	 */
-	public JUnitRunner(@Nonnull final String[] classes) {
+	public JUnitRunner(@Nonnull final String[] classes, @Nonnull final RunListener listener) {
+		this.listeners.add(checkNotNull(listener));
 		this.classes = checkNotNull(classes);
 	}
 
@@ -82,7 +84,7 @@ public final class JUnitRunner implements Runnable {
 	}
 
 	@Override
-	public void run() {
+	public Result call() throws Exception {
 		JUnitCore runner = new JUnitCore();
 		for (RunListener listener : this.listeners) {
 			runner.addListener(listener);
@@ -91,6 +93,6 @@ public final class JUnitRunner implements Runnable {
 		Class<?>[] testClasses = Collections2.transform(asList(this.classes), StringToClass.INSTANCE).toArray(
 				new Class<?>[this.classes.length]);
 
-		runner.run(testClasses);
+		return runner.run(testClasses);
 	}
 }

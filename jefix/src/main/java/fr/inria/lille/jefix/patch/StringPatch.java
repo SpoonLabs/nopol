@@ -47,10 +47,17 @@ public class StringPatch implements Patch {
 	}
 
 	/**
+	 * @return the containingClassName
+	 */
+	public String getContainingClassName() {
+		return this.location.getContainingClassName();
+	}
+
+	/**
 	 * @see fr.inria.lille.jefix.patch.Patch#getFile()
 	 */
 	@Override
-	public File getFile(final String sourceFolder) {
+	public File getFile(final File sourceFolder) {
 		return this.location.getSourceFile(sourceFolder);
 	}
 

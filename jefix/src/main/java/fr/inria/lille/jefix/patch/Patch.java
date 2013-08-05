@@ -38,7 +38,12 @@ public interface Patch {
 		}
 
 		@Override
-		public File getFile(final String sourcePath) {
+		public String getContainingClassName() {
+			throw new UnsupportedOperationException(toString());
+		}
+
+		@Override
+		public File getFile(final File sourcePath) {
 			throw new UnsupportedOperationException(toString());
 		}
 
@@ -63,7 +68,12 @@ public interface Patch {
 
 	String asString();
 
-	File getFile(String sourcePath);
+	/**
+	 * @return the containingClassName
+	 */
+	String getContainingClassName();
+
+	File getFile(File sourcePath);
 
 	int getLineNumber();
 }

@@ -4,27 +4,27 @@ import java.io.File;
 
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtLiteral;
 import spoon.reflect.cu.SourcePosition;
-import spoon.support.reflect.code.CtLiteralImpl;
+import spoon.support.reflect.code.CtCodeSnippetExpressionImpl;
 
 /**
  * @author Favio D. DeMarco
  */
-final class ConditionalReplacer extends AbstractProcessor<CtCodeElement> {
+public final class ConditionalReplacer extends AbstractProcessor<CtCodeElement> {
 
 	private final File file;
 	private final int line;
-	private final boolean value;
+	private final String value;
 
 	/**
 	 * @param file
 	 * @param line
 	 */
-	ConditionalReplacer(final File file, final int line, final boolean value) {
+	public ConditionalReplacer(final File file, final int line, final String value) {
 		this.file = file;
 		this.line = line;
 		this.value = value;
@@ -60,7 +60,7 @@ final class ConditionalReplacer extends AbstractProcessor<CtCodeElement> {
 	@Override
 	public void process(final CtCodeElement element) {
 		// we declare a new snippet of code to be inserted
-		CtLiteral<Boolean> snippet = new CtLiteralImpl<>();
+		CtCodeSnippetExpression<Boolean> snippet = new CtCodeSnippetExpressionImpl<>();
 		snippet.setFactory(this.getFactory());
 		snippet.setValue(this.value);
 		CtExpression<Boolean> condition = this.getCondition(element);

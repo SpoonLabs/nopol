@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.synth.conditional;
+package fr.inria.lille.jefix.test.junit;
 
 import java.io.File;
 import java.net.URL;
@@ -22,60 +22,77 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.junit.runner.Result;
 import org.slf4j.LoggerFactory;
 
 import spoon.SpoonClassLoader;
 import spoon.processing.Builder;
 import spoon.processing.ProcessingManager;
-import fr.inria.lille.jefix.SourceLocation;
-import fr.inria.lille.jefix.synth.InputOutputValues;
-import fr.inria.lille.jefix.test.junit.JUnitRunner;
+import spoon.support.JavaOutputProcessor;
+import fr.inria.lille.jefix.patch.Patch;
+import fr.inria.lille.jefix.synth.conditional.ConditionalReplacer;
 import fr.inria.lille.jefix.threads.ProvidedClassLoaderThreadFactory;
 
 /**
  * @author Favio D. DeMarco
- * 
+ *
  */
-final class ConditionalsConstraintModelBuilder {
+public final class TestPatch {
 
-	private final ConditionalReplacer conditionalReplacer;
+	private static final String SPOON_DIRECTORY = File.separator + ".."
+			+ File.separator + "spooned";
+
+	private final URL[] classpath;
+	private final File sourceFolder;
 	private final boolean debug = LoggerFactory.getLogger(this.getClass()).isDebugEnabled();
-	private final ClassLoader spooner;
-	private final boolean value;
+	private final SpoonClassLoader spooner;
 
-	ConditionalsConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation, final boolean value) {
-		this.value = value;
+	public TestPatch(final File sourceFolder, final URL[] classpath) {
+		this.sourceFolder = sourceFolder;
+		this.classpath = classpath;
 		SpoonClassLoader scl = new SpoonClassLoader();
 		scl.getEnvironment().setDebug(this.debug);
-		ProcessingManager processingManager = scl.getProcessingManager();
-		File sourceFile = sourceLocation.getSourceFile(sourceFolder);
-		int lineNumber = sourceLocation.getLineNumber();
-		this.conditionalReplacer = new ConditionalReplacer(sourceFile, lineNumber, Boolean.toString(value));
-		processingManager.addProcessor(this.conditionalReplacer);
-		processingManager.addProcessor(new ConditionalLoggingInstrumenter(sourceFile, lineNumber));
-		Builder builder = scl.getFactory().getBuilder();
+		Builder builder;
+		builder = scl.getFactory().getBuilder();
 		try {
 			builder.addInputSource(sourceFolder);
 			builder.build();
-			// should be loaded by the spoon class loader
-			scl.loadClass(sourceLocation.getContainingClassName());
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
 		this.spooner = scl;
 	}
 
-	InputOutputValues buildFor(final URL[] classpath, final String[] testClasses, final InputOutputValues model) {
-		ClassLoader cl = new URLClassLoader(classpath, this.spooner);
+	public boolean passesAllTests(final Patch patch, final String[] testClasses) {
+		ProcessingManager processingManager = this.spooner.getProcessingManager();
+		File sourceFile = patch.getFile(this.sourceFolder);
+		int lineNumber = patch.getLineNumber();
+		processingManager.addProcessor(new ConditionalReplacer(sourceFile, lineNumber, patch.asString()));
+
+		processingManager.addProcessor(new JavaOutputProcessor(new File(this.sourceFolder, SPOON_DIRECTORY)));
+
+		try {
+			// should be loaded by the spoon class loader
+			this.spooner.loadClass(patch.getContainingClassName());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			throw new RuntimeException(e);
+		}
+		return this.wasSuccessful(testClasses);
+	}
+
+	boolean wasSuccessful(final String[] testClasses) {
+		ClassLoader cl = new URLClassLoader(this.classpath, this.spooner);
 		// should use the url class loader
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
+		Result result;
 		try {
-			executor.submit(new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model, this.value))).get();
+			result = executor.submit(new JUnitRunner(testClasses)).get();
 		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
 		executor.shutdown();
-		return model;
+		return result.wasSuccessful();
 	}
 }

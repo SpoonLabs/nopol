@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.junit;
+package fr.inria.lille.jefix.test.junit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
