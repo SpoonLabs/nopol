@@ -61,6 +61,11 @@ public final class ConditionalSynthetizer implements Synthetizer {
 		data = new ConditionalsConstraintModelBuilder(this.sourceFolder, this.sourceLocation, false).buildFor(
 				classpath, testClasses, data);
 
+		// XXX FIXME TODO wtf!?
+		if (data.isEmpty()) {
+			return NO_PATCH;
+		}
+
 		InputModelBuilder modelBuilder = new InputModelBuilder(data);
 		Level level = CONSTANTS;
 		InputModel model = modelBuilder.buildFor(level);

@@ -67,6 +67,10 @@ public class InputOutputValues {
 		return this.outputValues;
 	}
 
+	public boolean isEmpty() {
+		return this.outputValues.isEmpty();
+	}
+
 	/**
 	 * @see java.lang.Object#toString()
 	 */

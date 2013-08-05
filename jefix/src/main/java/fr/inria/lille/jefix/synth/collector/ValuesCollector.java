@@ -25,11 +25,11 @@ import java.util.Map;
  */
 public final class ValuesCollector {
 
-	private static final Map<String, Object> VALUES = new HashMap<String, Object>();
-
 	private static final SubValuesCollector ARRAY_COLLECTOR = new ArraySubValuesCollector();
+
 	private static final SubValuesCollector COLLECTION_COLLECTOR = new CollectionSubValuesCollector();
 	private static final SubValuesCollector STRING_COLLECTOR = new StringSubValuesCollector();
+	private static final Map<String, Object> VALUES = new HashMap<String, Object>();
 
 	public static Object add(final String name, final Object value) {
 		if (null != value) {
@@ -54,6 +54,10 @@ public final class ValuesCollector {
 
 	public static Iterable<Map.Entry<String, Object>> getValues() {
 		return VALUES.entrySet();
+	}
+
+	public static boolean isEmpty() {
+		return VALUES.isEmpty();
 	}
 
 	/**

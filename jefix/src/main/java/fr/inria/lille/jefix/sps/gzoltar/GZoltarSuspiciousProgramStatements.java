@@ -48,29 +48,26 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 	 * @param classpath
 	 * @return
 	 */
-	public static GZoltarSuspiciousProgramStatements create(final String sourcePackage, final URL[] classpath) {
-		return new GZoltarSuspiciousProgramStatements(sourcePackage, classpath);
+	public static GZoltarSuspiciousProgramStatements create(final URL[] classpath) {
+		return new GZoltarSuspiciousProgramStatements(checkNotNull(classpath));
 	}
 
 	private final GZoltar gzoltar;
 
-	private GZoltarSuspiciousProgramStatements(final String sourcePackage, final URL[] classpath) {
+	private GZoltarSuspiciousProgramStatements(final URL[] classpath) {
 		try {
 			this.gzoltar = new GZoltarJava7();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
-
-		if (null != classpath) {
-			HashSet<String> classpaths = this.gzoltar.getClasspaths();
-			for (URL url : classpath) {
-				classpaths.add(url.toExternalForm());
-			}
-			this.gzoltar.setClassPaths(classpaths);
+		HashSet<String> classpaths = this.gzoltar.getClasspaths();
+		for (URL url : classpath) {
+			classpaths.add(url.toExternalForm());
 		}
-		this.gzoltar.addPackageToInstrument(checkNotNull(sourcePackage)); // TODO see if GZoltar instruments
-		// recursively
+		this.gzoltar.setClassPaths(classpaths);
+		this.gzoltar.addPackageToInstrument("");
+		this.gzoltar.addPackageNotToInstrument("org.junit");
 	}
 
 	/**
@@ -100,7 +97,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		for (String className : checkNotNull(testClasses)) {
 			this.gzoltar.addTestToExecute(className); // we want to execute the test
 			this.gzoltar.addClassNotToInstrument(className); // we don't want to include the test as root-cause
-																// candidate
+			// candidate
 		}
 		this.gzoltar.run();
 

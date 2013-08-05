@@ -20,6 +20,9 @@ import static fr.inria.lille.jefix.patch.Patch.NO_PATCH;
 import java.io.File;
 import java.net.URL;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fr.inria.lille.jefix.patch.Patch;
 import fr.inria.lille.jefix.sps.SuspiciousStatement;
 import fr.inria.lille.jefix.sps.gzoltar.GZoltarSuspiciousProgramStatements;
@@ -35,27 +38,27 @@ final class JEFix {
 
 	private final URL[] classpath;
 	private final GZoltarSuspiciousProgramStatements gZoltar;
-	private final String rootPackage;
 	private final SynthetizerFactory synthetizerFactory;
 	private final TestPatch testPatch;
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * @param rootPackage
 	 * @param sourceFolder
 	 * @param classpath
 	 */
-	public JEFix(final String rootPackage, final File sourceFolder, final URL[] classpath) {
-		this.rootPackage = rootPackage;
+	public JEFix(final File sourceFolder, final URL[] classpath) {
 		this.classpath = classpath;
-		this.gZoltar = GZoltarSuspiciousProgramStatements.create(this.rootPackage, this.classpath);
+		this.gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath);
 		this.synthetizerFactory = new SynthetizerFactory(sourceFolder);
 		this.testPatch = new TestPatch(sourceFolder, classpath);
 	}
 
 	public Patch build() {
-		String[] testClasses = new TestClassesFinder(this.rootPackage).findIn(this.classpath);
+		String[] testClasses = new TestClassesFinder().findIn(this.classpath);
 		Iterable<SuspiciousStatement> statements = this.gZoltar.sortBySuspiciousness(testClasses);
 		for (SuspiciousStatement statement : statements) {
+			this.logger.debug("Analysing {}", statement);
 			Patch newRepair = this.synthetizerFactory.getFor(statement.getSourceLocation()).buildPatch(this.classpath,
 					testClasses);
 			if (this.isOk(newRepair, testClasses)) {

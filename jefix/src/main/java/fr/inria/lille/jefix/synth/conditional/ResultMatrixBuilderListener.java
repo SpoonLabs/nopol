@@ -36,9 +36,11 @@ final class ResultMatrixBuilderListener extends RunListener {
 	 *
 	 */
 	private void processSuccessfulRun() {
-		this.matrix.addOutputValue(this.value);
-		for (Entry<String, Object> entry : ValuesCollector.getValues()) {
-			this.matrix.addInputValue(entry.getKey(), entry.getValue());
+		if (!ValuesCollector.isEmpty()) {
+			this.matrix.addOutputValue(this.value);
+			for (Entry<String, Object> entry : ValuesCollector.getValues()) {
+				this.matrix.addInputValue(entry.getKey(), entry.getValue());
+			}
 		}
 	}
 

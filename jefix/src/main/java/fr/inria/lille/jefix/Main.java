@@ -34,37 +34,32 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(final String[] args) {
-		if (3 != args.length) {
+		if (2 != args.length) {
 			printUsage();
 			return;
 		}
-		String pName = args[0];
-
-		File sourceFolder = new File(args[1]);
+		File sourceFolder = new File(args[0]);
 
 		checkArgument(sourceFolder.exists(), "%s: does not exist.", sourceFolder);
 		checkArgument(sourceFolder.isDirectory(), "%s: is not a directory.", sourceFolder);
 
-		String[] paths = args[2].split(Character.toString(File.pathSeparatorChar));
+		String[] paths = args[1].split(Character.toString(File.pathSeparatorChar));
 
-		new Main(pName, sourceFolder, paths).run();
+		new Main(sourceFolder, paths).run();
 	}
 
 	private static void printUsage() {
-		System.out.println("java " + Main.class.getName() + " <package> <source folder> <classpath>");
+		System.out.println("java " + Main.class.getName() + " <source folder> <classpath>");
 	}
 
 	private final String[] classpath;
-
-	private final String mainPackage;
 
 	private final File sourceFolder;
 
 	/**
 	 * 
 	 */
-	private Main(final String pName, final File sourceFolder, final String[] classpath) {
-		this.mainPackage = checkNotNull(pName);
+	private Main(final File sourceFolder, final String[] classpath) {
 		this.sourceFolder = checkNotNull(sourceFolder);
 		this.classpath = checkNotNull(classpath);
 	}
@@ -82,6 +77,6 @@ public class Main {
 			}
 		}
 		System.out.println("Suggested patch: "
-				+ new JEFix(this.mainPackage, this.sourceFolder, urls.toArray(new URL[urls.size()])).build());
+				+ new JEFix(this.sourceFolder, urls.toArray(new URL[urls.size()])).build());
 	}
 }

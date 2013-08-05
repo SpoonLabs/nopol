@@ -15,25 +15,18 @@
  */
 package fr.inria.lille.jefix.test.junit;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import sacha.finder.classes.impl.ClassloaderFinder;
 import sacha.finder.filters.impl.TestFilter;
 import sacha.finder.processor.Processor;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
 import fr.inria.lille.jefix.functors.ClassName;
@@ -45,42 +38,13 @@ import fr.inria.lille.jefix.threads.ProvidedClassLoaderThreadFactory;
  */
 public final class TestClassesFinder implements Callable<String[]> {
 
-	private static final class SubPackage implements Predicate<Class<?>> {
-
-		final String rootPackage;
-
-		/**
-		 * @param rootPackage
-		 */
-		SubPackage(@Nonnull final String rootPackage) {
-			this.rootPackage = checkNotNull(rootPackage);
-		}
-
-		@Override
-		public boolean apply(@Nullable final Class<?> input) {
-			return input.getPackage().getName().startsWith(this.rootPackage);
-		}
-	}
-
-	private final String rootPackage;
-
-	/**
-	 * @param rootPackage
-	 */
-	public TestClassesFinder(@Nonnull final String rootPackage) {
-		this.rootPackage = checkNotNull(rootPackage);
-	}
-
 	@Override
 	public String[] call() throws Exception {
 
 		Class<?>[] classes = new Processor(new ClassloaderFinder((URLClassLoader) Thread.currentThread()
 				.getContextClassLoader()), new TestFilter()).process();
 
-		Collection<Class<?>> filteredClasses = Collections2.filter(Arrays.asList(classes), new SubPackage(
-				this.rootPackage));
-
-		return Collections2.transform(filteredClasses, ClassName.INSTANCE).toArray(new String[filteredClasses.size()]);
+		return Collections2.transform(Arrays.asList(classes), ClassName.INSTANCE).toArray(new String[classes.length]);
 	}
 
 	public String[] findIn(final URL[] classpath) {
@@ -90,11 +54,8 @@ public final class TestClassesFinder implements Callable<String[]> {
 
 		String[] testClasses;
 		try {
-			testClasses = executor.submit(new TestClassesFinder(this.rootPackage)).get();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException(e);
-		} catch (ExecutionException e) {
+			testClasses = executor.submit(new TestClassesFinder()).get();
+		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		} finally {

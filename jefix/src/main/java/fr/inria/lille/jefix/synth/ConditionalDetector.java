@@ -1,5 +1,8 @@
 package fr.inria.lille.jefix.synth;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.File;
 
 import spoon.processing.AbstractProcessor;
@@ -21,7 +24,8 @@ final class ConditionalDetector extends AbstractProcessor<CtExpression<Boolean>>
 	 * @param line
 	 */
 	ConditionalDetector(final File file, final int line) {
-		this.file = file;
+		this.file = checkNotNull(file);
+		checkArgument(line > 0, "Line should be greater than 0: %s", line);
 		this.line = line;
 	}
 
@@ -37,8 +41,12 @@ final class ConditionalDetector extends AbstractProcessor<CtExpression<Boolean>>
 	 */
 	@Override
 	public boolean isToBeProcessed(final CtExpression<Boolean> candidate) {
-		SourcePosition position = candidate.getPosition();
-		return position.getLine() == this.line
+
+		// XXX
+		// position can be null. Spoon bug? WTF!? WTF!? WTF!?
+		SourcePosition position = this.tryToGetAPosition(candidate);
+
+		return /* WTF!? */position != null && /* WTF!? */position.getLine() == this.line
 				&& position.getFile().getAbsolutePath().equals(this.file.getAbsolutePath());
 	}
 
@@ -46,5 +54,18 @@ final class ConditionalDetector extends AbstractProcessor<CtExpression<Boolean>>
 	public void process(final CtExpression<Boolean> element) {
 		CtElement parent = element.getParent();
 		this.answer = this.answer || parent instanceof CtConditional || parent instanceof CtIf;
+	}
+
+	/**
+	 * XXX Position can be null... Spoon bug? WTF!? WTF!? WTF!?
+	 */
+	private SourcePosition tryToGetAPosition(final CtExpression<Boolean> candidate) {
+		SourcePosition position = candidate.getPosition();
+		CtElement parent = candidate.getParent();
+		while (null == position && parent != null) {
+			position = parent.getPosition();
+			parent = parent.getParent();
+		}
+		return position;
 	}
 }
