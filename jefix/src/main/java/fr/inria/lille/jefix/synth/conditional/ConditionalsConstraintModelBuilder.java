@@ -29,6 +29,7 @@ import spoon.processing.Builder;
 import spoon.processing.ProcessingManager;
 import fr.inria.lille.jefix.SourceLocation;
 import fr.inria.lille.jefix.synth.InputOutputValues;
+import fr.inria.lille.jefix.test.junit.JUnitRunner;
 import fr.inria.lille.jefix.threads.ProvidedClassLoaderThreadFactory;
 
 /**
@@ -71,7 +72,7 @@ final class ConditionalsConstraintModelBuilder {
 		ClassLoader cl = new URLClassLoader(classpath, this.spooner);
 		// should use the url class loader
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
-		executor.execute(new JUnitRunner(new ResultMatrixBuilderListener(model, this.value), testClasses));
+		executor.execute(new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model, this.value)));
 		this.shutdownAndWait(executor);
 		return model;
 	}

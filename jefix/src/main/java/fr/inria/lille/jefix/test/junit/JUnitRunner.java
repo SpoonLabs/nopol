@@ -13,10 +13,13 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.synth.conditional;
+package fr.inria.lille.jefix.test.junit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Arrays.asList;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,10 +35,7 @@ import com.google.common.collect.ComputationException;
  * @author Favio D. DeMarco
  * 
  */
-final class JUnitRunner implements Runnable {
-
-	private final RunListener listener;
-	private final String[] classes;
+public final class JUnitRunner implements Runnable {
 
 	private enum StringToClass implements Function<String, Class<?>> {
 		INSTANCE;
@@ -52,19 +52,41 @@ final class JUnitRunner implements Runnable {
 		}
 	}
 
+	private final String[] classes;
+
+	private final List<RunListener> listeners = new ArrayList<>();
+
 	/**
+	 * @param classes
 	 * @param listener
+	 */
+	public JUnitRunner(@Nonnull final String[] classes, @Nonnull final RunListener listener) {
+		this.listeners.add(checkNotNull(listener));
+		this.classes = checkNotNull(classes);
+	}
+
+	/**
 	 * @param classes
 	 */
-	public JUnitRunner(@Nonnull final RunListener listener, @Nonnull final String[] classes) {
-		this.listener = checkNotNull(listener);
+	public JUnitRunner(@Nonnull final String[] classes) {
 		this.classes = checkNotNull(classes);
+	}
+
+	/**
+	 * @param classes
+	 * @param listeners
+	 */
+	public JUnitRunner(@Nonnull final String[] classes, final RunListener... listeners) {
+		this.classes = checkNotNull(classes);
+		this.listeners.addAll(asList(listeners));
 	}
 
 	@Override
 	public void run() {
 		JUnitCore runner = new JUnitCore();
-		runner.addListener(this.listener);
+		for (RunListener listener : this.listeners) {
+			runner.addListener(listener);
+		}
 
 		Class<?>[] testClasses = Collections2.transform(asList(this.classes), StringToClass.INSTANCE).toArray(
 				new Class<?>[this.classes.length]);
