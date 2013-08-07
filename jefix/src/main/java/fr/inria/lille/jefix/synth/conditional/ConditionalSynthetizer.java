@@ -22,6 +22,8 @@ import static fr.inria.lille.jefix.patch.Patch.NO_PATCH;
 import java.io.File;
 import java.net.URL;
 
+import org.slf4j.LoggerFactory;
+
 import fr.inria.lille.jefix.SourceLocation;
 import fr.inria.lille.jefix.patch.Level;
 import fr.inria.lille.jefix.patch.Patch;
@@ -61,8 +63,10 @@ public final class ConditionalSynthetizer implements Synthetizer {
 		data = new ConditionalsConstraintModelBuilder(this.sourceFolder, this.sourceLocation, false).buildFor(
 				classpath, testClasses, data);
 
-		// XXX FIXME TODO wtf!?
+		// XXX FIXME TODO move this
+		// it should be at least one output value, this is weird...
 		if (data.isEmpty()) {
+			LoggerFactory.getLogger(this.getClass()).info("No model for {}", this.sourceLocation);
 			return NO_PATCH;
 		}
 
