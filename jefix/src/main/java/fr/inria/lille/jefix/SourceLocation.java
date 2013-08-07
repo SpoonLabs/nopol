@@ -58,6 +58,10 @@ public final class SourceLocation {
 
 	public File getSourceFile(final String sourceFolder) {
 		String classPath = this.containingClassName.replace('.', File.separatorChar);
+		int inertTypeIndex = classPath.indexOf('$');
+		if (inertTypeIndex > 0) {
+			classPath = classPath.substring(0, inertTypeIndex);
+		}
 		File sourceFile = new File(sourceFolder, classPath + ".java");
 		checkState(sourceFile.exists(), "%s: does not exist.", sourceFile);
 		return sourceFile;
@@ -68,7 +72,6 @@ public final class SourceLocation {
 	 */
 	@Override
 	public String toString() {
-		return String.format("SourceLocation %s:%d", this.containingClassName,
-				this.lineNumber);
+		return String.format("SourceLocation %s:%d", this.containingClassName, this.lineNumber);
 	}
 }
