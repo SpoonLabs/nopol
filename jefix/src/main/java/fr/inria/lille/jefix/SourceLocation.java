@@ -68,7 +68,7 @@ public final class SourceLocation {
 	 */
 	@Override
 	public String toString() {
-		return String.format("SourceLocation [containingClassName=%s, lineNumber=%d]", this.containingClassName,
+		return String.format("SourceLocation %s:%d", this.containingClassName,
 				this.lineNumber);
 	}
 }
