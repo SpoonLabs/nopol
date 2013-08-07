@@ -19,6 +19,7 @@ import static fr.inria.lille.jefix.synth.Synthetizer.NO_OP_SYNTHETIZER;
 
 import java.io.File;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.processing.Builder;
@@ -37,7 +38,8 @@ import fr.inria.lille.jefix.synth.conditional.ConditionalSynthetizer;
 public final class SynthetizerFactory {
 
 	private final File sourceFolder;
-	private final boolean debug = LoggerFactory.getLogger(this.getClass()).isDebugEnabled();
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final boolean debug = this.logger.isDebugEnabled();
 
 	/**
 	 * 
@@ -50,6 +52,7 @@ public final class SynthetizerFactory {
 		if (this.isConditional(statement)) {
 			return new ConditionalSynthetizer(this.sourceFolder, statement);
 		}
+		this.logger.debug("No synthetizer found for {}", statement);
 		return NO_OP_SYNTHETIZER;
 	}
 
