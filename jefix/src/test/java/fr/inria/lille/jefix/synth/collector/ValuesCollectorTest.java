@@ -26,7 +26,7 @@ public class ValuesCollectorTest {
 	}
 
 	@Test
-	public final void adding_a_Collection_should_add_the_size_also() {
+	public final void adding_a_Collection_should_add_the_size_and_if_it_is_empty() {
 		// GIVEN
 		String name = "collection";
 		Collection<?> value = asList(1, 2, 3);
@@ -36,11 +36,15 @@ public class ValuesCollectorTest {
 
 		// THEN
 		Iterator<Entry<String, Object>> iterator = ValuesCollector.getValues().iterator();
-		Entry<String, Object> entry = iterator.next();
-		assertEquals(name + ".size()", entry.getKey());
-		assertEquals(value.size(), entry.getValue());
+		Entry<String, Object> isEmpty = iterator.next();
+		assertEquals(name + ".isEmpty()", isEmpty.getKey());
+		assertEquals(value.isEmpty(), isEmpty.getValue());
 
-		entry = iterator.next();
+		Entry<String, Object> size = iterator.next();
+		assertEquals(name + ".size()", size.getKey());
+		assertEquals(value.size(), size.getValue());
+
+		Entry<String, Object> entry = iterator.next();
 		assertSame(name, entry.getKey());
 		assertSame(value, entry.getValue());
 
@@ -48,7 +52,7 @@ public class ValuesCollectorTest {
 	}
 
 	@Test
-	public final void adding_a_String_should_add_the_length_also() {
+	public final void adding_a_String_should_add_the_length_and_if_it_is_empty() {
 		// GIVEN
 		String name = "string";
 		String value = "Take nothing on its looks; take everything on evidence. There's no better rule.";
@@ -58,11 +62,15 @@ public class ValuesCollectorTest {
 
 		// THEN
 		Iterator<Entry<String, Object>> iterator = ValuesCollector.getValues().iterator();
-		Entry<String, Object> entry = iterator.next();
-		assertEquals(name + ".length()", entry.getKey());
-		assertEquals(value.length(), entry.getValue());
+		Entry<String, Object> isEmpty = iterator.next();
+		assertEquals(name + ".isEmpty()", isEmpty.getKey());
+		assertEquals(value.isEmpty(), isEmpty.getValue());
 
-		entry = iterator.next();
+		Entry<String, Object> length = iterator.next();
+		assertEquals(name + ".length()", length.getKey());
+		assertEquals(value.length(), length.getValue());
+
+		Entry<String, Object> entry = iterator.next();
 		assertSame(name, entry.getKey());
 		assertSame(value, entry.getValue());
 
