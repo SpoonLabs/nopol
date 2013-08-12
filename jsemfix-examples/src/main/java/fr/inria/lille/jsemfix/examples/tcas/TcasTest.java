@@ -17,8 +17,6 @@ package fr.inria.lille.jsemfix.examples.tcas;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -26,8 +24,6 @@ import org.junit.Test;
  * 
  */
 public class TcasTest {
-
-	private Tcas tcas;
 
 	/**
 	 * See <a href="http://www.comp.nus.edu.sg/~abhik/pdf/ICSE13-SEMFIX.pdf">SemFix: Program Repair via Semantic
@@ -40,7 +36,7 @@ public class TcasTest {
 
 		// GIVEN
 		// WHEN
-		int actual = this.tcas.is_upward_preferred(1, 0, 100);
+		int actual = new Tcas().is_upward_preferred(1, 0, 100);
 
 		// THEN
 		assertEquals(0, actual);
@@ -57,7 +53,7 @@ public class TcasTest {
 
 		// GIVEN
 		// WHEN
-		int actual = this.tcas.is_upward_preferred(1, 11, 110);
+		int actual = new Tcas().is_upward_preferred(1, 11, 110);
 
 		// THEN
 		assertEquals(1, actual);
@@ -74,7 +70,7 @@ public class TcasTest {
 
 		// GIVEN
 		// WHEN
-		int actual = this.tcas.is_upward_preferred(0, 100, 50);
+		int actual = new Tcas().is_upward_preferred(0, 100, 50);
 
 		// THEN
 		assertEquals(1, actual);
@@ -91,7 +87,7 @@ public class TcasTest {
 
 		// GIVEN
 		// WHEN
-		int actual = this.tcas.is_upward_preferred(1, -20, 60);
+		int actual = new Tcas().is_upward_preferred(1, -20, 60);
 
 		// THEN
 		assertEquals(1, actual);
@@ -108,25 +104,9 @@ public class TcasTest {
 
 		// GIVEN
 		// WHEN
-		int actual = this.tcas.is_upward_preferred(0, 0, 10);
+		int actual = new Tcas().is_upward_preferred(0, 0, 10);
 
 		// THEN
 		assertEquals(0, actual);
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-		this.tcas = new Tcas();
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-		this.tcas = null;
 	}
 }
