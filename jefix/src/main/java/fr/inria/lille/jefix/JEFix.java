@@ -72,6 +72,7 @@ final class JEFix {
 		if (newRepair == NO_PATCH) {
 			return false;
 		}
+		this.logger.debug("Suggested patch: {}", newRepair);
 		return this.passesAllTests(newRepair, testClasses);
 	}
 

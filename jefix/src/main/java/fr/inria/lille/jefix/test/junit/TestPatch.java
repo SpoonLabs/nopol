@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.junit.runner.Result;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.SpoonClassLoader;
@@ -44,7 +45,8 @@ public final class TestPatch {
 
 	private final URL[] classpath;
 	private final File sourceFolder;
-	private final boolean debug = LoggerFactory.getLogger(this.getClass()).isDebugEnabled();
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final boolean debug = this.logger.isDebugEnabled();
 	private final SpoonClassLoader spooner;
 
 	public TestPatch(final File sourceFolder, final URL[] classpath) {
@@ -65,6 +67,7 @@ public final class TestPatch {
 
 	public boolean passesAllTests(final Patch patch, final String[] testClasses) {
 		ProcessingManager processingManager = this.spooner.getProcessingManager();
+		this.logger.info("Applying patch: {}", patch);
 		File sourceFile = patch.getFile(this.sourceFolder);
 		int lineNumber = patch.getLineNumber();
 		processingManager.addProcessor(new ConditionalReplacer(sourceFile, lineNumber, patch.asString()));
