@@ -19,6 +19,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import fr.inria.lille.jefix.synth.smt.model.Type;
+
 /**
  * @author Favio D. DeMarco
  * 
@@ -35,11 +37,14 @@ public final class ValuesCollector {
 		if (null != value) {
 			addSubValues(name, value);
 		}
-		return VALUES.put(name, value);
+		if (Type.isOfAKnownType(value)) {
+			return VALUES.put(name, value);
+		}
+		return null;
 	}
 
 	private static void addSubValues(final String name, final Object value) {
-		if(value.getClass().isArray()) {
+		if (value.getClass().isArray()) {
 			ARRAY_COLLECTOR.addSubValues(name, value);
 		} else if (value instanceof Collection) {
 			COLLECTION_COLLECTOR.addSubValues(name, value);

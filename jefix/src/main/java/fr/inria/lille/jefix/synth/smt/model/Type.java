@@ -23,19 +23,40 @@ import com.google.common.base.Function;
  */
 public enum Type {
 
-	BOOLEAN, INTEGER;
+	BOOLEAN {
+		@Override
+		public boolean isOfThisType(final Object value) {
+			return value instanceof Boolean;
+		}
+	},
+	INTEGER {
+		@Override
+		public boolean isOfThisType(final Object value) {
+			return value instanceof Long || value instanceof Integer || value instanceof Short || value instanceof Byte;
+		}
+	};
 
 	public enum ValueToType implements Function<Object, Type> {
 		INSTANCE;
 		@Override
 		public Type apply(final Object value) {
-			if (value instanceof Boolean) {
-				return BOOLEAN;
-			} else if (value instanceof Long || value instanceof Integer || value instanceof Short
-					|| value instanceof Byte) {
-				return INTEGER;
+			for (Type type : Type.values()) {
+				if (type.isOfThisType(value)) {
+					return type;
+				}
 			}
 			throw new IllegalStateException("Can't find a sort for class " + value.getClass());
 		}
 	}
+
+	public static boolean isOfAKnownType(final Object value) {
+		for (Type type : Type.values()) {
+			if (type.isOfThisType(value)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public abstract boolean isOfThisType(Object value);
 }
