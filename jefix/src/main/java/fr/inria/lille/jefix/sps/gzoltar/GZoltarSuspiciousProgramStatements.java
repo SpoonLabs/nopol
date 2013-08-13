@@ -16,6 +16,7 @@
 package fr.inria.lille.jefix.sps.gzoltar;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.FluentIterable.from;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,8 +30,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
 import com.gzoltar.core.GZoltar;
+import com.gzoltar.core.components.Statement;
 
 import fr.inria.lille.jefix.sps.SuspiciousProgramStatements;
 import fr.inria.lille.jefix.sps.SuspiciousStatement;
@@ -42,6 +45,14 @@ import fr.inria.lille.jefix.sps.SuspiciousStatement;
  * @author Favio D. DeMarco
  */
 public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgramStatements {
+
+	private enum IsSuspicious implements Predicate<Statement> {
+		INSTANCE;
+		@Override
+		public boolean apply(final Statement input) {
+			return input.getSuspiciousness() > 0D;
+		}
+	}
 
 	/**
 	 * @param sourcePackage
@@ -101,13 +112,13 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		}
 		this.gzoltar.run();
 
+		List<SuspiciousStatement> statements = from(this.gzoltar.getSuspiciousStatements())
+				.filter(IsSuspicious.INSTANCE).transform(GZoltarStatementWrapperFunction.INSTANCE).toList();
+
 		Logger logger = LoggerFactory.getLogger(this.getClass());
 		if (logger.isDebugEnabled()) {
-			logger.debug("\n{}", this.gzoltar.getSpectra());
+			logger.debug("\n{}", Joiner.on('\n').join(statements));
 		}
-
-		List<SuspiciousStatement> statements = Lists.transform(this.gzoltar.getSuspiciousStatements(),
-				GZoltarStatementWrapperFunction.INSTANCE);
 
 		// TODO delete this method call
 		this.assertExpectedOrder(statements);
