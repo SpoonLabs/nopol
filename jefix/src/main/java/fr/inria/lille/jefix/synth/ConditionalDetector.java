@@ -41,31 +41,15 @@ final class ConditionalDetector extends AbstractProcessor<CtExpression<Boolean>>
 	 */
 	@Override
 	public boolean isToBeProcessed(final CtExpression<Boolean> candidate) {
-
-		// XXX
-		// position can be null. Spoon bug? WTF!? WTF!? WTF!?
-		SourcePosition position = this.tryToGetAPosition(candidate);
-
-		return /* WTF!? */position != null && /* WTF!? */position.getLine() == this.line
+		CtElement parent = candidate.getParent();
+		boolean isConditional = parent instanceof CtConditional || parent instanceof CtIf;
+		SourcePosition position = parent.getPosition();
+		return isConditional && position.getLine() == this.line
 				&& position.getFile().getAbsolutePath().equals(this.file.getAbsolutePath());
 	}
 
 	@Override
 	public void process(final CtExpression<Boolean> element) {
-		CtElement parent = element.getParent();
-		this.answer = this.answer || parent instanceof CtConditional || parent instanceof CtIf;
-	}
-
-	/**
-	 * XXX Position can be null... Spoon bug? WTF!? WTF!? WTF!?
-	 */
-	private SourcePosition tryToGetAPosition(final CtExpression<Boolean> candidate) {
-		SourcePosition position = candidate.getPosition();
-		CtElement parent = candidate.getParent();
-		while (null == position && parent != null) {
-			position = parent.getPosition();
-			parent = parent.getParent();
-		}
-		return position;
+		this.answer = true;
 	}
 }
