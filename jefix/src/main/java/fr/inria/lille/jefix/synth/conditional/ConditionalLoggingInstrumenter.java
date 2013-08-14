@@ -175,7 +175,8 @@ final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtStatement
 	@Override
 	public boolean isToBeProcessed(final CtStatement candidate) {
 		SourcePosition position = candidate.getPosition();
-		return (candidate instanceof CtIf || candidate instanceof CtConditional) && position.getLine() == this.line
+		boolean isConditional = candidate instanceof CtIf || candidate instanceof CtConditional;
+		return isConditional && position.getLine() == this.line
 				&& position.getFile().getAbsolutePath().equals(this.file.getAbsolutePath());
 	}
 
