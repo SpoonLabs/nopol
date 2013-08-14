@@ -3,7 +3,6 @@ package fr.inria.lille.jefix.synth.collector;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -44,10 +43,6 @@ public class ValuesCollectorTest {
 		assertEquals(name + ".size()", size.getKey());
 		assertEquals(value.size(), size.getValue());
 
-		Entry<String, Object> entry = iterator.next();
-		assertSame(name, entry.getKey());
-		assertSame(value, entry.getValue());
-
 		assertFalse(iterator.hasNext());
 	}
 
@@ -70,10 +65,6 @@ public class ValuesCollectorTest {
 		assertEquals(name + ".length()", length.getKey());
 		assertEquals(value.length(), length.getValue());
 
-		Entry<String, Object> entry = iterator.next();
-		assertSame(name, entry.getKey());
-		assertSame(value, entry.getValue());
-
 		assertFalse(iterator.hasNext());
 	}
 
@@ -91,10 +82,6 @@ public class ValuesCollectorTest {
 		Entry<String, Object> entry = iterator.next();
 		assertEquals(name + ".length", entry.getKey());
 		assertEquals(value.length, entry.getValue());
-
-		entry = iterator.next();
-		assertSame(name, entry.getKey());
-		assertSame(value, entry.getValue());
 
 		assertFalse(iterator.hasNext());
 	}
