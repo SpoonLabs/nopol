@@ -43,6 +43,11 @@ public class Main {
 		checkArgument(sourceFolder.exists(), "%s: does not exist.", sourceFolder);
 		checkArgument(sourceFolder.isDirectory(), "%s: is not a directory.", sourceFolder);
 
+		// XXX FIXME TODO this line adds the analyzed project classpath for the compiler, it should use another thread
+		// with a URLClassLoader, for example.
+		// see JDTCompiler.getLibraryAccess()...
+		System.setProperty("java.class.path", System.getProperty("java.class.path") + File.pathSeparatorChar + args[1]);
+
 		String[] paths = args[1].split(Character.toString(File.pathSeparatorChar));
 
 		new Main(sourceFolder, paths).run();
