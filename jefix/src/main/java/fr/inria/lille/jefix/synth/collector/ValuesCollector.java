@@ -19,6 +19,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.collect.ImmutableSet;
+
 import fr.inria.lille.jefix.synth.smt.model.Type;
 
 /**
@@ -58,7 +60,7 @@ public final class ValuesCollector {
 	}
 
 	public static Iterable<Map.Entry<String, Object>> getValues() {
-		return VALUES.entrySet();
+		return ImmutableSet.copyOf(VALUES.entrySet());
 	}
 
 	public static boolean isEmpty() {

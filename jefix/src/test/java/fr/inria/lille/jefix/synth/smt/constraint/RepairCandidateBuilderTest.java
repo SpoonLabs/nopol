@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
 import org.junit.Test;
 import org.smtlib.IParser.ParserException;
@@ -17,6 +18,8 @@ import org.smtlib.IResponse;
 import org.smtlib.ISource;
 import org.smtlib.SMT;
 import org.smtlib.sexpr.Parser;
+
+import com.google.common.collect.ImmutableMap;
 
 import fr.inria.lille.jefix.synth.InputOutputValues;
 import fr.inria.lille.jefix.synth.RepairCandidate;
@@ -50,8 +53,9 @@ public class RepairCandidateBuilderTest {
 	 * @return
 	 */
 	private InputModel createSimpleModel() {
-		InputOutputValues iov = new InputOutputValues().addInputValue("up_sep", 11).addInputValue("inhibit", 1)
-				.addInputValue("down_sep", 110);
+		Iterable<Map.Entry<String, Object>> inputValues = ImmutableMap.<String, Object> of("up_sep", 11, "inhibit", 1,
+				"down_sep", 110).entrySet();
+		InputOutputValues iov = new InputOutputValues().addValues(inputValues, true);
 		ValuesModel values = new ValuesModel(iov, Arrays.<Object> asList(-1, 0, 1, true, false));
 		return new InputModel(asList(BOOLEAN), new ArrayList<Component>(), BOOLEAN, values);
 	}

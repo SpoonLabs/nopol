@@ -17,8 +17,12 @@ package fr.inria.lille.jefix.synth;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import com.google.common.base.Supplier;
 import com.google.common.collect.Multimap;
@@ -41,15 +45,33 @@ public class InputOutputValues {
 	private final Multimap<String, Object> inputValues = Multimaps.newListMultimap(
 			new LinkedHashMap<String, Collection<Object>>(), ListSupplier.INSTANCE);
 
+	private final Set<Iterable<Map.Entry<String, Object>>> inputValuesSets = new HashSet<>();
+
 	private final List<Object> outputValues = new ArrayList<>();
 
-	public InputOutputValues addInputValue(final String varName, final Object value) {
+	private void addInputValue(final String varName, final Object value) {
 		this.inputValues.put(varName, value);
-		return this;
 	}
 
-	public InputOutputValues addOutputValue(final Object output) {
+	/**
+	 * @param inputValues
+	 */
+	private void addInputValues(final Iterable<Map.Entry<String, Object>> inputValues) {
+		for (Entry<String, Object> entry : inputValues) {
+			this.addInputValue(entry.getKey(), entry.getValue());
+		}
+	}
+
+	private void addOutputValue(final Object output) {
 		this.outputValues.add(output);
+	}
+
+	public InputOutputValues addValues(final Iterable<Map.Entry<String, Object>> inputValues, final Object outputValue) {
+		if (!this.inputValuesSets.contains(inputValues)) {
+			this.inputValuesSets.add(inputValues);
+			this.addOutputValue(outputValue);
+			this.addInputValues(inputValues);
+		}
 		return this;
 	}
 

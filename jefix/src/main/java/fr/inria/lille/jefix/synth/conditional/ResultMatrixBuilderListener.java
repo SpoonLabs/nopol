@@ -1,7 +1,5 @@
 package fr.inria.lille.jefix.synth.conditional;
 
-import java.util.Map.Entry;
-
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
@@ -37,10 +35,7 @@ final class ResultMatrixBuilderListener extends RunListener {
 	 */
 	private void processSuccessfulRun() {
 		if (!ValuesCollector.isEmpty()) {
-			this.matrix.addOutputValue(this.value);
-			for (Entry<String, Object> entry : ValuesCollector.getValues()) {
-				this.matrix.addInputValue(entry.getKey(), entry.getValue());
-			}
+			this.matrix.addValues(ValuesCollector.getValues(), this.value);
 		}
 	}
 
