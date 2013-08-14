@@ -17,6 +17,7 @@ package fr.inria.lille.jsemfix.examples.tcas;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -108,5 +109,17 @@ public class TcasTest {
 
 		// THEN
 		assertEquals(0, actual);
+	}
+
+	@Test
+	@Ignore("Added to get a response != '0 != up_sep'")
+	public void _6() {
+
+		// GIVEN
+		// WHEN
+		int actual = new Tcas().is_upward_preferred(1, 0, 99);
+
+		// THEN
+		assertEquals(1, actual);
 	}
 }
