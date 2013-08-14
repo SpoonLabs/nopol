@@ -85,12 +85,8 @@ public class InputOutputValues {
 	/**
 	 * @return the outputValues
 	 */
-	public Iterable<Object> getOutputValues() {
+	public Collection<Object> getOutputValues() {
 		return this.outputValues;
-	}
-
-	public boolean isEmpty() {
-		return this.outputValues.isEmpty();
 	}
 
 	/**

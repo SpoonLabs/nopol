@@ -41,6 +41,7 @@ final class JEFix {
 	private final SynthetizerFactory synthetizerFactory;
 	private final TestPatch testPatch;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final Logger patchLogger = LoggerFactory.getLogger("patch");
 
 	/**
 	 * @param rootPackage
@@ -72,7 +73,7 @@ final class JEFix {
 		if (newRepair == NO_PATCH) {
 			return false;
 		}
-		this.logger.debug("Suggested patch: {}", newRepair);
+		this.patchLogger.trace("Suggested patch: {}", newRepair);
 		return this.passesAllTests(newRepair, testClasses);
 	}
 
