@@ -55,18 +55,21 @@ public final class ConditionalSynthetizer implements Synthetizer {
 	@Override
 	public Patch buildPatch(final URL[] classpath, final String[] testClasses) {
 
-		InputOutputValues data = new InputOutputValues();
-
-		// XXX FIXME TODO wtf!?
-		data = new ConditionalsConstraintModelBuilder(this.sourceFolder, this.sourceLocation, true).buildFor(classpath,
-				testClasses, data);
-		data = new ConditionalsConstraintModelBuilder(this.sourceFolder, this.sourceLocation, false).buildFor(
-				classpath, testClasses, data);
+		ConditionalsConstraintModelBuilder conditionalsConstraintModelBuilder = new ConditionalsConstraintModelBuilder(
+				this.sourceFolder, this.sourceLocation);
+		InputOutputValues data = conditionalsConstraintModelBuilder.buildFor(classpath, testClasses);
 
 		// XXX FIXME TODO move this
-		// there should be at least one output value, this is weird...
+		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
 		if (data.getOutputValues().size() < 2) {
-			LoggerFactory.getLogger(this.getClass()).info("No model for {}", this.sourceLocation);
+			LoggerFactory.getLogger(this.getClass()).info("There are not enough tests for {}", this.sourceLocation);
+			return NO_PATCH;
+		}
+
+		// and it should be a viable patch, ie. fix the bug
+		if (!conditionalsConstraintModelBuilder.isAViablePatch()) {
+			LoggerFactory.getLogger(this.getClass()).info("Changing only this conditional does not solve the bug. {}",
+					this.sourceLocation);
 			return NO_PATCH;
 		}
 
