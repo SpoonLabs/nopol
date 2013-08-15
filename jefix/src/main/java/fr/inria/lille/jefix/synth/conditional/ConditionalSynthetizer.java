@@ -64,7 +64,7 @@ public final class ConditionalSynthetizer implements Synthetizer {
 				classpath, testClasses, data);
 
 		// XXX FIXME TODO move this
-		// it should be at least one output value, this is weird...
+		// there should be at least one output value, this is weird...
 		if (data.getOutputValues().size() < 2) {
 			LoggerFactory.getLogger(this.getClass()).info("No model for {}", this.sourceLocation);
 			return NO_PATCH;
