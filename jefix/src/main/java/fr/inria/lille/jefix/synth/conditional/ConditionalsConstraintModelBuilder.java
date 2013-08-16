@@ -107,7 +107,7 @@ public final class ConditionalsConstraintModelBuilder {
 			this.logger.warn("Timeout after {} seconds. Infinite loop?", TIMEOUT_IN_SECONDS);
 			this.viablePatch = false;
 		} finally {
-			executor.shutdown();
+			executor.shutdownNow();
 		}
 		return model;
 	}
