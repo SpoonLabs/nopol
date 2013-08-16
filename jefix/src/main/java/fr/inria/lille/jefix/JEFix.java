@@ -19,6 +19,7 @@ import static fr.inria.lille.jefix.patch.Patch.NO_PATCH;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +58,12 @@ final class JEFix {
 
 	public Patch build() {
 		String[] testClasses = new TestClassesFinder().findIn(this.classpath);
+
+		if (testClasses.length == 0) {
+			System.out.printf("No test classes found in classpath: %s%n", Arrays.toString(this.classpath));
+			return NO_PATCH;
+		}
+
 		Iterable<SuspiciousStatement> statements = this.gZoltar.sortBySuspiciousness(testClasses);
 		for (SuspiciousStatement statement : statements) {
 			this.logger.debug("Analysing {}", statement);
