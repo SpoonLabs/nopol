@@ -79,6 +79,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		this.gzoltar.setClassPaths(classpaths);
 		this.gzoltar.addPackageToInstrument("");
 		this.gzoltar.addPackageNotToInstrument("org.junit");
+		this.gzoltar.addPackageNotToInstrument("junit.framework");
 	}
 
 	/**
