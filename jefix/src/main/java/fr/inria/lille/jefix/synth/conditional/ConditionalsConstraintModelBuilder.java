@@ -18,6 +18,7 @@ package fr.inria.lille.jefix.synth.conditional;
 import static com.google.common.collect.ImmutableSet.copyOf;
 import static com.google.common.collect.Lists.transform;
 import static com.google.common.collect.Sets.intersection;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.io.File;
 import java.net.URL;
@@ -25,9 +26,11 @@ import java.net.URLClassLoader;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.runner.Description;
 import org.junit.runner.Result;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.SpoonClassLoader;
@@ -48,11 +51,17 @@ import fr.inria.lille.jefix.threads.ProvidedClassLoaderThreadFactory;
 public final class ConditionalsConstraintModelBuilder {
 
 	/**
+	 * XXX FIXME TODO should be a parameter
+	 */
+	private static final long TIMEOUT_IN_SECONDS = 60;
+
+	/**
 	 * Optimist...
 	 */
 	public static volatile boolean booleanValue = true;
 
-	private final boolean debug = LoggerFactory.getLogger(this.getClass()).isDebugEnabled();
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final boolean debug = this.logger.isDebugEnabled();
 	private final ClassLoader spooner;
 	private boolean viablePatch;
 
@@ -84,16 +93,22 @@ public final class ConditionalsConstraintModelBuilder {
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
 		try {
 			Result firstResult = executor.submit(
-					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model, booleanValue))).get();
+					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model, booleanValue))).get(
+							TIMEOUT_IN_SECONDS, SECONDS);
 			booleanValue = !booleanValue;
 			Result secondResult = executor.submit(
-					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model, booleanValue))).get();
+					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model, booleanValue))).get(
+							TIMEOUT_IN_SECONDS, SECONDS);
 			this.determineViability(firstResult, secondResult);
 		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
+		} catch (TimeoutException e) {
+			this.logger.warn("Timeout after {} seconds. Infinite loop?", TIMEOUT_IN_SECONDS);
+			this.viablePatch = false;
+		} finally {
+			executor.shutdown();
 		}
-		executor.shutdown();
 		return model;
 	}
 
