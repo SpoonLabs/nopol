@@ -16,12 +16,18 @@
 package fr.inria.lille.jefix.sps.gzoltar;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.io.File.separator;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.gzoltar.core.GZoltar;
 import com.gzoltar.core.agent.AgentCreator;
@@ -42,14 +48,15 @@ import com.gzoltar.core.spectra.Spectra;
  */
 public final class GZoltarJava7 extends GZoltar {
 
-	private static final String DIR_SEPARATOR = System.getProperty("file.separator");
-	private static final String JAVA_EXECUTABLE = System.getProperty("java.home") + DIR_SEPARATOR + "bin" + DIR_SEPARATOR
+	private static final String JAVA_EXECUTABLE = System.getProperty("java.home") + separator + "bin" + separator
 			+ "java";
-	private static final String PATH_SEPARATOR = System.getProperty("path.separator");
+	private static final String PATH_SEPARATOR = File.pathSeparator;
 	private static final String RUNNER = "com.gzoltar.core.instr.Runner";
 
 	private transient final File agent;
 	private transient Spectra spectra;
+
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public GZoltarJava7() throws IOException {
 		this(System.getProperty("user.dir"));
@@ -123,7 +130,18 @@ public final class GZoltarJava7 extends GZoltar {
 
 			ProcessBuilder processBuilder = new ProcessBuilder(parameters);
 			processBuilder.directory(new File(this.getWorkingDirectory()));
-			processBuilder.start().waitFor();
+			processBuilder.redirectErrorStream(true);
+			Process process = processBuilder.start();
+
+			InputStream stream = new BufferedInputStream(process.getInputStream());
+			byte[] byteArray = new byte[1024];
+			this.logger.debug(">>> Begin subprocess output");
+			int i;
+			while ((i = stream.read(byteArray)) != -1) {
+				this.logger.debug(new String(byteArray, 0, i));
+			}
+			this.logger.debug("<<< End subprocess output");
+			process.waitFor();
 			localResponse = message.getResponse();
 		} catch (InterruptedException | IOException localException) {
 			throw new RuntimeException(localException);
