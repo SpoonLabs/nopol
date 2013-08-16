@@ -117,7 +117,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 
 		Logger logger = LoggerFactory.getLogger(this.getClass());
 		if (logger.isDebugEnabled()) {
-			logger.debug("\n{}", Joiner.on('\n').join(statements));
+			logger.debug("Suspicious statements:\n{}", Joiner.on('\n').join(statements));
 		}
 
 		// TODO delete this method call
