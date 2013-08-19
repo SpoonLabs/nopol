@@ -20,7 +20,7 @@ import java.util.concurrent.ThreadFactory;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
 public final class ProvidedClassLoaderThreadFactory implements ThreadFactory {
 
@@ -36,7 +36,7 @@ public final class ProvidedClassLoaderThreadFactory implements ThreadFactory {
 		this.classLoader = classLoader;
 		try {
 			this.constructor = (Constructor<Thread>) classLoader.loadClass(Thread.class.getName()).getConstructor(
-					Runnable.class);
+					Runnable.class, String.class);
 		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
@@ -50,11 +50,12 @@ public final class ProvidedClassLoaderThreadFactory implements ThreadFactory {
 	public Thread newThread(final Runnable r) {
 		Thread newThread;
 		try {
-			newThread = this.constructor.newInstance(r);
+			newThread = this.constructor.newInstance(r, this.getClass().getSimpleName());
 		} catch (ReflectiveOperationException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
+		newThread.setDaemon(true);
 		newThread.setContextClassLoader(this.classLoader);
 		return newThread;
 	}
