@@ -94,11 +94,11 @@ public final class ConditionalsConstraintModelBuilder {
 		try {
 			Result firstResult = executor.submit(
 					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model, booleanValue))).get(
-							TIMEOUT_IN_SECONDS, SECONDS);
+					TIMEOUT_IN_SECONDS, SECONDS);
 			booleanValue = !booleanValue;
 			Result secondResult = executor.submit(
 					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model, booleanValue))).get(
-							TIMEOUT_IN_SECONDS, SECONDS);
+					TIMEOUT_IN_SECONDS, SECONDS);
 			this.determineViability(firstResult, secondResult);
 		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block
@@ -106,6 +106,7 @@ public final class ConditionalsConstraintModelBuilder {
 		} catch (TimeoutException e) {
 			this.logger.warn("Timeout after {} seconds. Infinite loop?", TIMEOUT_IN_SECONDS);
 			this.viablePatch = false;
+			booleanValue = !booleanValue;
 		} finally {
 			executor.shutdownNow();
 		}
