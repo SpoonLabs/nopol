@@ -1,0 +1,18 @@
+Context
+=======
+
+Software, something made by humans, is not perfect. Formally we call those imperfections "bugs". Informally something on the line of "wtf is happening?"
+
+Solving bugs it's a manual and time consuming task. Wouldn't be great to have an automated way to solve (most) of them?
+
+Introduction
+============
+
+
+
+
+
+Making it easy to solve may avoid "the blame game".
+
+
+Semfix: An automated repair method based on symbolic execution, constraint solving and program synthesis. Semfix tries to fix a bug using symbolic execution, an SMT solver and program synthesis.

@@ -1,6 +1,6 @@
 \documentclass{beamer}
-% \documentclass[handout]{beamer}
-% \setbeameroption{show notes}
+%\documentclass[handout]{beamer}
+%\setbeameroption{show notes}
 
 
 % Think backwards: what do you want people to remember from your talk?
@@ -19,10 +19,12 @@
   \usetheme{Warsaw}
   \setbeamercovered{transparent}
 }
-\title
-  [Program Repair via Semantic Analysis]
-  {Program~Repair~via~Semantic~Analysis}
-\author[DeMarco]{Favio~DeMarco}
+
+\usepackage{listings}
+%\lstset{basicstyle=\scriptsize}
+
+\title[{Repairing Bugs in Conditional Expressions}]{Repairing~Bugs~in~Conditional~Expressions}
+\author[Favio DeMarco]{Favio~DeMarco}
 \institute[U.B.A. - INRIA]{Universidad de Buenos Aires - INRIA}
 \date[08/28/2013]{August 28th, 2013}
 \subject{Computational Sciences}
@@ -31,11 +33,10 @@
 
   \frame
   {
-    \frametitle{Fin}
 \begin{quote}
     Take nothing on its looks; take everything on evidence. There's no better rule.
 \end{quote}    
-– Charles Dickens 
+– Charles Dickens, ``Great Expectations.''
   }
 
 \frame
@@ -45,25 +46,48 @@
 
   \frame
   {
-    \frametitle{Introduction}
-    Program repair via semantic Analysis.
-  }
-
-  \frame
-  {
     \frametitle{Context}
+    \framesubtitle{So far, the Universe is winning.}
     \begin{quote}
     Bug fixing continues to be a mostly manual, time consuming, and therefore expensive activity in software development.
     \end{quote}
-    Hoang Duong Thien Nguyen et al.
+    Hoang Duong Thien Nguyen et al, ``SemFix: Program Repair via Semantic Analysis''
 }
 
-  \frame
-  {
+ \begin{frame}[fragile]
     \frametitle{Case study}
-    Simplified Java clone of ``SemFix: Program Repair via Semantic Analysis''
-Hoang Duong Thien Nguyen, Dawei Qi, Abhik Roychoudhury, and Satish Chandra
-  }
+      \framesubtitle{Commons Math}
+        \begin{lstlisting}[escapeinside=\[\]]
+public static int gcd(int u, int v) {
+    if ([\textbf{u * v == 0}]) {
+        return (Math.abs(u) + Math.abs(v));
+    }
+    // ...
+}
+	\end{lstlisting}
+\end{frame}
+
+ \begin{frame}[fragile]
+    \frametitle{Case study}
+      \framesubtitle{Commons Math}
+        \begin{lstlisting}[escapeinside=\[\]]
+assertEquals([\textbf{3 * (1$<<$15)}]
+        , gcd(3 * (1<<20), 9 * (1<<15)));
+	\end{lstlisting}
+\end{frame}
+
+ \begin{frame}[fragile]
+    \frametitle{Case study}
+      \framesubtitle{Commons Math}
+        \begin{lstlisting}[escapeinside=\[\]]
+public static int gcd(int u, int v) {
+    if ([\textbf{(u == 0) $||$ (v == 0)}]) {
+        return (Math.abs(u) + Math.abs(v));
+    }
+    // ...
+}
+	\end{lstlisting}
+\end{frame}
 
 {
 \usebackgroundtemplate{\includegraphics[width=\paperwidth]{500daysofsummer}}%
@@ -79,9 +103,7 @@ Hoang Duong Thien Nguyen, Dawei Qi, Abhik Roychoudhury, and Satish Chandra
     SemFix: Program Repair via Semantic Analysis
 
 Hoang Duong Thien Nguyen, Dawei Qi, Abhik Roychoudhury, and Satish Chandra
-
-\note{An automated repair method based on symbolic execution, constraint solving and program synthesis. Semfix tries to fix a bug using symbolic execution, an SMT solver and program synthesis.}
-  }
+ }
 
 
   \frame
@@ -103,7 +125,17 @@ Claire Le Goues, ThanhVu Nguyen, Stephanie Forrest, Westley Weimer
     \frametitle{Problems}
     Unwillingness to share code.
   }
-  
+
+  \frame
+  {
+    \frametitle{Problems}
+    \framesubtitle{Test quality}
+   \begin{quote}
+    Quality is free, but only to those who are willing to pay heavily for it.
+   \end{quote}
+   – Tom DeMarco, Peopleware
+  }
+ 
   \frame
   {
     \frametitle{Limitations}
@@ -139,6 +171,12 @@ Claire Le Goues, ThanhVu Nguyen, Stephanie Forrest, Westley Weimer
     \frametitle{Conclusion}
     
   }
+
+  \frame
+  {
+    \frametitle{Contribution}
+    
+  }
   
  \frame
   {
@@ -147,7 +185,6 @@ Claire Le Goues, ThanhVu Nguyen, Stephanie Forrest, Westley Weimer
 
 %Programming today is a race between software engineers striving to build bigger and better idiot-proof programs, and the Universe trying to produce bigger and better idiots. So far, the Universe is winning.
 % Rick Cook, The Wizardry Compiled
-
 }
 
 \end{document}
