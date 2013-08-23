@@ -20,6 +20,7 @@ import static fr.inria.lille.jefix.patch.Patch.NO_PATCH;
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,12 @@ final class JEFix {
 			return NO_PATCH;
 		}
 
-		Iterable<SuspiciousStatement> statements = this.gZoltar.sortBySuspiciousness(testClasses);
+		Collection<SuspiciousStatement> statements = this.gZoltar.sortBySuspiciousness(testClasses);
+
+		if (statements.isEmpty()) {
+			System.out.println("No suspicious statements found.");
+		}
+
 		for (SuspiciousStatement statement : statements) {
 			this.logger.debug("Analysing {}", statement);
 			Patch newRepair = this.synthetizerFactory.getFor(statement.getSourceLocation()).buildPatch(this.classpath,
