@@ -23,6 +23,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import sacha.finder.classes.impl.ClassloaderFinder;
 import sacha.finder.filters.impl.TestFilter;
 import sacha.finder.processor.Processor;
@@ -37,6 +40,8 @@ import fr.inria.lille.jefix.threads.ProvidedClassLoaderThreadFactory;
  * 
  */
 public final class TestClassesFinder implements Callable<String[]> {
+
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Override
 	public String[] call() throws Exception {
@@ -61,6 +66,14 @@ public final class TestClassesFinder implements Callable<String[]> {
 		} finally {
 			executor.shutdown();
 		}
+
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug("Test clasess:");
+			for (String testClass : testClasses) {
+				this.logger.debug(testClass);
+			}
+		}
+
 		return testClasses;
 	}
 }
