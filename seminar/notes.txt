@@ -1,13 +1,27 @@
 Context
 =======
 
-Software, something made by humans, is not perfect. Formally we call those imperfections "bugs". Informally something on the line of "wtf is happening?"
+Software, something made by humans, is not perfect. Formally we call those imperfections "bugs". Informally we curse the computer.
 
-Solving bugs it's a manual and time consuming task. Wouldn't be great to have an automated way to solve (most) of them?
+Solving bugs it's a manual and time consuming task. Wouldn't be great to have an automated way to solve them? What if a program can solve or help solve some of them?
 
-Introduction
-============
+Case study
+==== =====
 
+The idea is to try to solve a bug in a conditional expression using as input the source code and a set of tests with at least one failing test.
+
+That's the input of the developed tool.
+
+The output is a patched java file. The tool does not require any additional input like models or contracts.
+
+-- Oracle-Guided Component-Based Program Synthesis + Semfix: An automated repair method based on symbolic execution, constraint solving and program synthesis
+
+Problems
+========
+
+It will fail if a test exercises both branches of the conditional.
+
+Like in the Commons Math case it can 
 
 
 
