@@ -56,15 +56,14 @@
 
  \begin{frame}[fragile]
     \frametitle{Case study}
-      \framesubtitle{Commons Math}
-        \begin{lstlisting}[escapeinside=\[\]]
+      \framesubtitle{Commons Math - MathUtils class}
+\begin{lstlisting}[escapeinside=\[\]]
 public static int gcd(int u, int v) {
-    if ([\textbf{u * v == 0}]) {
-        return (Math.abs(u) + Math.abs(v));
-    }
-    // ...
-}
-	\end{lstlisting}
+  if ([\textbf{u * v == 0}]) {
+    return (Math.abs(u) + Math.abs(v));
+  }
+...
+\end{lstlisting}
 \end{frame}
 
  \begin{frame}[fragile]
@@ -88,6 +87,18 @@ public static int gcd(int u, int v) {
 }
 	\end{lstlisting}
 \end{frame}
+
+\frame
+  {  
+  \frametitle{Case study}
+      \framesubtitle{Process}
+\begin{itemize}
+\item Statement ranking (GZoltar)  $\rightarrow$
+\item Ad hoc code manipulation and values capturing (OGCBPS\footnote{Oracle-Guided Component-Based Program Synthesis} -paper-) $\rightarrow$
+\item Repair Constraint  $\rightarrow$
+\item Program Synthesis (SOLFP\footnote{Synthesis of Loop-free Programs} -paper-)
+\end{itemize}
+}
 
 {
 \usebackgroundtemplate{\includegraphics[width=\paperwidth]{500daysofsummer}}%
@@ -137,6 +148,18 @@ Claire Le Goues, ThanhVu Nguyen, Stephanie Forrest, Westley Weimer
     Quality is free, but only to those who are willing to pay heavily for it.
    \end{quote}
    – Tom DeMarco, Peopleware
+   
+   
+%    0 != up_sep
+%    
+%    or (adding a border case test)
+%    
+%    !((up_sep <= inhibit) && ((down_sep == 100) || (inhibit < 1)))
+%    
+%    !=
+%    
+%    ((0 != inhibit) ? (up_sep + 100) : up_sep) > down_sep
+   
   }
  
   \frame
@@ -184,10 +207,91 @@ Claire Le Goues, ThanhVu Nguyen, Stephanie Forrest, Westley Weimer
  \frame
   {
     \frametitle{Can't and shouldn't.}
-\includegraphics[width=.85\paperwidth]{cnr}
+\includegraphics[width=.8\paperwidth]{cnr}
+
+}
 
 %Programming today is a race between software engineers striving to build bigger and better idiot-proof programs, and the Universe trying to produce bigger and better idiots. So far, the Universe is winning.
 % Rick Cook, The Wizardry Compiled
+
+
+ \begin{frame}[fragile]
+    \frametitle{Case study}
+      \framesubtitle{Commons Math - MathUtils class}
+\begin{lstlisting}[escapeinside=\[\]]
+411: public static int gcd(int u, int v) {
+412:   if ([\textbf{u * v == 0}]) {
+413:     return (Math.abs(u) + Math.abs(v));
+414:   }
+...
+\end{lstlisting}
+\end{frame}
+
+ \begin{frame}[fragile]
+    \frametitle{Case study}
+      \framesubtitle{Commons Math}
+        \begin{lstlisting}[escapeinside=\[\]]
+assertEquals([\textbf{3 * (1$<<$15)}]
+        , gcd(3 * (1<<20), 9 * (1<<15)));
+	\end{lstlisting}
+\end{frame}
+
+ \begin{frame}[fragile]
+    \frametitle{Case study}
+      \framesubtitle{Statement ranking (GZoltar)}
+\begin{verbatim}
+MathUtils:413 Suspiciousness 0.23570226039551587
+MathUtils:431 Suspiciousness 0.1543033499620919
+\end{verbatim}
+...
+\begin{verbatim}
+MathUtils:460 Suspiciousness 0.11322770341445956
+MathUtils:412 Suspiciousness 0.11180339887498948
+\end{verbatim}
+\end{frame}
+
+ \begin{frame}[fragile]
+    \frametitle{Case study}
+      \framesubtitle{Ad hoc code manipulation and values capturing (OGCBPS -paper-)}
+\begin{lstlisting}[escapeinside=\[\]]
+411: public static int gcd(int u, int v) {
+412:   if ([\textbf{true}]) {
+413:     return (Math.abs(u) + Math.abs(v));
+414:   }
+...
+\end{lstlisting}
+\end{frame}
+
+  \frame
+  {  
+  \frametitle{Case study}
+      \framesubtitle{Repair Constraint}
+\begin{equation*}
+ (u=0\wedge v=0 \Rightarrow output=true) \wedge
+\end{equation*}
+\begin{equation*}
+ (u=0\wedge v=55 \Rightarrow output=true) \wedge 
+\end{equation*}
+\begin{equation*}
+...
+\end{equation*}
+\begin{equation*}
+ (u=77\wedge v=55 \Rightarrow output=false)
+\end{equation*}
 }
+
+ \begin{frame}[fragile]
+    \frametitle{Case study}
+      \framesubtitle{Commons Math}
+        \begin{lstlisting}[escapeinside=\[\]]
+public static int gcd(int u, int v) {
+    if ([\textbf{(u == 0) $||$ (v == 0)}]) {
+        return (Math.abs(u) + Math.abs(v));
+    }
+    // ...
+}
+	\end{lstlisting}
+\end{frame}
+
 
 \end{document}
