@@ -88,18 +88,6 @@ public static int gcd(int u, int v) {
 	\end{lstlisting}
 \end{frame}
 
-\frame
-  {  
-  \frametitle{Case study}
-      \framesubtitle{Process}
-\begin{itemize}
-\item Statement ranking (GZoltar)  $\rightarrow$
-\item Ad hoc code manipulation and values capturing (OGCBPS\footnote{Oracle-Guided Component-Based Program Synthesis} -paper-) $\rightarrow$
-\item Repair Constraint  $\rightarrow$
-\item Program Synthesis (SOLFP\footnote{Synthesis of Loop-free Programs} -paper-)
-\end{itemize}
-}
-
 {
 \usebackgroundtemplate{\includegraphics[width=\paperwidth]{500daysofsummer}}%
   \frame
@@ -113,9 +101,9 @@ public static int gcd(int u, int v) {
     \frametitle{State of the art}
     SemFix: Program Repair via Semantic Analysis
 \begin{itemize}
-\item Statement ranking (Tarantula)
-\item Symbolic Execution (KLEE) $\rightarrow$ Repair Constraint
-\item Program Synthesis (SOLFP -paper-)
+\item Statement ranking (Tarantula) $\rightarrow$
+\item Symbolic Execution (KLEE) $\rightarrow$
+\item Repair Constraint $\rightarrow$  Program Synthesis (SOLFP\footnote{Synthesis of Loop-free Programs} -paper-)
 \end{itemize}
  }
 
@@ -169,9 +157,16 @@ Claire Le Goues, ThanhVu Nguyen, Stephanie Forrest, Westley Weimer
   }
 
   \frame
-  {
+  {  
     \frametitle{Contributions}
-  }
+      \framesubtitle{Process}
+\begin{itemize}
+\item Statement ranking (GZoltar)  $\rightarrow$
+\item Ad hoc code manipulation and values capturing (OGCBPS\footnote{Oracle-Guided Component-Based Program Synthesis} -paper-) $\rightarrow$
+\item Repair Constraint  $\rightarrow$
+\item Program Synthesis (SOLFP\footnote{Synthesis of Loop-free Programs} -paper-)
+\end{itemize}
+}
 
 
   \frame
