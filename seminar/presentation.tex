@@ -99,22 +99,43 @@ public static int gcd(int u, int v) {
   \frame
   {
     \frametitle{State of the art}
-    SemFix: Program Repair via Semantic Analysis
+    \framesubtitle{Trial and error}
+\textit{``Fault Localization'' (aka Statement Ranking)}
+
+\texttt{while} \textit{it doesn't pass all tests}
+
+$\rightarrow$ \textit{generate a candidate and apply it}
+
+\texttt{end while}
+}
+
+
+{
+\usebackgroundtemplate{\includegraphics[width=\paperwidth]{santa_claus_animated_wallpaper_2-other}}
+  \frame
+  {
+    \frametitle{State of the art}
+    \framesubtitle{SemFix: Program Repair via Semantic Analysis}
 \begin{itemize}
-\item Statement ranking (Tarantula) $\rightarrow$
-\item Symbolic Execution (KLEE) $\rightarrow$
-\item Repair Constraint $\rightarrow$  Program Synthesis (SOLFP\footnote{Synthesis of Loop-free Programs} -paper-)
+\item \textbf{Statement ranking (Tarantula)} $\rightarrow$
+\item \textbf{Symbolic Execution (KLEE)} $\rightarrow$
+\item \textbf{Repair Constraint} $\rightarrow$
+\item \textbf{Program Synthesis (SOLFP\footnote{Synthesis of Loop-free Programs} -paper-)}
 \end{itemize}
+ }
  }
 
 
   \frame
   {
     \frametitle{State of the art}
-    GenProg: A Generic Method for Automatic Software Repair
+    \framesubtitle{GenProg: A Generic Method for Automatic Software Repair}
+\begin{itemize}
+\item Statement ranking $\rightarrow$
+\item Genetic Algorithm
+\end{itemize}
     
-Claire Le Goues, ThanhVu Nguyen, Stephanie Forrest, Westley Weimer
-  }
+}
 
   \frame
   {
@@ -125,7 +146,10 @@ Claire Le Goues, ThanhVu Nguyen, Stephanie Forrest, Westley Weimer
   \frame
   {
     \frametitle{Problems}
-    Unwillingness to share code.
+\begin{itemize}
+\item Can't automate the testing process.
+\item It's not easy to find candidates.
+\end{itemize}    
   }
 
   \frame
@@ -135,9 +159,10 @@ Claire Le Goues, ThanhVu Nguyen, Stephanie Forrest, Westley Weimer
    \begin{quote}
     Quality is free, but only to those who are willing to pay heavily for it.
    \end{quote}
-   – Tom DeMarco, Peopleware
-   
-   
+    Tom DeMarco, Peopleware   
+  }
+  
+     
 %    0 != up_sep
 %    
 %    or (adding a border case test)
@@ -147,13 +172,19 @@ Claire Le Goues, ThanhVu Nguyen, Stephanie Forrest, Westley Weimer
 %    !=
 %    
 %    ((0 != inhibit) ? (up_sep + 100) : up_sep) > down_sep
-   
-  }
+
  
   \frame
   {
     \frametitle{Limitations}
-    Resources (time, code monkeys, knowledge, tools, etc.).
+    \framesubtitle{Test quality}
+\begin{itemize}
+\item Only 1 set of input values.
+\item Branch coverage.
+\item A \textit{removed} precondition can generate an infinite loop.
+\item Tests that exercise both branches.
+\item Generates \textit{a} fix not \textbf{THE} fix.
+\end{itemize}        
   }
 
   \frame
