@@ -49,6 +49,8 @@ public final class InputModelBuilder {
 			new MultiplicationModelBuilder().addTo(model);
 		case ITE_ARRAY_ACCESS:
 			new IfThenElseModelBuilder().addTo(model);
+		case COMPARISON_2:
+			new ComparisonModelBuilder().addTo(model);
 		case ARITHMETIC:
 			new ArithmeticModelBuilder().addTo(model);
 		case LOGIC:

@@ -134,11 +134,10 @@ final class ConditionalLoggingInstrumenter implements Processor {
 	}
 
 	private CtStatement getStatement(final CtCodeElement codeElement) {
-		CtElement parent = codeElement;
-		while (!(parent instanceof CtStatement)) {
-			parent = parent.getParent();
+		if (codeElement instanceof CtStatement) {
+			return (CtStatement) codeElement;
 		}
-		return (CtStatement) parent;
+		return codeElement.getParent(CtStatement.class);
 	}
 
 	private Collection<CtVariable<?>> getVariablesInLocalScope(final CtElement el, final Set<CtElement> stoppers) {

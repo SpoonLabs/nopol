@@ -15,8 +15,11 @@
  */
 package fr.inria.lille.jefix.synth.precondition;
 
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtClass;
 
 import com.google.common.base.Predicate;
 
@@ -30,6 +33,7 @@ public enum SpoonStatementPredicate implements Predicate<CtCodeElement> {
 
 	@Override
 	public boolean apply(final CtCodeElement input) {
-		return input instanceof CtExpression;
+		return input instanceof CtStatement
+				&& !(input instanceof CtClass || input instanceof CtBlock || input instanceof CtReturn);
 	}
 }

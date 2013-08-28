@@ -15,10 +15,10 @@
  */
 package fr.inria.lille.jefix.synth.precondition;
 
+import org.slf4j.LoggerFactory;
+
 import spoon.reflect.Factory;
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtElement;
 import fr.inria.lille.jefix.synth.Processor;
 
 /**
@@ -33,19 +33,12 @@ public final class ConditionalAdder implements Processor {
 		this.snippet = "if(" + variableName + ')';
 	}
 
-	private CtStatement getStatement(final CtCodeElement codeElement) {
-		CtElement parent = codeElement;
-		while (!(parent instanceof CtStatement)) {
-			parent = parent.getParent();
-		}
-		return (CtStatement) parent;
-	}
-
 	/**
 	 * @see fr.inria.lille.jefix.synth.Processor#process(spoon.reflect.Factory, spoon.reflect.code.CtCodeElement)
 	 */
 	@Override
 	public void process(final Factory factory, final CtCodeElement element) {
-		this.getStatement(element).insertBefore(factory.Code().createCodeSnippetStatement(this.snippet));
+		element.replace(factory.Code().createCodeSnippetStatement(this.snippet + element.toString()));
+		LoggerFactory.getLogger(this.getClass()).debug(element.getParent().getParent().toString());
 	}
 }

@@ -15,8 +15,8 @@
  */
 package fr.inria.lille.jefix.synth;
 
+import static fr.inria.lille.jefix.patch.Level.ARITHMETIC;
 import static fr.inria.lille.jefix.patch.Level.CONSTANTS;
-import static fr.inria.lille.jefix.patch.Level.MULTIPLICATION;
 import static fr.inria.lille.jefix.patch.Patch.NO_PATCH;
 
 import java.net.URL;
@@ -70,7 +70,7 @@ public final class Synthesizer {
 		InputModel model = modelBuilder.buildFor(level);
 		ConstraintSolver constraintSolver = new ConstraintSolver();
 		RepairCandidate newRepair = constraintSolver.solve(model);
-		while (null == newRepair && level != MULTIPLICATION) {
+		while (null == newRepair && level != ARITHMETIC) {
 			level = level.next();
 			model = modelBuilder.buildFor(level);
 			newRepair = constraintSolver.solve(model);

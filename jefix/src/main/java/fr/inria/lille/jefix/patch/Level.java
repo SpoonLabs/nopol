@@ -20,7 +20,7 @@ package fr.inria.lille.jefix.patch;
  * 
  */
 public enum Level {
-	CONSTANTS, COMPARISON, LOGIC, ARITHMETIC, ITE_ARRAY_ACCESS, MULTIPLICATION;
+	CONSTANTS, COMPARISON, LOGIC, ARITHMETIC, COMPARISON_2, ITE_ARRAY_ACCESS, MULTIPLICATION;
 
 	public Level next() {
 		return values()[this.ordinal() + 1];
