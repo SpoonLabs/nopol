@@ -36,11 +36,13 @@ public final class ValuesCollector {
 	private static final Map<String, Object> VALUES = new HashMap<String, Object>();
 
 	public static Object add(final String name, final Object value) {
-		if (null != value) {
+		boolean isNotNull = null != value;
+		addValue(name + "!=null", isNotNull);
+		if (isNotNull) {
 			addSubValues(name, value);
 		}
 		if (Type.isOfAKnownType(value)) {
-			return VALUES.put(name, value);
+			return addValue(name, value);
 		}
 		return null;
 	}
@@ -71,4 +73,8 @@ public final class ValuesCollector {
 	 * 
 	 */
 	private ValuesCollector() {}
+
+	public static Object addValue(final String name, final Object value) {
+		return VALUES.put(name, value);
+	}
 }

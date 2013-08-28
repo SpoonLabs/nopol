@@ -29,7 +29,7 @@ final class CollectionSubValuesCollector implements SubValuesCollector {
 	@Override
 	public void addSubValues(final String name, final Object value) {
 		Collection<?> collection = (Collection<?>) value;
-		ValuesCollector.add(name + ".size()", collection.size());
-		ValuesCollector.add(name + ".isEmpty()", collection.isEmpty());
+		ValuesCollector.addValue(name + ".size()", collection.size());
+		ValuesCollector.addValue(name + ".isEmpty()", collection.isEmpty());
 	}
 }

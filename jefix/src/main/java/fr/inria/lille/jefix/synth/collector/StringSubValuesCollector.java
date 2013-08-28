@@ -28,7 +28,7 @@ final class StringSubValuesCollector implements SubValuesCollector {
 	@Override
 	public void addSubValues(final String name, final Object value) {
 		String string = (String) value;
-		ValuesCollector.add(name + ".length()", string.length());
-		ValuesCollector.add(name + ".isEmpty()", string.isEmpty());
+		ValuesCollector.addValue(name + ".length()", string.length());
+		ValuesCollector.addValue(name + ".isEmpty()", string.isEmpty());
 	}
 }

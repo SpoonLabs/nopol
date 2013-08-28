@@ -3,6 +3,7 @@ package fr.inria.lille.jefix.synth.collector;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -35,6 +36,7 @@ public class ValuesCollectorTest {
 
 		// THEN
 		Iterator<Entry<String, Object>> iterator = ValuesCollector.getValues().iterator();
+
 		Entry<String, Object> isEmpty = iterator.next();
 		assertEquals(name + ".isEmpty()", isEmpty.getKey());
 		assertEquals(value.isEmpty(), isEmpty.getValue());
@@ -42,6 +44,10 @@ public class ValuesCollectorTest {
 		Entry<String, Object> size = iterator.next();
 		assertEquals(name + ".size()", size.getKey());
 		assertEquals(value.size(), size.getValue());
+
+		Entry<String, Object> isNotNull = iterator.next();
+		assertEquals(name + "!=null", isNotNull.getKey());
+		assertTrue((Boolean) isNotNull.getValue());
 
 		assertFalse(iterator.hasNext());
 	}
@@ -65,6 +71,10 @@ public class ValuesCollectorTest {
 		assertEquals(name + ".length()", length.getKey());
 		assertEquals(value.length(), length.getValue());
 
+		Entry<String, Object> isNotNull = iterator.next();
+		assertEquals(name + "!=null", isNotNull.getKey());
+		assertTrue((Boolean) isNotNull.getValue());
+
 		assertFalse(iterator.hasNext());
 	}
 
@@ -82,6 +92,10 @@ public class ValuesCollectorTest {
 		Entry<String, Object> entry = iterator.next();
 		assertEquals(name + ".length", entry.getKey());
 		assertEquals(value.length, entry.getValue());
+
+		Entry<String, Object> isNotNull = iterator.next();
+		assertEquals(name + "!=null", isNotNull.getKey());
+		assertTrue((Boolean) isNotNull.getValue());
 
 		assertFalse(iterator.hasNext());
 	}

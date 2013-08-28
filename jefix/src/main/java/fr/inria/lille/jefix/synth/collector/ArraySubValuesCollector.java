@@ -28,6 +28,6 @@ final class ArraySubValuesCollector implements SubValuesCollector {
 	 */
 	@Override
 	public void addSubValues(final String name, final Object value) {
-		ValuesCollector.add(name + ".length", Array.getLength(value));
+		ValuesCollector.addValue(name + ".length", Array.getLength(value));
 	}
 }
