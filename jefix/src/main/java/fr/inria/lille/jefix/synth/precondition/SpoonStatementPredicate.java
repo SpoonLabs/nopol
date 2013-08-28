@@ -25,7 +25,7 @@ import com.google.common.base.Predicate;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
 public enum SpoonStatementPredicate implements Predicate<CtCodeElement> {
 
@@ -34,6 +34,7 @@ public enum SpoonStatementPredicate implements Predicate<CtCodeElement> {
 	@Override
 	public boolean apply(final CtCodeElement input) {
 		return input instanceof CtStatement
-				&& !(input instanceof CtClass || input instanceof CtBlock || input instanceof CtReturn);
+				&& !(input instanceof CtClass || input instanceof CtBlock || input instanceof CtReturn)
+				&& input.getParent() instanceof CtStatement;
 	}
 }
