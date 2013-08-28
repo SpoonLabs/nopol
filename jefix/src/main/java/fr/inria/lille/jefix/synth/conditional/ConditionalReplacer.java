@@ -1,32 +1,26 @@
 package fr.inria.lille.jefix.synth.conditional;
 
-import java.io.File;
-
-import spoon.processing.AbstractProcessor;
+import spoon.reflect.Factory;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
-import spoon.reflect.cu.SourcePosition;
 import spoon.support.reflect.code.CtCodeSnippetExpressionImpl;
+import fr.inria.lille.jefix.synth.Processor;
 
 /**
  * @author Favio D. DeMarco
  */
-public final class ConditionalReplacer extends AbstractProcessor<CtCodeElement> {
+public final class ConditionalReplacer implements Processor {
 
-	private final File file;
-	private final int line;
 	private final String value;
 
 	/**
 	 * @param file
 	 * @param line
 	 */
-	public ConditionalReplacer(final File file, final int line, final String value) {
-		this.file = file;
-		this.line = line;
+	public ConditionalReplacer(final String value) {
 		this.value = value;
 	}
 
@@ -46,22 +40,11 @@ public final class ConditionalReplacer extends AbstractProcessor<CtCodeElement> 
 		return condition;
 	}
 
-	/**
-	 * @see spoon.processing.AbstractProcessor#isToBeProcessed(spoon.reflect.declaration.CtElement)
-	 */
 	@Override
-	public boolean isToBeProcessed(final CtCodeElement candidate) {
-		SourcePosition position = candidate.getPosition();
-		boolean isConditional = candidate instanceof CtIf || candidate instanceof CtConditional;
-		return isConditional && position.getLine() == this.line
-				&& position.getFile().getAbsolutePath().equals(this.file.getAbsolutePath());
-	}
-
-	@Override
-	public void process(final CtCodeElement element) {
+	public void process(final Factory facotry, final CtCodeElement element) {
 		// we declare a new snippet of code to be inserted
 		CtCodeSnippetExpression<Boolean> snippet = new CtCodeSnippetExpressionImpl<>();
-		snippet.setFactory(this.getFactory());
+		snippet.setFactory(facotry);
 		snippet.setValue(this.value);
 		CtExpression<Boolean> condition = this.getCondition(element);
 		condition.replace(snippet);

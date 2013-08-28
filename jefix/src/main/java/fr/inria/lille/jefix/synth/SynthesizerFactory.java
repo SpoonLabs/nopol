@@ -15,8 +15,6 @@
  */
 package fr.inria.lille.jefix.synth;
 
-import static fr.inria.lille.jefix.synth.Synthetizer.NO_OP_SYNTHETIZER;
-
 import java.io.File;
 
 import org.slf4j.Logger;
@@ -29,13 +27,16 @@ import spoon.support.DefaultCoreFactory;
 import spoon.support.QueueProcessingManager;
 import spoon.support.StandardEnvironment;
 import fr.inria.lille.jefix.SourceLocation;
-import fr.inria.lille.jefix.synth.conditional.ConditionalSynthetizer;
+import fr.inria.lille.jefix.synth.conditional.ConditionalReplacer;
+import fr.inria.lille.jefix.synth.conditional.SpoonConditionalPredicate;
+import fr.inria.lille.jefix.synth.precondition.ConditionalAdder;
+import fr.inria.lille.jefix.synth.precondition.SpoonStatementPredicate;
 
 /**
  * @author Favio D. DeMarco
  * 
  */
-public final class SynthetizerFactory {
+public final class SynthesizerFactory {
 
 	private final File sourceFolder;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -44,16 +45,27 @@ public final class SynthetizerFactory {
 	/**
 	 * 
 	 */
-	public SynthetizerFactory(final File sourceFolder) {
+	public SynthesizerFactory(final File sourceFolder) {
 		this.sourceFolder = sourceFolder;
 	}
 
-	public Synthetizer getFor(final SourceLocation statement) {
+	public Synthesizer getFor(final SourceLocation statement) {
+		DelegatingProcessor processor;
 		if (this.isConditional(statement)) {
-			return new ConditionalSynthetizer(this.sourceFolder, statement);
+			processor = new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE,
+					statement.getSourceFile(this.sourceFolder), statement.getLineNumber());
+			processor.addProcessor(new ConditionalReplacer(ConditionalValueHolder.VARIABLE_NAME)).addProcessor(
+					new ConditionalLoggingInstrumenter());
+		} else {
+			processor = new DelegatingProcessor(SpoonStatementPredicate.INSTANCE,
+					statement.getSourceFile(this.sourceFolder), statement.getLineNumber());
+			processor.addProcessor(new ConditionalLoggingInstrumenter()).addProcessor(
+					new ConditionalAdder(ConditionalValueHolder.VARIABLE_NAME));
+			this.logger.debug("No synthetizer found for {} trying a precondition", statement);
 		}
-		this.logger.debug("No synthetizer found for {}", statement);
-		return NO_OP_SYNTHETIZER;
+		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(this.sourceFolder, statement,
+				processor);
+		return new Synthesizer(constraintModelBuilder, statement);
 	}
 
 	private boolean isConditional(final SourceLocation rc) {

@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import fr.inria.lille.jefix.patch.Patch;
 import fr.inria.lille.jefix.sps.SuspiciousStatement;
 import fr.inria.lille.jefix.sps.gzoltar.GZoltarSuspiciousProgramStatements;
-import fr.inria.lille.jefix.synth.SynthetizerFactory;
+import fr.inria.lille.jefix.synth.SynthesizerFactory;
 import fr.inria.lille.jefix.test.junit.TestClassesFinder;
 import fr.inria.lille.jefix.test.junit.TestPatch;
 
@@ -40,7 +40,7 @@ final class JEFix {
 
 	private final URL[] classpath;
 	private final GZoltarSuspiciousProgramStatements gZoltar;
-	private final SynthetizerFactory synthetizerFactory;
+	private final SynthesizerFactory synthetizerFactory;
 	private final TestPatch testPatch;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final Logger patchLogger = LoggerFactory.getLogger("patch");
@@ -53,7 +53,7 @@ final class JEFix {
 	public JEFix(final File sourceFolder, final URL[] classpath) {
 		this.classpath = classpath;
 		this.gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath);
-		this.synthetizerFactory = new SynthetizerFactory(sourceFolder);
+		this.synthetizerFactory = new SynthesizerFactory(sourceFolder);
 		this.testPatch = new TestPatch(sourceFolder, classpath);
 	}
 

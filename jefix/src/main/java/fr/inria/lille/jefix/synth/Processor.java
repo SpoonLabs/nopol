@@ -13,22 +13,16 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.synth.conditional;
+package fr.inria.lille.jefix.synth;
 
-import org.junit.runner.Description;
-import org.junit.runner.notification.Failure;
-
-import com.google.common.base.Function;
+import spoon.reflect.Factory;
+import spoon.reflect.code.CtCodeElement;
 
 /**
  * @author Favio D. DeMarco
- * 
+ *
  */
-enum FailureToDescription implements Function<Failure, Description> {
-	INSTANCE;
+public interface Processor {
 
-	@Override
-	public Description apply(final Failure input) {
-		return input.getDescription();
-	}
+	void process(Factory factory, CtCodeElement element);
 }

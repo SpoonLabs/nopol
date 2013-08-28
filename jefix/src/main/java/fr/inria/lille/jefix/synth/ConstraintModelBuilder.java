@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.synth.conditional;
+package fr.inria.lille.jefix.synth;
 
 import static com.google.common.collect.ImmutableSet.copyOf;
 import static com.google.common.collect.Lists.transform;
@@ -36,11 +36,11 @@ import org.slf4j.LoggerFactory;
 import spoon.SpoonClassLoader;
 import spoon.processing.Builder;
 import spoon.processing.ProcessingManager;
+import spoon.processing.Processor;
 
 import com.google.common.collect.ImmutableSet;
 
 import fr.inria.lille.jefix.SourceLocation;
-import fr.inria.lille.jefix.synth.InputOutputValues;
 import fr.inria.lille.jefix.test.junit.JUnitRunner;
 import fr.inria.lille.jefix.threads.ProvidedClassLoaderThreadFactory;
 
@@ -48,32 +48,25 @@ import fr.inria.lille.jefix.threads.ProvidedClassLoaderThreadFactory;
  * @author Favio D. DeMarco
  * 
  */
-public final class ConditionalsConstraintModelBuilder {
+public final class ConstraintModelBuilder {
 
 	/**
 	 * XXX FIXME TODO should be a parameter
 	 */
 	private static final long TIMEOUT_IN_SECONDS = 60;
 
-	/**
-	 * Optimist...
-	 */
-	public static volatile boolean booleanValue = true;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final boolean debug = this.logger.isDebugEnabled();
 	private final ClassLoader spooner;
 	private boolean viablePatch;
 
-	ConditionalsConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation) {
+	public ConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation,
+			final Processor<?> processor) {
 		SpoonClassLoader scl = new SpoonClassLoader();
 		scl.getEnvironment().setDebug(this.debug);
 		ProcessingManager processingManager = scl.getProcessingManager();
-		File sourceFile = sourceLocation.getSourceFile(sourceFolder);
-		int lineNumber = sourceLocation.getLineNumber();
-		processingManager.addProcessor(new ConditionalReplacer(sourceFile, lineNumber, this.getClass().getName()
-				+ ".booleanValue"));
-		processingManager.addProcessor(new ConditionalLoggingInstrumenter(sourceFile, lineNumber));
+		processingManager.addProcessor(processor);
 		Builder builder = scl.getFactory().getBuilder();
 		try {
 			builder.addInputSource(sourceFolder);
@@ -86,19 +79,24 @@ public final class ConditionalsConstraintModelBuilder {
 		this.spooner = scl;
 	}
 
-	InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
+	/**
+	 * @see fr.inria.lille.jefix.synth.ConstraintModelBuilder#buildFor(java.net.URL[], java.lang.String[])
+	 */
+	public InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
 		InputOutputValues model = new InputOutputValues();
 		ClassLoader cl = new URLClassLoader(classpath, this.spooner);
 		// should use the url class loader
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
 		try {
 			Result firstResult = executor.submit(
-					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model, booleanValue))).get(
-					TIMEOUT_IN_SECONDS, SECONDS);
-			booleanValue = !booleanValue;
+					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model,
+							ConditionalValueHolder.booleanValue))).get(
+									TIMEOUT_IN_SECONDS, SECONDS);
+			ConditionalValueHolder.flip();
 			Result secondResult = executor.submit(
-					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model, booleanValue))).get(
-					TIMEOUT_IN_SECONDS, SECONDS);
+					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model,
+							ConditionalValueHolder.booleanValue))).get(
+									TIMEOUT_IN_SECONDS, SECONDS);
 			this.determineViability(firstResult, secondResult);
 		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block
@@ -106,7 +104,6 @@ public final class ConditionalsConstraintModelBuilder {
 		} catch (TimeoutException e) {
 			this.logger.warn("Timeout after {} seconds. Infinite loop?", TIMEOUT_IN_SECONDS);
 			this.viablePatch = false;
-			booleanValue = !booleanValue;
 		} finally {
 			executor.shutdownNow();
 		}
@@ -122,9 +119,9 @@ public final class ConditionalsConstraintModelBuilder {
 	}
 
 	/**
-	 * @return the viablePatch
+	 * @see fr.inria.lille.jefix.synth.ConstraintModelBuilder#isAViablePatch()
 	 */
-	boolean isAViablePatch() {
+	public boolean isAViablePatch() {
 		return this.viablePatch;
 	}
 }

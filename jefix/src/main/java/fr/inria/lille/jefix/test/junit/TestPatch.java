@@ -31,17 +31,18 @@ import spoon.processing.Builder;
 import spoon.processing.ProcessingManager;
 import spoon.support.JavaOutputProcessor;
 import fr.inria.lille.jefix.patch.Patch;
+import fr.inria.lille.jefix.synth.DelegatingProcessor;
 import fr.inria.lille.jefix.synth.conditional.ConditionalReplacer;
+import fr.inria.lille.jefix.synth.conditional.SpoonConditionalPredicate;
 import fr.inria.lille.jefix.threads.ProvidedClassLoaderThreadFactory;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
 public final class TestPatch {
 
-	private static final String SPOON_DIRECTORY = File.separator + ".."
-			+ File.separator + "spooned";
+	private static final String SPOON_DIRECTORY = File.separator + ".." + File.separator + "spooned";
 
 	private final URL[] classpath;
 	private final File sourceFolder;
@@ -70,8 +71,8 @@ public final class TestPatch {
 		this.logger.info("Applying patch: {}", patch);
 		File sourceFile = patch.getFile(this.sourceFolder);
 		int lineNumber = patch.getLineNumber();
-		processingManager.addProcessor(new ConditionalReplacer(sourceFile, lineNumber, patch.asString()));
-
+		processingManager.addProcessor(new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE, sourceFile,
+				lineNumber).addProcessor(new ConditionalReplacer(patch.asString())));
 		processingManager.addProcessor(new JavaOutputProcessor(new File(this.sourceFolder, SPOON_DIRECTORY)));
 
 		try {

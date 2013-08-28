@@ -13,31 +13,24 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.synth;
+package fr.inria.lille.jefix.synth.conditional;
 
-import static fr.inria.lille.jefix.patch.Patch.NO_PATCH;
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtConditional;
+import spoon.reflect.code.CtIf;
 
-import java.net.URL;
-
-import fr.inria.lille.jefix.patch.Patch;
+import com.google.common.base.Predicate;
 
 /**
  * @author Favio D. DeMarco
- * 
+ *
  */
-public interface Synthetizer {
+public enum SpoonConditionalPredicate implements Predicate<CtCodeElement> {
 
-	static final class DummySynthetizer implements Synthetizer {
+	INSTANCE;
 
-		private DummySynthetizer() {}
-
-		@Override
-		public Patch buildPatch(final URL[] classpath, final String[] testClasses) {
-			return NO_PATCH;
-		}
+	@Override
+	public boolean apply(final CtCodeElement input) {
+		return input instanceof CtIf || input instanceof CtConditional;
 	}
-
-	static final Synthetizer NO_OP_SYNTHETIZER = new DummySynthetizer();
-
-	Patch buildPatch(URL[] classpath, String[] testClasses);
 }

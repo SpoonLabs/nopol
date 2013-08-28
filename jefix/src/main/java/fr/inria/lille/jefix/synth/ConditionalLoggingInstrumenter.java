@@ -13,23 +13,20 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.synth.conditional;
+package fr.inria.lille.jefix.synth;
 
 import static spoon.reflect.declaration.ModifierKind.STATIC;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import spoon.processing.AbstractProcessor;
+import spoon.reflect.Factory;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtConditional;
-import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -51,7 +48,7 @@ import fr.inria.lille.jefix.synth.collector.ValuesCollector;
  * complex semantics of "static" and "final" (w.r.t. init, anonymous classes, etc.)
  * 
  */
-final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtStatement> {
+final class ConditionalLoggingInstrumenter implements Processor {
 
 	private static final class VariablesInLocalScopeVisitor extends CtAbstractVisitor {
 		private final Set<CtElement> stoppers;
@@ -97,18 +94,6 @@ final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtStatement
 
 	private static final String VALUES_COLLECTOR_CALL = ValuesCollector.class.getName() + ".add(\"";
 
-	private final File file;
-	private final int line;
-
-	/**
-	 * @param file
-	 * @param line
-	 */
-	ConditionalLoggingInstrumenter(final File file, final int line) {
-		this.file = file;
-		this.line = line;
-	}
-
 	/**
 	 * Returns all variables in this scope if el does not define a scope, returns an empty set
 	 * 
@@ -148,6 +133,14 @@ final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtStatement
 		return variables;
 	}
 
+	private CtStatement getStatement(final CtCodeElement codeElement) {
+		CtElement parent = codeElement;
+		while (!(parent instanceof CtStatement)) {
+			parent = parent.getParent();
+		}
+		return (CtStatement) parent;
+	}
+
 	private Collection<CtVariable<?>> getVariablesInLocalScope(final CtElement el, final Set<CtElement> stoppers) {
 		final Set<CtVariable<?>> variables = new HashSet<>();
 		// we will wisit some elements children of "el" to add the variables
@@ -173,15 +166,7 @@ final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtStatement
 	}
 
 	@Override
-	public boolean isToBeProcessed(final CtStatement candidate) {
-		SourcePosition position = candidate.getPosition();
-		boolean isConditional = candidate instanceof CtIf || candidate instanceof CtConditional;
-		return isConditional && position.getLine() == this.line
-				&& position.getFile().getAbsolutePath().equals(this.file.getAbsolutePath());
-	}
-
-	@Override
-	public void process(final CtStatement statement) {
+	public void process(final Factory factory, final CtCodeElement statement) {
 
 		boolean inStaticCode = this.hasStaticParent(statement);
 		StringBuilder snippet = new StringBuilder();
@@ -206,7 +191,7 @@ final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtStatement
 			}
 		}
 		if (snippet.length() > 0) {
-			statement.insertBefore(this.getFactory().Code().createCodeSnippetStatement(snippet.toString()));
+			this.getStatement(statement).insertBefore(factory.Code().createCodeSnippetStatement(snippet.toString()));
 		}
 	}
 }

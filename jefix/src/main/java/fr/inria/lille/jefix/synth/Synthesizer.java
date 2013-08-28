@@ -13,13 +13,12 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.synth.conditional;
+package fr.inria.lille.jefix.synth;
 
 import static fr.inria.lille.jefix.patch.Level.CONSTANTS;
 import static fr.inria.lille.jefix.patch.Level.MULTIPLICATION;
 import static fr.inria.lille.jefix.patch.Patch.NO_PATCH;
 
-import java.io.File;
 import java.net.URL;
 
 import org.slf4j.LoggerFactory;
@@ -28,9 +27,6 @@ import fr.inria.lille.jefix.SourceLocation;
 import fr.inria.lille.jefix.patch.Level;
 import fr.inria.lille.jefix.patch.Patch;
 import fr.inria.lille.jefix.patch.StringPatch;
-import fr.inria.lille.jefix.synth.InputOutputValues;
-import fr.inria.lille.jefix.synth.RepairCandidate;
-import fr.inria.lille.jefix.synth.Synthetizer;
 import fr.inria.lille.jefix.synth.smt.constraint.ConstraintSolver;
 import fr.inria.lille.jefix.synth.smt.model.InputModel;
 import fr.inria.lille.jefix.synth.smt.model.InputModelBuilder;
@@ -39,25 +35,21 @@ import fr.inria.lille.jefix.synth.smt.model.InputModelBuilder;
  * @author Favio D. DeMarco
  * 
  */
-public final class ConditionalSynthetizer implements Synthetizer {
+public final class Synthesizer {
 
-	private final File sourceFolder;
 	private final SourceLocation sourceLocation;
+	private final ConstraintModelBuilder conditionalsConstraintModelBuilder;
 
-	public ConditionalSynthetizer(final File sourceFolder, final SourceLocation sourceLocation) {
-		this.sourceFolder = sourceFolder;
+	public Synthesizer(final ConstraintModelBuilder conditionalsConstraintModelBuilder,
+			final SourceLocation sourceLocation) {
+		this.conditionalsConstraintModelBuilder = conditionalsConstraintModelBuilder;
 		this.sourceLocation = sourceLocation;
 	}
 
 	/**
-	 * @see fr.inria.lille.jefix.synth.Synthetizer#buildPatch(java.net.URL[], java.lang.String[])
 	 */
-	@Override
 	public Patch buildPatch(final URL[] classpath, final String[] testClasses) {
-
-		ConditionalsConstraintModelBuilder conditionalsConstraintModelBuilder = new ConditionalsConstraintModelBuilder(
-				this.sourceFolder, this.sourceLocation);
-		InputOutputValues data = conditionalsConstraintModelBuilder.buildFor(classpath, testClasses);
+		InputOutputValues data = this.conditionalsConstraintModelBuilder.buildFor(classpath, testClasses);
 
 		// XXX FIXME TODO move this
 		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
@@ -67,8 +59,8 @@ public final class ConditionalSynthetizer implements Synthetizer {
 		}
 
 		// and it should be a viable patch, ie. fix the bug
-		if (!conditionalsConstraintModelBuilder.isAViablePatch()) {
-			LoggerFactory.getLogger(this.getClass()).info("Changing only this conditional does not solve the bug. {}",
+		if (!this.conditionalsConstraintModelBuilder.isAViablePatch()) {
+			LoggerFactory.getLogger(this.getClass()).info("Changing only this statement does not solve the bug. {}",
 					this.sourceLocation);
 			return NO_PATCH;
 		}

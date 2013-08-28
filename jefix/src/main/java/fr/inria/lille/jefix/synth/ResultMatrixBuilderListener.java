@@ -1,10 +1,9 @@
-package fr.inria.lille.jefix.synth.conditional;
+package fr.inria.lille.jefix.synth;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
-import fr.inria.lille.jefix.synth.InputOutputValues;
 import fr.inria.lille.jefix.synth.collector.ValuesCollector;
 
 final class ResultMatrixBuilderListener extends RunListener {
