@@ -44,6 +44,8 @@
 	<logger name="fr.inria.lille.jefix.sps.gzoltar.GZoltarJava7"
 		level="OFF" />
 
+	<logger name="spoon.SpoonClassLoader" level="OFF" />
+
 	<logger name="fr.inria.lille.jefix.JEFix" level="debug"
 		additivity="false">
 		<appender-ref ref="STDERR" />

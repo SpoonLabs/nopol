@@ -35,6 +35,7 @@ public final class DelegatingProcessor extends AbstractProcessor<CtCodeElement> 
 	private final int line;
 	private final List<Processor> processors = new ArrayList<>();
 	private final Predicate<CtCodeElement> predicate;
+	private boolean process = true;
 
 	/**
 	 * @param file
@@ -57,7 +58,7 @@ public final class DelegatingProcessor extends AbstractProcessor<CtCodeElement> 
 	@Override
 	public boolean isToBeProcessed(final CtCodeElement candidate) {
 		SourcePosition position = candidate.getPosition();
-		return position != null && this.predicate.apply(candidate) && position.getLine() == this.line
+		return this.process && position != null && this.predicate.apply(candidate) && position.getLine() == this.line
 				&& position.getFile().getAbsolutePath().equals(this.file.getAbsolutePath());
 	}
 
@@ -66,5 +67,6 @@ public final class DelegatingProcessor extends AbstractProcessor<CtCodeElement> 
 		for (Processor processor : this.processors) {
 			processor.process(this.getFactory(), element);
 		}
+		this.process = false;
 	}
 }
