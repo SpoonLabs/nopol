@@ -15,16 +15,15 @@
  */
 package fr.inria.lille.jefix.synth;
 
-import static fr.inria.lille.jefix.patch.Level.ARITHMETIC;
-import static fr.inria.lille.jefix.patch.Level.CONSTANTS;
 import static fr.inria.lille.jefix.patch.Patch.NO_PATCH;
+import static fr.inria.lille.jefix.synth.Level.ARITHMETIC;
+import static fr.inria.lille.jefix.synth.Level.CONSTANTS;
 
 import java.net.URL;
 
 import org.slf4j.LoggerFactory;
 
 import fr.inria.lille.jefix.SourceLocation;
-import fr.inria.lille.jefix.patch.Level;
 import fr.inria.lille.jefix.patch.Patch;
 import fr.inria.lille.jefix.patch.StringPatch;
 import fr.inria.lille.jefix.synth.smt.constraint.ConstraintSolver;
@@ -38,12 +37,15 @@ import fr.inria.lille.jefix.synth.smt.model.InputModelBuilder;
 public final class DefaultSynthesizer implements Synthesizer {
 
 	private final SourceLocation sourceLocation;
-	private final ConstraintModelBuilder conditionalsConstraintModelBuilder;
+	private final ConstraintModelBuilder constraintModelBuilder;
+	private final Type type;
 
-	public DefaultSynthesizer(final ConstraintModelBuilder conditionalsConstraintModelBuilder,
-			final SourceLocation sourceLocation) {
-		this.conditionalsConstraintModelBuilder = conditionalsConstraintModelBuilder;
+	public DefaultSynthesizer(final ConstraintModelBuilder constraintModelBuilder,
+ final SourceLocation sourceLocation,
+			final Type type) {
+		this.constraintModelBuilder = constraintModelBuilder;
 		this.sourceLocation = sourceLocation;
+		this.type = type;
 	}
 
 	/* (non-Javadoc)
@@ -51,19 +53,19 @@ public final class DefaultSynthesizer implements Synthesizer {
 	 */
 	@Override
 	public Patch buildPatch(final URL[] classpath, final String[] testClasses) {
-		InputOutputValues data = this.conditionalsConstraintModelBuilder.buildFor(classpath, testClasses);
+		InputOutputValues data = constraintModelBuilder.buildFor(classpath, testClasses);
 
 		// XXX FIXME TODO move this
 		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
 		if (data.getOutputValues().size() < 2) {
-			LoggerFactory.getLogger(this.getClass()).info("There are not enough tests for {}", this.sourceLocation);
+			LoggerFactory.getLogger(this.getClass()).info("There are not enough tests for {}", sourceLocation);
 			return NO_PATCH;
 		}
 
 		// and it should be a viable patch, ie. fix the bug
-		if (!this.conditionalsConstraintModelBuilder.isAViablePatch()) {
+		if (!constraintModelBuilder.isAViablePatch()) {
 			LoggerFactory.getLogger(this.getClass()).info("Changing only this statement does not solve the bug. {}",
-					this.sourceLocation);
+					sourceLocation);
 			return NO_PATCH;
 		}
 
@@ -80,6 +82,6 @@ public final class DefaultSynthesizer implements Synthesizer {
 		if (null == newRepair) {
 			return NO_PATCH;
 		}
-		return new StringPatch(newRepair.toString(), this.sourceLocation);
+		return new StringPatch(newRepair.toString(), sourceLocation, type);
 	}
 }

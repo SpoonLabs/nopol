@@ -54,7 +54,8 @@ public final class SynthesizerFactory {
 	public Synthesizer getFor(final SourceLocation statement) {
 		DelegatingProcessor processor;
 
-		switch (getType(statement)) {
+		Type type = getType(statement);
+		switch (type) {
 		case CONDITIONAL:
 			processor = new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
@@ -74,7 +75,7 @@ public final class SynthesizerFactory {
 		}
 
 		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, statement, processor);
-		return new DefaultSynthesizer(constraintModelBuilder, statement);
+		return new DefaultSynthesizer(constraintModelBuilder, statement, type);
 	}
 
 	private Type getType(final SourceLocation rc) {

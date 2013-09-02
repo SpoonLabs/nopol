@@ -18,6 +18,7 @@ package fr.inria.lille.jefix.patch;
 import java.io.File;
 
 import fr.inria.lille.jefix.SourceLocation;
+import fr.inria.lille.jefix.synth.Type;
 
 /**
  * @author Favio D. DeMarco
@@ -26,16 +27,18 @@ import fr.inria.lille.jefix.SourceLocation;
 public class StringPatch implements Patch {
 
 	private final SourceLocation location;
-
 	private final String repair;
+	private final Type type;
 
 	/**
 	 * @param repair
 	 * @param location
+	 * @param type
 	 */
-	public StringPatch(final String repair, final SourceLocation location) {
+	public StringPatch(final String repair, final SourceLocation location, final Type type) {
 		this.repair = repair;
 		this.location = location;
+		this.type = type;
 	}
 
 	/**
@@ -43,14 +46,15 @@ public class StringPatch implements Patch {
 	 */
 	@Override
 	public String asString() {
-		return this.repair;
+		return repair;
 	}
 
 	/**
 	 * @return the containingClassName
 	 */
+	@Override
 	public String getContainingClassName() {
-		return this.location.getContainingClassName();
+		return location.getContainingClassName();
 	}
 
 	/**
@@ -58,7 +62,7 @@ public class StringPatch implements Patch {
 	 */
 	@Override
 	public File getFile(final File sourceFolder) {
-		return this.location.getSourceFile(sourceFolder);
+		return location.getSourceFile(sourceFolder);
 	}
 
 	/**
@@ -66,7 +70,12 @@ public class StringPatch implements Patch {
 	 */
 	@Override
 	public int getLineNumber() {
-		return this.location.getLineNumber();
+		return location.getLineNumber();
+	}
+
+	@Override
+	public Type getType() {
+		return type;
 	}
 
 	/**
@@ -74,6 +83,6 @@ public class StringPatch implements Patch {
 	 */
 	@Override
 	public String toString() {
-		return String.format("%s:%d: %s", this.location.getContainingClassName(), this.getLineNumber(), this.repair);
+		return String.format("%s:%d: %s %s", location.getContainingClassName(), getLineNumber(), type, repair);
 	}
 }

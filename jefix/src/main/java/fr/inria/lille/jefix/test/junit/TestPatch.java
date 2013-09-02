@@ -32,8 +32,11 @@ import spoon.processing.ProcessingManager;
 import spoon.support.JavaOutputProcessor;
 import fr.inria.lille.jefix.patch.Patch;
 import fr.inria.lille.jefix.synth.DelegatingProcessor;
+import fr.inria.lille.jefix.synth.Type;
 import fr.inria.lille.jefix.synth.conditional.ConditionalReplacer;
 import fr.inria.lille.jefix.synth.conditional.SpoonConditionalPredicate;
+import fr.inria.lille.jefix.synth.precondition.ConditionalAdder;
+import fr.inria.lille.jefix.synth.precondition.SpoonStatementPredicate;
 import fr.inria.lille.jefix.threads.ProvidedClassLoaderThreadFactory;
 
 /**
@@ -47,14 +50,14 @@ public final class TestPatch {
 	private final URL[] classpath;
 	private final File sourceFolder;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private final boolean debug = this.logger.isDebugEnabled();
+	private final boolean debug = logger.isDebugEnabled();
 	private final SpoonClassLoader spooner;
 
 	public TestPatch(final File sourceFolder, final URL[] classpath) {
 		this.sourceFolder = sourceFolder;
 		this.classpath = classpath;
 		SpoonClassLoader scl = new SpoonClassLoader();
-		scl.getEnvironment().setDebug(this.debug);
+		scl.getEnvironment().setDebug(debug);
 		Builder builder;
 		builder = scl.getFactory().getBuilder();
 		try {
@@ -63,30 +66,46 @@ public final class TestPatch {
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
-		this.spooner = scl;
+		spooner = scl;
 	}
 
 	public boolean passesAllTests(final Patch patch, final String[] testClasses) {
-		ProcessingManager processingManager = this.spooner.getProcessingManager();
-		this.logger.info("Applying patch: {}", patch);
-		File sourceFile = patch.getFile(this.sourceFolder);
-		int lineNumber = patch.getLineNumber();
-		processingManager.addProcessor(new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE, sourceFile,
-				lineNumber).addProcessor(new ConditionalReplacer(patch.asString())));
-		processingManager.addProcessor(new JavaOutputProcessor(new File(this.sourceFolder, SPOON_DIRECTORY)));
+		ProcessingManager processingManager = spooner.getProcessingManager();
+		logger.info("Applying patch: {}", patch);
+		File sourceFile = patch.getFile(sourceFolder);
+
+		processingManager.addProcessor(createProcessor(patch, sourceFile));
+
+		processingManager.addProcessor(new JavaOutputProcessor(new File(sourceFolder, SPOON_DIRECTORY)));
 
 		try {
 			// should be loaded by the spoon class loader
-			this.spooner.loadClass(patch.getContainingClassName());
+			spooner.loadClass(patch.getContainingClassName());
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
-		return this.wasSuccessful(testClasses);
+		return wasSuccessful(testClasses);
+	}
+
+	private DelegatingProcessor createProcessor(final Patch patch, final File sourceFile) {
+		Type type = patch.getType();
+		String patchAsString = patch.asString();
+		int lineNumber = patch.getLineNumber();
+		switch (type) {
+		case CONDITIONAL:
+			return new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE, sourceFile, lineNumber)
+			.addProcessor(new ConditionalReplacer(patchAsString));
+		case PRECONDITION:
+			return new DelegatingProcessor(SpoonStatementPredicate.INSTANCE, sourceFile, lineNumber)
+			.addProcessor(new ConditionalAdder(patchAsString));
+		default:
+			throw new IllegalStateException("Unknown patch type " + type);
+		}
 	}
 
 	boolean wasSuccessful(final String[] testClasses) {
-		ClassLoader cl = new URLClassLoader(this.classpath, this.spooner);
+		ClassLoader cl = new URLClassLoader(classpath, spooner);
 		// should use the url class loader
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
 		Result result;

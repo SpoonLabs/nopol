@@ -21,8 +21,8 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
-import fr.inria.lille.jefix.patch.Level;
 import fr.inria.lille.jefix.synth.InputOutputValues;
+import fr.inria.lille.jefix.synth.Level;
 
 /**
  * @author Favio D. DeMarco

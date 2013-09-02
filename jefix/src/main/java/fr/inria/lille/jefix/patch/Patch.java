@@ -17,6 +17,8 @@ package fr.inria.lille.jefix.patch;
 
 import java.io.File;
 
+import fr.inria.lille.jefix.synth.Type;
+
 /**
  * @author Favio D. DeMarco
  *
@@ -52,6 +54,11 @@ public interface Patch {
 			throw new UnsupportedOperationException(toString());
 		}
 
+		@Override
+		public Type getType() {
+			throw new UnsupportedOperationException(toString());
+		}
+
 		/**
 		 * @see java.lang.Object#toString()
 		 */
@@ -76,4 +83,6 @@ public interface Patch {
 	File getFile(File sourcePath);
 
 	int getLineNumber();
+
+	Type getType();
 }
