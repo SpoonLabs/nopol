@@ -13,30 +13,13 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.synth.precondition;
-
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtClass;
-
-import com.google.common.base.Predicate;
+package fr.inria.lille.jefix.synth;
 
 /**
  * @author Favio D. DeMarco
- * 
+ *
  */
-public enum SpoonStatementPredicate implements Predicate<CtCodeElement> {
+enum Type {
 
-	INSTANCE;
-
-	@Override
-	public boolean apply(final CtCodeElement input) {
-		return input instanceof CtStatement
-				&& !(input instanceof CtClass || input instanceof CtBlock
-						|| input instanceof CtReturn || input instanceof CtLocalVariable)
-						&& input.getParent() instanceof CtStatement;
-	}
+	CONDITIONAL, PRECONDITION, NONE;
 }

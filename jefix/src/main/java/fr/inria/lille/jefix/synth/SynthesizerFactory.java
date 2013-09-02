@@ -15,6 +15,8 @@
  */
 package fr.inria.lille.jefix.synth;
 
+import static fr.inria.lille.jefix.synth.Synthesizer.NO_OP_SYNTHESIZER;
+
 import java.io.File;
 
 import org.slf4j.Logger;
@@ -40,7 +42,7 @@ public final class SynthesizerFactory {
 
 	private final File sourceFolder;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private final boolean debug = this.logger.isDebugEnabled();
+	private final boolean debug = logger.isDebugEnabled();
 
 	/**
 	 * 
@@ -51,38 +53,45 @@ public final class SynthesizerFactory {
 
 	public Synthesizer getFor(final SourceLocation statement) {
 		DelegatingProcessor processor;
-		if (this.isConditional(statement)) {
+
+		switch (getType(statement)) {
+		case CONDITIONAL:
 			processor = new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE,
-					statement.getSourceFile(this.sourceFolder), statement.getLineNumber());
+					statement.getSourceFile(sourceFolder), statement.getLineNumber());
 			processor.addProcessor(new ConditionalReplacer(ConditionalValueHolder.VARIABLE_NAME)).addProcessor(
 					new ConditionalLoggingInstrumenter());
-		} else {
+			break;
+		case PRECONDITION:
 			processor = new DelegatingProcessor(SpoonStatementPredicate.INSTANCE,
-					statement.getSourceFile(this.sourceFolder), statement.getLineNumber());
+					statement.getSourceFile(sourceFolder), statement.getLineNumber());
 			processor.addProcessor(new ConditionalLoggingInstrumenter()).addProcessor(
 					new ConditionalAdder(ConditionalValueHolder.VARIABLE_NAME));
-			this.logger.debug("No synthetizer found for {} trying a precondition", statement);
+			logger.debug("No synthetizer found for {}, trying a precondition.", statement);
+			break;
+		default:
+			logger.debug("No synthetizer found for {}.", statement);
+			return NO_OP_SYNTHESIZER;
 		}
-		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(this.sourceFolder, statement,
-				processor);
-		return new Synthesizer(constraintModelBuilder, statement);
+
+		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, statement, processor);
+		return new DefaultSynthesizer(constraintModelBuilder, statement);
 	}
 
-	private boolean isConditional(final SourceLocation rc) {
+	private Type getType(final SourceLocation rc) {
 		StandardEnvironment env = new StandardEnvironment();
-		env.setDebug(this.debug);
+		env.setDebug(debug);
 		Factory factory = new Factory(new DefaultCoreFactory(), env);
 		ProcessingManager processing = new QueueProcessingManager(factory);
-		ConditionalDetector detector = new ConditionalDetector(rc.getSourceFile(this.sourceFolder), rc.getLineNumber());
+		TypelDetector detector = new TypelDetector(rc.getSourceFile(sourceFolder), rc.getLineNumber());
 		processing.addProcessor(detector);
 		Builder builder = factory.getBuilder();
 		try {
-			builder.addInputSource(this.sourceFolder);
+			builder.addInputSource(sourceFolder);
 			builder.build();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		processing.process();
-		return detector.isConditional();
+		return detector.getType();
 	}
 }

@@ -36,7 +36,7 @@ public final class ConditionalAdder implements Processor {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public ConditionalAdder(final String variableName) {
-		this.snippet = variableName;
+		snippet = variableName;
 	}
 
 	/**
@@ -44,10 +44,10 @@ public final class ConditionalAdder implements Processor {
 	 */
 	@Override
 	public void process(final Factory factory, final CtCodeElement element) {
-		this.logger.debug("Before: ##### {} #####\n{}", element, element.getParent());
+		logger.debug("##### {} ##### Before:\n{}", element, element.getParent());
 		CtIf newIf = factory.Core().createIf();
 		CtCodeSnippetExpression<Boolean> condition = factory.Core().createCodeSnippetExpression();
-		condition.setValue(this.snippet);
+		condition.setValue(snippet);
 		newIf.setCondition(condition);
 		element.replace(newIf);
 
@@ -55,6 +55,6 @@ public final class ConditionalAdder implements Processor {
 		// see SpoonStatementPredicate
 		newIf.setThenStatement((CtStatement) element);
 
-		this.logger.debug("After: ##### {} #####\n{}", element, element.getParent().getParent());
+		logger.debug("##### {} ##### After:\n{}", element, element.getParent().getParent());
 	}
 }
