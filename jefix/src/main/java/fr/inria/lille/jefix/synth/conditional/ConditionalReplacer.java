@@ -6,7 +6,6 @@ import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
-import spoon.support.reflect.code.CtCodeSnippetExpressionImpl;
 import fr.inria.lille.jefix.synth.Processor;
 
 /**
@@ -41,10 +40,9 @@ public final class ConditionalReplacer implements Processor {
 	}
 
 	@Override
-	public void process(final Factory facotry, final CtCodeElement element) {
+	public void process(final Factory factory, final CtCodeElement element) {
 		// we declare a new snippet of code to be inserted
-		CtCodeSnippetExpression<Boolean> snippet = new CtCodeSnippetExpressionImpl<>();
-		snippet.setFactory(facotry);
+		CtCodeSnippetExpression<Boolean> snippet = factory.Core().createCodeSnippetExpression();
 		snippet.setValue(this.value);
 		CtExpression<Boolean> condition = this.getCondition(element);
 		condition.replace(snippet);

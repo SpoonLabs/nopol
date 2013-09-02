@@ -15,10 +15,14 @@
  */
 package fr.inria.lille.jefix.synth.precondition;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.reflect.Factory;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtCodeSnippetExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtStatement;
 import fr.inria.lille.jefix.synth.Processor;
 
 /**
@@ -29,8 +33,10 @@ public final class ConditionalAdder implements Processor {
 
 	private final String snippet;
 
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 	public ConditionalAdder(final String variableName) {
-		this.snippet = "if(" + variableName + ')';
+		this.snippet = variableName;
 	}
 
 	/**
@@ -38,7 +44,17 @@ public final class ConditionalAdder implements Processor {
 	 */
 	@Override
 	public void process(final Factory factory, final CtCodeElement element) {
-		element.replace(factory.Code().createCodeSnippetStatement(this.snippet + element.toString()));
-		LoggerFactory.getLogger(this.getClass()).debug(element.getParent().getParent().toString());
+		this.logger.debug("Before: ##### {} #####\n{}", element, element.getParent());
+		CtIf newIf = factory.Core().createIf();
+		CtCodeSnippetExpression<Boolean> condition = factory.Core().createCodeSnippetExpression();
+		condition.setValue(this.snippet);
+		newIf.setCondition(condition);
+		element.replace(newIf);
+
+		// this should be after the replace to avoid an StackOverflowException caused by the circular reference.
+		// see SpoonStatementPredicate
+		newIf.setThenStatement((CtStatement) element);
+
+		this.logger.debug("After: ##### {} #####\n{}", element, element.getParent().getParent());
 	}
 }
