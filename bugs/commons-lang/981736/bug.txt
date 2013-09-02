@@ -1,0 +1,16 @@
+Fallan dos tests:
+
+Failed tests: 
+  testUPlus(org.apache.commons.lang3.text.translate.UnicodeUnescaperTest)
+  testFormat(org.apache.commons.lang3.time.FastDateFormatTest)
+
+"Comento" ambos tests.
+
+rc/main/java/org/apache/commons/lang3/math/NumberUtils.java        (working copy)
+@@ -476,7 +476,7 @@
+         if (decPos > -1) {
+ 
+             if (expPos > -1) {
+-                if (expPos < decPos) {
++                if (expPos < decPos || expPos > str.length()) {
+
