@@ -22,7 +22,6 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 
 import fr.inria.lille.jefix.synth.InputOutputValues;
-import fr.inria.lille.jefix.synth.Level;
 
 /**
  * @author Favio D. DeMarco
@@ -41,10 +40,18 @@ public final class InputModelBuilder {
 
 	public InputModel buildFor(final Level level) {
 
-		InputModel model = this.createModel();
+		InputModel model = createModel();
 
 		switch (level) {
 
+		case MULTIPLICATION_2:
+			new MultiplicationModelBuilder().addTo(model);
+		case ITE_ARRAY_ACCESS_2:
+			new IfThenElseModelBuilder().addTo(model);
+		case ARITHMETIC_2:
+			new ArithmeticModelBuilder().addTo(model);
+		case LOGIC_2:
+			new LogicModelBuilder().addTo(model);
 		case MULTIPLICATION:
 			new MultiplicationModelBuilder().addTo(model);
 		case ITE_ARRAY_ACCESS:
@@ -58,7 +65,7 @@ public final class InputModelBuilder {
 		case COMPARISON:
 			new ComparisonModelBuilder().addTo(model);
 		case CONSTANTS:
-			new ConstantsModelBuilder(this.data).addTo(model);
+			new ConstantsModelBuilder(data).addTo(model);
 			break;
 		default:
 			throw new IllegalStateException("Unknown level: " + level);
@@ -74,13 +81,13 @@ public final class InputModelBuilder {
 	private InputModel createModel() {
 
 		// XXX FIXME TODO Law of Demeter
-		Type outputType = Type.ValueToType.INSTANCE.apply(this.data.getOutputValues().iterator().next());
+		Type outputType = Type.ValueToType.INSTANCE.apply(data.getOutputValues().iterator().next());
 
 		List<Type> inputTypes = new ArrayList<>();
-		for (Collection<Object> values : this.data.getInputvalues().asMap().values()) {
+		for (Collection<Object> values : data.getInputvalues().asMap().values()) {
 			inputTypes.add(Type.ValueToType.INSTANCE.apply(values.iterator().next()));
 		}
 
-		return new InputModel(inputTypes, new ArrayList<Component>(), outputType, this.data);
+		return new InputModel(inputTypes, new ArrayList<Component>(), outputType, data);
 	}
 }

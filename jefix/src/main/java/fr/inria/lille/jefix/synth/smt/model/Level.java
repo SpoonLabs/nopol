@@ -13,16 +13,16 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jefix.synth;
+package fr.inria.lille.jefix.synth.smt.model;
 
 /**
  * @author Favio D. DeMarco
  * 
  */
 public enum Level {
-	CONSTANTS, COMPARISON, LOGIC, ARITHMETIC, COMPARISON_2, ITE_ARRAY_ACCESS, MULTIPLICATION;
+	CONSTANTS, COMPARISON, LOGIC, ARITHMETIC, COMPARISON_2, ITE_ARRAY_ACCESS, MULTIPLICATION, LOGIC_2, ARITHMETIC_2, ITE_ARRAY_ACCESS_2, MULTIPLICATION_2;
 
 	public Level next() {
-		return values()[this.ordinal() + 1];
+		return values()[ordinal() + 1];
 	}
 }

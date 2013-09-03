@@ -16,8 +16,8 @@
 package fr.inria.lille.jefix.synth;
 
 import static fr.inria.lille.jefix.patch.Patch.NO_PATCH;
-import static fr.inria.lille.jefix.synth.Level.ARITHMETIC;
-import static fr.inria.lille.jefix.synth.Level.CONSTANTS;
+import static fr.inria.lille.jefix.synth.smt.model.Level.ARITHMETIC;
+import static fr.inria.lille.jefix.synth.smt.model.Level.CONSTANTS;
 
 import java.net.URL;
 
@@ -29,6 +29,7 @@ import fr.inria.lille.jefix.patch.StringPatch;
 import fr.inria.lille.jefix.synth.smt.constraint.ConstraintSolver;
 import fr.inria.lille.jefix.synth.smt.model.InputModel;
 import fr.inria.lille.jefix.synth.smt.model.InputModelBuilder;
+import fr.inria.lille.jefix.synth.smt.model.Level;
 
 /**
  * @author Favio D. DeMarco
