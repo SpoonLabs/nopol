@@ -15,7 +15,6 @@
  */
 package fr.inria.lille.jefix.synth.collector;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,10 +28,6 @@ import fr.inria.lille.jefix.synth.smt.model.Type;
  */
 public final class ValuesCollector {
 
-	private static final SubValuesCollector ARRAY_COLLECTOR = new ArraySubValuesCollector();
-
-	private static final SubValuesCollector COLLECTION_COLLECTOR = new CollectionSubValuesCollector();
-	private static final SubValuesCollector STRING_COLLECTOR = new StringSubValuesCollector();
 	private static final Map<String, Object> VALUES = new HashMap<String, Object>();
 
 	public static Object add(final String name, final Object value) {
@@ -48,13 +43,7 @@ public final class ValuesCollector {
 	}
 
 	private static void addSubValues(final String name, final Object value) {
-		if (value.getClass().isArray()) {
-			ARRAY_COLLECTOR.addSubValues(name, value);
-		} else if (value instanceof Collection) {
-			COLLECTION_COLLECTOR.addSubValues(name, value);
-		} else if (value instanceof String) {
-			STRING_COLLECTOR.addSubValues(name, value);
-		}
+		SubValuesCollectors.process(name, value);
 	}
 
 	public static void clear() {

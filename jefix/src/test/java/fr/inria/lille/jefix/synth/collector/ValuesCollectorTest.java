@@ -6,7 +6,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.After;
@@ -53,7 +55,34 @@ public class ValuesCollectorTest {
 	}
 
 	@Test
-	public final void adding_a_String_should_add_the_length_and_if_it_is_empty() {
+	public final void adding_a_Map_should_add_the_size_and_if_it_is_empty() {
+		// GIVEN
+		String name = "map";
+		Map<?, ?> value = Collections.singletonMap("key", "value");
+
+		// WHEN
+		ValuesCollector.add(name, value);
+
+		// THEN
+		Iterator<Entry<String, Object>> iterator = ValuesCollector.getValues().iterator();
+
+		Entry<String, Object> size = iterator.next();
+		assertEquals(name + ".size()", size.getKey());
+		assertEquals(value.size(), size.getValue());
+
+		Entry<String, Object> isNotNull = iterator.next();
+		assertEquals(name + "!=null", isNotNull.getKey());
+		assertTrue((Boolean) isNotNull.getValue());
+
+		Entry<String, Object> isEmpty = iterator.next();
+		assertEquals(name + ".isEmpty()", isEmpty.getKey());
+		assertEquals(value.isEmpty(), isEmpty.getValue());
+
+		assertFalse(iterator.hasNext());
+	}
+
+	@Test
+	public final void adding_a_CharSequence_should_add_the_length_and_if_it_is_empty() {
 		// GIVEN
 		String name = "string";
 		String value = "Take nothing on its looks; take everything on evidence. There's no better rule.";
@@ -63,9 +92,6 @@ public class ValuesCollectorTest {
 
 		// THEN
 		Iterator<Entry<String, Object>> iterator = ValuesCollector.getValues().iterator();
-		Entry<String, Object> isEmpty = iterator.next();
-		assertEquals(name + ".isEmpty()", isEmpty.getKey());
-		assertEquals(value.isEmpty(), isEmpty.getValue());
 
 		Entry<String, Object> length = iterator.next();
 		assertEquals(name + ".length()", length.getKey());
@@ -74,6 +100,10 @@ public class ValuesCollectorTest {
 		Entry<String, Object> isNotNull = iterator.next();
 		assertEquals(name + "!=null", isNotNull.getKey());
 		assertTrue((Boolean) isNotNull.getValue());
+
+		Entry<String, Object> isEmpty = iterator.next();
+		assertEquals(name + ".length()==0", isEmpty.getKey());
+		assertEquals(value.isEmpty(), isEmpty.getValue());
 
 		assertFalse(iterator.hasNext());
 	}
