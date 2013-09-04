@@ -1,5 +1,8 @@
 package fr.inria.lille.jefix.synth.conditional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import spoon.reflect.Factory;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
@@ -14,6 +17,7 @@ import fr.inria.lille.jefix.synth.Processor;
 public final class ConditionalReplacer implements Processor {
 
 	private final String value;
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * @param file
@@ -41,10 +45,11 @@ public final class ConditionalReplacer implements Processor {
 
 	@Override
 	public void process(final Factory factory, final CtCodeElement element) {
+		logger.debug("Replacing:\n{}", element);
 		// we declare a new snippet of code to be inserted
 		CtCodeSnippetExpression<Boolean> snippet = factory.Core().createCodeSnippetExpression();
-		snippet.setValue(this.value);
-		CtExpression<Boolean> condition = this.getCondition(element);
+		snippet.setValue(value);
+		CtExpression<Boolean> condition = getCondition(element);
 		condition.replace(snippet);
 	}
 }
