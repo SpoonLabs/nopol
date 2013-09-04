@@ -41,15 +41,16 @@ public final class DefaultSynthesizer implements Synthesizer {
 	private final ConstraintModelBuilder constraintModelBuilder;
 	private final Type type;
 
-	public DefaultSynthesizer(final ConstraintModelBuilder constraintModelBuilder,
- final SourceLocation sourceLocation,
+	public DefaultSynthesizer(final ConstraintModelBuilder constraintModelBuilder, final SourceLocation sourceLocation,
 			final Type type) {
 		this.constraintModelBuilder = constraintModelBuilder;
 		this.sourceLocation = sourceLocation;
 		this.type = type;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see fr.inria.lille.jefix.synth.Synthesizer#buildPatch(java.net.URL[], java.lang.String[])
 	 */
 	@Override
@@ -58,8 +59,10 @@ public final class DefaultSynthesizer implements Synthesizer {
 
 		// XXX FIXME TODO move this
 		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
-		if (data.getOutputValues().size() < 2) {
-			LoggerFactory.getLogger(this.getClass()).info("There are not enough tests for {}", sourceLocation);
+		int dataSize = data.getOutputValues().size();
+		if (dataSize < 2) {
+			LoggerFactory.getLogger(this.getClass()).info("{} input values sets. There are not enough tests for {}",
+					dataSize, sourceLocation);
 			return NO_PATCH;
 		}
 
