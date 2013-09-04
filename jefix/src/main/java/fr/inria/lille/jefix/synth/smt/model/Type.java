@@ -32,7 +32,7 @@ public enum Type {
 	INTEGER {
 		@Override
 		public boolean isOfThisType(final Object value) {
-			return value instanceof Long || value instanceof Integer || value instanceof Short || value instanceof Byte;
+			return value instanceof Number;
 		}
 	};
 
