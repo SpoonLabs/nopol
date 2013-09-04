@@ -32,7 +32,7 @@ import spoon.processing.ProcessingManager;
 import spoon.support.JavaOutputProcessor;
 import fr.inria.lille.jefix.patch.Patch;
 import fr.inria.lille.jefix.synth.DelegatingProcessor;
-import fr.inria.lille.jefix.synth.Type;
+import fr.inria.lille.jefix.synth.BugKind;
 import fr.inria.lille.jefix.synth.conditional.ConditionalReplacer;
 import fr.inria.lille.jefix.synth.conditional.SpoonConditionalPredicate;
 import fr.inria.lille.jefix.synth.precondition.ConditionalAdder;
@@ -89,7 +89,7 @@ public final class TestPatch {
 	}
 
 	private DelegatingProcessor createProcessor(final Patch patch, final File sourceFile) {
-		Type type = patch.getType();
+		BugKind type = patch.getType();
 		String patchAsString = patch.asString();
 		int lineNumber = patch.getLineNumber();
 		switch (type) {

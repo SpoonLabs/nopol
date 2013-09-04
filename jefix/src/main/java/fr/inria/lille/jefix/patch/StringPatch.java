@@ -18,7 +18,7 @@ package fr.inria.lille.jefix.patch;
 import java.io.File;
 
 import fr.inria.lille.jefix.SourceLocation;
-import fr.inria.lille.jefix.synth.Type;
+import fr.inria.lille.jefix.synth.BugKind;
 
 /**
  * @author Favio D. DeMarco
@@ -28,14 +28,14 @@ public class StringPatch implements Patch {
 
 	private final SourceLocation location;
 	private final String repair;
-	private final Type type;
+	private final BugKind type;
 
 	/**
 	 * @param repair
 	 * @param location
 	 * @param type
 	 */
-	public StringPatch(final String repair, final SourceLocation location, final Type type) {
+	public StringPatch(final String repair, final SourceLocation location, final BugKind type) {
 		this.repair = repair;
 		this.location = location;
 		this.type = type;
@@ -74,7 +74,7 @@ public class StringPatch implements Patch {
 	}
 
 	@Override
-	public Type getType() {
+	public BugKind getType() {
 		return type;
 	}
 

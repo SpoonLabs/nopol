@@ -2,9 +2,9 @@ package fr.inria.lille.jefix.synth;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static fr.inria.lille.jefix.synth.Type.CONDITIONAL;
-import static fr.inria.lille.jefix.synth.Type.NONE;
-import static fr.inria.lille.jefix.synth.Type.PRECONDITION;
+import static fr.inria.lille.jefix.synth.BugKind.CONDITIONAL;
+import static fr.inria.lille.jefix.synth.BugKind.NONE;
+import static fr.inria.lille.jefix.synth.BugKind.PRECONDITION;
 
 import java.io.File;
 
@@ -14,9 +14,9 @@ import spoon.reflect.cu.SourcePosition;
 import fr.inria.lille.jefix.synth.conditional.SpoonConditionalPredicate;
 import fr.inria.lille.jefix.synth.precondition.SpoonStatementPredicate;
 
-final class TypelDetector extends AbstractProcessor<CtCodeElement> {
+final class BugKindDetector extends AbstractProcessor<CtCodeElement> {
 
-	private Type answer = NONE;
+	private BugKind answer = NONE;
 
 	private final String absolutePath;
 	private final int line;
@@ -25,7 +25,7 @@ final class TypelDetector extends AbstractProcessor<CtCodeElement> {
 	 * @param file
 	 * @param line
 	 */
-	TypelDetector(final File file, final int line) {
+	BugKindDetector(final File file, final int line) {
 		absolutePath = checkNotNull(file).getAbsolutePath();
 		checkArgument(line > 0, "Line should be greater than 0: %s", line);
 		this.line = line;
@@ -34,7 +34,7 @@ final class TypelDetector extends AbstractProcessor<CtCodeElement> {
 	/**
 	 * @return the answer
 	 */
-	Type getType() {
+	BugKind getType() {
 		return answer;
 	}
 

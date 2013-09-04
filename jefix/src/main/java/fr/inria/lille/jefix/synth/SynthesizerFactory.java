@@ -54,7 +54,7 @@ public final class SynthesizerFactory {
 	public Synthesizer getFor(final SourceLocation statement) {
 		DelegatingProcessor processor;
 
-		Type type = getType(statement);
+		BugKind type = getType(statement);
 		switch (type) {
 		case CONDITIONAL:
 			processor = new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE,
@@ -78,12 +78,12 @@ public final class SynthesizerFactory {
 		return new DefaultSynthesizer(constraintModelBuilder, statement, type);
 	}
 
-	private Type getType(final SourceLocation rc) {
+	private BugKind getType(final SourceLocation rc) {
 		StandardEnvironment env = new StandardEnvironment();
 		env.setDebug(debug);
 		Factory factory = new Factory(new DefaultCoreFactory(), env);
 		ProcessingManager processing = new QueueProcessingManager(factory);
-		TypelDetector detector = new TypelDetector(rc.getSourceFile(sourceFolder), rc.getLineNumber());
+		BugKindDetector detector = new BugKindDetector(rc.getSourceFile(sourceFolder), rc.getLineNumber());
 		processing.addProcessor(detector);
 		Builder builder = factory.getBuilder();
 		try {

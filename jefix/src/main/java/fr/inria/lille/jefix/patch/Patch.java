@@ -17,7 +17,7 @@ package fr.inria.lille.jefix.patch;
 
 import java.io.File;
 
-import fr.inria.lille.jefix.synth.Type;
+import fr.inria.lille.jefix.synth.BugKind;
 
 /**
  * @author Favio D. DeMarco
@@ -55,7 +55,7 @@ public interface Patch {
 		}
 
 		@Override
-		public Type getType() {
+		public BugKind getType() {
 			throw new UnsupportedOperationException(toString());
 		}
 
@@ -84,5 +84,5 @@ public interface Patch {
 
 	int getLineNumber();
 
-	Type getType();
+	BugKind getType();
 }

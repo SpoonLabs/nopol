@@ -38,9 +38,6 @@ import spoon.SpoonClassLoader;
 import spoon.processing.Builder;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
-
-import com.google.common.collect.ImmutableSet;
-
 import fr.inria.lille.jefix.SourceLocation;
 import fr.inria.lille.jefix.test.junit.JUnitRunner;
 import fr.inria.lille.jefix.threads.ProvidedClassLoaderThreadFactory;
@@ -109,14 +106,15 @@ public final class ConstraintModelBuilder {
 	}
 
 	private void determineViability(final Result firstResult, final Result secondResult) {
-		ImmutableSet<Description> firstFailures = copyOf(transform(firstResult.getFailures(),
-				FailureToDescription.INSTANCE));
-		ImmutableSet<Description> secondFailures = copyOf(transform(secondResult.getFailures(),
-				FailureToDescription.INSTANCE));
+		Set<Description> firstFailures = copyOf(transform(firstResult.getFailures(), FailureToDescription.INSTANCE));
+		Set<Description> secondFailures = copyOf(transform(secondResult.getFailures(), FailureToDescription.INSTANCE));
 		Set<Description> failingTests = intersection(firstFailures, secondFailures);
 		viablePatch = failingTests.isEmpty();
 		if (!viablePatch) {
-			logger.trace("Failing test(s): {}", failingTests);
+			logger.debug("Failing test(s): {}", failingTests);
+			Logger testsOutput = LoggerFactory.getLogger("tests.output");
+			testsOutput.debug("First set: \n{}", firstResult.getFailures());
+			testsOutput.debug("Second set: \n{}", secondResult.getFailures());
 		}
 	}
 

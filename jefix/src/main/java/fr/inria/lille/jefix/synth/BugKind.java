@@ -19,7 +19,7 @@ package fr.inria.lille.jefix.synth;
  * @author Favio D. DeMarco
  *
  */
-public enum Type {
+public enum BugKind {
 
 	CONDITIONAL, PRECONDITION, NONE;
 }

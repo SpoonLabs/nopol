@@ -39,10 +39,10 @@ public final class DefaultSynthesizer implements Synthesizer {
 
 	private final SourceLocation sourceLocation;
 	private final ConstraintModelBuilder constraintModelBuilder;
-	private final Type type;
+	private final BugKind type;
 
 	public DefaultSynthesizer(final ConstraintModelBuilder constraintModelBuilder, final SourceLocation sourceLocation,
-			final Type type) {
+			final BugKind type) {
 		this.constraintModelBuilder = constraintModelBuilder;
 		this.sourceLocation = sourceLocation;
 		this.type = type;
