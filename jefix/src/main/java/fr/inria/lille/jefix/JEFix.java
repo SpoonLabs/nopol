@@ -52,45 +52,59 @@ final class JEFix {
 	 */
 	public JEFix(final File sourceFolder, final URL[] classpath) {
 		this.classpath = classpath;
-		this.gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath);
-		this.synthetizerFactory = new SynthesizerFactory(sourceFolder);
-		this.testPatch = new TestPatch(sourceFolder, classpath);
+		gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath);
+		synthetizerFactory = new SynthesizerFactory(sourceFolder);
+		testPatch = new TestPatch(sourceFolder, classpath);
 	}
 
 	public Patch build() {
-		String[] testClasses = new TestClassesFinder().findIn(this.classpath);
+		String[] testClasses = new TestClassesFinder().findIn(classpath);
 
 		if (testClasses.length == 0) {
-			System.out.printf("No test classes found in classpath: %s%n", Arrays.toString(this.classpath));
+			System.out.printf("No test classes found in classpath: %s%n", Arrays.toString(classpath));
 			return NO_PATCH;
 		}
 
-		Collection<SuspiciousStatement> statements = this.gZoltar.sortBySuspiciousness(testClasses);
+		Collection<SuspiciousStatement> statements = gZoltar.sortBySuspiciousness(testClasses);
 
 		if (statements.isEmpty()) {
 			System.out.println("No suspicious statements found.");
 		}
 
 		for (SuspiciousStatement statement : statements) {
-			this.logger.debug("Analysing {}", statement);
-			Patch newRepair = this.synthetizerFactory.getFor(statement.getSourceLocation()).buildPatch(this.classpath,
-					testClasses);
-			if (this.isOk(newRepair, testClasses)) {
+			logger.debug("Analysing {}", statement);
+			Patch newRepair = buildPatch(testClasses, statement);
+			if (isOk(newRepair, testClasses)) {
 				return newRepair;
 			}
 		}
 		return NO_PATCH;
 	}
 
+	/**
+	 * @param testClasses
+	 * @param statement
+	 * @return
+	 */
+	private Patch buildPatch(final String[] testClasses, final SuspiciousStatement statement) {
+		try {
+			return synthetizerFactory.getFor(statement.getSourceLocation()).buildPatch(classpath,
+					testClasses);
+		} catch (SourceFileNotFoundException e) {
+			logger.info(e.getMessage());
+			return NO_PATCH;
+		}
+	}
+
 	private boolean isOk(final Patch newRepair, final String[] testClasses) {
 		if (newRepair == NO_PATCH) {
 			return false;
 		}
-		this.patchLogger.trace("Suggested patch: {}", newRepair);
-		return this.passesAllTests(newRepair, testClasses);
+		patchLogger.trace("Suggested patch: {}", newRepair);
+		return passesAllTests(newRepair, testClasses);
 	}
 
 	private boolean passesAllTests(final Patch newRepair, final String[] testClasses) {
-		return this.testPatch.passesAllTests(newRepair, testClasses);
+		return testPatch.passesAllTests(newRepair, testClasses);
 	}
 }

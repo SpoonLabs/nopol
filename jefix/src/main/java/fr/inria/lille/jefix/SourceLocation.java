@@ -15,9 +15,9 @@
  */
 package fr.inria.lille.jefix;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import java.io.File;
+
+import javax.annotation.Nullable;
 
 /**
  * @author Favio D. DeMarco
@@ -38,18 +38,25 @@ public final class SourceLocation {
 		this.lineNumber = lineNumber;
 	}
 
+	private void checkState(final boolean expression, @Nullable final String errorMessageTemplate,
+			@Nullable final Object... errorMessageArgs) {
+		if (!expression) {
+			throw new SourceFileNotFoundException(String.format(errorMessageTemplate, errorMessageArgs));
+		}
+	}
+
 	/**
 	 * @return the containingClassName
 	 */
 	public String getContainingClassName() {
-		return this.containingClassName;
+		return containingClassName;
 	}
 
 	/**
 	 * @return the lineNumber
 	 */
 	public int getLineNumber() {
-		return this.lineNumber;
+		return lineNumber;
 	}
 
 	public File getSourceFile(final File sourceFolder) {
@@ -57,7 +64,7 @@ public final class SourceLocation {
 	}
 
 	public File getSourceFile(final String sourceFolder) {
-		String classPath = this.containingClassName.replace('.', File.separatorChar);
+		String classPath = containingClassName.replace('.', File.separatorChar);
 		int inertTypeIndex = classPath.indexOf('$');
 		if (inertTypeIndex > 0) {
 			classPath = classPath.substring(0, inertTypeIndex);
@@ -72,6 +79,6 @@ public final class SourceLocation {
 	 */
 	@Override
 	public String toString() {
-		return String.format("SourceLocation %s:%d", this.containingClassName, this.lineNumber);
+		return String.format("SourceLocation %s:%d", containingClassName, lineNumber);
 	}
 }
