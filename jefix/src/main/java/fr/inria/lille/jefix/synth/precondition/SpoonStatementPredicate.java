@@ -34,9 +34,24 @@ public enum SpoonStatementPredicate implements Predicate<CtCodeElement> {
 
 	@Override
 	public boolean apply(final CtCodeElement input) {
-		return input instanceof CtStatement
-				&& !(input instanceof CtClass || input instanceof CtBlock
-						|| input instanceof CtReturn || input instanceof CtLocalVariable)
-						&& input.getParent() instanceof CtStatement;
+		return input instanceof CtStatement && !(input instanceof CtClass ||
+
+				// cannot insert code before '{}', for example would try to add code between 'Constructor()' and '{}'
+				input instanceof CtBlock ||
+
+				// cannot insert a conditional before 'return', won't compile.
+				input instanceof CtReturn ||
+
+				// cannot insert a conditional before variable declaration, won't compile if the variable is used later on.
+				input instanceof CtLocalVariable)
+
+				&& !(
+						// cannot insert code between 'return' and a statement, for example would try to add code between
+						// 'return' and 'someMethod();'
+						input.getParent() instanceof CtReturn ||
+
+						// cannot insert code between a variable declaration and a statement, for example would try to add code
+						// between 'int foo =' and 'bar + baz;'
+						input.getParent() instanceof CtLocalVariable);
 	}
 }
