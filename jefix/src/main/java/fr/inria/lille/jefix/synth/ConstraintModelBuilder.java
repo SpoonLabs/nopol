@@ -23,6 +23,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,16 +56,15 @@ public final class ConstraintModelBuilder {
 	 */
 	private static final long TIMEOUT_IN_SECONDS = 60;
 
-
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private final boolean debug = this.logger.isDebugEnabled();
+	private final boolean debug = logger.isDebugEnabled();
 	private final ClassLoader spooner;
 	private boolean viablePatch;
 
 	public ConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation,
 			final Processor<?> processor) {
 		SpoonClassLoader scl = new SpoonClassLoader();
-		scl.getEnvironment().setDebug(this.debug);
+		scl.getEnvironment().setDebug(debug);
 		ProcessingManager processingManager = scl.getProcessingManager();
 		processingManager.addProcessor(processor);
 		Builder builder = scl.getFactory().getBuilder();
@@ -76,7 +76,7 @@ public final class ConstraintModelBuilder {
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
-		this.spooner = scl;
+		spooner = scl;
 	}
 
 	/**
@@ -84,26 +84,24 @@ public final class ConstraintModelBuilder {
 	 */
 	public InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
 		InputOutputValues model = new InputOutputValues();
-		ClassLoader cl = new URLClassLoader(classpath, this.spooner);
+		ClassLoader cl = new URLClassLoader(classpath, spooner);
 		// should use the url class loader
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
 		try {
 			Result firstResult = executor.submit(
 					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model,
-							ConditionalValueHolder.booleanValue))).get(
-									TIMEOUT_IN_SECONDS, SECONDS);
+							ConditionalValueHolder.booleanValue))).get(TIMEOUT_IN_SECONDS, SECONDS);
 			ConditionalValueHolder.flip();
 			Result secondResult = executor.submit(
 					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model,
-							ConditionalValueHolder.booleanValue))).get(
-									TIMEOUT_IN_SECONDS, SECONDS);
-			this.determineViability(firstResult, secondResult);
+							ConditionalValueHolder.booleanValue))).get(TIMEOUT_IN_SECONDS, SECONDS);
+			determineViability(firstResult, secondResult);
 		} catch (InterruptedException | ExecutionException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		} catch (TimeoutException e) {
-			this.logger.warn("Timeout after {} seconds. Infinite loop?", TIMEOUT_IN_SECONDS);
-			this.viablePatch = false;
+			logger.warn("Timeout after {} seconds. Infinite loop?", TIMEOUT_IN_SECONDS);
+			viablePatch = false;
 		} finally {
 			executor.shutdownNow();
 		}
@@ -115,13 +113,17 @@ public final class ConstraintModelBuilder {
 				FailureToDescription.INSTANCE));
 		ImmutableSet<Description> secondFailures = copyOf(transform(secondResult.getFailures(),
 				FailureToDescription.INSTANCE));
-		this.viablePatch = intersection(firstFailures, secondFailures).isEmpty();
+		Set<Description> failingTests = intersection(firstFailures, secondFailures);
+		viablePatch = failingTests.isEmpty();
+		if (!viablePatch) {
+			logger.trace("Failing test(s): {}", failingTests);
+		}
 	}
 
 	/**
 	 * @see fr.inria.lille.jefix.synth.ConstraintModelBuilder#isAViablePatch()
 	 */
 	public boolean isAViablePatch() {
-		return this.viablePatch;
+		return viablePatch;
 	}
 }
