@@ -61,7 +61,7 @@ public final class DefaultSynthesizer implements Synthesizer {
 		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
 		int dataSize = data.getOutputValues().size();
 		if (dataSize < 2) {
-			LoggerFactory.getLogger(this.getClass()).info("{} input values sets. There are not enough tests for {}",
+			LoggerFactory.getLogger(this.getClass()).info("{} input values set(s). There are not enough tests for {}",
 					dataSize, sourceLocation);
 			return NO_PATCH;
 		}
