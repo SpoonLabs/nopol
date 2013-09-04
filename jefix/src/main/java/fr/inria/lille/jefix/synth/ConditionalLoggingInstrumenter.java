@@ -21,6 +21,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.LoggerFactory;
+
 import spoon.reflect.Factory;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
@@ -64,13 +66,13 @@ final class ConditionalLoggingInstrumenter implements Processor {
 		public <R> void visitCtBlock(final CtBlock<R> block) {
 			for (CtStatement stmt : block.getStatements()) {
 				// we can not add variables that are declared after the stoppers
-				if (this.stoppers.contains(stmt)) {
+				if (stoppers.contains(stmt)) {
 					return;
 				}
 
 				// we only add the new local variables
 				if (stmt instanceof CtLocalVariable) {
-					this.variables.add((CtVariable<?>) stmt);
+					variables.add((CtVariable<?>) stmt);
 				}
 			}
 		}
@@ -79,7 +81,7 @@ final class ConditionalLoggingInstrumenter implements Processor {
 		@Override
 		public <T> void visitCtClass(final CtClass<T> ctClass) {
 			for (CtField<?> field : ctClass.getFields()) {
-				this.variables.add(field);
+				variables.add(field);
 			}
 		}
 
@@ -87,7 +89,7 @@ final class ConditionalLoggingInstrumenter implements Processor {
 		@Override
 		public <T> void visitCtMethod(final CtMethod<T> m) {
 			for (CtParameter<?> param : m.getParameters()) {
-				this.variables.add(param);
+				variables.add(param);
 			}
 		}
 	}
@@ -103,7 +105,7 @@ final class ConditionalLoggingInstrumenter implements Processor {
 		final Set<CtVariable<?>> variables = new HashSet<>();
 
 		// we add all variables in the scope of el
-		variables.addAll(this.getVariablesInLocalScope(el, children));
+		variables.addAll(getVariablesInLocalScope(el, children));
 
 		// recursion: we collect all variables in this scope
 		// and in the scope of its parent
@@ -128,7 +130,7 @@ final class ConditionalLoggingInstrumenter implements Processor {
 				&& !(el instanceof CtSimpleType && el.getParent() instanceof CtBlock)) {
 			// here is the recursion
 			children.add(el);
-			variables.addAll(this._getVariablesInScope(el.getParent(), children));
+			variables.addAll(_getVariablesInScope(el.getParent(), children));
 		}
 		return variables;
 	}
@@ -148,7 +150,7 @@ final class ConditionalLoggingInstrumenter implements Processor {
 	}
 
 	private Collection<CtVariable<?>> getVariablesInScope(final CtElement el) {
-		return this._getVariablesInScope(el, new HashSet<CtElement>());
+		return _getVariablesInScope(el, new HashSet<CtElement>());
 	}
 
 	private boolean hasStaticParent(final CtElement el) {
@@ -159,18 +161,17 @@ final class ConditionalLoggingInstrumenter implements Processor {
 		}
 
 		if (el.getParent() != null) {
-			return this.hasStaticParent(el.getParent());
+			return hasStaticParent(el.getParent());
 		}
 		return false;
 	}
 
 	@Override
 	public void process(final Factory factory, final CtCodeElement statement) {
-
-		boolean inStaticCode = this.hasStaticParent(statement);
+		boolean inStaticCode = hasStaticParent(statement);
 		StringBuilder snippet = new StringBuilder();
 
-		for (CtVariable<?> var : this.getVariablesInScope(statement)) {
+		for (CtVariable<?> var : getVariablesInScope(statement)) {
 			boolean isStaticVar = var.getModifiers().contains(STATIC);
 
 			// we only add if the code is non static
@@ -190,7 +191,9 @@ final class ConditionalLoggingInstrumenter implements Processor {
 			}
 		}
 		if (snippet.length() > 0) {
-			this.getStatement(statement).insertBefore(factory.Code().createCodeSnippetStatement(snippet.toString()));
+			CtStatement target = getStatement(statement);
+			LoggerFactory.getLogger(this.getClass()).debug("Instrumenting [{}] in\n{}", target, target.getParent());
+			target.insertBefore(factory.Code().createCodeSnippetStatement(snippet.toString()));
 		}
 	}
 }
