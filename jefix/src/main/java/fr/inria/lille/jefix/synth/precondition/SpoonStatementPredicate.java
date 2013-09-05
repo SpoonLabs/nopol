@@ -16,11 +16,13 @@
 package fr.inria.lille.jefix.synth.precondition;
 
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtReturn;
+import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 
 import com.google.common.base.Predicate;
 
@@ -34,24 +36,22 @@ public enum SpoonStatementPredicate implements Predicate<CtCodeElement> {
 
 	@Override
 	public boolean apply(final CtCodeElement input) {
-		return input instanceof CtStatement && !(input instanceof CtClass ||
+		CtElement parent = input.getParent();
+		return input instanceof CtStatement && !(
+				// input instanceof CtClass ||
 
 				// cannot insert code before '{}', for example would try to add code between 'Constructor()' and '{}'
-				input instanceof CtBlock ||
+				// input instanceof CtBlock ||
 
-				// cannot insert a conditional before 'return', won't compile.
-				input instanceof CtReturn ||
+				// cannot insert a conditional before 'return', it won't compile.
+				// input instanceof CtReturn ||
 
-				// cannot insert a conditional before variable declaration, won't compile if the variable is used later on.
+				// cannot insert a conditional before a variable declaration, it won't compile if the variable is used
+				// later on.
 				input instanceof CtLocalVariable)
 
-				&& !(
-						// cannot insert code between 'return' and a statement, for example would try to add code between
-						// 'return' and 'someMethod();'
-						input.getParent() instanceof CtReturn ||
-
-						// cannot insert code between a variable declaration and a statement, for example would try to add code
-						// between 'int foo =' and 'bar + baz;'
-						input.getParent() instanceof CtLocalVariable);
+				// Avoids ClassCastException's. @see spoon.support.reflect.code.CtStatementImpl#insertBefore(CtStatement
+				// target, CtStatementList<?> statements)
+				&& (parent instanceof CtIf || parent instanceof CtLoop || parent instanceof CtCase || parent instanceof CtBlock);
 	}
 }
