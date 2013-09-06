@@ -1,12 +1,13 @@
 \documentclass[a4paper,10pt,twocolumn]{article}
 
-% \usepackage{ucs}
-\usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
-\usepackage{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
 \usepackage{graphicx}
-
-% \usepackage[dvips]{hyperref}
+% \usepackage{ucs}
+\usepackage{fontenc}
+\usepackage{hyperref}
+\usepackage{tikz}
 
 \date{\today}
 
@@ -15,7 +16,7 @@
 \author{
         DeMarco Favio D. \\
                 Department of Computer Science\\
-		Universidad de Buenos Aires
+                Universidad de Buenos Aires
 }
 
 \begin{document}
@@ -59,10 +60,11 @@ Finally, Section~\ref{conclusions} gives the conclusions.
 \section{Contribution}
 
 \subsection{Overview}
-Nice figure
+
+\input{flow_graph}
+\label{flow_graph}
 
 \subsection{...}
-
 
 \section{Evaluation}
 \label{evaluation}
@@ -71,6 +73,6 @@ Nice figure
 \label{conclusions}
 
 \bibliographystyle{abbrv}
-\bibliography{main}
+% \bibliography{main}
 
 \end{document}
