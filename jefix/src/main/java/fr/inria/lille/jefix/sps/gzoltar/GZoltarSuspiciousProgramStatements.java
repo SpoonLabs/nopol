@@ -67,19 +67,23 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 
 	private GZoltarSuspiciousProgramStatements(final URL[] classpath) {
 		try {
-			this.gzoltar = new GZoltarJava7();
+			gzoltar = new GZoltarJava7();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
-		HashSet<String> classpaths = this.gzoltar.getClasspaths();
+		HashSet<String> classpaths = gzoltar.getClasspaths();
 		for (URL url : classpath) {
-			classpaths.add(url.toExternalForm());
+			if ("file".equals(url.getProtocol())) {
+				classpaths.add(url.getPath());
+			} else {
+				classpaths.add(url.toExternalForm());
+			}
 		}
-		this.gzoltar.setClassPaths(classpaths);
-		this.gzoltar.addPackageToInstrument("");
-		this.gzoltar.addPackageNotToInstrument("org.junit");
-		this.gzoltar.addPackageNotToInstrument("junit.framework");
+		gzoltar.setClassPaths(classpaths);
+		gzoltar.addPackageToInstrument("");
+		gzoltar.addPackageNotToInstrument("org.junit");
+		gzoltar.addPackageNotToInstrument("junit.framework");
 	}
 
 	/**
@@ -107,13 +111,13 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 	public List<SuspiciousStatement> sortBySuspiciousness(final String... testClasses) {
 
 		for (String className : checkNotNull(testClasses)) {
-			this.gzoltar.addTestToExecute(className); // we want to execute the test
-			this.gzoltar.addClassNotToInstrument(className); // we don't want to include the test as root-cause
+			gzoltar.addTestToExecute(className); // we want to execute the test
+			gzoltar.addClassNotToInstrument(className); // we don't want to include the test as root-cause
 			// candidate
 		}
-		this.gzoltar.run();
+		gzoltar.run();
 
-		List<SuspiciousStatement> statements = from(this.gzoltar.getSuspiciousStatements())
+		List<SuspiciousStatement> statements = from(gzoltar.getSuspiciousStatements())
 				.filter(IsSuspicious.INSTANCE).transform(GZoltarStatementWrapperFunction.INSTANCE).toList();
 
 		Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -122,7 +126,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		}
 
 		// TODO delete this method call
-		this.assertExpectedOrder(statements);
+		assertExpectedOrder(statements);
 
 		return statements;
 	}
