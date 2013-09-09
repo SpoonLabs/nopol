@@ -1,0 +1,82 @@
+<configuration>
+	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator" />
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
+			by default -->
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+		<target>System.err</target>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="PATCHES" class="ch.qos.logback.core.FileAppender">
+		<file>patches.txt</file>
+		<append>false</append>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="DEBUG" class="ch.qos.logback.core.FileAppender">
+		<file>debug.txt</file>
+		<append>false</append>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="CONSTRAINTS" class="ch.qos.logback.core.FileAppender">
+		<file>constraints.txt</file>
+		<append>false</append>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="TESTS_OUTPUT" class="ch.qos.logback.core.FileAppender">
+		<file>tests_output.txt</file>
+		<append>false</append>
+		<encoder>
+			<pattern>%msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="fr.inria.lille.nopol.synth.smt.constraint.ConstraintSolver"
+		level="debug" additivity="false">
+		<appender-ref ref="CONSTRAINTS" />
+	</logger>
+
+	<logger name="fr.inria.lille.nopol.sps.gzoltar.GZoltarJava7"
+		level="debug" />
+
+	<logger name="org.apache" level="OFF" />
+
+	<logger name="spoon.SpoonClassLoader" level="OFF" additivity="true">
+		<appender-ref ref="STDERR" />
+	</logger>
+
+	<logger name="fr.inria.lille.nopol.NoPol" level="debug"
+		additivity="true">
+		<appender-ref ref="STDERR" />
+	</logger>
+
+	<logger name="patch" level="trace" additivity="false">
+		<appender-ref ref="PATCHES" />
+	</logger>
+
+	<logger name="tests.output" level="debug" additivity="false">
+		<appender-ref ref="TESTS_OUTPUT" />
+	</logger>
+
+	<root level="debug">
+		<appender-ref ref="DEBUG" />
+	</root>
+</configuration>
