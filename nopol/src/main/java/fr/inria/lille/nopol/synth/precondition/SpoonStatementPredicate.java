@@ -21,6 +21,7 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtLoop;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 
@@ -44,7 +45,7 @@ public enum SpoonStatementPredicate implements Predicate<CtCodeElement> {
 				// input instanceof CtBlock ||
 
 				// cannot insert a conditional before 'return', it won't compile.
-				// input instanceof CtReturn ||
+				input instanceof CtReturn ||
 
 				// cannot insert a conditional before a variable declaration, it won't compile if the variable is used
 				// later on.
