@@ -32,7 +32,7 @@ import org.smtlib.IExpr.IIdentifier;
 import org.smtlib.IExpr.IQualifiedIdentifier;
 import org.smtlib.ISort;
 import org.smtlib.SMT.Configuration;
-import org.smtlib.logic.AUFLIA;
+import org.smtlib.logic.AUFLIRA;
 
 import com.google.common.collect.Iterables;
 
@@ -47,6 +47,7 @@ import fr.inria.lille.nopol.synth.smt.model.ValuesModel;
  */
 final class Synthesis {
 
+	private static final String MINUS = "-";
 	private static final String INPUT_LINE_FORMAT = "L_I%d_%d";
 	private static final String OUTPUT_LINE = "LO";
 	private static final String OUTPUT_LINE_PREFIX = "LO_";
@@ -61,39 +62,38 @@ final class Synthesis {
 
 	Synthesis(@Nonnull final Configuration smtConfig, @Nonnull final InputModel model) {
 		this.smtConfig = smtConfig;
-		this.efactory = smtConfig.exprFactory;
-		this.sortfactory = smtConfig.sortFactory;
-		this.commandFactory = smtConfig.commandFactory;
-		this.intSort = this.sortfactory.createSortExpression(this.efactory.symbol("Int"));
-		this.and = this.efactory.symbol("and");
+		efactory = smtConfig.exprFactory;
+		sortfactory = smtConfig.sortFactory;
+		commandFactory = smtConfig.commandFactory;
+		intSort = sortfactory.createSortExpression(efactory.symbol("Int"));
+		and = efactory.symbol("and");
 		this.model = model;
 	}
 
 	private void addFunctionDeclarationsTo(final Collection<ICommand> script) {
-		List<Component> components = this.model.getComponents();
-		script.add(new Acyclicity(this.smtConfig).createFunctionDefinitionFor(components));
-		script.add(new Consistency(this.smtConfig).createFunctionDefinitionFor(components.size()));
-		script.add(new WellFormedProgram(this.smtConfig).createFunctionDefinitionFor(this.model));
-		script.add(new Library(this.smtConfig).createFunctionDefinitionFor(components));
-		script.add(new Connectivity(this.smtConfig).createFunctionDefinitionFor(this.model));
-		script.add(new Verification(this.smtConfig).createFunctionDefinitionFor(this.model));
+		List<Component> components = model.getComponents();
+		script.add(new Acyclicity(smtConfig).createFunctionDefinitionFor(components));
+		script.add(new Consistency(smtConfig).createFunctionDefinitionFor(components.size()));
+		script.add(new WellFormedProgram(smtConfig).createFunctionDefinitionFor(model));
+		script.add(new Library(smtConfig).createFunctionDefinitionFor(components));
+		script.add(new Connectivity(smtConfig).createFunctionDefinitionFor(model));
+		script.add(new Verification(smtConfig).createFunctionDefinitionFor(model));
 	}
 
 	/**
 	 * @param script
 	 */
 	private void addLocationFunctionsTo(final Collection<ICommand> script) {
-		Collection<IExpr> ioModel = this.getModel();
+		Collection<IExpr> ioModel = getModel();
 		for (IExpr symbol : ioModel) {
-			script.add(this.commandFactory.declare_fun((IIdentifier) symbol, Collections.<ISort> emptyList(),
-					this.intSort));
+			script.add(commandFactory.declare_fun((IIdentifier) symbol, Collections.<ISort> emptyList(), intSort));
 		}
 	}
 
 	private IExpr createConstraint(final Iterable<List<IExpr>> inputValues, final Iterable<IExpr> outputValues) {
 		List<IExpr> constraints = new ArrayList<>();
-		List<IExpr> ioModel = this.getModel();
-		constraints.add(this.efactory.fcn(this.efactory.symbol(WellFormedProgram.FUNCTION_NAME), ioModel));
+		List<IExpr> ioModel = getModel();
+		constraints.add(efactory.fcn(efactory.symbol(WellFormedProgram.FUNCTION_NAME), ioModel));
 		int index = 0;
 		for (IExpr output : outputValues) {
 			List<IExpr> parameters = new ArrayList<>(ioModel.size() + 1);
@@ -103,17 +103,17 @@ final class Synthesis {
 			index++;
 			parameters.add(output);
 			parameters.addAll(ioModel);
-			constraints.add(this.efactory.fcn(this.efactory.symbol(Verification.FUNCTION_NAME), parameters));
+			constraints.add(efactory.fcn(efactory.symbol(Verification.FUNCTION_NAME), parameters));
 		}
-		return this.efactory.fcn(this.and, constraints);
+		return efactory.fcn(and, constraints);
 	}
 
 	List<ICommand> createScript() {
 
-		Iterable<List<IExpr>> inputValues = this.getInputValues();
-		Iterable<IExpr> outputValues = this.getOutputValues();
+		Iterable<List<IExpr>> inputValues = getInputValues();
+		Iterable<IExpr> outputValues = getOutputValues();
 
-		return this.createScriptFor(inputValues, outputValues);
+		return createScriptFor(inputValues, outputValues);
 	}
 
 	/**
@@ -122,29 +122,28 @@ final class Synthesis {
 	 * @param outputValues
 	 * @return
 	 */
-	private List<ICommand> createScriptFor(final Iterable<List<IExpr>> inputValues,
-			final Iterable<IExpr> outputValues) {
-		List<ICommand> script = new ArrayList<>(this.model.getComponents().size() * 3);
-		script.add(this.commandFactory.set_option(this.efactory.keyword(PRODUCE_MODELS), TRUE));
-		script.add(this.commandFactory.set_logic(this.efactory.symbol(AUFLIA.class.getSimpleName())));
-		this.addFunctionDeclarationsTo(script);
-		this.addLocationFunctionsTo(script);
-		script.add(this.commandFactory.assertCommand(this.createConstraint(inputValues, outputValues)));
+	private List<ICommand> createScriptFor(final Iterable<List<IExpr>> inputValues, final Iterable<IExpr> outputValues) {
+		List<ICommand> script = new ArrayList<>(model.getComponents().size() * 3);
+		script.add(commandFactory.set_option(efactory.keyword(PRODUCE_MODELS), TRUE));
+		script.add(commandFactory.set_logic(efactory.symbol(AUFLIRA.class.getSimpleName())));
+		addFunctionDeclarationsTo(script);
+		addLocationFunctionsTo(script);
+		script.add(commandFactory.assertCommand(createConstraint(inputValues, outputValues)));
 		return script;
 	}
 
 	private Iterable<List<IExpr>> getInputValues() {
 		Collection<List<IExpr>> expressions = new ArrayList<>();
-		ValuesModel valuesModel = this.model.getValues();
+		ValuesModel valuesModel = model.getValues();
 		for (Collection<Object> values : valuesModel.getInputvalues().asMap().values()) {
-			expressions.add(this.iExprCollectionFromObjects(values));
+			expressions.add(iExprCollectionFromObjects(values));
 		}
 
 		// XXX FIXME TODO
 		int size = Iterables.size(valuesModel.getOutputValues());
 
 		for (Object constant : valuesModel.getConstants()) {
-			expressions.add(Collections.nCopies(size, this.objectToIExpr(constant)));
+			expressions.add(Collections.nCopies(size, objectToIExpr(constant)));
 		}
 		return expressions;
 	}
@@ -154,14 +153,14 @@ final class Synthesis {
 	 * @return
 	 */
 	List<IExpr> getModel() {
-		Collection<Component> components = this.model.getComponents();
+		Collection<Component> components = model.getComponents();
 		List<IExpr> parameters = new ArrayList<>(components.size() * 3);
-		parameters.add(this.efactory.symbol(OUTPUT_LINE));
+		parameters.add(efactory.symbol(OUTPUT_LINE));
 		int componentIndex = 0;
 		for (Component component : components) {
-			parameters.add(this.efactory.symbol(OUTPUT_LINE_PREFIX + componentIndex));
+			parameters.add(efactory.symbol(OUTPUT_LINE_PREFIX + componentIndex));
 			for (int parameterIndex = 0; parameterIndex < component.getParameterTypes().size(); parameterIndex++) {
-				parameters.add(this.efactory.symbol(String.format(INPUT_LINE_FORMAT, componentIndex, parameterIndex)));
+				parameters.add(efactory.symbol(String.format(INPUT_LINE_FORMAT, componentIndex, parameterIndex)));
 			}
 			componentIndex++;
 		}
@@ -169,13 +168,13 @@ final class Synthesis {
 	}
 
 	private Iterable<IExpr> getOutputValues() {
-		return this.iExprCollectionFromObjects(this.model.getValues().getOutputValues());
+		return iExprCollectionFromObjects(model.getValues().getOutputValues());
 	}
 
 	private List<IExpr> iExprCollectionFromObjects(final Iterable<Object> values) {
 		List<IExpr> expressions = new ArrayList<>();
 		for (Object value : values) {
-			expressions.add(this.objectToIExpr(value));
+			expressions.add(objectToIExpr(value));
 		}
 		return expressions;
 	}
@@ -184,12 +183,12 @@ final class Synthesis {
 		Type type = Type.ValueToType.INSTANCE.apply(value);
 		if (Type.BOOLEAN == type) {
 			return (Boolean) value ? TRUE : FALSE;
-		} else if (Type.INTEGER == type) {
-			long longValue = ((Number) value).longValue();
-			if (longValue < 0) {
-				return this.efactory.fcn(this.efactory.symbol("-"), this.efactory.numeral(Math.abs(longValue)));
+		} else if (Type.NUMBER == type) {
+			String stringValue = value.toString();
+			if (stringValue.startsWith(MINUS)) {
+				return efactory.fcn(efactory.symbol(MINUS), efactory.decimal(stringValue.substring(1)));
 			} else {
-				return this.efactory.numeral(longValue);
+				return efactory.decimal(stringValue);
 			}
 		}
 		throw new IllegalStateException("Unknown type: " + type);

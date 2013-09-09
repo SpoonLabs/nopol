@@ -64,6 +64,7 @@ if (pos > n) {
     return sorted[(length - 1)];
 } 
 
+Agregando soporte para punto flotante la expresión sugerida cambia a: length==fpos
 
 ---- src/java/org/apache/commons/math/stat/univariate/rank/Percentile.java ----
 index 99dbd64..e3d8da6 100644

@@ -31,14 +31,14 @@ import fr.inria.lille.nopol.synth.smt.model.Type;
 final class TypeToSort implements Function<Type, ISort> {
 
 	private final ISort boolSort;
-	private final ISort intSort;
+	private final ISort realSort;
 
 	/**
 	 * @param sortFactory
 	 */
 	TypeToSort(@Nonnull final IFactory sortFactory, @Nonnull final org.smtlib.IExpr.IFactory eFactory) {
-		this.boolSort = sortFactory.Bool();
-		this.intSort = sortFactory.createSortExpression(eFactory.symbol("Int"));
+		boolSort = sortFactory.Bool();
+		realSort = sortFactory.createSortExpression(eFactory.symbol("Real"));
 	}
 
 	@Override
@@ -46,9 +46,9 @@ final class TypeToSort implements Function<Type, ISort> {
 	public ISort apply(@Nullable final Type input) {
 		switch (input) {
 		case BOOLEAN:
-			return this.boolSort;
-		case INTEGER:
-			return this.intSort;
+			return boolSort;
+		case NUMBER:
+			return realSort;
 
 		default:
 			throw new IllegalArgumentException("Unknown type " + input);

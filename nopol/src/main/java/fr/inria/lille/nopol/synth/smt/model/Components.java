@@ -37,25 +37,25 @@ public final class Components {
 	public static final Component OR = createFunction("or", new InfixExpression("||"), Type.BOOLEAN, Type.BOOLEAN,
 			Type.BOOLEAN);
 
-	public static final Component ITE = createFunction("ite", new TernaryExpression("?", ":"), Type.INTEGER,
-			Type.BOOLEAN, Type.INTEGER, Type.INTEGER);
+	public static final Component ITE = createFunction("ite", new TernaryExpression("?", ":"), Type.NUMBER,
+			Type.BOOLEAN, Type.NUMBER, Type.NUMBER);
 
 	public static final Component DISTINCT = createFunction("distinct", new InfixExpression("!="), Type.BOOLEAN,
-			Type.INTEGER, Type.INTEGER);
-	public static final Component EQUALS = createFunction("=", new InfixExpression("=="), Type.BOOLEAN, Type.INTEGER,
-			Type.INTEGER);
+			Type.NUMBER, Type.NUMBER);
+	public static final Component EQUALS = createFunction("=", new InfixExpression("=="), Type.BOOLEAN, Type.NUMBER,
+			Type.NUMBER);
 	public static final Component LESS_OR_EQUAL_THAN = createFunction("<=", new InfixExpression("<="), Type.BOOLEAN,
-			Type.INTEGER, Type.INTEGER);
-	public static final Component LESS_THAN = createFunction("<", new InfixExpression("<"), Type.BOOLEAN, Type.INTEGER,
-			Type.INTEGER);
+			Type.NUMBER, Type.NUMBER);
+	public static final Component LESS_THAN = createFunction("<", new InfixExpression("<"), Type.BOOLEAN, Type.NUMBER,
+			Type.NUMBER);
 
-	public static final Component PLUS = createFunction("+", new InfixExpression("+"), Type.INTEGER, Type.INTEGER,
-			Type.INTEGER);
-	public static final Component MINUS = createFunction("-", new InfixExpression("-"), Type.INTEGER, Type.INTEGER,
-			Type.INTEGER);
+	public static final Component PLUS = createFunction("+", new InfixExpression("+"), Type.NUMBER, Type.NUMBER,
+			Type.NUMBER);
+	public static final Component MINUS = createFunction("-", new InfixExpression("-"), Type.NUMBER, Type.NUMBER,
+			Type.NUMBER);
 
-	public static final Component MULTIPLICATION = createFunction("*", new InfixExpression("*"), Type.INTEGER,
-			Type.INTEGER, Type.INTEGER);
+	public static final Component MULTIPLICATION = createFunction("*", new InfixExpression("*"), Type.NUMBER,
+			Type.NUMBER, Type.NUMBER);
 
 	public static Component createFunction(final String name, final CompositeExpression expression,
 			final Type outputType, final Type parameter) {

@@ -29,7 +29,7 @@ public enum Type {
 			return value instanceof Boolean;
 		}
 	},
-	INTEGER {
+	NUMBER {
 		@Override
 		public boolean isOfThisType(final Object value) {
 			return value instanceof Number;
