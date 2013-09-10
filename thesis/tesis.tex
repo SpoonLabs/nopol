@@ -4,19 +4,22 @@
 
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
-\usepackage[spanish]{babel}
+\usepackage[english]{babel}
 \usepackage[left=3cm,right=3cm,bottom=3.5cm,top=3.5cm]{geometry}
+\usepackage{tikz}
 
 \begin{document}
 
 %%%% CARATULA
-\def\autor{Luke Skywalker}
-\def\titulo{La Guerra de las Galaxias: \mbox{Rebelión e Imperio}}
-\def\runtitulo{La Guerra de las Galaxias: Rebelión e Imperio}
-\def\runtitle{Star Wars: Rebellion and Empire}
-\def\director{Obi-Wan Kenobi}
-\def\codirector{Master Yoda}
-\def\lugar{Buenos Aires, 2011}
+\def\autor{Favio D. DeMarco}
+\def\titulo{No-Pol: \mbox{Automatically fixing bugs}
+		    \mbox{in conditional statements}
+		    \mbox{using an SMT-Solver}}
+\def\runtitulo{Automatically fixing bugs in conditional statements using an SMT-Solver}
+\def\runtitle{Automatically fixing bugs in conditional statements using an SMT-Solver}
+\def\director{Martin Monperrus}
+\def\codirector{Diego Garbervetsky}
+\def\lugar{Buenos Aires, 2013}
 \input{caratula}
 
 %%%% ABSTRACTS, AGRADECIMIENTOS Y DEDICATORIA
@@ -38,44 +41,21 @@
 
 %%%% ACA VA EL CONTENIDO DE LA TESIS
 
-\chapter{La guerra de las galaxias}
-\section{Infancia y juventud}
-{\begin{small}%
-\begin{flushright}%
-\it
-There's nothing for me now.
-I want to learn the ways of\\ the Force and become a Jedi like my father. \\
---Luke Skywalker
-\end{flushright}%
-\end{small}%
-\vspace{.5cm}}
+\input{introduction}
 
-\section{Rescate de la princesa}
-{\begin{small}%
-\begin{flushright}%
-\it
-Here's where the fun begins!\\
---Han Solo
-\end{flushright}%
-\end{small}%
-\vspace{.5cm}}
+\input{background}
 
-\section{Sacrificio y victoria}
-{\begin{small}%
-\begin{flushright}%
-\it
-This will be a day long remembered.\\ It has seen the end of Kenobi.\\ It will soon see the end of the Rebellion.\\
---Darth Vader
-\end{flushright}%
-\end{small}%
-\vspace{.5cm}}
+\input{contribution}
 
-%% ...
-\chapter{El imperio contraataca}
-\chapter{El regreso del Jedi}
+\chapter{Evaluation}
+\label{evaluation}
+
+\chapter{Conclusions}
+\label{conclusions}
 
 %%%% BIBLIOGRAFIA
 \backmatter
-%\bibliography{tesis}
+\bibliographystyle{plain} 
+\bibliography{tesis}
 
 \end{document}
