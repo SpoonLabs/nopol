@@ -15,6 +15,8 @@
  */
 package fr.inria.lille.nopol.synth;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * @author Favio D. DeMarco
  * 
@@ -27,7 +29,27 @@ public final class RepairCandidate {
 	 * @param value
 	 */
 	public RepairCandidate(final String value) {
-		this.value = value;
+		this.value = checkNotNull(value);
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		RepairCandidate other = (RepairCandidate) obj;
+		return value.equals(other.value);
+	}
+
+	@Override
+	public int hashCode() {
+		return value.hashCode();
 	}
 
 	/**
@@ -35,6 +57,6 @@ public final class RepairCandidate {
 	 */
 	@Override
 	public String toString() {
-		return this.value;
+		return value;
 	}
 }

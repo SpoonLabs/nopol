@@ -15,7 +15,10 @@
  */
 package fr.inria.lille.nopol.synth.smt.constraint;
 
-import static org.smtlib.impl.Response.SAT;
+import static org.smtlib.impl.Response.UNSAT;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,13 +45,13 @@ public final class ConstraintSolver {
 
 	private void handleResponse(final IResponse response) {
 		if (response.isError()) {
-			this.logger.error(response.toString());
+			logger.error(response.toString());
 		}
 	}
 
 	private void log(final Iterable<ICommand> script) {
 		for (ICommand command : script) {
-			this.logger.debug(this.pretty(command.toString()).toString());
+			logger.debug(pretty(command.toString()).toString());
 		}
 	}
 
@@ -78,19 +81,31 @@ public final class ConstraintSolver {
 		Synthesis synthesis = new Synthesis(smtConfig, model);
 		IScript script = smtConfig.commandFactory.script((IStringLiteral) null, synthesis.createScript());
 
-		if (this.logger.isDebugEnabled()) {
-			this.log(script.commands());
+		if (logger.isDebugEnabled()) {
+			log(script.commands());
 		}
 
-		this.handleResponse(script.execute(solver));
+		handleResponse(script.execute(solver));
 
-		if (SAT.equals(solver.check_sat())) {
-			IResponse modelResponse = solver.get_value(synthesis.getModel().toArray(new IExpr[] {}));
-			this.logger.debug("Model: {}", modelResponse);
-			return new RepairCandidateBuilder(model, modelResponse).build();
-		} else {
-			this.logger.debug("UNSAT");
+		if (UNSAT.equals(solver.check_sat())) {
+			logger.debug("UNSAT");
 			return null;
+		} else {
+			IExpr[] solverModel = synthesis.getModel().toArray(new IExpr[] {});
+			IResponse modelResponse = solver.get_value(solverModel);
+			Set<IResponse> responses = new HashSet<>();
+			RepairCandidate repairCandidate;
+			do {
+				responses.add(modelResponse);
+				logger.debug("Model: {}", modelResponse);
+				repairCandidate = new RepairCandidateBuilder(model, modelResponse).build();
+				LoggerFactory.getLogger("code.synthesis").debug("Candidate: {}", repairCandidate);
+
+				// smt-lib needs a check-sat before each get-value to return a new model
+				solver.check_sat();
+				modelResponse = solver.get_value(solverModel);
+			} while (!responses.contains(modelResponse));
+			return repairCandidate;
 		}
 	}
 }
