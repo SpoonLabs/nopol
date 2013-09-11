@@ -1,0 +1,9 @@
+src/java/org/apache/commons/math/MathException.java -------------
+index 6e25982..11f7c56 100644
+@@ -86,7 +86,7 @@ public class MathException extends Exception {
+                     ResourceBundle.getBundle("org.apache.commons.math.MessagesResources", locale);
+             }
+ 
+-            if (cachedResources.getLocale().equals(locale)) {
++            if (cachedResources.getLocale().getLanguage().equals(locale.getLanguage())) {
+
