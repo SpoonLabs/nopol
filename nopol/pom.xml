@@ -21,7 +21,10 @@
 	</prerequisites>
 
 	<properties>
+		<default.encoding>UTF-8</default.encoding>
 		<slf4j.version>1.7.5</slf4j.version>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>
 
 	<dependencies>
@@ -114,15 +117,13 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-					<encoding>UTF-8</encoding>
+					<encoding>${default.encoding}</encoding>
 				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<configuration>
-					<encoding>UTF-8</encoding>
+					<encoding>${default.encoding}</encoding>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -182,7 +183,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<parallel>classes</parallel>
-					<threadCount>5</threadCount>
+					<threadCount>4</threadCount>
 				</configuration>
 			</plugin>
 
