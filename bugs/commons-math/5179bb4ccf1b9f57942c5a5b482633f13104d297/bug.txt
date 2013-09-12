@@ -1,0 +1,9 @@
+Even today there are no tests for this change.
+
+src/main/java/org/apache/commons/math3/analysis/integration/gauss/SymmetricGaussIntegrator.java View file @ 5179bb4
+...	...	 @@ -90,13 +90,12 @@ public double integrate(UnivariateFunction f) {
+90	90	              s = t;
+91	91	          }
+92	92	  
+93	 	 -        if (ruleLength % 2 == 1) {
+ 	93	 +        if (ruleLength % 2 != 0) {
