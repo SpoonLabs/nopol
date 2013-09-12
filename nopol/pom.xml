@@ -178,6 +178,14 @@
 					</archive>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<parallel>classes</parallel>
+					<threadCount>5</threadCount>
+				</configuration>
+			</plugin>
+
 		</plugins>
 
 		<pluginManagement>
