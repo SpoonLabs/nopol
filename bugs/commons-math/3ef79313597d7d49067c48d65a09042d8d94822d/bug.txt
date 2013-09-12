@@ -1,0 +1,7 @@
+src/main/java/org/apache/commons/math3/optimization/linear/SimplexTableau.java View file @ 3ef7931
+@@ -335,7 +335,7 @@ protected void dropPhase1Objective() {
+         // positive cost non-artificial variables
+         for (int i = getNumObjectiveFunctions(); i < getArtificialVariableOffset(); i++) {
+             final double entry = tableau.getEntry(0, i);
+-            if (Precision.compareTo(entry, 0d, maxUlps) > 0) {
++            if (Precision.compareTo(entry, 0d, epsilon) > 0) {
