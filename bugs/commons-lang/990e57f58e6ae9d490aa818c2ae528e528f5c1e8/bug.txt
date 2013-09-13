@@ -1,0 +1,16 @@
+src/java/org/apache/commons/lang/StringUtils.java View file @ 990e57f
+...	...	 @@ -77,7 +77,7 @@
+77	77	   * @author Arun Mammen Thomas
+78	78	   * @author <a href="mailto:ggregory@seagullsw.com">Gary Gregory</a>
+79	79	   * @since 1.0
+80	 	 - * @version $Id: StringUtils.java,v 1.47 2003/06/21 22:24:55 bayard Exp $
+ 	80	 + * @version $Id: StringUtils.java,v 1.48 2003/06/23 03:51:13 bayard Exp $
+81	81	   */
+82	82	  public class StringUtils {
+83	83	  
+...	...	 @@ -1048,7 +1048,7 @@ public static String chop(String str) {
+1048	1048	       */
+1049	1049	      public static String chopNewline(String str) {
+1050	1050	          int lastIdx = str.length() - 1;
+1051	 	 -        if (lastIdx == 0) {
+ 	1051	 +        if (lastIdx <= 0) {
