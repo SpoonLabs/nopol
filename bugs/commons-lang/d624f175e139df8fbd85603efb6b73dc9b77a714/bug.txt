@@ -1,0 +1,14 @@
+GZoltar encuentra más tests erróneos y la línea con el bug no aparece entre las candidatas.
+
+Fallan otros tests, aparentemente por la versión de java, fueron comentados para poder correr No-Pol:
+
+src/test/org/apache/commons/lang/time/FastDateFormatTest.java
+src/test/org/apache/commons/lang/builder/ToStringBuilderTest.java
+
+src/java/org/apache/commons/lang/text/StrTokenizer.java View file @ d624f17
+...	...	 @@ -1238,7 +1238,7 @@ public int isMatch(char[] text, int textLen, int pos) {
+1238	1238	           */
+1239	1239	          public int isMatch(char[] text, int textLen, int pos) {
+1240	1240	              int len = chars.length;
+1241	 	 -            if (pos + len >= textLen) {
+ 	1241	 +            if (pos + len > textLen) {
