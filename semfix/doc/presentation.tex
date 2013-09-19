@@ -1,203 +1,0 @@
-\documentclass{beamer}
-% \documentclass[handout]{beamer}
-% \setbeameroption{show notes}
-
-\usecolortheme[named=blue]{structure}
-
-\mode<presentation>
-{
-  \usetheme{Warsaw}
-  \setbeamercovered{transparent}
-}
-
-\usepackage{listings}
-\lstset{basicstyle=\scriptsize}
-
-\title
-  [SemFix: Program Repair via Semantic Analysis]
-  {SemFix:~Program~Repair~via~Semantic~Analysis}
-\author[DeMarco]{Favio~DeMarco}
-\institute[U.B.A. - INRIA]{Universidad de Buenos Aires - INRIA}
-\date[04/23/2013]{April 23th, 2013}
-\subject{Computational Sciences}
-
-\begin{document}
-
-\frame
-  {
-    \titlepage
-  }
-%-----------------------------------------------------------------------------80
-  \section*{Outline}
-%-----------------------------------------------------------------------------80
-  \frame
-  {
-    \frametitle{Outline of Topics}
-
-    \tableofcontents
-  }
-  
-  \frame
-  {
-    \frametitle{Semfix}
-	An automated repair method based on symbolic execution, constraint solving and program synthesis.
-	\note{Semfix tries to fix a bug using symbolic execution, an SMT solver and program synthesis.}
-  }
-
-  \frame
-  {
-    \frametitle{What?}
-	\begin{description}
-\item[Symbolic execution:] Analysis of programs by tracking symbolic rather than actual values. Kind of ``abstract interpretation''.
-\note[item]{The program is run using variables and expressions, instead of values, taking every possible path.}
-
-\item[Constraint solving:] The requirement on the repaired code to pass a given set of tests is formulated as a constraint.
-\note[item]{Test cases are used as a source for constraints over the mentioned variables.}
-
-\item[Program synthesis:] Automatically construct a program that provably satisfies a given high level specification in a appropriate logical calculus (instead of trying every possible combination).
-\note[item]{Code is generated taking into account the mentioned constraints.}
-	\end{description}
-  }
-
-  \frame
-  {
-    \frametitle{What we need?}
-    \begin{enumerate}
-     \item A program
-     \item with a test suite
-     \item and (at least) a failing test case.
-    \end{enumerate}
-      No formal specification of correct behavior is needed.
-  }
-
-  \section*{Let's start}
-  \frame
-  {
-    \frametitle{Where is the bug?}
-	\framesubtitle{Fault isolation}	
-	i.e. where to fix the problem. The technique uses the ranking produced by a statistical fault
-isolation tool: Tar\'antula.
-\begin{equation*}
- susp(s)=\dfrac{\dfrac{failed(s)}{totalfailed}}{\dfrac{passed(s)}{totalpassed}+\dfrac{failed(s)}{totalfailed}} 
-\end{equation*}
-\note{The tests are run and for each executed statement a suspiciousness score is calculated based on its frequency of occurence in passing and failing executions. The techinique will try to find a fix for the program going from the most to the less suspicios statements. \textit{susp(s)} is the suspiciousness score of statement s. \textit{failed(s)} is the number of failing executions in which s occurs, and \textit{passed(s)} is the number of passing executions in which s occurs. \textit{totalfailed} is the total number of failing executions and \textit{totalpassed} is the total number of passing executions.}
-  }
-
-  \frame
-  {
-    \frametitle{Now what?}
-    \framesubtitle{Statement-level specification inference}	
-
-    i.e. automaticallydiscover the correct speciﬁcation of the buggy statement.
-    \note{The technique creates,for each input to the buggy statement, the output thatwould have resulted in the test passing. The program is executed \textit{concretely} with each test case input until it reaches the actual suspicios line. Then the value of the statement is replaced with a symbolic value \textit{X} and the execution continues symbolically.}
-  }
-
-  \frame
-  {
-    \frametitle{So?}
-    \framesubtitle{Component-Based Program Synthesis}
-
-    Given a set of input-output pairs, component-based program synthesis generates a program that satisfies all the given input-output pairs.
-    \note{If$<\alpha , \beta>$ is one of the input-output pairs, then the synthesizedprogram must produce output $\beta$ when its input is $\alpha$.}
-    
-    A set of location variables are defined for eachcomponent (constant, minus, plus, etc.) and the synthesis process is reduced to findingvalues for these location variables.
-    \note{The constraint over thelocation variables is in first-order logic and solved by an SMT solver.}
-  }
-  \section*{Methodology}
-  \frame
-  {
-    \frametitle{The gory details}
-    \begin{itemize}
-     \item Only generate repairs by altering one statement.
-     \note[item]{Thegenerated fix is always with respect to a given test suite. If allthe tests in the given test suite pass after the repair is applied,the repair is considered to be successful.}
-
-     \item Focus on repairs that change the righthand side of assignments or branch predicates:
-     \begin{itemize}
-      \item x=$f_{buggy}(...) \rightarrow$ x=$f(...)$
-      \item if($f_{buggy}(...)$) $\rightarrow$ if($f(...)$)
-     \end{itemize}
-     \note[item]{The expression $f(...)$ is required to be side-effect free.}
-    \end{itemize}
-
-  }
-  \frame
-  {
-    \frametitle{Repair Constraint}
-     Given a program $P$, atest suite $T$, a repair constraint $C$ of a function $f_{buggy}$ inprogram $P$ is a constraint over function $f$ such that if $f\vDash C$,$P[f/f_{buggy}]$ passes all tests in $T$.
-     \note{For each particular test case $i$, $C_i$ is a second order predicate over the function $f$. The solution of $C$ is a function $f$ which can be used torepair the program so that all the test cases in the test suite $T$pass.Note that $C$ is a constraint over function $f$. Current offthe-shelf SMT solvers cannot directly solve such a formula. Component-Based Program Synthesis is used to solve this gap.}
-  }
-  \frame
-  {
-    \frametitle{Novel symbolic execution}
-    
-    The program is executed \textit{concretely} with input $t_i$to statement $s$ (withoutexecuting statement $s$). Then the result of function$f(...)$ is seted as symbolic and \textit{symbolic execution} is started fromstatement $s$.
-  }
-  
-  \frame
-  {
-    \frametitle{All together now}
-    \begin{description}
-     \item[Input:] 
-    \begin{description}
-     \item[P:] The buggy program
-     \item[T:] A test suite
-     \item[RC:] A ranked list of potential bug root-cause
-     \note{Do you remember Tar\'antula?}
-    \end{description}
-    \item[Output:]
-    \begin{description}
-     \item[r:] A repair for P
-    \end{description}
-     \end{description}
-
-  }
-  
-  
-  \begin{frame}[fragile]
-    \frametitle{All together now}
-    \begin{lstlisting}
-while RC is not EMPTY and not TIMEOUT do
-  rc = Shift(RC) // A repair candidate
-  S = new Set(); // A test suite for repair generation
-  Tf = ExtractFailedTests(T, P);
-  while Tf.isNotEmpty() do
-    S = S U Tf
-    new_repair = Repair(P, S, rc)
-    if new_repair == null then
-      break
-    end if
-    P'
-    ApplyRepair(P, new_repair)
-    Tf = ExtractFailedTests(T, P');
-  end while
-  if new_repair not null then
-    return new_repair
-  end if
-end while
-\end{lstlisting}
-\end{frame}
-
-  
-  \begin{frame}[fragile]
-    \frametitle{All together now}
-    \begin{lstlisting}
-function Repair(P, S, rc)
-  C = GenerateRepairConstraint(P, S, rc);
-  level = 1 // The complexity of a repair
-  new_repair = Synthesize(C, level);
-  while new_repair == null and level <= MAX_LEVEL do
-    level = level + 1
-    new_repair = Synthesize(C, level);
-  end while
-  return new_repair
-end function
-\end{lstlisting}
-\end{frame}
-  
-  \section*{Optimizations}
-  \frame
-  {
-    \frametitle{}
-  }
-
-\end{document}
