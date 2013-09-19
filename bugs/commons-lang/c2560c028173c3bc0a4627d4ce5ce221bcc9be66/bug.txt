@@ -1,0 +1,19 @@
+No se puede reparar, el único test prueba la excepción agregada.
+
+src/main/java/org/apache/commons/lang3/math/NumberUtils.java View file @ c2560c0
+...	...	 @@ -476,7 +476,7 @@ public static Number createNumber(String str) throws NumberFormatException {
+476	476	          if (decPos > -1) {
+477	477	  
+478	478	              if (expPos > -1) {
+479	 	 -                if (expPos < decPos) {
+ 	479	 +                if (expPos < decPos || expPos > str.length()) {
+480	480	                      throw new NumberFormatException(str + " is not a valid number.");
+481	481	                  }
+482	482	                  dec = str.substring(decPos + 1, expPos);
+...	...	 @@ -486,6 +486,9 @@ public static Number createNumber(String str) throws NumberFormatException {
+486	486	              mant = str.substring(0, decPos);
+487	487	          } else {
+488	488	              if (expPos > -1) {
+ 	489	 +                if (expPos > str.length()) {
+ 	490	 +                    throw new NumberFormatException(str + " is not a valid number.");
+ 	491	 +                }
