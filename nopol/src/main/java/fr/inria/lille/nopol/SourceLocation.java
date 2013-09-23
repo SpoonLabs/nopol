@@ -59,16 +59,20 @@ public final class SourceLocation {
 		return lineNumber;
 	}
 
+	public String getRootClassName() {
+		int inertTypeIndex = containingClassName.indexOf('$');
+		if (inertTypeIndex > 0) {
+			return containingClassName.substring(0, inertTypeIndex);
+		}
+		return containingClassName;
+	}
+
 	public File getSourceFile(final File sourceFolder) {
 		return this.getSourceFile(sourceFolder.getAbsolutePath());
 	}
 
 	public File getSourceFile(final String sourceFolder) {
-		String classPath = containingClassName.replace('.', File.separatorChar);
-		int inertTypeIndex = classPath.indexOf('$');
-		if (inertTypeIndex > 0) {
-			classPath = classPath.substring(0, inertTypeIndex);
-		}
+		String classPath = getRootClassName().replace('.', File.separatorChar);
 		File sourceFile = new File(sourceFolder, classPath + ".java");
 		checkState(sourceFile.exists(), "%s: does not exist.", sourceFile);
 		return sourceFile;

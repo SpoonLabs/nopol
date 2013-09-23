@@ -18,6 +18,7 @@ package fr.inria.lille.nopol.synth;
 import static com.google.common.collect.ImmutableSet.copyOf;
 import static com.google.common.collect.Lists.transform;
 import static com.google.common.collect.Sets.intersection;
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.io.File;
@@ -51,7 +52,7 @@ public final class ConstraintModelBuilder {
 	/**
 	 * XXX FIXME TODO should be a parameter
 	 */
-	private static final long TIMEOUT_IN_SECONDS = 60;
+	private static final long TIMEOUT_IN_SECONDS = MINUTES.toSeconds(5L);
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final boolean debug = logger.isDebugEnabled();
@@ -69,7 +70,7 @@ public final class ConstraintModelBuilder {
 			builder.addInputSource(sourceFolder);
 			builder.build();
 			// should be loaded by the spoon class loader
-			scl.loadClass(sourceLocation.getContainingClassName());
+			scl.loadClass(sourceLocation.getRootClassName());
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}

@@ -40,7 +40,7 @@ public interface Patch {
 		}
 
 		@Override
-		public String getContainingClassName() {
+		public String getRootClassName() {
 			throw new UnsupportedOperationException(toString());
 		}
 
@@ -78,7 +78,7 @@ public interface Patch {
 	/**
 	 * @return the containingClassName
 	 */
-	String getContainingClassName();
+	String getRootClassName();
 
 	File getFile(File sourcePath);
 

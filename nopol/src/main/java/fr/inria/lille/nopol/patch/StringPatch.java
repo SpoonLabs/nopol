@@ -53,8 +53,8 @@ public class StringPatch implements Patch {
 	 * @return the containingClassName
 	 */
 	@Override
-	public String getContainingClassName() {
-		return location.getContainingClassName();
+	public String getRootClassName() {
+		return location.getRootClassName();
 	}
 
 	/**

@@ -80,7 +80,7 @@ public final class TestPatch {
 
 		try {
 			// should be loaded by the spoon class loader
-			spooner.loadClass(patch.getContainingClassName());
+			spooner.loadClass(patch.getRootClassName());
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
