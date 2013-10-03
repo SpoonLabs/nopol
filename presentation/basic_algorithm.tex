@@ -1,6 +1,5 @@
 \begin{tikzpicture}[
-  font=\sffamily,
-  every matrix/.style={ampersand replacement=\&,column sep=2em,row sep=2em},
+  every matrix/.style={ampersand replacement=\&,column sep=5em,row sep=2em},
   box/.style={draw,rounded corners,fill=gray},
   flow/.style={->, thick},
   fail/.style={->, thick, dashed},
@@ -8,21 +7,20 @@
   
 % Position the nodes using a matrix layout
 \matrix{
+
+      \& \node[box] (test) {Oracle and Data \\ Collection};
+      \& \\
       \node[box] (faultLocalization) {Fault \\ Localization};
-      \& \node[box] (generateCandidate) {Find a Fix \\ for Location x};
-      \& \node[box] (test) {Run Unit \\ Tests};
-      \& \node[box] (output) {Fix};
+      \& \\
+      \& \node[box] (generateCandidate) {Find a \textit{Fix} \\ for Location \texttt{x}};
+      \& \node[box] (output) {Return \\ \textit{Fix}};
       \\
   };
 
 % Draw the arrows between the nodes and label them.
-\draw [flow] (faultLocalization) -- (generateCandidate);
-\draw [flow] (generateCandidate.north) .. controls (up:3em) .. (test.north);
-\draw [flow] (test) -- (output);
-\draw [fail] (test.south) .. controls (down:3em) .. (generateCandidate.south);
+\draw [flow] (test) to[bend left=50] (generateCandidate);
+\draw [flow] (generateCandidate) to node[above] {found} (output);
+\draw [fail] (generateCandidate) to[bend left=50] node[left, font=\ttfamily] (statement) {for each \\ location \\ x} (test);
+\draw [flow] (faultLocalization) -- (statement.west);
 
-
-% \draw [fail] (oracleInquisition.south) .. controls (down:.5em) and (left:8em) .. (oracleInquisition.west);
-% \draw [fail] (collectionOfTestExecutionData) .. controls (down:2em) and (left:9em) .. (oracleInquisition.west);
-% \draw [fail] (smtSolving.north) .. controls (down:2em) and (left:10em) .. (oracleInquisition.west);
 \end{tikzpicture}
