@@ -165,11 +165,6 @@ Patched Java source file.
 }
 
 
-\begin{frame}
- 
-\end{frame}
-
-
 \begin{frame}[fragile]
     \frametitle{Fault Localization (statement ranking)}
       \framesubtitle{GZoltar - Ochiai coefficient}
@@ -197,6 +192,7 @@ MathUtils:412 - Suspiciousness: 0.11180339887498948
 ...
 \end{frame}
 
+
 \begin{frame}[fragile]
 \frametitle{Fault Localization (statement ranking)}
 \framesubtitle{GZoltar - Ochiai coefficient}
@@ -216,12 +212,21 @@ MathUtils:412 - Suspiciousness: 0.11180339887498948
 \end{frame}
 
 
+\frame
+{
+  \frametitle{Oracle Inquisition}
+  \framesubtitle{For Location \texttt{x}}
+  \begin{center}
+  \include{basic_algorithm_oracle_and_values}
+  \end{center}
+}
 
 \frame
 {
-  \frametitle{Generating a candidate}
+  \frametitle{Oracle Inquisition}
+  \framesubtitle{For Location \texttt{x}}
   \begin{center}
-  \include{flow_graph}
+  \include{flow_graph_oracle}
   \end{center}
 }
 
