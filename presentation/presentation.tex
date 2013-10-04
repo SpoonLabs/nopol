@@ -28,7 +28,9 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{fontenc}
+
 \usepackage{tikz}
+\usetikzlibrary{fadings}
 
 \title[{Nopol: Repairing Bugs in Conditional Expressions}]{Nopol:~Repairing~Bugs~in~Conditional~Expressions}
 \author[Favio DeMarco]{Favio~DeMarco}
@@ -155,7 +157,7 @@ Patched Java source file.
 
 \frame
 {
-    \frametitle{Algorithm}
+    \frametitle{Overview}
     \framesubtitle{Trial and error}
   \begin{center}
   \include{basic_algorithm}
@@ -163,17 +165,19 @@ Patched Java source file.
 }
 
 
- \begin{frame}[fragile]
+\begin{frame}
+ 
+\end{frame}
+
+
+\begin{frame}[fragile]
     \frametitle{Fault Localization (statement ranking)}
       \framesubtitle{GZoltar - Ochiai coefficient}
-Suspiciousness $s_j$ of a statement $j$:
-\begin{equation*}
- s_j=\dfrac{ee_j}{\sqrt{(ee_j + ne_j ) \times (ee_j + en_j )}}
-\end{equation*}
+The suspiciousness $s_j$ of a statement $j$ depends on:
 \begin{itemize}
- \item $ee_j$: number of \textbf{failing} test cases \textbf{executing} statement $j$ 
- \item $ne_j$: number of \textbf{failing} test cases \textbf{not executing} statement $j$
- \item $en_j$: number of \textbf{successful} tests \textbf{executing} statement $j$
+ \item The number of \textbf{failing} test cases \textbf{executing} statement $j$ 
+ \item The number of \textbf{failing} test cases \textbf{not executing} statement $j$
+ \item The number of \textbf{successful} tests \textbf{executing} statement $j$
 \end{itemize}
 \end{frame}
 

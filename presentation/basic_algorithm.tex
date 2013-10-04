@@ -1,6 +1,6 @@
 \begin{tikzpicture}[
   every matrix/.style={ampersand replacement=\&,column sep=4em,row sep=3em},
-  box/.style={draw,rounded corners,fill=gray},
+  box/.style={rounded corners,fill=gray,path fading=south},
   flow/.style={->, very thick},
   fail/.style={->, very thick, dashed},
   every node/.style={align=center}]
@@ -8,7 +8,7 @@
 % Position the nodes using a matrix layout
 \matrix{
 
-      \& \node[box] (test) {Oracle and Data \\ Collection};
+      \& \node[box] (test) {Oracle and Values \\ Collection};
       \& \\
       \node[box] (faultLocalization) {Fault \\ Localization};
       \& \\
