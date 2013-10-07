@@ -230,6 +230,18 @@ MathUtils:412 - Suspiciousness: 0.11180339887498948
   \end{center}
 }
 
+\begin{frame}
+  \frametitle{Oracle Inquisition}
+  \framesubtitle{For Location \texttt{x}}
+ \begin{equation*}
+  if(\overbrace{a<b}^{\displaystyle bug}) \quad \quad \underbrace{\begin{align*}
+                                         if(true) \quad & \quad if(false) \\
+                                         PASS \quad & \quad KO
+                                        \end{align*} }_{\displaystyle Oracle}
+ \end{equation*}
+\end{frame}
+
+
 \begin{frame}[fragile]
   \frametitle{Generating a candidate}
   \framesubtitle{Oracle-Guided Component-Based Program Synthesis:}

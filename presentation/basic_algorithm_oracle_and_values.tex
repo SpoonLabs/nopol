@@ -21,7 +21,7 @@
 % Draw the arrows between the nodes and label them.
 \draw [flow] (test) to[bend left=50] (generateCandidate);
 \draw [flow] (generateCandidate) to node[above] {found!} (output);
-\draw [fail] (generateCandidate) to[bend left=50] node[font=\ttfamily, fill=black!90] (statement) {for each \\ location \\ x} (test);
+\draw [fail] (generateCandidate) to[bend left=50] node[font=\ttfamily, fill=black!90] (statement) {for each \\ location x} (test);
 \draw [flow] (faultLocalization) -- (statement.west);
 
 \end{tikzpicture}
