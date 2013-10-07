@@ -125,7 +125,7 @@ Some kind of specification:
  \item Model
  \item Contracts
  \item \textbf{Unit tests}
- \item ...
+ \item \dots
 \end{itemize}
 \end{frame}
 
@@ -184,12 +184,12 @@ The suspiciousness $s_j$ of a statement $j$ depends on:
 MathUtils:413 - Suspiciousness: 0.23570226039551587
 MathUtils:431 - Suspiciousness: 0.1543033499620919
 \end{verbatim}
-...
+\dots
 \begin{verbatim}
 MathUtils:460 - Suspiciousness: 0.11322770341445956
 MathUtils:412 - Suspiciousness: 0.11180339887498948
 \end{verbatim}
-...
+\dots
 \end{frame}
 
 
@@ -251,8 +251,40 @@ MathUtils:412 - Suspiciousness: 0.11180339887498948
 }
 
 
-% TWO_PI
+\begin{frame}[fragile]
+  \frametitle{Collection of Test Execution Data}
+  \framesubtitle{For Location \texttt{x}}
+\begin{lstlisting}[basicstyle=\footnotesize]
+ 42: public static final double TWO_PI = 2 * FastMath.PI;
+...
+411: public static int gcd(int u, int v) {
+412:   if (u * v == 0) {
+413:     return (Math.abs(u) + Math.abs(v));
+414:   }
+\end{lstlisting}
 
+\begin{center}
+\begin{tabular}{|l|l|l|l|l}
+\hline
+ & \texttt{TWO\_PI} & \texttt{u} & \texttt{v} & \\
+\hline
+\textit{testZero} & 6.283185\dots & 0 & 0 & \\
+\hline
+\textit{testOverflow} & 6.283185\dots & 0x00110000 & 0x01100000 & \\
+\hline
+ & & & & \\
+\end{tabular}
+\end{center}
+\end{frame}
+
+\frame
+{
+  \frametitle{Constraints Generation}
+  \framesubtitle{For Location \texttt{x}}
+  \begin{center}
+  \include{flow_graph_constraint}
+  \end{center}
+}
 
 \begin{frame}[fragile]
   \frametitle{Generating a candidate}
@@ -459,7 +491,7 @@ assertEquals([\textbf{3 * (1$<<$15)}]
 MathUtils:413 Suspiciousness 0.23570226039551587
 MathUtils:431 Suspiciousness 0.1543033499620919
 \end{verbatim}
-...
+\dots
 \begin{verbatim}
 MathUtils:460 Suspiciousness 0.11322770341445956
 MathUtils:412 Suspiciousness 0.11180339887498948
