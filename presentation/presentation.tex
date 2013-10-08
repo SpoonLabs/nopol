@@ -6,6 +6,7 @@
 % Don’t say everything.
 % Simplify.
 
+
 \setbeamertemplate{navigation symbols}{}%remove navigation symbols
 \setbeamercolor{normal text}{fg=white,bg=black!90}
 \setbeamercolor{structure}{fg=white}
@@ -33,6 +34,11 @@
 \usepackage{tikz}
 \usetikzlibrary{fadings}
 
+% eliminar para la versión final
+\usepackage[colorinlistoftodos]{todonotes}
+% fin de eliminar para la versión final
+
+
 \title[{Nopol: Repairing Bugs in Conditional Expressions}]{Nopol:~Repairing~Bugs~in~Conditional~Expressions}
 \author[Favio DeMarco]{Favio~DeMarco}
 \institute[U.B.A. - INRIA]{Universidad de Buenos Aires - INRIA}
@@ -43,6 +49,7 @@
 
   \frame
   {
+  \todo[inline]{Eliminar ``eliminar para la versión final''}
 \begin{quote}
     Take nothing on its looks; take everything on evidence. There's no better rule.
 \end{quote}    
@@ -322,6 +329,9 @@ MathUtils:412 - Suspiciousness: 0.11180339887498948
 \end{align*}
 \end{frame}
 
+\begin{frame}
+\todo[inline]{conditions to meet by the solution}
+\end{frame}
 
 \begin{frame}[fragile]
   \frametitle{Constraints Generation}
@@ -424,6 +434,10 @@ I2_2 = 0  O  = 2
 \psi_{conn}(L, I, O, P, R) = \bigwedge_{x, y \in P \cup R \cup I \cup \{O\}} (l_x = l_y \Rightarrow x = y)
 \end{equation*}
 }
+
+\begin{frame}
+\todo[inline]{Slide sobre levels}
+\end{frame}
 
   \frame
   {
