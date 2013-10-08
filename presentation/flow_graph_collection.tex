@@ -1,5 +1,5 @@
 \begin{tikzpicture}[
-  every matrix/.style={ampersand replacement=\&,column sep=2em,row sep=2em},
+  every matrix/.style={ampersand replacement=\&,column sep=1.5em},
   box/.style={rounded corners,fill=gray,path fading=south, draw, thick},
   shadedbox/.style={rounded corners,fill=black!90},
   flow/.style={->, very thick},
@@ -11,7 +11,7 @@
     \node[shadedbox] (empty1) {...};
     \& \node[shadedbox] (oracleInquisition) {Oracle \\ Inquisition};
     \& \node[box] (collectionOfTestExecutionData) {Collection \\ of Test Execution \\ Data};
-    \& \node[shadedbox] (constraintsGeneration) {Constraints \\ Generation};
+    \& \node[shadedbox] (constraintsGeneration) {Find a \textit{Fix} \\ for Location \texttt{x}};
     \& \node[shadedbox] (empty2) {...};
     \\
   };

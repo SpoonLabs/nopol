@@ -1,7 +1,8 @@
 \begin{tikzpicture}[
   every matrix/.style={ampersand replacement=\&,column sep=2em,row sep=2em},
-  box/.style={rounded corners,fill=gray,path fading=south, draw, thick},
   shadedbox/.style={rounded corners,fill=black!90},
+  nobox/.style={rounded corners,fill=gray,path fading=south},
+  box/.style={nobox, draw, thick},
   flow/.style={->, very thick},
   fail/.style={->, thick, dashed},
   every node/.style={align=center}]
@@ -10,7 +11,7 @@
 \matrix{
     \node[shadedbox] (faultLocalization) {Fault \\ Localization};
     \& \node[box] (oracleInquisition) {Oracle \\ Inquisition};
-    \& \node[shadedbox] (collectionOfTestExecutionData) {Collection \\ of Test Execution \\ Data};
+    \& \node[nobox] (collectionOfTestExecutionData) {Collection \\ of Test Execution \\ Data};
     \& \node[shadedbox] (empty) {...};
     \\
   };
