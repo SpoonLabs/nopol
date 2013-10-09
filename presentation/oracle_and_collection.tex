@@ -1,0 +1,65 @@
+\frame
+{
+  \frametitle{Oracle and Values Collection}
+  \framesubtitle{For Location \texttt{x}}
+  \begin{center}
+  \include{basic_algorithm_oracle_and_values}
+  \end{center}
+}
+
+\frame
+{
+  \frametitle{Oracle and Values Collection}
+  \framesubtitle{For Location \texttt{x}}
+  Two steps:
+  \begin{center}
+  \include{flow_graph_oracle}
+  \end{center}
+}
+
+\begin{frame}
+  \frametitle{Oracle Inquisition}
+  \framesubtitle{For Location \texttt{x}}
+ \begin{equation*}
+  \texttt{if(}\overbrace{\texttt{a < b}}^{\displaystyle \textsf{bug}}\texttt{)} \qquad \underbrace{\begin{array}{cc}
+                                         \texttt{if(true)} \quad & \quad \texttt{if(false)} \\
+                                         PASS \quad & \quad KO
+                                        \end{array} }_{\displaystyle \textsf{Oracle}}
+ \end{equation*}
+\end{frame}
+
+\frame
+{
+  \frametitle{Collection of Test Execution Data}
+  \framesubtitle{For Location \texttt{x}}
+  \begin{center}
+  \include{flow_graph_collection}
+  \end{center}
+}
+
+
+\begin{frame}[fragile]
+  \frametitle{Collection of Test Execution Data}
+  \framesubtitle{For Location \texttt{x}}
+\begin{lstlisting}[basicstyle=\footnotesize]
+ 42: public static final double TWO_PI = 2 * FastMath.PI;
+...
+411: public static int gcd(int u, int v) {
+412:   if (u * v == 0) {
+413:     return (Math.abs(u) + Math.abs(v));
+414:   }
+\end{lstlisting}
+
+\begin{center}
+\begin{tabular}{|l|l|l|l|l}
+\hline
+ & \texttt{TWO\_PI} & \texttt{u} & \texttt{v} & \\
+\hline
+\textit{testZero} & 6.283185\dots & 0 & 0 & \\
+\hline
+\textit{testOverflow} & 6.283185\dots & 0x00110000 & 0x01100000 & \\
+\hline
+ & & & & \\
+\end{tabular}
+\end{center}
+\end{frame}

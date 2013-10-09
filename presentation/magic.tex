@@ -1,0 +1,148 @@
+\frame
+{
+  \frametitle{Find a \textit{Fix}}
+  \framesubtitle{For Location \texttt{x}}
+  \begin{center}
+  \include{basic_algorithm_fix_generation}
+  \end{center}
+}
+
+\frame
+{
+  \frametitle{Constraints Generation (aka secret sauce)}
+  \framesubtitle{For Location \texttt{x}}
+  \begin{center}
+  \include{flow_graph_constraint}
+  \end{center}
+}
+
+\begin{frame}
+  \frametitle{Constraints Generation}
+  \framesubtitle{Oracle-Guided Component-Based Program Synthesis:}
+  Components and line numbers:
+\begin{align*}
+\textsf{Constants} & \left\{ \begin{array}{ll}
+        0 & \texttt{true} \\
+        1 & \texttt{false} \\
+        2 & \texttt{-1} \\
+        3 & \texttt{0} \\
+        4 & \texttt{1}
+    \end{array}\right. \\
+\textsf{Input values} & \left\{ \begin{array}{lllll}
+        5 & \texttt{u} & &		8 & \texttt{col != null} \\
+        6 & \texttt{v} & &		9 & \texttt{col.isEmpty()} \\
+        7 & \texttt{TWO\_PI} & &	10 & \texttt{col.size()} \\
+        \dots
+    \end{array}\right. \\
+\textsf{Oracle} & \left\{ \begin{array}{ll}
+        l_O &  \textsf{Expected} \\
+            & \textsf{output}
+    \end{array}\right.
+\end{align*}
+\end{frame}
+
+\begin{frame}
+conditions to meet by the solution
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Constraints Generation}
+  \framesubtitle{Oracle-Guided Component-Based Program Synthesis:}
+  Components and line numbers:
+\begin{verbatim}
+0 true
+1 false
+2 0
+3 1
+4 u
+5 v
+...
+O1 I1_1 < I1_2
+O2 I2_1 <= I2_2
+O3 I3_1 + I3_2
+...
+ON IN_1 ? IN_2 : IN_3
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Constraints Generation}
+  \framesubtitle{Example}
+  Components:
+\begin{verbatim}
+0 I
+O1 := f1(I1);
+O2 := f2(I2_1, I2_2);
+\end{verbatim}
+I want to codify:
+\begin{verbatim}
+f(I) = f1(f2(I, I));
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Constraints Generation}
+  \framesubtitle{Example}
+\begin{columns}
+\column{.5\textwidth}
+  Components:
+\begin{verbatim}
+0 I
+O1 := f1(I1);
+O2 := f2(I2_1, I2_2);
+\end{verbatim}
+I want to codify:
+\begin{verbatim}
+f(I) = f1(f2(I, I));
+\end{verbatim}
+\column{.5\textwidth}
+A solution:
+\begin{verbatim}
+0 I
+1 := f2(0, 0);
+2 := f1(1);
+\end{verbatim}
+Line coded:
+\begin{verbatim}
+I1 = 1    O1 = 2
+I2_1 = 0  O2 = 1
+I2_2 = 0  O  = 2
+\end{verbatim}
+\end{columns}
+\end{frame}
+
+
+\frame
+{
+  \frametitle{Constraints Generation}
+  \framesubtitle{Oracle-Guided Component-Based Program Synthesis}
+\begin{equation*}
+\phi_{func}(L, I, O) = \exists P, R \psi_{wfp}(L, I, P, R) \wedge \psi_{lib}(P, R) \wedge \psi_{conn}(L, I, O, P, R)
+\end{equation*}
+}
+
+
+\frame
+{
+  \frametitle{Constraints Generation}
+  \framesubtitle{Oracle-Guided Component-Based Program Synthesis}
+\begin{equation*}
+\psi_{wfp}(L, I, P, R) = \bigwedge_{x \in P} (0 \leq l_x < M) \wedge \bigwedge_{x \in R} (|I| \leq l_x < M)
+\end{equation*}
+\begin{equation*}
+\wedge \psi_{cons}(L) \wedge \psi_{acyc}(L)
+\end{equation*}
+}
+
+\frame
+{
+  \frametitle{Constraints Generation}
+  \framesubtitle{Oracle-Guided Component-Based Program Synthesis}
+\begin{equation*}
+\psi_{lib}(P, R) = \left( \bigwedge^N_{i=1} \phi_i(I_i, O_i) \right)
+\end{equation*}
+
+\begin{equation*}
+\psi_{conn}(L, I, O, P, R) = \bigwedge_{x, y \in P \cup R \cup I \cup \{O\}} (l_x = l_y \Rightarrow x = y)
+\end{equation*}
+}
