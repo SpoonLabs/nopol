@@ -1,27 +1,40 @@
-\begin{frame}  
-\frametitle{Bugs}
-\begin{quotation}
-The difference between the right word and the almost right word is the difference between lightning and a lightning bug.
-\end{quotation}
--- Mark Twain
-\end{frame}
+% \begin{frame}  
+% \frametitle{Bugs}
+% \begin{quotation}
+% The difference between the right word and the almost right word is the difference between lightning and a lightning bug.
+% \end{quotation}
+% -- Mark Twain
+% \end{frame}
  
-  
+\begin{frame}
+\frametitle{Motivation}
+\framesubtitle{The Six Stages of Debugging}
+\begin{enumerate}
+\item  That can’t happen.
+\item  That doesn’t happen on my machine.
+\item  That shouldn’t happen.
+\item  Why does that happen?
+\item  Oh, I see.
+\item  How did that ever work?
+\end{enumerate}
+\end{frame}
+
+ 
+ 
 \begin{frame}[fragile]
-\frametitle{What are conditional bugs?}
+\frametitle{What are conditional expression bugs?}
 \begin{lstlisting}[escapeinside=\[\]]
 [\textbf{boolean expression}] ? someValue : someOtherValue;
-\end{lstlisting}
 
-\begin{lstlisting}[escapeinside=\[\]]
 if ([\textbf{boolean expression}]) {
 ...
+}
 \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]
 \frametitle{Change of If Condition Expression (IF-CC)}
-Kai Pan et al.:
+Kai Pan et al.\footnote{Toward an understanding of bug fix patterns}:
 \begin{quotation}
 This bug fix change fixes the bug by changing the condition expression of an if
 condition. The previous code has a bug in the if condition logic.
@@ -36,7 +49,7 @@ condition. The previous code has a bug in the if condition logic.
 \end{frame}
   
 \begin{frame}[fragile]
-\frametitle{What are conditional bugs?}
+\frametitle{What are conditional expression bugs?}
 \framesubtitle{Commons Math - MathUtils class}
     
 \begin{lstlisting}[escapeinside=\[\]]
@@ -55,7 +68,7 @@ condition. The previous code has a bug in the if condition logic.
 
 \begin{frame}
 \frametitle{Problem I}
-\framesubtitle{How to find the bug?}
+\framesubtitle{How does the tool know something is \textit{wrong}?}
 \begin{center}
 \Huge{404}
 \end{center}
@@ -63,13 +76,7 @@ condition. The previous code has a bug in the if condition logic.
 
 \begin{frame}
 \frametitle{Problem I}
-\framesubtitle{How to find the bug?}
-How do we know something is \textit{wrong}?
-\end{frame}
-
-\begin{frame}
-\frametitle{Problem I}
-\framesubtitle{How to find the bug?}
+\framesubtitle{How does the tool know something is \textit{wrong}?}
 Some kind of specification:
 \begin{itemize}
  \item Model
@@ -80,13 +87,12 @@ Some kind of specification:
 \end{frame}
 
 \begin{frame}[fragile]
-    \frametitle{Case study}
-      \framesubtitle{Commons Math}
-At least one failing test:
+\frametitle{How does the tool know something is \textit{wrong}?}
+\framesubtitle{At least one failing test}
       
       \begin{lstlisting}[escapeinside=\[\]]
 assertEquals([\textbf{3 * (1$<<$15)}]
-       , gcd(3 * (1<<20), 9 * (1<<15)));
+            , gcd(3 * (1<<20), 9 * (1<<15)));
 	\end{lstlisting}
 \end{frame}
 
@@ -103,13 +109,3 @@ assertEquals([\textbf{3 * (1$<<$15)}]
 \frametitle{No-Pol output}
 Patched Java source file.
 \end{frame}
-
-
-\frame
-{
-    \frametitle{Overview}
-    \framesubtitle{Trial and error}
-  \begin{center}
-  \include{basic_algorithm}
-  \end{center}
-}
