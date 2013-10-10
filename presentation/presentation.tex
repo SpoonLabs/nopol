@@ -57,6 +57,16 @@
 
 \input{introduction}
 
+\frame
+{
+    \frametitle{Overview}
+    \framesubtitle{Trial and error}
+  \begin{center}
+  \include{basic_algorithm}
+  \end{center}
+}
+
+
 \begin{frame}
 \frametitle{Problem II}
 \framesubtitle{Where is the bug?}
@@ -112,21 +122,47 @@ MathUtils:412 - Suspiciousness: 0.11180339887498948
 \end{frame}
 
 
-\frame
-{
-    \frametitle{Overview}
-    \framesubtitle{Trial and error}
-  \begin{center}
-  \include{basic_algorithm}
-  \end{center}
-}
-
 \input{oracle_and_collection}
 
 \input{magic}
 
-\begin{frame}
-Slide sobre levels
+% \begin{frame}
+% Slide sobre levels
+% \end{frame}
+
+
+ \begin{frame}[fragile]
+    \frametitle{Preconditions bugs}
+      \framesubtitle{Commons Collections - SequencedHashMap class}
+\begin{lstlisting}
+private Entry findEntry(Map.Entry e) {
+  if (e == null)
+    return null;
+  Entry entry = entries.get(e.getKey());
+  if (entry.equals(e)) // entry can be null
+    return entry;
+  else
+    return null;
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Addition of Precondition Check (IF-APC)}
+Kai Pan et al.\footnote{Toward an understanding of bug fix patterns}:
+\begin{quotation}
+This bug fix adds an if predicate to ensure a precondition is met before anobject is accessed or an operation is performed.
+\end{quotation}
+
+\vspace{1em}
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+- lastChunk.init(seg,expander,x,styles,
+-   fontRenderContext, context.rules.getDefault());
++ if (!lastChunk.initialized)
++   lastChunk.init(seg,expander,x,styles,
++     fontRenderContext, context.rules.getDefault());
+\end{lstlisting}
 \end{frame}
 
   \frame
