@@ -67,7 +67,7 @@
 			<artifactId>gzoltar</artifactId>
 			<version>0.0.3</version>
 			<scope>system</scope>
-			<systemPath>${project.build.directory}/../lib/com.gzoltar-0.0.3-jar-with-dependencies.jar</systemPath>
+			<systemPath>${project.build.sourceDirectory}/../../../lib/com.gzoltar-0.0.3-jar-with-dependencies.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.smtlib</groupId>

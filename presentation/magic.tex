@@ -1,0 +1,200 @@
+\frame
+{
+  \frametitle{Find a \textit{Fix}}
+  \framesubtitle{For Location \texttt{x}}
+  \begin{center}
+  \include{basic_algorithm_fix_generation}
+  \end{center}
+}
+
+\frame
+{
+  \frametitle{Constraints Generation (aka secret sauce)}
+  \framesubtitle{For Location \texttt{x}}
+  \begin{center}
+  \include{flow_graph_constraint}
+  \end{center}
+}
+
+\begin{frame}
+  \frametitle{Constraints Generation}
+  \framesubtitle{Oracle-Guided Component-Based Program Synthesis:}
+  Components and line numbers:
+\begin{align*}
+\textsf{Constants} & \left\{ \begin{array}{ll}
+        0 & \texttt{true} \\
+        1 & \texttt{false} \\
+        2 & \texttt{-1} \\
+        3 & \texttt{0} \\
+        4 & \texttt{1}
+    \end{array}\right. \\
+\textsf{Input values} & \left\{ \begin{array}{lllll}
+        5 & \texttt{u} & &		8 & \texttt{col != null} \\
+        6 & \texttt{v} & &		9 & \texttt{col.isEmpty()} \\
+        7 & \texttt{TWO\_PI} & &	10 & \texttt{col.size()} \\
+        \dots
+    \end{array}\right. \\
+\textsf{Oracle} & \left\{ \begin{array}{ll}
+        l_O &  \textsf{Expected} \\
+            & \textsf{output}
+    \end{array}\right.
+\end{align*}
+\end{frame}
+
+% \begin{frame}
+% conditions to meet by the solution
+% \end{frame}
+
+\begin{frame}
+  \frametitle{Constraints Generation}
+  \framesubtitle{Oracle-Guided Component-Based Program Synthesis:}
+  Components and line numbers:
+  
+\begin{align*}
+l_{O1} & = l_{I11} < l_{I12} \\
+l_{O2} & = l_{I21} <= l_{I22} \\ 
+l_{O3} & = l_{I31} + l_{I32} \\
+l_{O4} & = l_{I41} * l_{I42} \\
+l_{O5} & = l_{I51} \wedge l_{I52} \\
+& ... \\
+l_{On} & = l_{In1} ? l_{In2} : l_{In3}
+\end{align*}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Constraints Generation}
+  \framesubtitle{Example}
+  Components:
+\begin{verbatim}
+0   I
+lO  oracle
+lO1 := f1(lI1);
+lO2 := f2(lI2_1, lI2_2);
+\end{verbatim}
+An answer:
+\begin{verbatim}
+lI1 = 1    lO1 = 2
+lI2_1 = 0  lO2 = 1
+lI2_2 = 0  lO  = 2
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Constraints Generation}
+  \framesubtitle{Example}
+\begin{columns}
+\column{.5\textwidth}
+  Components:
+\begin{verbatim}
+0   I
+lO  oracle
+lO1 := f1(lI1);
+lO2 := f2(lI2_1, lI2_2);
+\end{verbatim}
+An answer:
+\begin{verbatim}
+lI1 = 1    lO1 = 2
+lI2_1 = 0  lO2 = 1
+lI2_2 = 0  lO  = 2
+\end{verbatim}
+\column{.5\textwidth}
+Another representation:
+\begin{verbatim}
+0 I
+1 := f2(0, 0);
+return f1(1);
+\end{verbatim}
+What it means:
+\begin{verbatim}
+f(I) = f1(f2(I, I));
+\end{verbatim}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Constraints Generation}
+  \framesubtitle{Example}
+  Well formed program:
+\begin{columns}
+\column{.5\textwidth}
+\begin{verbatim}
+0   I
+lO  oracle
+lO1 := f1(lI1);
+lO2 := f2(lI2_1, lI2_2);
+\end{verbatim}
+\column{.5\textwidth}
+\begin{itemize}
+ \item all line numbers should be between 0 and 3.
+ \item the output lines should be greater than the input lines (acyclicity).
+ \item \texttt{lO1} $\neq$ \texttt{lO2} (consistency)
+\end{itemize}
+\end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Constraints Generation}
+  \framesubtitle{Example}
+Library:
+\begin{align*}
+O_{1} & = f_{1}(I_1) \\
+O_{2} & = f_{2}(I_{21}, I_{22}) \\ 
+\end{align*}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Constraints Generation}
+  \framesubtitle{Example}
+Connectivity:
+\begin{columns}
+\column{.5\textwidth}
+\begin{verbatim}
+0   I
+lO  oracle
+lO1 := f1(lI1);
+lO2 := f2(lI2_1, lI2_2);
+\end{verbatim}
+\column{.5\textwidth}
+\begin{itemize}
+ \item if $I_{21} = I$ then $l_{I21} = 0$
+ \item if $I_{1} = O_2$ then $l_{I1} = l_{O2}$
+\end{itemize}
+\end{columns}
+\end{frame}
+
+
+\frame
+{
+  \frametitle{Constraints Generation}
+  \framesubtitle{Oracle-Guided Component-Based Program Synthesis}
+\begin{align*}
+\phi_{func}(L, I, O) = \exists P, R & \psi_{wfp}(L) \\
+& \wedge \psi_{lib}(P, R)  \\ 
+& \wedge \psi_{conn}(L, I, O, P, R)
+\end{align*}
+}
+
+
+\frame
+{
+  \frametitle{Constraints Generation}
+  \framesubtitle{Oracle-Guided Component-Based Program Synthesis}
+\begin{align*}
+\psi_{wfp}(L) = & \bigwedge_{x \in P} (0 \leq l_x < M) \\
+& \wedge \bigwedge_{x \in R} (|I| \leq l_x < M) \\
+& \wedge \psi_{cons}(L) \wedge \psi_{acyc}(L)
+\end{align*}
+}
+
+\frame
+{
+  \frametitle{Constraints Generation}
+  \framesubtitle{Oracle-Guided Component-Based Program Synthesis}
+\begin{equation*}
+\psi_{lib}(P, R) = \left( \bigwedge^N_{i=1} \phi_i(I_i, O_i) \right)
+\end{equation*}
+
+\begin{equation*}
+\psi_{conn}(L, I, O, P, R) = \bigwedge_{x, y \in P \cup R \cup I \cup \{O\}} (l_x = l_y \Rightarrow x = y)
+\end{equation*}
+}

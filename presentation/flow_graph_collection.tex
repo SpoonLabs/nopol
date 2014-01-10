@@ -1,0 +1,25 @@
+\begin{tikzpicture}[
+  every matrix/.style={ampersand replacement=\&,column sep=1.5em},
+  box/.style={rounded corners,fill=gray,path fading=south, draw, thick},
+  shadedbox/.style={rounded corners,fill=black!90},
+  flow/.style={->, very thick},
+  fail/.style={->, thick, dashed},
+  every node/.style={align=center}]
+  
+% Position the nodes using a matrix layout
+\matrix{
+    \node[shadedbox] (empty1) {...};
+    \& \node[shadedbox] (oracleInquisition) {Oracle \\ Inquisition};
+    \& \node[box] (collectionOfTestExecutionData) {Collection \\ of Test Execution \\ Data};
+    \& \node[shadedbox] (constraintsGeneration) {Find a \textit{Fix} \\ for Location \texttt{x}};
+    \& \node[shadedbox] (empty2) {...};
+    \\
+  };
+
+% Draw the arrows between the nodes and label them.
+\draw [flow] (empty1) -- (oracleInquisition);
+\draw [flow] (oracleInquisition) -- (collectionOfTestExecutionData);
+\draw [flow] (collectionOfTestExecutionData) -- (constraintsGeneration);
+\draw [flow] (constraintsGeneration) -- (empty2);
+
+\end{tikzpicture}
