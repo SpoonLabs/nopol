@@ -23,12 +23,11 @@ import java.util.Set;
 
 import org.slf4j.LoggerFactory;
 
-import spoon.reflect.Factory;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -41,6 +40,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import fr.inria.lille.nopol.synth.collector.ValuesCollector;
 
@@ -92,6 +92,12 @@ final class ConditionalLoggingInstrumenter implements Processor {
 				variables.add(param);
 			}
 		}
+
+		@Override
+		public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
+		}
+
+		
 	}
 
 	private static final String VALUES_COLLECTOR_CALL = ValuesCollector.class.getName() + ".add(\"";
@@ -135,7 +141,7 @@ final class ConditionalLoggingInstrumenter implements Processor {
 		return variables;
 	}
 
-	private CtStatement getStatement(final CtCodeElement codeElement) {
+	private CtStatement getStatement(final CtElement codeElement) {
 		if (codeElement instanceof CtStatement) {
 			return (CtStatement) codeElement;
 		}
@@ -166,8 +172,7 @@ final class ConditionalLoggingInstrumenter implements Processor {
 		return false;
 	}
 
-	@Override
-	public void process(final Factory factory, final CtCodeElement statement) {
+	public void process(final Factory factory, final CtElement statement) {
 		boolean inStaticCode = hasStaticParent(statement);
 		StringBuilder snippet = new StringBuilder();
 
@@ -188,12 +193,20 @@ final class ConditionalLoggingInstrumenter implements Processor {
 				String varName = var.getSimpleName();
 				snippet.append(VALUES_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(");")
 				.append(System.lineSeparator());
+				
+				
+				
+				
 			}
 		}
 		if (snippet.length() > 0) {
 			CtStatement target = getStatement(statement);
+			
 			LoggerFactory.getLogger(this.getClass()).debug("Instrumenting [{}] in\n{}", target, target.getParent());
 			target.insertBefore(factory.Code().createCodeSnippetStatement(snippet.toString()));
+			
 		}
 	}
+
+	
 }

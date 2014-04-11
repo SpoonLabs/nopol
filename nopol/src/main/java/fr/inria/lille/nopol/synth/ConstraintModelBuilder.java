@@ -35,11 +35,12 @@ import org.junit.runner.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spoon.SpoonClassLoader;
-import spoon.processing.Builder;
+import spoon.Launcher;
+import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import fr.inria.lille.nopol.SourceLocation;
+import fr.inria.lille.nopol.SpoonClassLoader;
 import fr.inria.lille.nopol.test.junit.JUnitRunner;
 import fr.inria.lille.nopol.threads.ProvidedClassLoaderThreadFactory;
 
@@ -65,8 +66,9 @@ public final class ConstraintModelBuilder {
 		scl.getEnvironment().setDebug(debug);
 		ProcessingManager processingManager = scl.getProcessingManager();
 		processingManager.addProcessor(processor);
-		Builder builder = scl.getFactory().getBuilder();
+		SpoonCompiler builder;
 		try {
+			builder = new Launcher().createCompiler(scl.getFactory());
 			builder.addInputSource(sourceFolder);
 			builder.build();
 			// should be loaded by the spoon class loader
@@ -95,7 +97,6 @@ public final class ConstraintModelBuilder {
 							ConditionalValueHolder.booleanValue))).get(TIMEOUT_IN_SECONDS, SECONDS);
 			determineViability(firstResult, secondResult);
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		} catch (TimeoutException e) {
 			logger.warn("Timeout after {} seconds. Infinite loop?", TIMEOUT_IN_SECONDS);

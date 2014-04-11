@@ -15,8 +15,9 @@
  */
 package fr.inria.lille.nopol.synth;
 
-import spoon.reflect.Factory;
-import spoon.reflect.code.CtCodeElement;
+
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
 
 /**
  * @author Favio D. DeMarco
@@ -24,5 +25,5 @@ import spoon.reflect.code.CtCodeElement;
  */
 public interface Processor {
 
-	void process(Factory factory, CtCodeElement element);
+	void process(Factory factory, CtElement element);
 }

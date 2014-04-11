@@ -9,15 +9,14 @@ import static fr.inria.lille.nopol.synth.BugKind.PRECONDITION;
 import java.io.File;
 
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtElement;
 import fr.inria.lille.nopol.synth.conditional.SpoonConditionalPredicate;
 import fr.inria.lille.nopol.synth.precondition.SpoonStatementPredicate;
 
-final class BugKindDetector extends AbstractProcessor<CtCodeElement> {
-
+final class BugKindDetector extends AbstractProcessor<CtElement> {
+	
 	private BugKind answer = NONE;
-
 	private final String absolutePath;
 	private final int line;
 
@@ -42,14 +41,18 @@ final class BugKindDetector extends AbstractProcessor<CtCodeElement> {
 	 * @see spoon.processing.AbstractProcessor#isToBeProcessed(spoon.reflect.declaration.CtElement)
 	 */
 	@Override
-	public boolean isToBeProcessed(final CtCodeElement candidate) {
+	public boolean isToBeProcessed(final CtElement candidate) {
+		if ( candidate.getPosition() == null )
+			return false;
+		
 		SourcePosition position = candidate.getPosition();
-		return answer == NONE && position != null && position.getLine() == line
-				&& position.getFile().getAbsolutePath().equals(absolutePath);
+		return position.getLine() == line
+					&& position.getFile().getAbsolutePath().equals(absolutePath);
+
 	}
 
 	@Override
-	public void process(final CtCodeElement element) {
+	public void process(final CtElement element) {
 		if (SpoonConditionalPredicate.INSTANCE.apply(element)) {
 			answer = CONDITIONAL;
 		} else if (SpoonStatementPredicate.INSTANCE.apply(element)) {

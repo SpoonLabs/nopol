@@ -22,10 +22,11 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spoon.processing.Builder;
+import spoon.Launcher;
+import spoon.compiler.Environment;
+import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
-import spoon.reflect.Factory;
-import spoon.support.DefaultCoreFactory;
+import spoon.reflect.factory.Factory;
 import spoon.support.QueueProcessingManager;
 import spoon.support.StandardEnvironment;
 import fr.inria.lille.nopol.SourceLocation;
@@ -33,6 +34,8 @@ import fr.inria.lille.nopol.synth.conditional.ConditionalReplacer;
 import fr.inria.lille.nopol.synth.conditional.SpoonConditionalPredicate;
 import fr.inria.lille.nopol.synth.precondition.ConditionalAdder;
 import fr.inria.lille.nopol.synth.precondition.SpoonStatementPredicate;
+
+
 
 /**
  * @author Favio D. DeMarco
@@ -54,19 +57,21 @@ public final class SynthesizerFactory {
 	public Synthesizer getFor(final SourceLocation statement) {
 		DelegatingProcessor processor;
 
+		
+		
 		BugKind type = getType(statement);
 		switch (type) {
 		case CONDITIONAL:
 			processor = new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
-			processor.addProcessor(new ConditionalReplacer(ConditionalValueHolder.VARIABLE_NAME)).addProcessor(
-					new ConditionalLoggingInstrumenter());
-			break;
+			processor.addProcessor(new ConditionalReplacer(ConditionalValueHolder.VARIABLE_NAME));
+			processor.addProcessor(new ConditionalLoggingInstrumenter());
+		break;
 		case PRECONDITION:
 			processor = new DelegatingProcessor(SpoonStatementPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
-			processor.addProcessor(new ConditionalLoggingInstrumenter()).addProcessor(
-					new ConditionalAdder(ConditionalValueHolder.VARIABLE_NAME));
+			processor.addProcessor(new ConditionalLoggingInstrumenter());
+			processor.addProcessor(new ConditionalAdder(ConditionalValueHolder.VARIABLE_NAME)); 
 			logger.debug("No synthetizer found for {}, trying a precondition.", statement);
 			break;
 		default:
@@ -75,21 +80,30 @@ public final class SynthesizerFactory {
 		}
 
 		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, statement, processor);
+		
 		return new DefaultSynthesizer(constraintModelBuilder, statement, type);
 	}
 
 	private BugKind getType(final SourceLocation rc) {
-		StandardEnvironment env = new StandardEnvironment();
+		Launcher l = null;
+		try {
+			l = new Launcher();
+		} catch (Exception e){
+			throw new IllegalStateException(e);
+		}
+		Environment env = new StandardEnvironment();
 		env.setDebug(debug);
-		Factory factory = new Factory(new DefaultCoreFactory(), env);
+		Factory factory = l.createFactory(env);
 		ProcessingManager processing = new QueueProcessingManager(factory);
 		BugKindDetector detector = new BugKindDetector(rc.getSourceFile(sourceFolder), rc.getLineNumber());
 		processing.addProcessor(detector);
-		Builder builder = factory.getBuilder();
+		SpoonCompiler builder;
 		try {
+			builder = l.createCompiler(factory);
 			builder.addInputSource(sourceFolder);
+			builder.addTemplateSource(sourceFolder);
 			builder.build();
-		} catch (Exception e) {
+		}  catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		processing.process();

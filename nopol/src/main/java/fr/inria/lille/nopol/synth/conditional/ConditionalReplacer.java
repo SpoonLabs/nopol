@@ -3,12 +3,12 @@ package fr.inria.lille.nopol.synth.conditional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spoon.reflect.Factory;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
 import fr.inria.lille.nopol.synth.Processor;
 
 /**
@@ -31,7 +31,7 @@ public final class ConditionalReplacer implements Processor {
 	 * @param element
 	 * @return
 	 */
-	private CtExpression<Boolean> getCondition(final CtCodeElement element) {
+	private CtExpression<Boolean> getCondition(final CtElement element) {
 		CtExpression<Boolean> condition;
 		if (element instanceof CtIf) {
 			condition = ((CtIf) element).getCondition();
@@ -44,7 +44,7 @@ public final class ConditionalReplacer implements Processor {
 	}
 
 	@Override
-	public void process(final Factory factory, final CtCodeElement element) {
+	public void process(final Factory factory, final CtElement element) {
 		logger.debug("Replacing:\n{}", element);
 		// we declare a new snippet of code to be inserted
 		CtCodeSnippetExpression<Boolean> snippet = factory.Core().createCodeSnippetExpression();
@@ -52,4 +52,6 @@ public final class ConditionalReplacer implements Processor {
 		CtExpression<Boolean> condition = getCondition(element);
 		condition.replace(snippet);
 	}
+
+	
 }

@@ -20,8 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtElement;
 
 import com.google.common.base.Predicate;
 
@@ -29,19 +29,19 @@ import com.google.common.base.Predicate;
  * @author Favio D. DeMarco
  * 
  */
-public final class DelegatingProcessor extends AbstractProcessor<CtCodeElement> {
+public final class DelegatingProcessor extends AbstractProcessor<CtElement> {
 
 	private final File file;
 	private final int line;
 	private final List<Processor> processors = new ArrayList<>();
-	private final Predicate<CtCodeElement> predicate;
+	private final Predicate<CtElement> predicate;
 	private boolean process = true;
 
 	/**
 	 * @param file
 	 * @param line
 	 */
-	public DelegatingProcessor(final Predicate<CtCodeElement> instance, final File file, final int line) {
+	public DelegatingProcessor(final Predicate<CtElement> instance, final File file, final int line) {
 		this.file = file;
 		this.line = line;
 		this.predicate = instance;
@@ -56,14 +56,15 @@ public final class DelegatingProcessor extends AbstractProcessor<CtCodeElement> 
 	 * @see spoon.processing.AbstractProcessor#isToBeProcessed(spoon.reflect.declaration.CtElement)
 	 */
 	@Override
-	public boolean isToBeProcessed(final CtCodeElement candidate) {
+	public boolean isToBeProcessed(final CtElement candidate) {
 		SourcePosition position = candidate.getPosition();
 		return this.process && position != null && this.predicate.apply(candidate) && position.getLine() == this.line
-				&& position.getFile().getAbsolutePath().equals(this.file.getAbsolutePath());
+								&& position.getFile().getAbsolutePath().equals(this.file.getAbsolutePath());
+
 	}
 
 	@Override
-	public void process(final CtCodeElement element) {
+	public void process(final CtElement element) {
 		for (Processor processor : this.processors) {
 			processor.process(this.getFactory(), element);
 		}

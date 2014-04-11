@@ -26,10 +26,12 @@ import org.junit.runner.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spoon.SpoonClassLoader;
-import spoon.processing.Builder;
+import spoon.Launcher;
+import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
+import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
+import fr.inria.lille.nopol.SpoonClassLoader;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.synth.BugKind;
 import fr.inria.lille.nopol.synth.DelegatingProcessor;
@@ -52,37 +54,39 @@ public final class TestPatch {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final boolean debug = logger.isDebugEnabled();
 	private final SpoonClassLoader spooner;
-
+	
+	
 	public TestPatch(final File sourceFolder, final URL[] classpath) {
 		this.sourceFolder = sourceFolder;
 		this.classpath = classpath;
 		SpoonClassLoader scl = new SpoonClassLoader();
+		scl.setSourcePath(sourceFolder);
 		scl.getEnvironment().setDebug(debug);
-		Builder builder;
-		builder = scl.getFactory().getBuilder();
+		SpoonCompiler builder;
 		try {
+			builder = new Launcher().createCompiler();
 			builder.addInputSource(sourceFolder);
-			builder.build();
+		    builder.build();
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
 		spooner = scl;
 	}
 
+	public static String getGeneratedPatchDirectorie(){
+		return SPOON_DIRECTORY;
+	}
+	
 	public boolean passesAllTests(final Patch patch, final String[] testClasses) {
 		ProcessingManager processingManager = spooner.getProcessingManager();
 		logger.info("Applying patch: {}", patch);
 		File sourceFile = patch.getFile(sourceFolder);
-
 		processingManager.addProcessor(createProcessor(patch, sourceFile));
-
-		processingManager.addProcessor(new JavaOutputProcessor(new File(sourceFolder, SPOON_DIRECTORY)));
-
+		processingManager.addProcessor(new JavaOutputProcessor(new File(sourceFolder, SPOON_DIRECTORY), new DefaultJavaPrettyPrinter(spooner.getEnvironment())));
 		try {
 			// should be loaded by the spoon class loader
 			spooner.loadClass(patch.getRootClassName());
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
 		return wasSuccessful(testClasses);
@@ -112,7 +116,6 @@ public final class TestPatch {
 		try {
 			result = executor.submit(new JUnitRunner(testClasses)).get();
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
 		executor.shutdown();

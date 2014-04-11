@@ -18,11 +18,11 @@ package fr.inria.lille.nopol.synth.precondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spoon.reflect.Factory;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
 import fr.inria.lille.nopol.synth.Processor;
 
 /**
@@ -43,18 +43,23 @@ public final class ConditionalAdder implements Processor {
 	 * @see fr.inria.lille.nopol.synth.Processor#process(spoon.reflect.Factory, spoon.reflect.code.CtCodeElement)
 	 */
 	@Override
-	public void process(final Factory factory, final CtCodeElement element) {
+	public void process(final Factory factory, final CtElement element) {
 		logger.debug("##### {} ##### Before:\n{}", element, element.getParent());
+		CtElement parent = element.getParent();
 		CtIf newIf = factory.Core().createIf();
 		CtCodeSnippetExpression<Boolean> condition = factory.Core().createCodeSnippetExpression();
 		condition.setValue(snippet);
 		newIf.setCondition(condition);
+		// Fix : warning: ignoring inconsistent parent for [CtElem1] ( [CtElem2] != [CtElem3] )
+		newIf.setParent(parent);
 		element.replace(newIf);
-
 		// this should be after the replace to avoid an StackOverflowException caused by the circular reference.
 		// see SpoonStatementPredicate
 		newIf.setThenStatement((CtStatement) element);
-
+		// Fix : warning: ignoring inconsistent parent for [CtElem1] ( [CtElem2] != [CtElem3] )
+		newIf.getThenStatement().setParent(newIf);
 		logger.debug("##### {} ##### After:\n{}", element, element.getParent().getParent());
 	}
+
+	
 }

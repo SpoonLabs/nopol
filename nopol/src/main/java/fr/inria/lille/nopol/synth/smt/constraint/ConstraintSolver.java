@@ -17,6 +17,12 @@ package fr.inria.lille.nopol.synth.smt.constraint;
 
 import static org.smtlib.impl.Response.UNSAT;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,7 +48,8 @@ import fr.inria.lille.nopol.synth.smt.model.InputModel;
 public final class ConstraintSolver {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
+	
+	
 	private void handleResponse(final IResponse response) {
 		if (response.isError()) {
 			logger.error(response.toString());
@@ -74,18 +81,19 @@ public final class ConstraintSolver {
 		return builder;
 	}
 
+	
+	
 	public RepairCandidate solve(final InputModel model) {
 		Configuration smtConfig = new SMT().smtConfig;
 		ISolver solver = new SolverFactory(smtConfig).create();
 		solver.start();
 		Synthesis synthesis = new Synthesis(smtConfig, model);
 		IScript script = smtConfig.commandFactory.script((IStringLiteral) null, synthesis.createScript());
-
 		if (logger.isDebugEnabled()) {
 			log(script.commands());
 		}
-
 		handleResponse(script.execute(solver));
+
 
 		if (UNSAT.equals(solver.check_sat())) {
 			logger.debug("UNSAT");
@@ -100,11 +108,10 @@ public final class ConstraintSolver {
 				logger.debug("Model: {}", modelResponse);
 				repairCandidate = new RepairCandidateBuilder(model, modelResponse).build();
 				LoggerFactory.getLogger("code.synthesis").debug("Candidate: {}", repairCandidate);
-
 				// smt-lib needs a check-sat before each get-value to return a new model
 				solver.check_sat();
 				modelResponse = solver.get_value(solverModel);
-			} while (!responses.contains(modelResponse));
+			} while (responses.contains(modelResponse));
 			return repairCandidate;
 		}
 	}

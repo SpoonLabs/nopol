@@ -17,7 +17,6 @@ package fr.inria.lille.nopol.synth.precondition;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtLoop;
@@ -31,28 +30,26 @@ import com.google.common.base.Predicate;
  * @author Favio D. DeMarco
  * 
  */
-public enum SpoonStatementPredicate implements Predicate<CtCodeElement> {
-
+public enum SpoonStatementPredicate implements Predicate<CtElement>{
 	INSTANCE;
 
 	@Override
-	public boolean apply(final CtCodeElement input) {
+	public boolean apply(final CtElement input) {
 		CtElement parent = input.getParent();
 		return input instanceof CtStatement && !(
 				// input instanceof CtClass ||
-
-				// cannot insert code before '{}', for example would try to add code between 'Constructor()' and '{}'
-				// input instanceof CtBlock ||
-
-				// cannot insert a conditional before 'return', it won't compile.
+				 
+ 				// cannot insert code before '{}', for example would try to add code between 'Constructor()' and '{}'
+ 				// input instanceof CtBlock ||
+ 
+ 				// cannot insert a conditional before 'return', it won't compile.
 				input instanceof CtReturn ||
-
-				// cannot insert a conditional before a variable declaration, it won't compile if the variable is used
+				//cannot insert a conditional before a variable declaration, it won't compile if the variable is used
 				// later on.
 				input instanceof CtLocalVariable)
-
 				// Avoids ClassCastException's. @see spoon.support.reflect.code.CtStatementImpl#insertBefore(CtStatement
-				// target, CtStatementList<?> statements)
+ 				// target, CtStatementList<?> statements)
 				&& (parent instanceof CtIf || parent instanceof CtLoop || parent instanceof CtCase || parent instanceof CtBlock);
+		
 	}
 }
