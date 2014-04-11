@@ -32,6 +32,8 @@ public final class InputModel {
 	private final Type outputType;
 
 	private final ValuesModel values;
+	
+	private final Level level;
 
 	/**
 	 * @param inputTypes
@@ -39,7 +41,7 @@ public final class InputModel {
 	 * @param data
 	 */
 	public InputModel(@Nonnull final List<Type> inputTypes, @Nonnull final List<Component> components,
-			@Nonnull final Type outputType, final ValuesModel data) {
+			@Nonnull final Type outputType, final ValuesModel data, final Level level) {
 		// XXX FIXME TODO
 		// checkArgument(!inputTypes.isEmpty(), "Input types cannot be empty.");
 		// checkArgument(!components.isEmpty(), "Components cannot be empty.");
@@ -47,6 +49,7 @@ public final class InputModel {
 		this.components = components;
 		this.outputType = outputType;
 		this.values = data;
+		this.level = level;
 	}
 
 	/**
@@ -75,6 +78,13 @@ public final class InputModel {
 	 */
 	public ValuesModel getValues() {
 		return this.values;
+	}
+
+	/**
+	 * @return the level
+	 */
+	public Level getLevel() {
+		return level;
 	}
 
 	/**

@@ -81,7 +81,7 @@ public final class SynthesizerFactory {
 
 		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, statement, processor);
 		
-		return new DefaultSynthesizer(constraintModelBuilder, statement, type);
+		return new DefaultSynthesizer(constraintModelBuilder, statement, type, sourceFolder);
 	}
 
 	private BugKind getType(final SourceLocation rc) {

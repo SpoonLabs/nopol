@@ -40,7 +40,7 @@ public final class InputModelBuilder {
 
 	public InputModel buildFor(final Level level) {
 
-		InputModel model = createModel();
+		InputModel model = createModel(level);
 
 		switch (level) {
 
@@ -78,16 +78,13 @@ public final class InputModelBuilder {
 	 * @param outputType
 	 * @return
 	 */
-	private InputModel createModel() {
-
+	private InputModel createModel(Level level) {
 		// XXX FIXME TODO Law of Demeter
 		Type outputType = Type.ValueToType.INSTANCE.apply(data.getOutputValues().iterator().next());
-
 		List<Type> inputTypes = new ArrayList<>();
 		for (Collection<Object> values : data.getInputvalues().asMap().values()) {
 			inputTypes.add(Type.ValueToType.INSTANCE.apply(values.iterator().next()));
 		}
-
-		return new InputModel(inputTypes, new ArrayList<Component>(), outputType, data);
+		return new InputModel(inputTypes, new ArrayList<Component>(), outputType, data, level);
 	}
 }

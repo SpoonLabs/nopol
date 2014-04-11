@@ -48,7 +48,13 @@ import fr.inria.lille.nopol.synth.smt.model.InputModel;
 public final class ConstraintSolver {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final File outputFolder;
+	private static int i = 0;
 	
+	public ConstraintSolver(final File outputFolder){
+		this.outputFolder = outputFolder;
+	}
+
 	
 	private void handleResponse(final IResponse response) {
 		if (response.isError()) {
@@ -94,6 +100,7 @@ public final class ConstraintSolver {
 		}
 		handleResponse(script.execute(solver));
 
+		createSMTFile(script, model);
 
 		if (UNSAT.equals(solver.check_sat())) {
 			logger.debug("UNSAT");
@@ -115,4 +122,38 @@ public final class ConstraintSolver {
 			return repairCandidate;
 		}
 	}
+	
+	private void createSMTFile(IScript script, InputModel model) {
+		File output = createOutputFile(i);
+		PrintWriter writer=null;
+		try {
+			DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+			writer = new PrintWriter(output);
+			writer.println(df.format(new Date()));
+			writer.println("STM-File generate for \""+outputFolder.getCanonicalPath()+"\"");
+			writer.println("Level : "+model.getLevel().toString());
+			writer.println("-----------------------------------");
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
+		} 
+		for ( ICommand cmd : script.commands() ){
+			writer.println(cmd.toString());
+		}
+		writer.flush();
+		writer.close();
+		i++;
+	}
+
+
+	private File createOutputFile(int i){
+		File output = new File(outputFolder.getParent()+File.separatorChar+"smt_file_"+i);
+		try {
+			output.delete();
+			output.createNewFile();
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
+		return output;	
+	}
+
 }

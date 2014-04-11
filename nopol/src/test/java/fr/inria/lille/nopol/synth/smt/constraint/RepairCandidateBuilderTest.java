@@ -23,9 +23,9 @@ import com.google.common.collect.ImmutableMap;
 
 import fr.inria.lille.nopol.synth.InputOutputValues;
 import fr.inria.lille.nopol.synth.RepairCandidate;
-import fr.inria.lille.nopol.synth.smt.constraint.RepairCandidateBuilder;
 import fr.inria.lille.nopol.synth.smt.model.Component;
 import fr.inria.lille.nopol.synth.smt.model.InputModel;
+import fr.inria.lille.nopol.synth.smt.model.Level;
 import fr.inria.lille.nopol.synth.smt.model.ValuesModel;
 
 public class RepairCandidateBuilderTest {
@@ -58,7 +58,7 @@ public class RepairCandidateBuilderTest {
 				"down_sep", 110).entrySet();
 		InputOutputValues iov = new InputOutputValues().addValues(inputValues, true);
 		ValuesModel values = new ValuesModel(iov, Arrays.<Object> asList(-1, 0, 1, true, false));
-		return new InputModel(asList(BOOLEAN), new ArrayList<Component>(), BOOLEAN, values);
+		return new InputModel(asList(BOOLEAN), new ArrayList<Component>(), BOOLEAN, values, Level.CONSTANTS);
 	}
 
 	@Test

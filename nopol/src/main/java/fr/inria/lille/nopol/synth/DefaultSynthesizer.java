@@ -19,6 +19,7 @@ import static fr.inria.lille.nopol.patch.Patch.NO_PATCH;
 import static fr.inria.lille.nopol.synth.smt.model.Level.ARITHMETIC;
 import static fr.inria.lille.nopol.synth.smt.model.Level.CONSTANTS;
 
+import java.io.File;
 import java.net.URL;
 
 import org.slf4j.LoggerFactory;
@@ -40,12 +41,14 @@ public final class DefaultSynthesizer implements Synthesizer {
 	private final SourceLocation sourceLocation;
 	private final ConstraintModelBuilder constraintModelBuilder;
 	private final BugKind type;
+	private final File outputFolder;
 
 	public DefaultSynthesizer(final ConstraintModelBuilder constraintModelBuilder, final SourceLocation sourceLocation,
-			final BugKind type) {
+			final BugKind type, final File outputFolder) {
 		this.constraintModelBuilder = constraintModelBuilder;
 		this.sourceLocation = sourceLocation;
 		this.type = type;
+		this.outputFolder = outputFolder;
 	}
 
 	/*
@@ -61,7 +64,7 @@ public final class DefaultSynthesizer implements Synthesizer {
 		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
 		int dataSize = data.getOutputValues().size();
 		if (dataSize < 2) {
-			LoggerFactory.getLogger(this.getClass()).info("{} input values set(s). There are not enough tests for {}",
+			LoggerFactory.getLogger(this.getClass()).info("{} input values set(s). There are not enough tests for {} otherwise the patch would be \"true\" or \"false\"",
 					dataSize, sourceLocation);
 			return NO_PATCH;
 		}
@@ -72,11 +75,10 @@ public final class DefaultSynthesizer implements Synthesizer {
 					sourceLocation);
 			return NO_PATCH;
 		}
-
 		InputModelBuilder modelBuilder = new InputModelBuilder(data);
 		Level level = CONSTANTS;
 		InputModel model = modelBuilder.buildFor(level);
-		ConstraintSolver constraintSolver = new ConstraintSolver();
+		ConstraintSolver constraintSolver = new ConstraintSolver(outputFolder);
 		RepairCandidate newRepair = constraintSolver.solve(model);
 		while (null == newRepair && level != ARITHMETIC) {
 			level = level.next();
