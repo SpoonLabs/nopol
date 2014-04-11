@@ -58,8 +58,20 @@ public final class DelegatingProcessor extends AbstractProcessor<CtElement> {
 	@Override
 	public boolean isToBeProcessed(final CtElement candidate) {
 		SourcePosition position = candidate.getPosition();
-		return this.process && position != null && this.predicate.apply(candidate) && position.getLine() == this.line
-								&& position.getFile().getAbsolutePath().equals(this.file.getAbsolutePath());
+		File f1;
+		File f2;
+		boolean isNotNullPosition =	position != null; 
+		boolean isPraticable =	this.predicate.apply(candidate);
+		boolean isSameLine =	position.getLine() == this.line;
+		boolean isSameFile = false;
+		try {
+			f1 = position.getFile().getCanonicalFile().getAbsoluteFile();
+			f2 = this.file.getCanonicalFile();
+			isSameFile = f1.getAbsolutePath().equals(f2.getAbsolutePath());
+		} catch (Exception e){
+			throw new IllegalStateException(e);
+		}
+		return  this.process && isNotNullPosition &&  isPraticable && isSameLine && isSameFile;
 
 	}
 

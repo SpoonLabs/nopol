@@ -46,9 +46,16 @@ final class BugKindDetector extends AbstractProcessor<CtElement> {
 			return false;
 		
 		SourcePosition position = candidate.getPosition();
-		return position.getLine() == line
-					&& position.getFile().getAbsolutePath().equals(absolutePath);
-
+		boolean isSameLine = position.getLine() == line;
+		boolean isSameFile = false;
+		File f2 = new File(absolutePath);
+		try {
+			isSameFile = position.getFile().getCanonicalFile().getAbsolutePath().equals(f2.getCanonicalFile().getAbsolutePath());
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+		boolean hasToBeProc = isSameLine && isSameFile;
+		return hasToBeProc;
 	}
 
 	@Override

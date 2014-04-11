@@ -36,20 +36,25 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 	@Override
 	public boolean apply(final CtElement input) {
 		CtElement parent = input.getParent();
-		return input instanceof CtStatement && !(
-				// input instanceof CtClass ||
-				 
- 				// cannot insert code before '{}', for example would try to add code between 'Constructor()' and '{}'
- 				// input instanceof CtBlock ||
- 
- 				// cannot insert a conditional before 'return', it won't compile.
-				input instanceof CtReturn ||
-				//cannot insert a conditional before a variable declaration, it won't compile if the variable is used
-				// later on.
-				input instanceof CtLocalVariable)
-				// Avoids ClassCastException's. @see spoon.support.reflect.code.CtStatementImpl#insertBefore(CtStatement
- 				// target, CtStatementList<?> statements)
-				&& (parent instanceof CtIf || parent instanceof CtLoop || parent instanceof CtCase || parent instanceof CtBlock);
+		boolean isCtStamement = input instanceof CtStatement;
+		boolean isCtReturn = input instanceof CtReturn;
+		boolean isCtLocalVariable = input instanceof CtLocalVariable;
+		boolean isInsideIfLoopCaseBlock = (parent instanceof CtIf || parent instanceof CtLoop || parent instanceof CtCase || parent instanceof CtBlock);
 		
+		boolean result = isCtStamement && !(
+				// input instanceof CtClass ||
+
+				// cannot insert code before '{}', for example would try to add code between 'Constructor()' and '{}'
+				// input instanceof CtBlock ||
+
+				// cannot insert a conditional before 'return', it won't compile.
+				isCtReturn ||
+				// cannot insert a conditional before a variable declaration, it won't compile if the variable is used
+				// later on.
+				isCtLocalVariable )
+				// Avoids ClassCastException's. @see spoon.support.reflect.code.CtStatementImpl#insertBefore(CtStatement
+				// target, CtStatementList<?> statements)
+				&& isInsideIfLoopCaseBlock ;
+		return  result;
 	}
 }
