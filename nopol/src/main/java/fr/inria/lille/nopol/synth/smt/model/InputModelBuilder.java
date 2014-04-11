@@ -31,7 +31,7 @@ public final class InputModelBuilder {
 
 	private final ValuesModel data;
 
-	private static final List<Object> CONSTANTS = ImmutableList.<Object> of(-1, 0, 1, true, false);
+	private static final List<Object> CONSTANTS = ImmutableList.<Object> of(-1, 0, 1);
 
 	public InputModelBuilder(final InputOutputValues data) {
 		// XXX FIXME TODO wtf!?
