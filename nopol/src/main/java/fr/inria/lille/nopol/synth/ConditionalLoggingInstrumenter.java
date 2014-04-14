@@ -100,8 +100,10 @@ final class ConditionalLoggingInstrumenter implements Processor {
 		
 	}
 
-	private static final String VALUES_COLLECTOR_CALL = ValuesCollector.class.getName() + ".add(\"";
+	private static final String VALUES_COLLECTOR_CALL = ValuesCollector.class.getName() + ".collectValue(\"";
+	private static final String NULLNESS_COLLECTOR_CALL = ValuesCollector.class.getName() + ".collectNullness(\"";
 
+	
 	/**
 	 * Returns all variables in this scope if el does not define a scope, returns an empty set
 	 * 
@@ -194,6 +196,17 @@ final class ConditionalLoggingInstrumenter implements Processor {
 				snippet.append(VALUES_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(");")
 				.append(System.lineSeparator());
 				
+				if ( !var.getType().isPrimitive() ){
+					snippet.append(NULLNESS_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(");")
+					.append(System.lineSeparator());
+				} else {
+					// huge workaround
+					// because otherwise there are missing values in ValuesCollector at runtime
+					// and the indices get wrong
+					// so we add a fake value so as to have the same number of collected values at runtime
+					// this value is "true", if SMT uses it, the resulting synthesize expression would still compile
+					snippet.append(ValuesCollector.class.getName() + ".collectTrue();");									
+				}
 				
 				
 				
@@ -204,7 +217,6 @@ final class ConditionalLoggingInstrumenter implements Processor {
 			
 			LoggerFactory.getLogger(this.getClass()).debug("Instrumenting [{}] in\n{}", target, target.getParent());
 			target.insertBefore(factory.Code().createCodeSnippetStatement(snippet.toString()));
-			
 		}
 	}
 

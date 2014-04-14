@@ -30,17 +30,26 @@ public final class ValuesCollector {
 
 	private static final Map<String, Object> VALUES = new HashMap<String, Object>();
 
-	public static Object add(final String name, final Object value) {
+	public static void collectValue(final String name, final Object value) {
+		if (Type.isOfAKnownType(value)) {
+			addValue(name, value);
+		}
+	}
+	
+	/** workaround */
+	public static void collectTrue() {
+			addValue("true", true);
+	}
+
+	public static void collectNullness(final String name, final Object value){
 		boolean isNotNull = null != value;
 		addValue(name + "!=null", isNotNull);
+	
 		if (isNotNull) {
 			addSubValues(name, value);
 		}
-		if (Type.isOfAKnownType(value)) {
-			return addValue(name, value);
-		}
-		return null;
 	}
+	
 
 	private static void addSubValues(final String name, final Object value) {
 		SubValuesCollectors.process(name, value);
