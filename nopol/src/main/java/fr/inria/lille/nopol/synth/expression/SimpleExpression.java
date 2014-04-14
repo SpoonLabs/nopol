@@ -34,7 +34,7 @@ public final class SimpleExpression implements Expression {
 
 	@Override
 	public String asGuardedString() {
-		return this.asString();
+		return "("+ this.asString()+")";
 	}
 
 	@Override
