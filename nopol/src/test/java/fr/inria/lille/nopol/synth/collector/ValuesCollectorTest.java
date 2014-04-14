@@ -15,8 +15,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.lille.nopol.synth.collector.ValuesCollector;
-
 public class ValuesCollectorTest {
 
 	@Before
@@ -36,8 +34,10 @@ public class ValuesCollectorTest {
 		Collection<?> value = asList(1, 2, 3);
 
 		// WHEN
-		ValuesCollector.add(name, value);
-
+		ValuesCollector.collectValue(name, value);
+		ValuesCollector.collectNullness(name, value);
+		
+		
 		// THEN
 		Iterator<Entry<String, Object>> iterator = ValuesCollector.getValues().iterator();
 
@@ -63,8 +63,9 @@ public class ValuesCollectorTest {
 		Map<?, ?> value = Collections.singletonMap("key", "value");
 
 		// WHEN
-		ValuesCollector.add(name, value);
-
+		ValuesCollector.collectValue(name, value);
+		ValuesCollector.collectNullness(name, value);
+		
 		// THEN
 		Iterator<Entry<String, Object>> iterator = ValuesCollector.getValues().iterator();
 
@@ -90,8 +91,10 @@ public class ValuesCollectorTest {
 		String value = "Take nothing on its looks; take everything on evidence. There's no better rule.";
 
 		// WHEN
-		ValuesCollector.add(name, value);
+		ValuesCollector.collectValue(name, value);
+		ValuesCollector.collectNullness(name, value);
 
+		
 		// THEN
 		Iterator<Entry<String, Object>> iterator = ValuesCollector.getValues().iterator();
 
@@ -117,7 +120,8 @@ public class ValuesCollectorTest {
 		int[] value = { 1, 2, 3 };
 
 		// WHEN
-		ValuesCollector.add(name, value);
+		ValuesCollector.collectValue(name, value);
+		ValuesCollector.collectNullness(name, value);
 
 		// THEN
 		Iterator<Entry<String, Object>> iterator = ValuesCollector.getValues().iterator();
