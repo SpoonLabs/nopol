@@ -233,8 +233,8 @@ final class ConditionalLoggingInstrumenter implements Processor {
 		}
 		if (snippet.length() > 0) {
 			CtStatement target = getStatement(statement);
-			LoggerFactory.getLogger(this.getClass()).debug("Instrumenting [{}] in\n{}", target, target.getParent());
 			target.insertBefore(factory.Code().createCodeSnippetStatement(snippet.toString()));
+			LoggerFactory.getLogger(this.getClass()).debug("Instrumenting [{}] in\n{}", target, target.getParent());
 		}
 	}
 
