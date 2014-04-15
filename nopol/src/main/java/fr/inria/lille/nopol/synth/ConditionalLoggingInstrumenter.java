@@ -19,15 +19,18 @@ import static spoon.reflect.declaration.ModifierKind.STATIC;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.LoggerFactory;
 
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThisAccess;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -42,6 +45,7 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtAbstractVisitor;
+import spoon.reflect.visitor.Filter;
 import fr.inria.lille.nopol.synth.collector.ValuesCollector;
 
 /**
@@ -174,28 +178,46 @@ final class ConditionalLoggingInstrumenter implements Processor {
 		return false;
 	}
 
+	/**
+	 * Adds monitoring code for both if expressions (CtIf and all statements for missing preconditions).
+	 * That's why we consider CtElement and not only CtIf
+	 */
 	public void process(final Factory factory, final CtElement statement) {
 		boolean inStaticCode = hasStaticParent(statement);
 		StringBuilder snippet = new StringBuilder();
-
 		for (CtVariable<?> var : getVariablesInScope(statement)) {
 			boolean isStaticVar = var.getModifiers().contains(STATIC);
-
 			// we only add if the code is non static
 			// or if code is static and the variable as well
 			if (!inStaticCode || inStaticCode && (isStaticVar || !(var instanceof CtField))) {
 				// if the local var is not initialized, it might be a compilation problem
 				// because of "not initialized"
 				if (var instanceof CtLocalVariable) {
-					CtLocalVariable<?> lvar = (CtLocalVariable<?>) var;
-					if (lvar.getDefaultExpression() == null) {
-						continue;
+					final CtLocalVariable<?> lvar = (CtLocalVariable<?>) var;
+					if (lvar.getDefaultExpression() == null) {			
+						CtBlock<?> methodBody = lvar.getParent(CtMethod.class).getBody();
+						List<CtAssignment<?,?>> assignments = methodBody.getElements(new Filter<CtAssignment<?,?>>() {
+							@Override
+							public boolean matches(CtAssignment<?,?> elem) {
+								return ((CtVariableAccess<?>)elem.getAssigned()).getVariable().getSimpleName() == lvar.getSimpleName();
+							}
+							@Override
+							public Class<?> getType() {
+								return CtAssignment.class;
+							}
+						});
+						boolean isInit = false;
+						for (CtAssignment<?,?> a : assignments) {
+							if (a.getPosition().getLine() < statement.getPosition().getLine())
+								isInit = true;
+						}
+						if ( isInit )
+							continue;
 					}
 				}
 				String varName = var.getSimpleName();
 				snippet.append(VALUES_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(");")
 				.append(System.lineSeparator());
-				
 				if ( !var.getType().isPrimitive() ){
 					snippet.append(NULLNESS_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(");")
 					.append(System.lineSeparator());
@@ -205,16 +227,12 @@ final class ConditionalLoggingInstrumenter implements Processor {
 					// and the indices get wrong
 					// so we add a fake value so as to have the same number of collected values at runtime
 					// this value is "true", if SMT uses it, the resulting synthesize expression would still compile
-					snippet.append(ValuesCollector.class.getName() + ".collectTrue();");									
+					snippet.append(ValuesCollector.class.getName() + ".collectTrue();").append(System.lineSeparator());
 				}
-				
-				
-				
 			}
 		}
 		if (snippet.length() > 0) {
 			CtStatement target = getStatement(statement);
-			
 			LoggerFactory.getLogger(this.getClass()).debug("Instrumenting [{}] in\n{}", target, target.getParent());
 			target.insertBefore(factory.Code().createCodeSnippetStatement(snippet.toString()));
 		}
