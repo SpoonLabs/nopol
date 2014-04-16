@@ -199,7 +199,7 @@ final class ConditionalLoggingInstrumenter implements Processor {
 						List<CtAssignment<?,?>> assignments = methodBody.getElements(new Filter<CtAssignment<?,?>>() {
 							@Override
 							public boolean matches(CtAssignment<?,?> elem) {
-								if ( elem.getAssigned() instanceof CtVariableAccess ){
+								if ( !(elem.getAssigned() instanceof CtVariableAccess) ){
 									return false;
 								}
 								return ((CtVariableAccess<?>)elem.getAssigned()).getVariable().getSimpleName().equals(lvar.getSimpleName());
