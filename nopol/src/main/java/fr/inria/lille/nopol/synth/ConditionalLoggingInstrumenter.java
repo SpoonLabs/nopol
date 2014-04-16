@@ -199,7 +199,10 @@ final class ConditionalLoggingInstrumenter implements Processor {
 						List<CtAssignment<?,?>> assignments = methodBody.getElements(new Filter<CtAssignment<?,?>>() {
 							@Override
 							public boolean matches(CtAssignment<?,?> elem) {
-								return ((CtVariableAccess<?>)elem.getAssigned()).getVariable().getSimpleName() == lvar.getSimpleName();
+								if ( elem.getAssigned() instanceof CtVariableAccess ){
+									return false;
+								}
+								return ((CtVariableAccess<?>)elem.getAssigned()).getVariable().getSimpleName().equals(lvar.getSimpleName());
 							}
 							@Override
 							public Class<?> getType() {
@@ -208,11 +211,13 @@ final class ConditionalLoggingInstrumenter implements Processor {
 						});
 						boolean isInit = false;
 						for (CtAssignment<?,?> a : assignments) {
-							if (a.getPosition().getLine() < statement.getPosition().getLine())
+							if (a.getPosition().getLine() < statement.getPosition().getLine()){
 								isInit = true;
+							}
 						}
-						if ( isInit )
+						if ( !isInit ) {
 							continue;
+						}
 					}
 				}
 				String varName = var.getSimpleName();
