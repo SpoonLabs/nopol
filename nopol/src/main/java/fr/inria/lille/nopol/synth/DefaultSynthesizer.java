@@ -16,8 +16,7 @@
 package fr.inria.lille.nopol.synth;
 
 import static fr.inria.lille.nopol.patch.Patch.NO_PATCH;
-import static fr.inria.lille.nopol.synth.smt.model.Level.ARITHMETIC;
-import static fr.inria.lille.nopol.synth.smt.model.Level.CONSTANTS;
+import static fr.inria.lille.nopol.synth.smt.model.Level.*;
 
 import java.io.File;
 import java.net.URL;
@@ -79,10 +78,12 @@ public final class DefaultSynthesizer implements Synthesizer {
 		Level level = CONSTANTS;
 		InputModel model = modelBuilder.buildFor(level);
 		ConstraintSolver constraintSolver = new ConstraintSolver(outputFolder);
+		LoggerFactory.getLogger(this.getClass()).info("Trying "+level+"...");
 		RepairCandidate newRepair = constraintSolver.solve(model);
-		while (null == newRepair && level != ARITHMETIC) {
+		while (null == newRepair && level != MULTIPLICATION) {
 			level = level.next();
 			model = modelBuilder.buildFor(level);
+			LoggerFactory.getLogger(this.getClass()).info("Trying "+level+"...");
 			newRepair = constraintSolver.solve(model);
 		}
 		if (null == newRepair) {
