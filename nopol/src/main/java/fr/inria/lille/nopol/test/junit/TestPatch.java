@@ -17,7 +17,6 @@ package fr.inria.lille.nopol.test.junit;
 
 import java.io.File;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,6 +30,7 @@ import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
+import fr.inria.lille.nopol.MyClassLoader;
 import fr.inria.lille.nopol.SpoonClassLoader;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.synth.BugKind;
@@ -55,7 +55,6 @@ public final class TestPatch {
 	private final boolean debug = logger.isDebugEnabled();
 	private final SpoonClassLoader spooner;
 	
-	
 	public TestPatch(final File sourceFolder, final URL[] classpath) {
 		this.sourceFolder = sourceFolder;
 		this.classpath = classpath;
@@ -64,7 +63,7 @@ public final class TestPatch {
 		scl.getEnvironment().setDebug(debug);
 		SpoonCompiler builder;
 		try {
-			builder = new Launcher().createCompiler();
+			builder = new Launcher().createCompiler(scl.getFactory());
 			builder.addInputSource(sourceFolder);
 		    builder.build();
 		} catch (Exception e) {
@@ -84,7 +83,6 @@ public final class TestPatch {
 		processingManager.addProcessor(createProcessor(patch, sourceFile));
 		processingManager.addProcessor(new JavaOutputProcessor(new File(sourceFolder, SPOON_DIRECTORY), new DefaultJavaPrettyPrinter(spooner.getEnvironment())));
 		try {
-			// should be loaded by the spoon class loader
 			spooner.loadClass(patch.getRootClassName());
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
@@ -109,13 +107,14 @@ public final class TestPatch {
 	}
 
 	boolean wasSuccessful(final String[] testClasses) {
-		ClassLoader cl = new URLClassLoader(classpath, spooner);
-		// should use the url class loader
+		ClassLoader cl = new MyClassLoader(classpath, spooner.getClasscache());
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
 		Result result;
 		try {
 			result = executor.submit(new JUnitRunner(testClasses)).get();
-		} catch (InterruptedException | ExecutionException e) {
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		} catch (ExecutionException e) {
 			throw new RuntimeException(e);
 		}
 		executor.shutdown();

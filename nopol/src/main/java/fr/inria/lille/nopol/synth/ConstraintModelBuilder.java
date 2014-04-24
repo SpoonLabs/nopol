@@ -23,7 +23,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.io.File;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -39,6 +38,7 @@ import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
+import fr.inria.lille.nopol.MyClassLoader;
 import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.SpoonClassLoader;
 import fr.inria.lille.nopol.test.junit.JUnitRunner;
@@ -59,7 +59,7 @@ public final class ConstraintModelBuilder {
 	private final boolean debug = logger.isDebugEnabled();
 	private final ClassLoader spooner;
 	private boolean viablePatch;
-
+	
 	public ConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation,
 			final Processor<?> processor) {
 		SpoonClassLoader scl = new SpoonClassLoader();
@@ -71,7 +71,6 @@ public final class ConstraintModelBuilder {
 			builder = new Launcher().createCompiler(scl.getFactory());
 			builder.addInputSource(sourceFolder);
 			builder.build();
-			// should be loaded by the spoon class loader
 			scl.loadClass(sourceLocation.getRootClassName());
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
@@ -84,8 +83,7 @@ public final class ConstraintModelBuilder {
 	 */
 	public InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
 		InputOutputValues model = new InputOutputValues();
-		ClassLoader cl = new URLClassLoader(classpath, spooner);
-		// should use the url class loader
+		ClassLoader cl = new MyClassLoader(classpath, ((SpoonClassLoader)(spooner)).getClasscache());		
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
 		try {
 			Result firstResult = executor.submit(
@@ -96,7 +94,9 @@ public final class ConstraintModelBuilder {
 					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model,
 							ConditionalValueHolder.booleanValue))).get(TIMEOUT_IN_SECONDS, SECONDS);
 			determineViability(firstResult, secondResult);
-		} catch (InterruptedException | ExecutionException e) {
+		} catch (InterruptedException  e) {
+			throw new RuntimeException(e);
+		} catch (ExecutionException e) {
 			throw new RuntimeException(e);
 		} catch (TimeoutException e) {
 			logger.warn("Timeout after {} seconds. Infinite loop?", TIMEOUT_IN_SECONDS);
