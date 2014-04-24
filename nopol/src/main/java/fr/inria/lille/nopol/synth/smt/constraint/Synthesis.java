@@ -19,6 +19,7 @@ import static org.smtlib.Utils.FALSE;
 import static org.smtlib.Utils.PRODUCE_MODELS;
 import static org.smtlib.Utils.TRUE;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -91,12 +92,12 @@ final class Synthesis {
 	}
 
 	private IExpr createConstraint(final Iterable<List<IExpr>> inputValues, final Iterable<IExpr> outputValues) {
-		List<IExpr> constraints = new ArrayList<>();
+		List<IExpr> constraints = new ArrayList<IExpr>();
 		List<IExpr> ioModel = getModel();
 		constraints.add(efactory.fcn(efactory.symbol(WellFormedProgram.FUNCTION_NAME), ioModel));
 		int index = 0;
 		for (IExpr output : outputValues) {
-			List<IExpr> parameters = new ArrayList<>(ioModel.size() + 1);
+			List<IExpr> parameters = new ArrayList<IExpr>(ioModel.size() + 1);
 			for (List<IExpr> inputs : inputValues) {
 				parameters.add(inputs.get(index));
 			}
@@ -123,7 +124,7 @@ final class Synthesis {
 	 * @return
 	 */
 	private List<ICommand> createScriptFor(final Iterable<List<IExpr>> inputValues, final Iterable<IExpr> outputValues) {
-		List<ICommand> script = new ArrayList<>(model.getComponents().size() * 3);
+		List<ICommand> script = new ArrayList<ICommand>(model.getComponents().size() * 3);
 		script.add(commandFactory.set_option(efactory.keyword(PRODUCE_MODELS), TRUE));
 		script.add(commandFactory.set_logic(efactory.symbol(AUFLIRA.class.getSimpleName())));
 		addFunctionDeclarationsTo(script);
@@ -133,7 +134,7 @@ final class Synthesis {
 	}
 
 	private Iterable<List<IExpr>> getInputValues() {
-		Collection<List<IExpr>> expressions = new ArrayList<>();
+		Collection<List<IExpr>> expressions = new ArrayList<List<IExpr>>();
 		ValuesModel valuesModel = model.getValues();
 		for (Collection<Object> values : valuesModel.getInputvalues().asMap().values()) {
 			expressions.add(iExprCollectionFromObjects(values));
@@ -154,7 +155,7 @@ final class Synthesis {
 	 */
 	List<IExpr> getModel() {
 		Collection<Component> components = model.getComponents();
-		List<IExpr> parameters = new ArrayList<>(components.size() * 3);
+		List<IExpr> parameters = new ArrayList<IExpr>(components.size() * 3);
 		parameters.add(efactory.symbol(OUTPUT_LINE));
 		int componentIndex = 0;
 		for (Component component : components) {
@@ -172,7 +173,7 @@ final class Synthesis {
 	}
 
 	private List<IExpr> iExprCollectionFromObjects(final Iterable<Object> values) {
-		List<IExpr> expressions = new ArrayList<>();
+		List<IExpr> expressions = new ArrayList<IExpr>();
 		for (Object value : values) {
 			expressions.add(objectToIExpr(value));
 		}
@@ -185,6 +186,10 @@ final class Synthesis {
 			return (Boolean) value ? TRUE : FALSE;
 		} else if (Type.NUMBER == type) {
 			String stringValue = value.toString();
+			// Avoid scientific notation
+			if ( stringValue.contains("E") ){
+				stringValue = new BigDecimal((double)value).toPlainString();
+			}
 			if (stringValue.startsWith(MINUS)) {
 				return efactory.fcn(efactory.symbol(MINUS), efactory.decimal(stringValue.substring(1)));
 			} else {
