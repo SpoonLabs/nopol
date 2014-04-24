@@ -17,12 +17,14 @@ package fr.inria.lille.nopol.synth.precondition;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
+import spoon.reflect.code.CtFor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
+import spoon.support.reflect.code.CtForImpl;
 
 import com.google.common.base.Predicate;
 
@@ -40,6 +42,7 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 		boolean isCtReturn = input instanceof CtReturn;
 		boolean isCtLocalVariable = input instanceof CtLocalVariable;
 		boolean isInsideIfLoopCaseBlock = (parent instanceof CtIf || parent instanceof CtLoop || parent instanceof CtCase || parent instanceof CtBlock);
+		boolean isInsideForUpdate = parent instanceof CtFor ? ((CtFor)(parent)).getForUpdate().contains(input) : false ;
 		
 		boolean result = isCtStamement && !(
 				// input instanceof CtClass ||
@@ -54,7 +57,9 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 				isCtLocalVariable )
 				// Avoids ClassCastException's. @see spoon.support.reflect.code.CtStatementImpl#insertBefore(CtStatement
 				// target, CtStatementList<?> statements)
-				&& isInsideIfLoopCaseBlock ;
+				&& isInsideIfLoopCaseBlock
+				// cannot insert if inside update statement in for loop declaration
+				&& !isInsideForUpdate;
 		return  result;
 	}
 }
