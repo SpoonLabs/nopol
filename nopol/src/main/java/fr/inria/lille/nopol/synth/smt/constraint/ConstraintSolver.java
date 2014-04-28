@@ -37,6 +37,7 @@ import org.smtlib.ISolver;
 import org.smtlib.SMT;
 import org.smtlib.SMT.Configuration;
 
+import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.synth.RepairCandidate;
 import fr.inria.lille.nopol.synth.smt.SolverFactory;
 import fr.inria.lille.nopol.synth.smt.model.InputModel;
@@ -49,10 +50,12 @@ public final class ConstraintSolver {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final File outputFolder;
+	private final SourceLocation sl;
 	private static int i = 0;
 	
-	public ConstraintSolver(final File outputFolder){
+	public ConstraintSolver(final File outputFolder, SourceLocation sl){
 		this.outputFolder = outputFolder;
+		this.sl = sl;
 	}
 
 	
@@ -108,7 +111,7 @@ public final class ConstraintSolver {
 		} else {
 			IExpr[] solverModel = synthesis.getModel().toArray(new IExpr[] {});
 			IResponse modelResponse = solver.get_value(solverModel);
-			Set<IResponse> responses = new HashSet<>();
+			Set<IResponse> responses = new HashSet<IResponse>();
 			RepairCandidate repairCandidate;
 			do {
 				responses.add(modelResponse);
@@ -130,7 +133,9 @@ public final class ConstraintSolver {
 			DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 			writer = new PrintWriter(output);
 			writer.println(df.format(new Date()));
-			writer.println("STM-File generate for \""+outputFolder.getCanonicalPath()+"\"");
+			writer.println("STM-File generate for project \""+outputFolder.getCanonicalPath()+"\"");
+			writer.println("Class : "+sl.getContainingClassName());
+			writer.println("Line : "+sl.getLineNumber());
 			writer.println("Level : "+model.getLevel().toString());
 			writer.println("-----------------------------------");
 		} catch (Exception e) {
@@ -146,7 +151,9 @@ public final class ConstraintSolver {
 
 
 	private File createOutputFile(int i){
-		File output = new File(outputFolder.getParent()+File.separatorChar+"smt_file_"+i);
+		int index = sl.getContainingClassName().lastIndexOf(".");
+		String className = sl.getContainingClassName().substring(index+1);
+		File output = new File(outputFolder.getParent()+File.separatorChar+className+":"+sl.getLineNumber()+".smt_"+i);
 		try {
 			output.delete();
 			output.createNewFile();
