@@ -24,7 +24,6 @@ import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
-import spoon.support.reflect.code.CtForImpl;
 
 import com.google.common.base.Predicate;
 
@@ -40,21 +39,22 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 		CtElement parent = input.getParent();
 		boolean isCtStamement = input instanceof CtStatement;
 		boolean isCtReturn = input instanceof CtReturn;
+		boolean isInsideIf = parent.getParent() instanceof CtIf; // Checking parent isn't enough, parent will be CtBlock and grandpa will be CtIf
 		boolean isCtLocalVariable = input instanceof CtLocalVariable;
 		boolean isInsideIfLoopCaseBlock = (parent instanceof CtIf || parent instanceof CtLoop || parent instanceof CtCase || parent instanceof CtBlock);
 		boolean isInsideForUpdate = parent instanceof CtFor ? ((CtFor)(parent)).getForUpdate().contains(input) : false ;
 		
-		boolean result = isCtStamement && !(
+		boolean result = isCtStamement 
 				// input instanceof CtClass ||
 
 				// cannot insert code before '{}', for example would try to add code between 'Constructor()' and '{}'
 				// input instanceof CtBlock ||
 
-				// cannot insert a conditional before 'return', it won't compile.
-				isCtReturn ||
+				// cannot insert a conditional before 'return', it won't compile. Or it need to be inside If
+				&& !(isCtReturn && !( isInsideIf ))
 				// cannot insert a conditional before a variable declaration, it won't compile if the variable is used
 				// later on.
-				isCtLocalVariable )
+				&& !isCtLocalVariable 
 				// Avoids ClassCastException's. @see spoon.support.reflect.code.CtStatementImpl#insertBefore(CtStatement
 				// target, CtStatementList<?> statements)
 				&& isInsideIfLoopCaseBlock
