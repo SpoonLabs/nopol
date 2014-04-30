@@ -24,6 +24,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.lille.nopol.synth.DefaultSynthesizer;
+import fr.inria.lille.nopol.synth.SynthesizerFactory;
+import fr.inria.lille.nopol.synth.smt.SMTExecutionResult;
+import fr.inria.lille.nopol.synth.smt.constraint.ConstraintSolver;
+
 /**
  * @author Favio D. DeMarco
  *
@@ -49,6 +54,14 @@ public class Main {
 		System.setProperty("java.class.path", System.getProperty("java.class.path") + File.pathSeparatorChar + args[1]);
 		String[] paths = args[1].split(Character.toString(File.pathSeparatorChar));
 		new Main(sourceFolder, paths).run();
+		
+		System.out.println("----Information----");
+		System.out.println("Nb Statements Analysed : "+SynthesizerFactory.getNbStatementsAnalysed());
+		System.out.println("Nb Statements with Angelic Value Found : "+DefaultSynthesizer.getNbStatementsWithAngelicValue());
+		System.out.println("Nb Solver Execution : "+ConstraintSolver.getExecResult().size());
+		for ( SMTExecutionResult result : ConstraintSolver.getExecResult() ){
+			System.out.println(result);
+		}
 		System.out.println("Total Execution time : "+(System.currentTimeMillis()-startTime)+"ms");
 	}
 

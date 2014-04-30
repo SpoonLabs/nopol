@@ -22,8 +22,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -39,6 +41,7 @@ import org.smtlib.SMT.Configuration;
 
 import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.synth.RepairCandidate;
+import fr.inria.lille.nopol.synth.smt.SMTExecutionResult;
 import fr.inria.lille.nopol.synth.smt.SolverFactory;
 import fr.inria.lille.nopol.synth.smt.model.InputModel;
 
@@ -52,12 +55,12 @@ public final class ConstraintSolver {
 	private final File outputFolder;
 	private final SourceLocation sl;
 	private static int i = 0;
-	
+	private static List<SMTExecutionResult> execResult = new ArrayList<>();
+
 	public ConstraintSolver(final File outputFolder, SourceLocation sl){
 		this.outputFolder = outputFolder;
 		this.sl = sl;
 	}
-
 	
 	private void handleResponse(final IResponse response) {
 		if (response.isError()) {
@@ -101,7 +104,11 @@ public final class ConstraintSolver {
 		if (logger.isDebugEnabled()) {
 			log(script.commands());
 		}
+		
+		long startTime = System.currentTimeMillis();
 		handleResponse(script.execute(solver));
+		execResult.add(new SMTExecutionResult(System.currentTimeMillis()-startTime, model.getLevel(), sl));
+		
 
 		createSMTFile(script, model);
 
@@ -149,7 +156,6 @@ public final class ConstraintSolver {
 		i++;
 	}
 
-
 	private File createOutputFile(int i){
 		int index = sl.getContainingClassName().lastIndexOf(".");
 		String className = sl.getContainingClassName().substring(index+1);
@@ -161,6 +167,10 @@ public final class ConstraintSolver {
 			throw new IllegalStateException(e);
 		}
 		return output;	
+	}
+	
+	public static List<SMTExecutionResult> getExecResult() {
+		return execResult;
 	}
 
 }

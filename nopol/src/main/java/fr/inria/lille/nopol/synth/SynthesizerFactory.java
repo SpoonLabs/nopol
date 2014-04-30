@@ -35,8 +35,6 @@ import fr.inria.lille.nopol.synth.conditional.SpoonConditionalPredicate;
 import fr.inria.lille.nopol.synth.precondition.ConditionalAdder;
 import fr.inria.lille.nopol.synth.precondition.SpoonStatementPredicate;
 
-
-
 /**
  * @author Favio D. DeMarco
  * 
@@ -46,6 +44,7 @@ public final class SynthesizerFactory {
 	private final File sourceFolder;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final boolean debug = logger.isDebugEnabled();
+	private static int nbStatementsAnalysed = 0;
 
 	/**
 	 * 
@@ -56,9 +55,6 @@ public final class SynthesizerFactory {
 
 	public Synthesizer getFor(final SourceLocation statement) {
 		DelegatingProcessor processor;
-
-		
-		
 		BugKind type = getType(statement);
 		switch (type) {
 		case CONDITIONAL:
@@ -79,8 +75,8 @@ public final class SynthesizerFactory {
 			return NO_OP_SYNTHESIZER;
 		}
 
+		nbStatementsAnalysed++;
 		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, statement, processor);
-		
 		return new DefaultSynthesizer(constraintModelBuilder, statement, type, sourceFolder);
 	}
 
@@ -108,5 +104,9 @@ public final class SynthesizerFactory {
 		}
 		processing.process();
 		return detector.getType();
+	}
+	
+	public static int getNbStatementsAnalysed(){
+		return nbStatementsAnalysed;
 	}
 }

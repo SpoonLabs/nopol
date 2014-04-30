@@ -40,6 +40,7 @@ public final class DefaultSynthesizer implements Synthesizer {
 	private final ConstraintModelBuilder constraintModelBuilder;
 	private final BugKind type;
 	private final File outputFolder;
+	private static int nbStatementsWithAngelicValue = 0;
 
 	public DefaultSynthesizer(final ConstraintModelBuilder constraintModelBuilder, final SourceLocation sourceLocation,
 			final BugKind type, final File outputFolder) {
@@ -73,6 +74,7 @@ public final class DefaultSynthesizer implements Synthesizer {
 					sourceLocation);
 			return NO_PATCH;
 		}
+		nbStatementsWithAngelicValue++;
 		InputModelBuilder modelBuilder = new InputModelBuilder(data);
 		Level level = Level.CONSTANTS;
 		InputModel model = modelBuilder.buildFor(level);
@@ -89,5 +91,9 @@ public final class DefaultSynthesizer implements Synthesizer {
 			return NO_PATCH;
 		}
 		return new StringPatch(newRepair.toString(), sourceLocation, type);
+	}
+	
+	public static int getNbStatementsWithAngelicValue(){
+		return nbStatementsWithAngelicValue;
 	}
 }
