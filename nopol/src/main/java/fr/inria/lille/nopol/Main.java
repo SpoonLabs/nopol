@@ -34,12 +34,12 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(final String[] args) {
+		long startTime = System.currentTimeMillis();
 		if (2 != args.length) {
 			printUsage();
 			return;
 		}
 		File sourceFolder = new File(args[0]);
-
 		checkArgument(sourceFolder.exists(), "%s: does not exist.", sourceFolder);
 		checkArgument(sourceFolder.isDirectory(), "%s: is not a directory.", sourceFolder);
 
@@ -47,10 +47,9 @@ public class Main {
 		// with a URLClassLoader, for example.
 		// see JDTCompiler.getLibraryAccess()...
 		System.setProperty("java.class.path", System.getProperty("java.class.path") + File.pathSeparatorChar + args[1]);
-
 		String[] paths = args[1].split(Character.toString(File.pathSeparatorChar));
-
 		new Main(sourceFolder, paths).run();
+		System.out.println("Total Execution time : "+(System.currentTimeMillis()-startTime)+"ms");
 	}
 
 	private static void printUsage() {
@@ -71,13 +70,12 @@ public class Main {
 
 	void run() {
 
-		List<URL> urls = new ArrayList<>();
+		List<URL> urls = new ArrayList<URL>();
 		for (String path : this.classpath) {
 			try {
 				urls.add(new File(path).toURI().toURL());
 			} catch (MalformedURLException e) {
 				printUsage();
-				// TODO Auto-generated catch block
 				throw new RuntimeException(e);
 			}
 		}

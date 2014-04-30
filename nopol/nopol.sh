@@ -1,6 +1,5 @@
 #!/bin/sh
 
-START=$(date +%s)
 DIR="`dirname $0`"
 LIB="$3"
 
@@ -15,7 +14,4 @@ COMMAND="java $JAVA_FLAGS -cp $CLASSPATH $MAINCLASS $1 $2"
 echo "Running: $COMMAND \n"
 $COMMAND
 
-END=$(date +%s)
-EXECTIME=$(($END - $START))
-echo "Time : $EXECTIME seconds" >> debug.txt
 
