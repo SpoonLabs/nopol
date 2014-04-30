@@ -93,6 +93,12 @@ public final class ConstraintModelBuilder {
 			Result secondResult = executor.submit(
 					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model,
 							ConditionalValueHolder.booleanValue))).get(TIMEOUT_IN_SECONDS, SECONDS);
+			if ( firstResult.getFailureCount()==0 || secondResult.getFailureCount() == 0){
+				/*
+				 * Return empty model because we don't want "true" or "false" as a solution
+				 */
+				return new InputOutputValues();
+			}
 			determineViability(firstResult, secondResult);
 		} catch (InterruptedException  e) {
 			throw new RuntimeException(e);
