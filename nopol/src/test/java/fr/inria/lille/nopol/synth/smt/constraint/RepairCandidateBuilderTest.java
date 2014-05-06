@@ -111,7 +111,7 @@ public class RepairCandidateBuilderTest {
 		RepairCandidate candidate = new RepairCandidateBuilder(model, response).build();
 
 		// THEN
-		assertEquals("0!=up_sep", candidate.toString());
+		assertEquals("(0)!=(up_sep)", candidate.toString());
 	}
 
 	/**
@@ -130,6 +130,6 @@ public class RepairCandidateBuilderTest {
 		RepairCandidate candidate = new RepairCandidateBuilder(model, response).build();
 
 		// THEN
-		assertEquals("(0!=up_sep)==((0<=inhibit)<inhibit)", candidate.toString());
+		assertEquals("((0)!=(up_sep))==(((0)<=(inhibit))<(inhibit))", candidate.toString());
 	}
 }
