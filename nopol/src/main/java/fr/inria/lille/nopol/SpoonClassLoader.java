@@ -48,6 +48,7 @@ public class SpoonClassLoader extends ClassLoader {
 
 	private final Map<String, Class<?>> classcache = new TreeMap<String, Class<?>>();
 
+
 	private CoreFactory coreFactory;
 
 	private Environment environment;
@@ -104,6 +105,13 @@ public class SpoonClassLoader extends ClassLoader {
 		return this.environment;
 	}
 
+	/**
+	 * Gets the class cache
+	 */
+	public Map<String, Class<?>> getClasscache() {
+		return classcache;
+	}
+	
 	/**
 	 * Gets the associated factory.
 	 */
