@@ -58,8 +58,8 @@ final class NoPol {
 	}
 
 	public Patch build() {
-		String[] testClasses = new TestClassesFinder().findIn(classpath);
-
+		String[] testClasses = new TestClassesFinder().findIn(classpath, false);			
+		
 		if (testClasses.length == 0) {
 			System.out.printf("No test classes found in classpath: %s%n", Arrays.toString(classpath));
 			return NO_PATCH;

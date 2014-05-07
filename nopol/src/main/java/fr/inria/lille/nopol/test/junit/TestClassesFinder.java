@@ -17,7 +17,9 @@ package fr.inria.lille.nopol.test.junit;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -52,7 +54,7 @@ public final class TestClassesFinder implements Callable<String[]> {
 		return Collections2.transform(Arrays.asList(classes), ClassName.INSTANCE).toArray(new String[classes.length]);
 	}
 
-	public String[] findIn(final URL[] classpath) {
+	public String[] findIn(final URL[] classpath, boolean acceptTestSuite) {
 
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(
 				new URLClassLoader(classpath)));
@@ -66,7 +68,11 @@ public final class TestClassesFinder implements Callable<String[]> {
 		} finally {
 			executor.shutdown();
 		}
-
+		
+		if ( !acceptTestSuite ){
+			testClasses = removeTestSuite(testClasses);
+		}
+		
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Test clasess:");
 			for (String testClass : testClasses) {
@@ -75,5 +81,15 @@ public final class TestClassesFinder implements Callable<String[]> {
 		}
 
 		return testClasses;
+	}
+	
+	public String[] removeTestSuite(String[] totalTest){
+		List<String> tests = new ArrayList<>();
+		for ( int i = 0 ; i < totalTest.length ; i++ ){
+			if ( !totalTest[i].endsWith("Suite") ){
+				tests.add(totalTest[i]);
+			}
+		}
+		return tests.toArray(new String[tests.size()]);	
 	}
 }
