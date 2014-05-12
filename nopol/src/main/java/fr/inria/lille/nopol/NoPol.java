@@ -19,8 +19,10 @@ import static fr.inria.lille.nopol.patch.Patch.NO_PATCH;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +46,7 @@ final class NoPol {
 	private final TestPatch testPatch;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final Logger patchLogger = LoggerFactory.getLogger("patch");
+	private static List<Patch> patchList = new ArrayList<>();
 
 	/**
 	 * @param rootPackage
@@ -57,12 +60,13 @@ final class NoPol {
 		testPatch = new TestPatch(sourceFolder, classpath);
 	}
 
-	public Patch build() {
+	public List<Patch> build() {
 		String[] testClasses = new TestClassesFinder().findIn(classpath, false);			
+		
 		
 		if (testClasses.length == 0) {
 			System.out.printf("No test classes found in classpath: %s%n", Arrays.toString(classpath));
-			return NO_PATCH;
+			return null;
 		}
 
 		Collection<SuspiciousStatement> statements = gZoltar.sortBySuspiciousness(testClasses);
@@ -72,13 +76,14 @@ final class NoPol {
 		}
 
 		for (SuspiciousStatement statement : statements) {
-			logger.debug("Analysing {}", statement);
-			Patch newRepair = buildPatch(testClasses, statement);
-			if (isOk(newRepair, testClasses)) {
-				return newRepair;
-			}
+				logger.debug("Analysing {}", statement);
+				Patch newRepair = buildPatch(testClasses, statement);
+				if (isOk(newRepair, testClasses)) {
+					patchList.add(newRepair);
+				}
+		
 		}
-		return NO_PATCH;
+		return patchList;
 	}
 
 	/**
@@ -107,4 +112,11 @@ final class NoPol {
 	private boolean passesAllTests(final Patch newRepair, final String[] testClasses) {
 		return testPatch.passesAllTests(newRepair, testClasses);
 	}
+
+	public static List<Patch> getPatchList() {
+		return patchList;
+	}
+	
+	
+	
 }

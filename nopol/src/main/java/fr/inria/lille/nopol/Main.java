@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.synth.DefaultSynthesizer;
 import fr.inria.lille.nopol.synth.SynthesizerFactory;
 import fr.inria.lille.nopol.synth.smt.SMTExecutionResult;
@@ -62,6 +63,9 @@ public class Main {
 		for ( SMTExecutionResult result : ConstraintSolver.getExecResult() ){
 			System.out.println(result);
 		}
+		for ( Patch patch : NoPol.getPatchList() ){
+			System.out.println(patch);
+		}
 		System.out.println("Total Execution time : "+(System.currentTimeMillis()-startTime)+"ms");
 	}
 
@@ -92,7 +96,6 @@ public class Main {
 				throw new RuntimeException(e);
 			}
 		}
-		System.out.println("Suggested patch: "
-				+ new NoPol(this.sourceFolder, urls.toArray(new URL[urls.size()])).build());
+		new NoPol(this.sourceFolder, urls.toArray(new URL[urls.size()])).build();
 	}
 }
