@@ -109,10 +109,11 @@ public final class ConstraintSolver {
 		handleResponse(script.execute(solver));
 		execResult.add(new SMTExecutionResult(System.currentTimeMillis()-startTime, model.getLevel(), sl));
 		
+		IResponse state = solver.check_sat();
 
-		createSMTFile(script, model);
+		createSMTFile(script, model, state);
 
-		if (UNSAT.equals(solver.check_sat())) {
+		if (UNSAT.equals(state)) {
 			logger.debug("UNSAT");
 			return null;
 		} else {
@@ -133,7 +134,7 @@ public final class ConstraintSolver {
 		}
 	}
 	
-	private void createSMTFile(IScript script, InputModel model) {
+	private void createSMTFile(IScript script, InputModel model, IResponse state) {
 		File output = createOutputFile(i);
 		PrintWriter writer=null;
 		try {
@@ -144,6 +145,7 @@ public final class ConstraintSolver {
 			writer.println("Class : "+sl.getContainingClassName());
 			writer.println("Line : "+sl.getLineNumber());
 			writer.println("Level : "+model.getLevel().toString());
+			writer.println("State : "+state);
 			writer.println("-----------------------------------");
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
