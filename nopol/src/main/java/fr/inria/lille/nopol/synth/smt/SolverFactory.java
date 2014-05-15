@@ -6,7 +6,8 @@ package fr.inria.lille.nopol.synth.smt;
 import org.smtlib.ISolver;
 import org.smtlib.SMT.Configuration;
 import org.smtlib.solvers.Solver_cvc4;
-import org.smtlib.solvers.Solver_z3_4_3;
+
+import utils.FileHandler;
 
 /**
  * @author fav
@@ -14,10 +15,7 @@ import org.smtlib.solvers.Solver_z3_4_3;
  */
 public final class SolverFactory {
 
-	/**
-	 * XXX FIXME TODO should be a parameter
-	 */
-	private static final String Z3_BINARY_PATH = "/usr/bin/z3";
+	private static final String CVC4_BINARY_PATH = "/opt/local/bin/cvc4";
 	
 	private final Configuration smtConfig;
 
@@ -26,6 +24,11 @@ public final class SolverFactory {
 	}
 
 	public ISolver create() {
-		return new Solver_z3_4_3(smtConfig, Z3_BINARY_PATH);
+		return new Solver_cvc4(smtConfig, solverBinaryPath());
+	}
+	
+	public String solverBinaryPath() {
+		FileHandler.ensurePathIsValid(CVC4_BINARY_PATH);
+		return CVC4_BINARY_PATH;
 	}
 }

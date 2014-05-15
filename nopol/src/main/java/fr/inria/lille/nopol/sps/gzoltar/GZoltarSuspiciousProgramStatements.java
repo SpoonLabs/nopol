@@ -90,16 +90,21 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 	 * TODO delete this method
 	 */
 	private void assertExpectedOrder(final Collection<SuspiciousStatement> statements) {
-		List<SuspiciousStatement> sortedStatementsList = new ArrayList<SuspiciousStatement>(statements);
-		Collections.sort(sortedStatementsList, new Comparator<SuspiciousStatement>() {
+		List<SuspiciousStatement> sortedStatements = orderedBySuspiciousness(statements);
+		if (! statements.equals(sortedStatements)) {
+			throw new RuntimeException("The order does not match:\n" + statements + '\n' + sortedStatements);
+		}
+	}
+	
+	private List<SuspiciousStatement> orderedBySuspiciousness(Collection<SuspiciousStatement> statements) {
+		ArrayList<SuspiciousStatement> sortedStatements = new ArrayList<SuspiciousStatement>(statements);
+		Collections.sort(sortedStatements, new Comparator<SuspiciousStatement>() {
 			@Override
 			public int compare(final SuspiciousStatement o1, final SuspiciousStatement o2) {
-				return Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness()); // reversed parameters because we
-				// want a descending order list
+				return Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness());
 			}
 		});
-		assert statements.equals(sortedStatementsList) : "The order does not match:\n" + statements + '\n'
-		+ sortedStatementsList;
+		return sortedStatements;
 	}
 
 	/**
