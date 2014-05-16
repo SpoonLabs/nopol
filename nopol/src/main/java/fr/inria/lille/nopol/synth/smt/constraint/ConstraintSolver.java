@@ -105,12 +105,13 @@ public final class ConstraintSolver {
 			log(script.commands());
 		}
 		
+		
+		
 		long startTime = System.currentTimeMillis();
 		handleResponse(script.execute(solver));
-		execResult.add(new SMTExecutionResult(System.currentTimeMillis()-startTime, model.getLevel(), sl));
-		
 		IResponse state = solver.check_sat();
-
+		
+		execResult.add(new SMTExecutionResult(System.currentTimeMillis()-startTime, model.getLevel(), sl, state));
 		createSMTFile(script, model, state);
 
 		if (UNSAT.equals(state)) {
