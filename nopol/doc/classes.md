@@ -17,9 +17,11 @@ In charge of finding the repair. The general process is the following:
 
       [3.3.2] Modified classes are recompiled.
 
-      [3.3.3] Input-output values are obtained.
+      [3.3.3] Test classes are executed on the modified code. Then the angelic value is flipped, and another execution is performed.
 
-  3.4 `DefaultSynthesiser` iterates through increasing levels of components complexity to find a repair. For each level, it creates a suitable model which is solved by `ConstraintSolver` (which ultimately uses the `SMTLIB`). If there exists a solution, it is decoded as a string repair.
+      [3.3.4] `DefaultSynthesiser` obtains input-output values.
+
+  3.4 If the statement is indeed an angelic fix localization, `DefaultSynthesiser` iterates through increasing levels of components complexity to find a repair. For each level, it creates a suitable model which is solved by `ConstraintSolver` (which ultimately uses the `SMTLIB`). If there exists a solution, it is decoded as a string repair.
 
 4. After the `SynthesizerFactory` returns a repair, it checks that the repair is indeed _correct_ (when the `TestPatch` with the new repair now passes all tests). If so, then `NoPol` ends the execution with that repair. Otherwise, it keeps analysing another statement.
 
@@ -47,13 +49,13 @@ This is just a compound processor. That is to say that the way it processes a `C
 
 
 ## ConditionalReplacer
-This processor should only be used when dealing with statement that have a conditional problem. The only thing it does is setting the condition to `true` or `false` (angelic value). It does so using a code snippet with Spoon to transform the corresponding `CtExpression<Boolean>`.
+This processor should only be used when dealing with statement that have a conditional problem (the statement applies to `SpoonConditionalPredicate`). The only thing it does is setting the condition to `true` or `false` (angelic value). It does so using a code snippet with Spoon to transform the corresponding `CtExpression<Boolean>`.
 
 The code snippet refers to a static variable `ConditionalValueHolder.VARIABLE_NAME` which, of course, can be changed dynamically. Therefore, the modified file with the attached code snippet needs only to be recompiled once (after the insertion of the code snippet). If the code snippet didn't refer to a static value and instead had the hardcoded value `true` or `false`, then one would need to recompile the code each time he wants to change the angelic value. This is because Spoon lets the programmer modify the AST of `*.java` files, but the JVM loads compiled `*.class` files.
 
 
 ## ConditionalAdder
-This processor receives a statement that may need a precondition before its execution, and it wraps it inside a `CtIf` element (`if/then` statement). The precondition value is set to `true` or `false` (angelic value). Again, this instrumentation of the code is achieved using Spoon.
+This processor receives a statement that may need a precondition before its execution (the statement applies to `SpoonStatementPredicate`), and it wraps it inside a `CtIf` element (`if/then` statement). The precondition value is set to `true` or `false` (angelic value). Again, this instrumentation of the code is achieved using Spoon.
 
 
 ## Level
