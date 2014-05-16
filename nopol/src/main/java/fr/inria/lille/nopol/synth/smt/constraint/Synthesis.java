@@ -19,7 +19,6 @@ import static org.smtlib.Utils.FALSE;
 import static org.smtlib.Utils.PRODUCE_MODELS;
 import static org.smtlib.Utils.TRUE;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -186,10 +185,6 @@ final class Synthesis {
 			return (Boolean) value ? TRUE : FALSE;
 		} else if (Type.NUMBER == type) {
 			String stringValue = value.toString();
-			// Avoid scientific notation
-			if ( stringValue.contains("E") ){
-				stringValue = new BigDecimal((double)value).toPlainString();
-			}
 			if (stringValue.startsWith(MINUS)) {
 				return efactory.fcn(efactory.symbol(MINUS), efactory.decimal(stringValue.substring(1)));
 			} else {
