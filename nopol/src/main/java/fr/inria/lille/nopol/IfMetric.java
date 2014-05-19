@@ -38,7 +38,8 @@ public class IfMetric {
 	private final String[] classpath;
 	private static List<IfPosition> thenStatementsExecuted = new ArrayList<>();
 	private static List<IfPosition> elseStatementsExecuted = new ArrayList<>();
-
+	private final List<String> modifyClass;
+	
 	private final File sourceFolder;
 
 	private static File output;
@@ -59,6 +60,7 @@ public class IfMetric {
 		this.classpath = paths;
 		output = new File(sourceFolder + "/../IfMetric");
 		FileWriter writer = null;
+		modifyClass = new ArrayList<>();
 		try {
 			writer = new FileWriter(output);
 		} catch (IOException e) {
@@ -110,6 +112,7 @@ public class IfMetric {
 
 	private static void writeOutPut(String s) {
 		try {
+			System.out.println(s);
 			writer.write(s + "\n");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -134,18 +137,24 @@ public class IfMetric {
 			throw new IllegalStateException(e);
 		}
 
-		writeOutPut("ClassName.TestCaseName\t\t\tNbInpurIf\tNbPurIf");
+		
 
 		processing.process();
+		
+		writeOutPut("ClassName.TestCaseName\t\t\tNbInpurIf\tNbPurIf");
 		try {
 
-			builder.compileInputSources();
+			for ( String modify : modifyClass ){
+				scl.loadClass(modify);
+			}
 
+			
 			ExecutorService executor = Executors
 					.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(
 							scl));
-			Result result;
-			result = executor.submit(new JUnitRunner(testClasses)).get();
+
+			executor.submit(new JUnitRunner(testClasses)).get();
+			
 			executor.shutdown();
 
 			writer.close();
@@ -356,9 +365,14 @@ public class IfMetric {
 							instrumentIfInsideMethod(tmp);
 						}
 					}
-
 				}
 
+				String s = method.getDeclaringType().getQualifiedName();
+				if ( !modifyClass.contains(s) ){
+					modifyClass.add(s);
+				}
+				
+				
 			}
 
 		}
