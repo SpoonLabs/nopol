@@ -9,7 +9,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,6 +20,7 @@ import spoon.processing.AbstractProcessor;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtAnnotation;
@@ -139,11 +139,8 @@ public class IfMetric {
 		processing.process();
 		try {
 
-			try {
-				builder.compileInputSources();
-			} catch (Exception e) {
-				throw new IllegalStateException(e);
-			}
+			builder.compileInputSources();
+
 			ExecutorService executor = Executors
 					.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(
 							scl));
@@ -153,11 +150,7 @@ public class IfMetric {
 
 			writer.close();
 
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		} catch (ExecutionException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 
@@ -224,6 +217,8 @@ public class IfMetric {
 
 		private void instrumentIfInsideMethod(CtIf elem) {
 
+			System.out.println("###### Before ###### \n" + elem);
+			
 			if (elem.getThenStatement() != null) {
 				StringBuilder snippet = new StringBuilder();
 				snippet.append(THEN_EXECUTED_CALL).append("this.getClass()")
@@ -231,10 +226,13 @@ public class IfMetric {
 				CtStatement call = factory.Code().createCodeSnippetStatement(
 						snippet.toString());
 				if (!(elem.getThenStatement() instanceof CtBlock)) {
-					CtBlock block = factory.Core().createBlock();
+					CtBlock block = factory.Core().createBlock();	
+					call.setParent(block);
+					elem.getThenStatement().setParent(block);			
 					block.addStatement(call);
 					block.addStatement(elem.getThenStatement());
-					elem.getThenStatement().replace(block);
+					block.setParent(elem);
+					elem.setThenStatement(block);
 				} else {
 					CtBlock block = (CtBlock) elem.getThenStatement();
 					block.insertBegin(call);
@@ -247,10 +245,13 @@ public class IfMetric {
 				CtStatement call = factory.Code().createCodeSnippetStatement(
 						snippet.toString());
 				if (!(elem.getElseStatement() instanceof CtBlock)) {
-					CtBlock block = factory.Core().createBlock();
+					CtBlock block = factory.Core().createBlock();	
+					call.setParent(block);
+					elem.getElseStatement().setParent(block);			
 					block.addStatement(call);
 					block.addStatement(elem.getElseStatement());
-					elem.getElseStatement().replace(block);
+					block.setParent(elem);
+					elem.setElseStatement(block);
 				} else {
 					CtBlock block = (CtBlock) elem.getElseStatement();
 					block.insertBegin(call);
@@ -266,10 +267,12 @@ public class IfMetric {
 				elem.setElseStatement(block);
 			}
 
-			System.out.println(elem);
+			System.out.println("###### After ###### \n" + elem);
 		}
 
 		private void instrumentMethod(CtMethod method) {
+
+			System.out.println("###### Before ###### \n" + method);
 
 			if (method.getBody() != null) {
 				StringBuilder snippet_compute = new StringBuilder();
@@ -288,10 +291,26 @@ public class IfMetric {
 				CtStatementList<CtStatement> list_call = new CtStatementListImpl<>();
 				list_call.addStatement(call_compute);
 				list_call.addStatement(call_reset);
-				method.getBody().insertEnd(list_call);
+				/*
+				 * Workaround, getLastStatement throw
+				 * ArrayIndexOutOfBoundException when the method is empty
+				 */
+				try {
+					CtStatement lastStatement = method.getBody()
+							.getLastStatement();
+					if (lastStatement instanceof CtReturn) {
+						lastStatement.insertBefore(list_call);
+					} else {
+						lastStatement.insertAfter(list_call);
+					}
+				} catch (ArrayIndexOutOfBoundsException aeoob) {
+					/*
+					 * Do nothing because of empty method
+					 */
+				}
 			}
 
-			System.out.println(method);
+			System.out.println("###### After ###### \n" + method);
 		}
 
 		private boolean isTestCase(CtMethod method) {
