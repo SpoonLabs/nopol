@@ -1,0 +1,51 @@
+(set-option :produce-models true)
+OUT: success
+(set-logic AUFLIRA)
+OUT: success
+(define-fun acyc ((L_I0_0 Int)(L_I0_1 Int)(LO_0 Int)(L_I1_0 Int)(L_I1_1 Int)(LO_1 Int)(L_I2_0 Int)(L_I2_1 Int)(LO_2 Int)(L_I3_0 Int)(L_I3_1 Int)(LO_3 Int)) Bool (and (< L_I0_0 LO_0) (< L_I0_1 LO_0) (< L_I1_0 LO_1) (< L_I1_1 LO_1) (< L_I2_0 LO_2) (< L_I2_1 LO_2) (< L_I3_0 LO_3) (< L_I3_1 LO_3)))
+OUT: success
+(define-fun cons ((LO_0 Int)(LO_1 Int)(LO_2 Int)(LO_3 Int)) Bool (and (distinct LO_0 LO_1) (distinct LO_0 LO_2) (distinct LO_0 LO_3) (distinct LO_1 LO_2) (distinct LO_1 LO_3) (distinct LO_2 LO_3)))
+OUT: success
+(define-fun wfp ((LO Int)(LO_0 Int)(L_I0_0 Int)(L_I0_1 Int)(LO_1 Int)(L_I1_0 Int)(L_I1_1 Int)(LO_2 Int)(L_I2_0 Int)(L_I2_1 Int)(LO_3 Int)(L_I3_0 Int)(L_I3_1 Int)) Bool (and (cons LO_0 LO_1 LO_2 LO_3) (acyc L_I0_0 L_I0_1 LO_0 L_I1_0 L_I1_1 LO_1 L_I2_0 L_I2_1 LO_2 L_I3_0 L_I3_1 LO_3) (or (= L_I0_0 0) (= L_I0_0 2) (= L_I0_0 5) (= L_I0_0 6) (= L_I0_0 7)) (or (= L_I0_1 0) (= L_I0_1 2) (= L_I0_1 5) (= L_I0_1 6) (= L_I0_1 7)) (and (<= 8 LO_0) (< LO_0 12)) (or (= L_I1_0 0) (= L_I1_0 2) (= L_I1_0 5) (= L_I1_0 6) (= L_I1_0 7)) (or (= L_I1_1 0) (= L_I1_1 2) (= L_I1_1 5) (= L_I1_1 6) (= L_I1_1 7)) (and (<= 8 LO_1) (< LO_1 12)) (or (= L_I2_0 0) (= L_I2_0 2) (= L_I2_0 5) (= L_I2_0 6) (= L_I2_0 7)) (or (= L_I2_1 0) (= L_I2_1 2) (= L_I2_1 5) (= L_I2_1 6) (= L_I2_1 7)) (and (<= 8 LO_2) (< LO_2 12)) (or (= L_I3_0 0) (= L_I3_0 2) (= L_I3_0 5) (= L_I3_0 6) (= L_I3_0 7)) (or (= L_I3_1 0) (= L_I3_1 2) (= L_I3_1 5) (= L_I3_1 6) (= L_I3_1 7)) (and (<= 8 LO_3) (< LO_3 12)) (or (= LO 1) (= LO 3) (= LO 4) (= LO LO_2) (= LO LO_3) (= LO LO_0) (= LO LO_1))))
+OUT: success
+(define-fun lib ((I0_0 Real)(I0_1 Real)(O_0 Bool)(I1_0 Real)(I1_1 Real)(O_1 Bool)(I2_0 Real)(I2_1 Real)(O_2 Bool)(I3_0 Real)(I3_1 Real)(O_3 Bool)) Bool (and (= O_0 (< I0_0 I0_1)) (= O_1 (<= I1_0 I1_1)) (= O_2 (= I2_0 I2_1)) (= O_3 (distinct I3_0 I3_1))))
+OUT: success
+(define-fun conn ((I_0 Real)(I_1 Bool)(I_2 Real)(I_3 Bool)(I_4 Bool)(I_5 Real)(I_6 Real)(I_7 Real)(I0_0 Real)(L_I0_0 Int)(I0_1 Real)(L_I0_1 Int)(O_0 Bool)(LO_0 Int)(I1_0 Real)(L_I1_0 Int)(I1_1 Real)(L_I1_1 Int)(O_1 Bool)(LO_1 Int)(I2_0 Real)(L_I2_0 Int)(I2_1 Real)(L_I2_1 Int)(O_2 Bool)(LO_2 Int)(I3_0 Real)(L_I3_0 Int)(I3_1 Real)(L_I3_1 Int)(O_3 Bool)(LO_3 Int)(O Bool)(LO Int)) Bool (and (=> (= L_I0_0 0) (= I0_0 I_0)) (=> (= L_I0_0 2) (= I0_0 I_2)) (=> (= L_I0_0 5) (= I0_0 I_5)) (=> (= L_I0_0 6) (= I0_0 I_6)) (=> (= L_I0_0 7) (= I0_0 I_7)) (=> (= L_I0_1 0) (= I0_1 I_0)) (=> (= L_I0_1 2) (= I0_1 I_2)) (=> (= L_I0_1 5) (= I0_1 I_5)) (=> (= L_I0_1 6) (= I0_1 I_6)) (=> (= L_I0_1 7) (= I0_1 I_7)) (=> (= L_I1_0 0) (= I1_0 I_0)) (=> (= L_I1_0 2) (= I1_0 I_2)) (=> (= L_I1_0 5) (= I1_0 I_5)) (=> (= L_I1_0 6) (= I1_0 I_6)) (=> (= L_I1_0 7) (= I1_0 I_7)) (=> (= L_I1_1 0) (= I1_1 I_0)) (=> (= L_I1_1 2) (= I1_1 I_2)) (=> (= L_I1_1 5) (= I1_1 I_5)) (=> (= L_I1_1 6) (= I1_1 I_6)) (=> (= L_I1_1 7) (= I1_1 I_7)) (=> (= L_I2_0 0) (= I2_0 I_0)) (=> (= L_I2_0 2) (= I2_0 I_2)) (=> (= L_I2_0 5) (= I2_0 I_5)) (=> (= L_I2_0 6) (= I2_0 I_6)) (=> (= L_I2_0 7) (= I2_0 I_7)) (=> (= L_I2_1 0) (= I2_1 I_0)) (=> (= L_I2_1 2) (= I2_1 I_2)) (=> (= L_I2_1 5) (= I2_1 I_5)) (=> (= L_I2_1 6) (= I2_1 I_6)) (=> (= L_I2_1 7) (= I2_1 I_7)) (=> (= L_I3_0 0) (= I3_0 I_0)) (=> (= L_I3_0 2) (= I3_0 I_2)) (=> (= L_I3_0 5) (= I3_0 I_5)) (=> (= L_I3_0 6) (= I3_0 I_6)) (=> (= L_I3_0 7) (= I3_0 I_7)) (=> (= L_I3_1 0) (= I3_1 I_0)) (=> (= L_I3_1 2) (= I3_1 I_2)) (=> (= L_I3_1 5) (= I3_1 I_5)) (=> (= L_I3_1 6) (= I3_1 I_6)) (=> (= L_I3_1 7) (= I3_1 I_7)) (=> (= LO 1) (= O I_1)) (=> (= LO 3) (= O I_3)) (=> (= LO 4) (= O I_4)) (=> (= LO LO_0) (= O O_0)) (=> (= LO LO_1) (= O O_1)) (=> (= LO LO_2) (= O O_2)) (=> (= LO LO_3) (= O O_3))))
+OUT: success
+(define-fun verification ((I_0 Real)(I_1 Bool)(I_2 Real)(I_3 Bool)(I_4 Bool)(I_5 Real)(I_6 Real)(I_7 Real)(O Bool)(LO Int)(LO_0 Int)(L_I0_0 Int)(L_I0_1 Int)(LO_1 Int)(L_I1_0 Int)(L_I1_1 Int)(LO_2 Int)(L_I2_0 Int)(L_I2_1 Int)(LO_3 Int)(L_I3_0 Int)(L_I3_1 Int)) Bool (exists ((I0_0 Real) (I0_1 Real) (O_0 Bool) (I1_0 Real) (I1_1 Real) (O_1 Bool) (I2_0 Real) (I2_1 Real) (O_2 Bool) (I3_0 Real) (I3_1 Real) (O_3 Bool) ) (and (lib I0_0 I0_1 O_0 I1_0 I1_1 O_1 I2_0 I2_1 O_2 I3_0 I3_1 O_3) (conn I_0 I_1 I_2 I_3 I_4 I_5 I_6 I_7 I0_0 L_I0_0 I0_1 L_I0_1 O_0 LO_0 I1_0 L_I1_0 I1_1 L_I1_1 O_1 LO_1 I2_0 L_I2_0 I2_1 L_I2_1 O_2 LO_2 I3_0 L_I3_0 I3_1 L_I3_1 O_3 LO_3 O LO))))
+OUT: success
+(declare-fun LO () Int)
+OUT: success
+(declare-fun LO_0 () Int)
+OUT: success
+(declare-fun L_I0_0 () Int)
+OUT: success
+(declare-fun L_I0_1 () Int)
+OUT: success
+(declare-fun LO_1 () Int)
+OUT: success
+(declare-fun L_I1_0 () Int)
+OUT: success
+(declare-fun L_I1_1 () Int)
+OUT: success
+(declare-fun LO_2 () Int)
+OUT: success
+(declare-fun L_I2_0 () Int)
+OUT: success
+(declare-fun L_I2_1 () Int)
+OUT: success
+(declare-fun LO_3 () Int)
+OUT: success
+(declare-fun L_I3_0 () Int)
+OUT: success
+(declare-fun L_I3_1 () Int)
+OUT: success
+(assert (and (wfp LO LO_0 L_I0_0 L_I0_1 LO_1 L_I1_0 L_I1_1 LO_2 L_I2_0 L_I2_1 LO_3 L_I3_0 L_I3_1) (verification 4 true 0 false true (- 1) 0 1 true LO LO_0 L_I0_0 L_I0_1 LO_1 L_I1_0 L_I1_1 LO_2 L_I2_0 L_I2_1 LO_3 L_I3_0 L_I3_1) (verification 4 true (- 5) false true (- 1) 0 1 true LO LO_0 L_I0_0 L_I0_1 LO_1 L_I1_0 L_I1_1 LO_2 L_I2_0 L_I2_1 LO_3 L_I3_0 L_I3_1) (verification 4 true (- 1) false true (- 1) 0 1 true LO LO_0 L_I0_0 L_I0_1 LO_1 L_I1_0 L_I1_1 LO_2 L_I2_0 L_I2_1 LO_3 L_I3_0 L_I3_1) (verification 4 true 3 false true (- 1) 0 1 false LO LO_0 L_I0_0 L_I0_1 LO_1 L_I1_0 L_I1_1 LO_2 L_I2_0 L_I2_1 LO_3 L_I3_0 L_I3_1) (verification 4 true 12 false true (- 1) 0 1 false LO LO_0 L_I0_0 L_I0_1 LO_1 L_I1_0 L_I1_1 LO_2 L_I2_0 L_I2_1 LO_3 L_I3_0 L_I3_1) (verification 4 true 2 false true (- 1) 0 1 false LO LO_0 L_I0_0 L_I0_1 LO_1 L_I1_0 L_I1_1 LO_2 L_I2_0 L_I2_1 LO_3 L_I3_0 L_I3_1) (verification 4 true 1 false true (- 1) 0 1 false LO LO_0 L_I0_0 L_I0_1 LO_1 L_I1_0 L_I1_1 LO_2 L_I2_0 L_I2_1 LO_3 L_I3_0 L_I3_1) (verification 13 true 5 false true (- 1) 0 1 false LO LO_0 L_I0_0 L_I0_1 LO_1 L_I1_0 L_I1_1 LO_2 L_I2_0 L_I2_1 LO_3 L_I3_0 L_I3_1)))
+OUT: success
+(check-sat)
+OUT: sat
+(get-value ( LO LO_0 L_I0_0 L_I0_1 LO_1 L_I1_0 L_I1_1 LO_2 L_I2_0 L_I2_1 LO_3 L_I3_0 L_I3_1))
+OUT: ((LO 9) (LO_0 8) (L_I0_0 5) (L_I0_1 6) (LO_1 9) (L_I1_0 2) (L_I1_1 6) (LO_2 10) (L_I2_0 6) (L_I2_1 2) (LO_3 11) (L_I3_0 0) (L_I3_1 0))
+(check-sat)
+OUT: sat
+(get-value ( LO LO_0 L_I0_0 L_I0_1 LO_1 L_I1_0 L_I1_1 LO_2 L_I2_0 L_I2_1 LO_3 L_I3_0 L_I3_1))
