@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.nopol.threads;
+package fr.inria.lille.spirals.commons.classes;
 
 import java.lang.reflect.Constructor;
 import java.util.concurrent.ThreadFactory;
@@ -37,16 +37,18 @@ public final class ProvidedClassLoaderThreadFactory implements ThreadFactory {
 		try {
 			this.constructor = (Constructor<Thread>) classLoader.loadClass(Thread.class.getName()).getConstructor(
 					Runnable.class, String.class);
-		} catch (NoSuchMethodException | SecurityException | ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException(e);
+		} catch (NoSuchMethodException nse) {
+			throw new RuntimeException(nse);
+		} catch (SecurityException se) {
+			throw new RuntimeException(se);
+		} catch (ClassNotFoundException cne) {
+			throw new RuntimeException(cne);
 		}
 	}
 
 	/**
 	 * @see java.util.concurrent.ThreadFactory#newThread(java.lang.Runnable)
 	 */
-	@Override
 	public Thread newThread(final Runnable r) {
 		Thread newThread;
 		try {

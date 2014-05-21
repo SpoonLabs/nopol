@@ -1,4 +1,4 @@
-package fr.inria.lille.nopol;
+package fr.inria.lille.spirals.commons.classes;
 
 import java.net.URL;
 import java.net.URLClassLoader;

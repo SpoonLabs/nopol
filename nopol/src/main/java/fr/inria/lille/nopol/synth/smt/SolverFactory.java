@@ -3,11 +3,11 @@
  */
 package fr.inria.lille.nopol.synth.smt;
 
-import java.io.File;
-
 import org.smtlib.ISolver;
 import org.smtlib.SMT.Configuration;
 import org.smtlib.solvers.Solver_cvc4;
+
+import fr.inria.lille.spirals.commons.io.FileHandler;
 
 /**
  * @author fav
@@ -24,9 +24,7 @@ public final class SolverFactory {
 	}
 
 	public ISolver create() {
-		if (! new File(solverBinaryPath()).exists()) {
-			throw new RuntimeException("File does not exists: " + solverBinaryPath());
-		}
+		FileHandler.ensurePathIsValid(solverBinaryPath());
 		return new Solver_cvc4(smtConfig, solverBinaryPath());
 	}
 	

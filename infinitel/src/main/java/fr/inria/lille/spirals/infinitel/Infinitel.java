@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Collection;
 
 /**
- * @title Infinite Loops Repair
+ * @name Infinite Loops Repair
  *
  */
 public class Infinitel {
@@ -15,8 +15,8 @@ public class Infinitel {
 		infiniteLoopFixer.showSummary();
 	}
 	
-	public Infinitel(File sourceFolder, Collection<String> paths) {
-		// TODO Auto-generated constructor stub
+	public Infinitel(File sourceFolder, Collection<String> classFolder) {
+		
 	}
 
 	public void repair() {
@@ -26,8 +26,7 @@ public class Infinitel {
 
 	public void showSummary() {
 		// TODO Auto-generated method stub
-		
 	}
 
-	
+	private Collection<Class<?>> testClasses;
 }

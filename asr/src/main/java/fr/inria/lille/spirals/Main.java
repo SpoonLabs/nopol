@@ -10,7 +10,7 @@ import fr.inria.lille.spirals.infinitel.Infinitel;
 
 
 /**
- * @title Automatic Software Repair
+ * @name Automatic Software Repair
  *
  */
 public class Main {
@@ -19,8 +19,8 @@ public class Main {
     	try {
     		String repairMethod = args[0];
     		File sourceFolder = FileHandler.directoryFrom(args[1]);
-    		Collection<String> paths = StringLibrary.split(args[2], StringLibrary.javaPathSeparator());
-    		new Main(args, repairMethod, sourceFolder, paths);
+    		Collection<String> classFolder = StringLibrary.split(args[2], StringLibrary.javaPathSeparator());
+    		new Main(args, repairMethod, sourceFolder, classFolder);
     	}
     	catch (Exception e) {
     		showUsage();
@@ -28,13 +28,13 @@ public class Main {
     	}
     }
 	
-	private Main(String[] args, String repairMethod, File sourceFolder, Collection<String> paths) {
+	private Main(String[] args, String repairMethod, File sourceFolder, Collection<String> classFolder) {
 		if (repairMethod.equalsIgnoreCase("nopol")) {
 			args = ArrayLibrary.subarray(args, 1, 3);
 			fr.inria.lille.nopol.Main.main(args);
 		}
 		else if (repairMethod.equalsIgnoreCase("infinitel")) {
-			Infinitel.run(sourceFolder, paths);
+			Infinitel.run(sourceFolder, classFolder);
 		}
 	}
 

@@ -4,6 +4,10 @@ import java.io.File;
 
 public class FileHandler {
 
+	public static boolean ensurePathIsValid(String path) {
+		return openFrom(path).exists();
+	}
+	
 	public static File openFrom(String path) {
 		File file = new File(path);
 		if (! file.exists()) {

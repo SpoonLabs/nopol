@@ -13,12 +13,11 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.nopol.test.junit;
+package fr.inria.lille.spirals.commons.classes;
 
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -32,10 +31,6 @@ import sacha.finder.classes.impl.ClassloaderFinder;
 import sacha.finder.filters.impl.TestFilter;
 import sacha.finder.processor.Processor;
 
-import com.google.common.collect.Collections2;
-
-import fr.inria.lille.nopol.functors.ClassName;
-import fr.inria.lille.nopol.threads.ProvidedClassLoaderThreadFactory;
 
 /**
  * @author Favio D. DeMarco
@@ -45,13 +40,22 @@ public final class TestClassesFinder implements Callable<String[]> {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@Override
 	public String[] call() throws Exception {
 
 		Class<?>[] classes = new Processor(new ClassloaderFinder((URLClassLoader) Thread.currentThread()
 				.getContextClassLoader()), new TestFilter()).process();
 
-		return Collections2.transform(Arrays.asList(classes), ClassName.INSTANCE).toArray(new String[classes.length]);
+		return namesFrom(classes);
+	}
+	
+	public String[] namesFrom(Class<?>[] classes) {
+		String[] names = new String[classes.length];
+		int index = 0;
+		for (Class<?> aClass : classes) {
+			names[index] = aClass.getName();
+			index += 1;
+		}
+		return names;
 	}
 
 	public String[] findIn(final URL[] classpath, boolean acceptTestSuite) {
@@ -62,9 +66,10 @@ public final class TestClassesFinder implements Callable<String[]> {
 		String[] testClasses;
 		try {
 			testClasses = executor.submit(new TestClassesFinder()).get();
-		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException(e);
+		} catch (InterruptedException ie) {
+			throw new RuntimeException(ie);
+		} catch (ExecutionException ee) {
+			throw new RuntimeException(ee);
 		} finally {
 			executor.shutdown();
 		}
@@ -84,7 +89,7 @@ public final class TestClassesFinder implements Callable<String[]> {
 	}
 	
 	public String[] removeTestSuite(String[] totalTest){
-		List<String> tests = new ArrayList<>();
+		List<String> tests = new ArrayList<String>();
 		for ( int i = 0 ; i < totalTest.length ; i++ ){
 			if ( !totalTest[i].endsWith("Suite") ){
 				tests.add(totalTest[i]);

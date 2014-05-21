@@ -30,7 +30,6 @@ import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
-import fr.inria.lille.nopol.MyClassLoader;
 import fr.inria.lille.nopol.SpoonClassLoader;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.synth.BugKind;
@@ -39,7 +38,8 @@ import fr.inria.lille.nopol.synth.conditional.ConditionalReplacer;
 import fr.inria.lille.nopol.synth.conditional.SpoonConditionalPredicate;
 import fr.inria.lille.nopol.synth.precondition.ConditionalAdder;
 import fr.inria.lille.nopol.synth.precondition.SpoonStatementPredicate;
-import fr.inria.lille.nopol.threads.ProvidedClassLoaderThreadFactory;
+import fr.inria.lille.spirals.commons.classes.MyClassLoader;
+import fr.inria.lille.spirals.commons.classes.ProvidedClassLoaderThreadFactory;
 
 /**
  * @author Favio D. DeMarco

@@ -38,11 +38,11 @@ import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
-import fr.inria.lille.nopol.MyClassLoader;
 import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.SpoonClassLoader;
 import fr.inria.lille.nopol.test.junit.JUnitRunner;
-import fr.inria.lille.nopol.threads.ProvidedClassLoaderThreadFactory;
+import fr.inria.lille.spirals.commons.classes.MyClassLoader;
+import fr.inria.lille.spirals.commons.classes.ProvidedClassLoaderThreadFactory;
 
 /**
  * @author Favio D. DeMarco
