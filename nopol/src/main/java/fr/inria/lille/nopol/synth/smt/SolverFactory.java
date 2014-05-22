@@ -7,7 +7,7 @@ import org.smtlib.ISolver;
 import org.smtlib.SMT.Configuration;
 import org.smtlib.solvers.Solver_cvc4;
 
-import fr.inria.lille.spirals.commons.io.FileHandler;
+import fr.inria.lille.commons.io.FileHandler;
 
 /**
  * @author fav

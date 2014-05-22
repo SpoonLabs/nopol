@@ -25,12 +25,12 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.inria.lille.commons.classes.TestClassesFinder;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.sps.SuspiciousStatement;
 import fr.inria.lille.nopol.sps.gzoltar.GZoltarSuspiciousProgramStatements;
 import fr.inria.lille.nopol.synth.SynthesizerFactory;
 import fr.inria.lille.nopol.test.junit.TestPatch;
-import fr.inria.lille.spirals.commons.classes.TestClassesFinder;
 
 /**
  * @author Favio D. DeMarco

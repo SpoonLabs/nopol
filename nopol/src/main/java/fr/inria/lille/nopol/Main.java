@@ -15,84 +15,78 @@
  */
 package fr.inria.lille.nopol;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import fr.inria.lille.commons.collections.CollectionLibrary;
+import fr.inria.lille.commons.collections.ListLibrary;
+import fr.inria.lille.commons.io.FileHandler;
+import fr.inria.lille.commons.string.StringLibrary;
+import fr.inria.lille.infinitel.Infinitel;
 import fr.inria.lille.nopol.synth.DefaultSynthesizer;
 import fr.inria.lille.nopol.synth.SynthesizerFactory;
 import fr.inria.lille.nopol.synth.smt.SMTExecutionResult;
 import fr.inria.lille.nopol.synth.smt.constraint.ConstraintSolver;
 
-/**
- * @author Favio D. DeMarco
- *
- */
 public class Main {
 
-	/**
-	 * @param args
-	 */
-	public static void main(final String[] args) {
-		long startTime = System.currentTimeMillis();
-		if (2 != args.length) {
-			printUsage();
-			return;
+	public static void main(String[] args) {
+    	try {
+    		String repairMethod = args[0];
+    		File sourceFolder = FileHandler.directoryFrom(args[1]);
+    		Collection<URL> classFolders = collectClassDirectories(args[2]);
+    		new Main(args, repairMethod, sourceFolder, classFolders);
+    	}
+    	catch (Exception e) {
+    		showUsage();
+    		e.printStackTrace();
+    	}
+    }
+    
+	private Main(String[] args, String repairMethod, File sourceFolder, Collection<URL> classFolders) {
+		if (repairMethod.equalsIgnoreCase("nopol")) {
+			executeNopol(sourceFolder, CollectionLibrary.toArray(URL.class, classFolders));
 		}
-		File sourceFolder = new File(args[0]);
-		checkArgument(sourceFolder.exists(), "%s: does not exist.", sourceFolder);
-		checkArgument(sourceFolder.isDirectory(), "%s: is not a directory.", sourceFolder);
+		else if (repairMethod.equalsIgnoreCase("infinitel")) {
+			executeInfinitel(sourceFolder, classFolders);
+		}
+	}
 
-		// XXX FIXME TODO this line adds the analyzed project classpath for the compiler, it should use another thread
-		// with a URLClassLoader, for example.
-		// see JDTCompiler.getLibraryAccess()...
-		System.setProperty("java.class.path", System.getProperty("java.class.path") + File.pathSeparatorChar + args[1]);
-		String[] paths = args[1].split(Character.toString(File.pathSeparatorChar));
-		new Main(sourceFolder, paths).run();
-		
+	private static Collection<URL> collectClassDirectories(String classFolders) {
+		List<String> folderNames = StringLibrary.split(classFolders, StringLibrary.javaPathSeparator());
+		List<URL> folders = ListLibrary.newArrayList();
+		for (String folderName : folderNames) {
+			folders.add(FileHandler.urlFrom(folderName));
+		}
+		return folders;
+	}
+	
+	public void executeNopol(File sourceFolder, URL[] urls) {
+		long startTime = System.currentTimeMillis();
+		System.out.println("Suggested patch: " + new NoPol(sourceFolder, urls).build());
 		System.out.println("----Information----");
-		System.out.println("Nb Statements Analysed : "+SynthesizerFactory.getNbStatementsAnalysed());
-		System.out.println("Nb Statements with Angelic Value Found : "+DefaultSynthesizer.getNbStatementsWithAngelicValue());
-		System.out.println("Nb Solver Execution : "+ConstraintSolver.getExecResult().size());
+		System.out.println("Nb Statements Analysed : " + SynthesizerFactory.getNbStatementsAnalysed());
+		System.out.println("Nb Statements with Angelic Value Found : " + DefaultSynthesizer.getNbStatementsWithAngelicValue());
+		System.out.println("Nb Solver Execution : " + ConstraintSolver.getExecResult().size());
 		for ( SMTExecutionResult result : ConstraintSolver.getExecResult() ){
 			System.out.println(result);
 		}
-		System.out.println("Total Execution time : "+(System.currentTimeMillis()-startTime)+"ms");
+		System.out.println("Total Execution time : " + (System.currentTimeMillis() - startTime) + "ms");
 	}
-
-	private static void printUsage() {
-		System.out.println("java " + Main.class.getName() + " <source folder> <classpath>");
-	}
-
-	private final String[] classpath;
-
-	private final File sourceFolder;
-
-	/**
-	 * 
-	 */
-	private Main(final File sourceFolder, final String[] classpath) {
-		this.sourceFolder = checkNotNull(sourceFolder);
-		this.classpath = checkNotNull(classpath);
-	}
-
-	void run() {
-
-		List<URL> urls = new ArrayList<URL>();
-		for (String path : this.classpath) {
-			try {
-				urls.add(new File(path).toURI().toURL());
-			} catch (MalformedURLException e) {
-				printUsage();
-				throw new RuntimeException(e);
-			}
-		}
-		System.out.println("Suggested patch: "
-				+ new NoPol(this.sourceFolder, urls.toArray(new URL[urls.size()])).build());
+    
+    public void executeInfinitel(File sourceFolder, Collection<URL> classFolders) {
+    	Infinitel.run(sourceFolder, classFolders);
+    }
+	
+	private static void showUsage() {
+		StringBuilder message = new StringBuilder();
+		String newline = StringLibrary.javaNewline();
+		message.append("$ java " + Main.class.getName() + " <repair method> <source folder> <classpath>" + newline);
+		message.append("<repair metod>  'nopol' or 'infinitel'" + newline);
+		message.append("<source folder> path to folder containing source code to by fixed" + newline);
+		message.append("<classpath>     path(s) to folder(s) with test cases (separated by colon ':')" + newline);
+		System.out.println(message);
 	}
 }

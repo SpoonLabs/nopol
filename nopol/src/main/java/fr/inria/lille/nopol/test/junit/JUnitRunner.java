@@ -16,21 +16,17 @@
 package fr.inria.lille.nopol.test.junit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ComputationException;
 
 /**
@@ -38,25 +34,6 @@ import com.google.common.collect.ComputationException;
  * 
  */
 public final class JUnitRunner implements Callable<Result> {
-
-	private enum StringToClass implements Function<String, Class<?>> {
-		INSTANCE;
-
-		@Override
-		@Nullable
-		public Class<?> apply(@Nullable final String input) {
-			try {
-				return Thread.currentThread().getContextClassLoader().loadClass(input);
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				throw new ComputationException(e);
-			}
-		}
-	}
-
-	private final String[] classes;
-
-	private final List<RunListener> listeners = new ArrayList<>();
 
 	/**
 	 * @param classes
@@ -74,25 +51,30 @@ public final class JUnitRunner implements Callable<Result> {
 		this.classes = checkNotNull(classes);
 	}
 
-	/**
-	 * @param classes
-	 * @param listeners
-	 */
-	public JUnitRunner(@Nonnull final String[] classes, final RunListener... listeners) {
-		this.classes = checkNotNull(classes);
-		this.listeners.addAll(asList(listeners));
-	}
-
 	@Override
 	public Result call() throws Exception {
 		JUnitCore runner = new JUnitCore();
 		for (RunListener listener : this.listeners) {
 			runner.addListener(listener);
 		}
-
-		Class<?>[] testClasses = Collections2.transform(asList(this.classes), StringToClass.INSTANCE).toArray(
-				new Class<?>[this.classes.length]);
-
+		Class<?>[] testClasses = classArrayFrom(classes);
 		return runner.run(testClasses);
 	}
+
+	private Class<?>[] classArrayFrom(String[] classNames) {
+		Class<?>[] classes = new Class<?>[classNames.length];
+		int index = 0;
+		for (String className : classNames) {
+			try {
+				classes[index] = Thread.currentThread().getContextClassLoader().loadClass(className);
+			} catch (ClassNotFoundException e) {
+				throw new ComputationException(e);
+			}
+			index += 1;
+		}
+		return classes;
+	}
+	
+	private final String[] classes;
+	private final List<RunListener> listeners = new ArrayList<>();
 }
