@@ -58,8 +58,7 @@ public final class TestPatch {
 	public TestPatch(final File sourceFolder, final URL[] classpath) {
 		this.sourceFolder = sourceFolder;
 		this.classpath = classpath;
-		SpoonClassLoader scl = new SpoonClassLoader();
-		scl.setSourcePath(sourceFolder);
+		SpoonClassLoader scl = new SpoonClassLoader(sourceFolder);
 		scl.getEnvironment().setDebug(debug);
 		SpoonCompiler builder;
 		try {

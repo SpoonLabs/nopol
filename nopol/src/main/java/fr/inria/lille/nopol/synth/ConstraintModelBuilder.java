@@ -60,9 +60,8 @@ public final class ConstraintModelBuilder {
 	private final ClassLoader spooner;
 	private boolean viablePatch;
 	
-	public ConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation,
-			final Processor<?> processor) {
-		SpoonClassLoader scl = new SpoonClassLoader();
+	public ConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation, final Processor<?> processor) {
+		SpoonClassLoader scl = new SpoonClassLoader(sourceFolder);
 		scl.getEnvironment().setDebug(debug);
 		ProcessingManager processingManager = scl.getProcessingManager();
 		processingManager.addProcessor(processor);
