@@ -26,6 +26,9 @@ import org.slf4j.LoggerFactory;
 
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
@@ -41,11 +44,13 @@ import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.filter.TypeFilter;
 import fr.inria.lille.nopol.synth.collector.ValuesCollector;
 
 /**
@@ -220,23 +225,21 @@ final class ConditionalLoggingInstrumenter implements Processor {
 					}
 				}
 				String varName = var.getSimpleName();
-				snippet.append(VALUES_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(", "+ConditionalValueHolder.ID_Conditional)
-				.append(");")
-				.append(System.lineSeparator());
-				if ( !var.getType().isPrimitive() ){
-					snippet.append(NULLNESS_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(", "+ConditionalValueHolder.ID_Conditional)
-					.append(");")
-					.append(System.lineSeparator());
-				} else {
-					// huge workaround
-					// because otherwise there are missing values in ValuesCollector at runtime
-					// and the indices get wrong
-					// so we add a fake value so as to have the same number of collected values at runtime
-					// this value is "true", if SMT uses it, the resulting synthesize expression would still compile
-					snippet.append(ValuesCollector.class.getName() + ".collectTrue("+ConditionalValueHolder.ID_Conditional+");").append(System.lineSeparator());
+				createSnippetCollect(snippet, varName, var);
+			}
+		}
+		if ( statement instanceof CtIf ){
+			CtIf iff = (CtIf) statement;
+			CtExpression<?> condition = iff.getCondition();
+			List<CtExpression<?>> subConditions = condition.getElements(new TypeFilter<CtExpression<?>>(CtExpression.class));
+			for ( CtExpression<?> sub : subConditions ){
+				if ( !(sub instanceof CtLiteral<?>)){
+					createSnippetCollect(snippet, sub.toString(), sub);
 				}
 			}
 		}
+		
+		
 		if (snippet.length() > 0) {
 			CtStatement target = getStatement(statement);
 			target.insertBefore(factory.Code().createCodeSnippetStatement(snippet.toString()));
@@ -244,5 +247,22 @@ final class ConditionalLoggingInstrumenter implements Processor {
 		}
 	}
 
+	private void createSnippetCollect(StringBuilder snippet, String varName, CtTypedElement<?> element){
+		snippet.append(VALUES_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(", "+ConditionalValueHolder.ID_Conditional)
+		.append(");")
+		.append(System.lineSeparator());
+		if ( !element.getType().isPrimitive() ){
+			snippet.append(NULLNESS_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(", "+ConditionalValueHolder.ID_Conditional)
+			.append(");")
+			.append(System.lineSeparator());
+		} else {
+			// huge workaround
+			// because otherwise there are missing values in ValuesCollector at runtime
+			// and the indices get wrong
+			// so we add a fake value so as to have the same number of collected values at runtime
+			// this value is "true", if SMT uses it, the resulting synthesize expression would still compile
+			snippet.append(ValuesCollector.class.getName() + ".collectTrue("+ConditionalValueHolder.ID_Conditional+");").append(System.lineSeparator());
+		}
+	}
 	
 }
