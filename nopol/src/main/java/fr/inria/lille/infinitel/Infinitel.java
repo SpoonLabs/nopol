@@ -4,7 +4,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.Collection;
 
-import spoon.reflect.declaration.CtElement;
 import fr.inria.lille.commons.classes.TestClassesFinder;
 import fr.inria.lille.commons.collections.CollectionLibrary;
 import fr.inria.lille.commons.collections.ListLibrary;
@@ -23,8 +22,6 @@ public class Infinitel {
 	public Infinitel(File sourceFolder, Collection<URL> classFolders) {
 		this.sourceFolder = sourceFolder;
 		this.classFolders = classFolders;
-		Collection<CtElement> statements = (new fr.inria.lille.infinitel.LoopStatementsCollector(sourceFolder())).statements();
-		System.out.println(statements);
 	}
 
 	public void repair() {

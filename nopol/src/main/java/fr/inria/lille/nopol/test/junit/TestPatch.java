@@ -27,12 +27,11 @@ import org.slf4j.LoggerFactory;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
-import spoon.processing.ProcessingManager;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 import fr.inria.lille.commons.classes.CacheBasedClassLoader;
 import fr.inria.lille.commons.classes.ProvidedClassLoaderThreadFactory;
-import fr.inria.lille.nopol.SpoonClassLoader;
+import fr.inria.lille.commons.spoon.SpoonClassLoader;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.synth.BugKind;
 import fr.inria.lille.nopol.synth.DelegatingProcessor;
@@ -76,11 +75,10 @@ public final class TestPatch {
 	}
 	
 	public boolean passesAllTests(final Patch patch, final String[] testClasses) {
-		ProcessingManager processingManager = spooner.getProcessingManager();
 		logger.info("Applying patch: {}", patch);
 		File sourceFile = patch.getFile(sourceFolder);
-		processingManager.addProcessor(createProcessor(patch, sourceFile));
-		processingManager.addProcessor(new JavaOutputProcessor(new File(sourceFolder, SPOON_DIRECTORY), new DefaultJavaPrettyPrinter(spooner.getEnvironment())));
+		spooner.addProcessor(createProcessor(patch, sourceFile));
+		spooner.addProcessor(new JavaOutputProcessor(new File(sourceFolder, SPOON_DIRECTORY), new DefaultJavaPrettyPrinter(spooner.getEnvironment())));
 		try {
 			spooner.loadClass(patch.getRootClassName());
 		} catch (ClassNotFoundException e) {

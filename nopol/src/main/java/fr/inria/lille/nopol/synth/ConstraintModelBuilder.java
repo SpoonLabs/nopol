@@ -36,12 +36,11 @@ import org.slf4j.LoggerFactory;
 
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
-import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import fr.inria.lille.commons.classes.CacheBasedClassLoader;
 import fr.inria.lille.commons.classes.ProvidedClassLoaderThreadFactory;
+import fr.inria.lille.commons.spoon.SpoonClassLoader;
 import fr.inria.lille.nopol.SourceLocation;
-import fr.inria.lille.nopol.SpoonClassLoader;
 import fr.inria.lille.nopol.test.junit.JUnitRunner;
 
 /**
@@ -63,8 +62,7 @@ public final class ConstraintModelBuilder {
 	public ConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation, final Processor<?> processor) {
 		SpoonClassLoader scl = new SpoonClassLoader(sourceFolder);
 		scl.getEnvironment().setDebug(debug);
-		ProcessingManager processingManager = scl.getProcessingManager();
-		processingManager.addProcessor(processor);
+		scl.addProcessor(processor);
 		SpoonCompiler builder;
 		try {
 			builder = new Launcher().createCompiler(scl.getFactory());

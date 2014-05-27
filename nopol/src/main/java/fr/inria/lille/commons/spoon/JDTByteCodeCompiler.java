@@ -15,7 +15,7 @@
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
 
-package fr.inria.lille.nopol;
+package fr.inria.lille.commons.spoon;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

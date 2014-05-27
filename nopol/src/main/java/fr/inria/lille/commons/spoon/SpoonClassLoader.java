@@ -1,4 +1,5 @@
-package fr.inria.lille.nopol;
+package fr.inria.lille.commons.spoon;
+
 /*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
@@ -17,9 +18,8 @@ package fr.inria.lille.nopol;
  */
 
 
-
 import java.io.File;
-import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -31,8 +31,8 @@ import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
+import spoon.processing.Processor;
 import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -40,47 +40,50 @@ import spoon.support.DefaultCoreFactory;
 import spoon.support.RuntimeProcessingManager;
 import spoon.support.StandardEnvironment;
 import spoon.support.util.BasicCompilationUnit;
-
-import com.martiansoftware.jsap.JSAPException;
-
 import fr.inria.lille.commons.collections.MapLibrary;
 
-/**
- * A classloader that gets classes from Java source files and process them
- * before actually loading them.
+/** 
+ * A classloader that gets classes from Java source files and process them before actually loading them.
+ * As any other classloader, `SpoonClassLoader` can load a given class only once. This means that to use
+ * Spoon several times on the same sourceFolder you should instantiate a `SpoonClassLoader` each time.
  */
 public class SpoonClassLoader extends ClassLoader {
 
 	public SpoonClassLoader(File sourceFolder) {
 		super();
 		sourcePath = sourceFolder;
+		compiler = new JDTByteCodeCompiler();
+		environment = new StandardEnvironment();
+		classcache = new TreeMap<String, Class<?>>();
+		factory = new FactoryImpl(new DefaultCoreFactory(), getEnvironment());
+		manager = new RuntimeProcessingManager(getFactory());
+		buildModel();
 	}
 
-	public Factory getFactory() {
-		if (factory == null) {
-			factory = new FactoryImpl(getCoreFactory(), getEnvironment());
+	private void buildModel() {
+		try {
+			SpoonCompiler builder = new Launcher().createCompiler(getFactory());
+			builder.addInputSource(getSourcePath());
+			builder.addTemplateSource(getSourcePath());
+			builder.build();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+	}
+	
+	public Factory getFactory() {
 		return factory;
 	}
-
-	public CoreFactory getCoreFactory() {
-		if (coreFactory == null) {
-			coreFactory = new DefaultCoreFactory();
-		}
-		return coreFactory;
+	
+	public File getSourcePath() {
+		return sourcePath;
 	}
 	
 	public Environment getEnvironment() {
-		if (environment == null) {
-			environment = new StandardEnvironment();
-		}
 		return environment;
 	}
 
 	public JDTByteCodeCompiler getCompiler() {
-		if (compiler == null) {
-			compiler = new JDTByteCodeCompiler();
-		}
 		return compiler;
 	}
 	
@@ -88,17 +91,36 @@ public class SpoonClassLoader extends ClassLoader {
 		return classcache;
 	}
 	
-	public ProcessingManager getProcessingManager() {
-		if (processing == null) {
-			processing = new RuntimeProcessingManager(getFactory());
-		}
-		return processing;
+	protected ProcessingManager getProcessingManager() {
+		return manager;
 	}
 
+	public void addProcessors(Collection<Processor<?>> processors) {
+		for (Processor<?> processor : processors) {
+			addProcessor(processor);
+		}
+	}
+
+	public void addProcessor(Processor<?> processor) {
+		getProcessingManager().addProcessor(processor);
+	}
+	
+	public Collection<CtSimpleType> modelledClasses() {
+		return InstanceOfClassFilter.classDefinitionsIn(getFactory());
+	}
+	
+	public Map<String, Class<?>> loadModelledClasses() {
+		Map<String, Class<?>> loadedClasses = MapLibrary.newHashMap();
+		for (CtSimpleType modelledClass : modelledClasses()) {
+			loadedClasses.putAll(initializeClassFrom(modelledClass));
+		}
+		return loadedClasses;
+	}
+	
 	@Override
 	public Class<?> loadClass(final String name) throws ClassNotFoundException {
-		if (classcache.containsKey(name)) {
-			return classcache.get(name);
+		if (getClasscache().containsKey(name)) {
+			return getClasscache().get(name);
 		}
 		Class<?> clas = createClass(name);
 		if (clas == null) {
@@ -113,54 +135,28 @@ public class SpoonClassLoader extends ClassLoader {
 	private Class<?> createClass(final String qualifiedName) {
 		Class<?> targetClass = null;
 		try {
-			processJavaFile(qualifiedName);
-			targetClass = classcache.get(qualifiedName);
+			CtSimpleType<?> c = modelledClassFor(qualifiedName);
+			initializeClassFrom(c);
+			targetClass = getClasscache().get(qualifiedName);
 		} catch (Exception e) {
 
 		}
 		return targetClass;
 	}
-
-	private void processJavaFile(final String qualifiedName) throws Exception {
-		CtSimpleType<?> c = classFrom(qualifiedName);
-		processClass(c);
-		Map<String, Class<?>> compiledClasses = compiledClassesFrom(c);
-		MapLibrary.putAll(compiledClasses, classcache);
-	}
-
-	private CtSimpleType<?> classFrom(final String qualifiedName) throws ClassNotFoundException, JSAPException, IOException, Exception {
+	
+	private CtSimpleType<?> modelledClassFor(final String qualifiedName) throws ClassNotFoundException {
 		CtSimpleType<?> c = getFactory().Type().get(qualifiedName);
-		if (c == null) {
-			File f = resolve(qualifiedName);
-			if (f != null && f.exists()) {
-				SpoonCompiler builder = new Launcher().createCompiler(getFactory());
-				builder.addInputSource(sourcePath);
-				builder.addTemplateSource(sourcePath);
-				builder.build();
-				c = getFactory().Type().get(qualifiedName);
-			}
-		}
 		if (c == null) {
 			throw new ClassNotFoundException(qualifiedName);
 		}
 		return c;
 	}
-	
-	private File resolve(final String qualifiedName) {
-		File current = sourcePath;
-		String[] path = qualifiedName.split("[.]");
-		for (String p : path) {
-			for (File f : current.listFiles()) {
-				if (f.getName().equals(p) || f.getName().equals(p + ".java")) {
-					current = f;
-					continue;
-				}
-			}
-		}
-		if (!current.isDirectory()) {
-			return current;
-		}
-		return null;
+
+	private Map<String, Class<?>> initializeClassFrom(final CtSimpleType<?> c) {
+		processClass(c);
+		Map<String, Class<?>> compiledClasses = compiledClassesFrom(c);
+		getClasscache().putAll(compiledClasses);
+		return compiledClasses;
 	}
 	
 	private void processClass(CtSimpleType<?> c) {
@@ -201,11 +197,10 @@ public class SpoonClassLoader extends ClassLoader {
 		return addedClasses;
 	}
 
-	private Factory factory;
 	private File sourcePath;
-	private CoreFactory coreFactory;
+	private Factory factory;
 	private Environment environment;
+	private ProcessingManager manager;
 	private JDTByteCodeCompiler compiler;
-	private ProcessingManager processing;
-	private final Map<String, Class<?>> classcache = new TreeMap<String, Class<?>>();
+	private final Map<String, Class<?>> classcache;
 }
