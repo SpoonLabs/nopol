@@ -15,10 +15,15 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import fr.inria.lille.nopol.synth.ConditionalValueHolder;
+
 public class ValuesCollectorTest {
 
 	@Before
 	public void setUp() {
+		ConditionalValueHolder.ID_Conditional++;
+		ConditionalValueHolder.createEnableConditionalTab();
+		ConditionalValueHolder.enableNextCondition();
 		ValuesCollector.clear();
 	}
 
@@ -34,8 +39,8 @@ public class ValuesCollectorTest {
 		Collection<?> value = asList(1, 2, 3);
 
 		// WHEN
-		ValuesCollector.collectValue(name, value);
-		ValuesCollector.collectNullness(name, value);
+		ValuesCollector.collectValue(name, value, 0);
+		ValuesCollector.collectNullness(name, value, 0);
 		
 		
 		// THEN
@@ -63,8 +68,8 @@ public class ValuesCollectorTest {
 		Map<?, ?> value = Collections.singletonMap("key", "value");
 
 		// WHEN
-		ValuesCollector.collectValue(name, value);
-		ValuesCollector.collectNullness(name, value);
+		ValuesCollector.collectValue(name, value, 0);
+		ValuesCollector.collectNullness(name, value, 0);
 		
 		// THEN
 		Iterator<Entry<String, Object>> iterator = ValuesCollector.getValues().iterator();
@@ -91,8 +96,8 @@ public class ValuesCollectorTest {
 		String value = "Take nothing on its looks; take everything on evidence. There's no better rule.";
 
 		// WHEN
-		ValuesCollector.collectValue(name, value);
-		ValuesCollector.collectNullness(name, value);
+		ValuesCollector.collectValue(name, value, 0);
+		ValuesCollector.collectNullness(name, value, 0);
 
 		
 		// THEN
@@ -120,8 +125,8 @@ public class ValuesCollectorTest {
 		int[] value = { 1, 2, 3 };
 
 		// WHEN
-		ValuesCollector.collectValue(name, value);
-		ValuesCollector.collectNullness(name, value);
+		ValuesCollector.collectValue(name, value, 0);
+		ValuesCollector.collectNullness(name, value, 0);
 
 		// THEN
 		Iterator<Entry<String, Object>> iterator = ValuesCollector.getValues().iterator();
