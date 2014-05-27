@@ -5,11 +5,11 @@ import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class MyClassLoader extends URLClassLoader {
+public class CacheBasedClassLoader extends URLClassLoader {
 
 	private Map<String, Class<?>> classcache = new TreeMap<String, Class<?>>();
 
-	public MyClassLoader(URL[] urls, Map<String, Class<?>> classcache){
+	public CacheBasedClassLoader(URL[] urls, Map<String, Class<?>> classcache){
 		super(urls);
 		this.classcache = classcache;
 	}

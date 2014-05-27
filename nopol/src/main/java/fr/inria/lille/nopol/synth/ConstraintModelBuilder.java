@@ -38,7 +38,7 @@ import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
-import fr.inria.lille.commons.classes.MyClassLoader;
+import fr.inria.lille.commons.classes.CacheBasedClassLoader;
 import fr.inria.lille.commons.classes.ProvidedClassLoaderThreadFactory;
 import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.SpoonClassLoader;
@@ -83,7 +83,7 @@ public final class ConstraintModelBuilder {
 	 */
 	public InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
 		InputOutputValues model = new InputOutputValues();
-		ClassLoader cl = new MyClassLoader(classpath, ((SpoonClassLoader)(spooner)).getClasscache());		
+		ClassLoader cl = new CacheBasedClassLoader(classpath, ((SpoonClassLoader)(spooner)).getClasscache());		
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
 		try {
 			Result firstResult = executor.submit(

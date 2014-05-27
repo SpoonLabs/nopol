@@ -30,7 +30,7 @@ import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
-import fr.inria.lille.commons.classes.MyClassLoader;
+import fr.inria.lille.commons.classes.CacheBasedClassLoader;
 import fr.inria.lille.commons.classes.ProvidedClassLoaderThreadFactory;
 import fr.inria.lille.nopol.SpoonClassLoader;
 import fr.inria.lille.nopol.patch.Patch;
@@ -107,7 +107,7 @@ public final class TestPatch {
 	}
 
 	boolean wasSuccessful(final String[] testClasses) {
-		ClassLoader cl = new MyClassLoader(classpath, spooner.getClasscache());
+		ClassLoader cl = new CacheBasedClassLoader(classpath, spooner.getClasscache());
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
 		Result result;
 		try {
