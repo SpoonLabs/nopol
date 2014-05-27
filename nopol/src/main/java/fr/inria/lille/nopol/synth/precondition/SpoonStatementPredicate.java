@@ -37,6 +37,10 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 	@Override
 	public boolean apply(final CtElement input) {
 		CtElement parent = input.getParent();
+		if ( parent == null ){
+			return false;
+		}
+		boolean isConstructorCall = input.toString().contains("super(") || input.toString().contains("this("); // big workaround in order to catch super() call or this() in constructor, could be more efficient
 		boolean isCtStamement = input instanceof CtStatement;
 		boolean isCtReturn = input instanceof CtReturn;
 		boolean isInsideIf = parent.getParent() instanceof CtIf; // Checking parent isn't enough, parent will be CtBlock and grandpa will be CtIf
@@ -50,7 +54,7 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 				// cannot insert code before '{}', for example would try to add code between 'Constructor()' and '{}'
 				// input instanceof CtBlock ||
 
-				// cannot insert a conditional before 'return', it won't compile. Or it need to be inside If
+				// cannot insert a conditional before 'return', it won't compile. TODO : Or it need to be inside If with no return in the other branch 
 				&& !(isCtReturn && !( isInsideIf ))
 				// cannot insert a conditional before a variable declaration, it won't compile if the variable is used
 				// later on.
@@ -59,7 +63,9 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 				// target, CtStatementList<?> statements)
 				&& isInsideIfLoopCaseBlock
 				// cannot insert if inside update statement in for loop declaration
-				&& !isInsideForUpdate;
+				&& !isInsideForUpdate
+				// cannot insert if before super() call in constructor
+				&& !isConstructorCall;
 		return  result;
 	}
 }
