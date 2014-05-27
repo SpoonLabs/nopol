@@ -111,7 +111,7 @@ public final class TestPatch {
 		} catch (ExecutionException e) {
 			throw new RuntimeException(e);
 		}
-		executor.shutdown();
+		executor.shutdownNow();
 		return result.wasSuccessful();
 	}
 }
