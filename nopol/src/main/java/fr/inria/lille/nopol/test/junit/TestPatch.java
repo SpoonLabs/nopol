@@ -58,18 +58,8 @@ public final class TestPatch {
 	public TestPatch(final File sourceFolder, final URL[] classpath) {
 		this.sourceFolder = sourceFolder;
 		this.classpath = classpath;
-		SpoonClassLoader scl = new SpoonClassLoader();
-		scl.setSourcePath(sourceFolder);
-		scl.getEnvironment().setDebug(debug);
-		SpoonCompiler builder;
-		try {
-			builder = new Launcher().createCompiler(scl.getFactory());
-			builder.addInputSource(sourceFolder);
-		    builder.build();
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
-		spooner = scl;
+		this.spooner = new SpoonClassLoader();
+		
 	}
 
 	public static String getGeneratedPatchDirectorie(){
@@ -83,8 +73,12 @@ public final class TestPatch {
 		processingManager.addProcessor(createProcessor(patch, sourceFile));
 		processingManager.addProcessor(new JavaOutputProcessor(new File(sourceFolder, SPOON_DIRECTORY), new DefaultJavaPrettyPrinter(spooner.getEnvironment())));
 		try {
+			SpoonCompiler builder;
+			builder = new Launcher().createCompiler(spooner.getFactory());
+			builder.addInputSource(sourceFolder);
+			builder.build();
 			spooner.loadClass(patch.getRootClassName());
-		} catch (ClassNotFoundException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		return wasSuccessful(testClasses);

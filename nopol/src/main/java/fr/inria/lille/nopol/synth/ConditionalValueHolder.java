@@ -22,18 +22,61 @@ package fr.inria.lille.nopol.synth;
 public final class ConditionalValueHolder {
 
 	public static final String VARIABLE_NAME = ConditionalValueHolder.class.getName() + '.' + "booleanValue";
-
+	public static final String ENABLE_CONDITIONAL = ConditionalValueHolder.class.getName() + '.' + "enableConditional[";
+	public static int ID_Conditional = 0;
+	
+	
+	
 	/**
 	 * Optimist...
 	 */
 	public static volatile boolean booleanValue = true;
 
+	public static boolean enableConditional[];
+
+	
 	public static void flip() {
 		booleanValue = !booleanValue;
 	}
 
+	public static void createEnableConditionalTab() {
+		enableConditional = new boolean[ID_Conditional];
+		for ( int i = 0 ; i < ID_Conditional ; i++ ){
+			enableConditional[i] = false;
+		}
+	}
+
+	public static void enableNextCondition() {
+		for ( int i = 0 ; i < enableConditional.length ; i++ ){
+			if ( enableConditional[i] && i < enableConditional.length-1 ){
+				enableConditional[i] = false;
+				enableConditional[i+1] = true;
+				return;
+			}
+		}
+		enableConditional[0] = true;
+	}
+	
+	public static void disableAllCondition() {
+		for ( int i = 0 ; i < enableConditional.length ; i++ ){
+				enableConditional[i] = false;
+		}
+	}
+	
+	public static int getEnableID(){
+		for ( int i = 0 ; i < enableConditional.length ; i++ ){
+			if ( enableConditional[i] ){
+				return i;
+			}
+		}
+		return -1;
+	}
+	
 	/**
 	 * 
 	 */
 	private ConditionalValueHolder() {}
+
+
+
 }

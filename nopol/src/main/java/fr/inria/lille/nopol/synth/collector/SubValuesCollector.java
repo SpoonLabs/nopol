@@ -28,5 +28,5 @@ interface SubValuesCollector {
 	 * @param value
 	 * @param values
 	 */
-	void addSubValues(String name, Object value);
+	void addSubValues(String name, Object value, int mapID);
 }

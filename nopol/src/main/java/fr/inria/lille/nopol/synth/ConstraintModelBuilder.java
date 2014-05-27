@@ -34,8 +34,6 @@ import org.junit.runner.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import fr.inria.lille.nopol.MyClassLoader;
@@ -56,43 +54,53 @@ public final class ConstraintModelBuilder {
 	private static final long TIMEOUT_IN_SECONDS = MINUTES.toSeconds(5L);
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private final boolean debug = logger.isDebugEnabled();
-	private final ClassLoader spooner;
+	private final SpoonClassLoader spooner;
 	private boolean viablePatch;
+	private final SourceLocation sourceLocation;
+	private final BugKind type;
+	private final int mapID;
 	
 	public ConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation,
-			final Processor<?> processor) {
-		SpoonClassLoader scl = new SpoonClassLoader();
-		scl.getEnvironment().setDebug(debug);
+			final Processor<?> processor, SpoonClassLoader scl, final BugKind type) {
+		this.sourceLocation = sourceLocation;
 		ProcessingManager processingManager = scl.getProcessingManager();
 		processingManager.addProcessor(processor);
-		SpoonCompiler builder;
-		try {
-			builder = new Launcher().createCompiler(scl.getFactory());
-			builder.addInputSource(sourceFolder);
-			builder.build();
-			scl.loadClass(sourceLocation.getRootClassName());
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
-		spooner = scl;
+		processingManager.process();
+		mapID = ConditionalValueHolder.ID_Conditional;
+		ConditionalValueHolder.ID_Conditional++;
+		this.type = type;
+		
+		this.spooner = scl;
+		
 	}
 
 	/**
 	 * @see fr.inria.lille.nopol.synth.ConstraintModelBuilder#buildFor(java.net.URL[], java.lang.String[])
 	 */
 	public InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
+		
+		try {
+			spooner.loadClass(sourceLocation.getRootClassName());
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		
+		if ( type == BugKind.CONDITIONAL || type == BugKind.PRECONDITION){
+			ConditionalValueHolder.enableNextCondition();
+		}
+		
+		
 		InputOutputValues model = new InputOutputValues();
-		ClassLoader cl = new MyClassLoader(classpath, ((SpoonClassLoader)(spooner)).getClasscache());		
+		ClassLoader cl = new MyClassLoader(classpath, spooner.getClasscache());		
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
 		try {
 			Result firstResult = executor.submit(
 					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model,
-							ConditionalValueHolder.booleanValue))).get(TIMEOUT_IN_SECONDS, SECONDS);
+							ConditionalValueHolder.booleanValue, mapID))).get(TIMEOUT_IN_SECONDS, SECONDS);
 			ConditionalValueHolder.flip();
 			Result secondResult = executor.submit(
 					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model,
-							ConditionalValueHolder.booleanValue))).get(TIMEOUT_IN_SECONDS, SECONDS);
+							ConditionalValueHolder.booleanValue, mapID))).get(TIMEOUT_IN_SECONDS, SECONDS);
 			if ( firstResult.getFailureCount()==0 || secondResult.getFailureCount() == 0){
 				/*
 				 * Return empty model because we don't want "true" or "false" as a solution

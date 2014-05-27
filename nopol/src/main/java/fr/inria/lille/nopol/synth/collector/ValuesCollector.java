@@ -20,6 +20,7 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableSet;
 
+import fr.inria.lille.nopol.synth.ConditionalValueHolder;
 import fr.inria.lille.nopol.synth.smt.model.Type;
 
 /**
@@ -28,31 +29,40 @@ import fr.inria.lille.nopol.synth.smt.model.Type;
  */
 public final class ValuesCollector {
 
-	private static final Map<String, Object> VALUES = new HashMap<String, Object>();
+	private static final Map<String, Object> VALUES = new HashMap<String,Object>();
 
-	public static void collectValue(final String name, final Object value) {
-		if (Type.isOfAKnownType(value)) {
-			addValue(name, value);
+
+	
+	public static void collectValue(final String name, final Object value, int mapID) {
+
+		if ( ConditionalValueHolder.getEnableID() == mapID ){
+			if (Type.isOfAKnownType(value)) {
+				addValue(name, value, mapID);
+			}
 		}
 	}
 	
 	/** workaround */
-	public static void collectTrue() {
-			addValue("true", true);
+	public static void collectTrue(int mapID) {
+		if ( ConditionalValueHolder.getEnableID() == mapID ){
+			addValue("true", true, mapID);
+		}
 	}
 
-	public static void collectNullness(final String name, final Object value){
-		boolean isNotNull = null != value;
-		addValue(name + "!=null", isNotNull);
-	
-		if (isNotNull) {
-			addSubValues(name, value);
+	public static void collectNullness(final String name, final Object value, int mapID){
+		if ( ConditionalValueHolder.getEnableID() == mapID ){
+			boolean isNotNull = null != value;
+			addValue(name + "!=null", isNotNull, mapID);
+		
+			if (isNotNull) {
+				addSubValues(name, value, mapID);
+			}
 		}
 	}
 	
 
-	private static void addSubValues(final String name, final Object value) {
-		SubValuesCollectors.process(name, value);
+	private static void addSubValues(final String name, final Object value, int mapID) {
+			SubValuesCollectors.process(name, value, mapID);
 	}
 
 	public static void clear() {
@@ -72,7 +82,9 @@ public final class ValuesCollector {
 	 */
 	private ValuesCollector() {}
 
-	public static Object addValue(final String name, final Object value) {
-		return VALUES.put(name, value);
+	public static void addValue(final String name, final Object value, int mapID) {
+		if ( ConditionalValueHolder.getEnableID() == mapID ){
+			VALUES.put(name, value);
+		}
 	}
 }

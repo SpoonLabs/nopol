@@ -22,8 +22,8 @@ enum SubValuesCollectors implements SubValuesCollector {
 		 * @see fr.inria.lille.nopol.synth.collector.SubValuesCollector#addSubValues(java.lang.String, java.lang.Object)
 		 */
 		@Override
-		public void addSubValues(final String name, final Object value) {
-			ValuesCollector.addValue(name + ".length", Array.getLength(value));
+		public void addSubValues(final String name, final Object value, int mapID) {
+			ValuesCollector.addValue(name + ".length", Array.getLength(value), mapID);
 		}
 
 		@Override
@@ -38,10 +38,10 @@ enum SubValuesCollectors implements SubValuesCollector {
 		 * @see fr.inria.lille.nopol.synth.collector.SubValuesCollector#addSubValues(java.lang.String, java.lang.Object)
 		 */
 		@Override
-		public void addSubValues(final String name, final Object value) {
+		public void addSubValues(final String name, final Object value, int mapID) {
 			Collection<?> collection = (Collection<?>) value;
-			ValuesCollector.addValue(name + ".size()", collection.size());
-			ValuesCollector.addValue(name + ".isEmpty()", collection.isEmpty());
+			ValuesCollector.addValue(name + ".size()", collection.size(), mapID);
+			ValuesCollector.addValue(name + ".isEmpty()", collection.isEmpty(), mapID);
 		}
 
 		@Override
@@ -55,10 +55,10 @@ enum SubValuesCollectors implements SubValuesCollector {
 		 * @see fr.inria.lille.nopol.synth.collector.SubValuesCollector#addSubValues(java.lang.String, java.lang.Object)
 		 */
 		@Override
-		public void addSubValues(final String name, final Object value) {
+		public void addSubValues(final String name, final Object value, int mapID) {
 			CharSequence string = (CharSequence) value;
-			ValuesCollector.addValue(name + ".length()", string.length());
-			ValuesCollector.addValue(name + ".length()==0", string.length() == 0);
+			ValuesCollector.addValue(name + ".length()", string.length(), mapID);
+			ValuesCollector.addValue(name + ".length()==0", string.length() == 0, mapID);
 		}
 
 		@Override
@@ -73,10 +73,10 @@ enum SubValuesCollectors implements SubValuesCollector {
 		 * @see fr.inria.lille.nopol.synth.collector.SubValuesCollector#addSubValues(java.lang.String, java.lang.Object)
 		 */
 		@Override
-		public void addSubValues(final String name, final Object value) {
+		public void addSubValues(final String name, final Object value, int mapID) {
 			Map<?, ?> map = (Map<?, ?>) value;
-			ValuesCollector.addValue(name + ".size()", map.size());
-			ValuesCollector.addValue(name + ".isEmpty()", map.isEmpty());
+			ValuesCollector.addValue(name + ".size()", map.size(),mapID);
+			ValuesCollector.addValue(name + ".isEmpty()", map.isEmpty(),mapID);
 		}
 
 		@Override
@@ -91,9 +91,9 @@ enum SubValuesCollectors implements SubValuesCollector {
 		 * @see fr.inria.lille.nopol.synth.collector.SubValuesCollector#addSubValues(java.lang.String, java.lang.Object)
 		 */
 		@Override
-		public void addSubValues(final String name, final Object value) {
+		public void addSubValues(final String name, final Object value, int mapID) {
 			Iterator<?> iterator = (Iterator<?>) value;
-			ValuesCollector.addValue(name + ".hasNext()", iterator.hasNext());
+			ValuesCollector.addValue(name + ".hasNext()", iterator.hasNext(), mapID);
 		}
 
 		@Override
@@ -108,9 +108,9 @@ enum SubValuesCollectors implements SubValuesCollector {
 		 * @see fr.inria.lille.nopol.synth.collector.SubValuesCollector#addSubValues(java.lang.String, java.lang.Object)
 		 */
 		@Override
-		public void addSubValues(final String name, final Object value) {
+		public void addSubValues(final String name, final Object value, int mapID) {
 			Enumeration<?> iterator = (Enumeration<?>) value;
-			ValuesCollector.addValue(name + ".hasMoreElements()", iterator.hasMoreElements());
+			ValuesCollector.addValue(name + ".hasMoreElements()", iterator.hasMoreElements(), mapID);
 		}
 
 		@Override
@@ -125,10 +125,10 @@ enum SubValuesCollectors implements SubValuesCollector {
 		 * @see fr.inria.lille.nopol.synth.collector.SubValuesCollector#addSubValues(java.lang.String, java.lang.Object)
 		 */
 		@Override
-		public void addSubValues(final String name, final Object value) {
+		public void addSubValues(final String name, final Object value, int mapID) {
 			Dictionary<?, ?> dictionary = (Dictionary<?, ?>) value;
-			ValuesCollector.addValue(name + ".size()", dictionary.size());
-			ValuesCollector.addValue(name + ".isEmpty()", dictionary.isEmpty());
+			ValuesCollector.addValue(name + ".size()", dictionary.size(),mapID);
+			ValuesCollector.addValue(name + ".isEmpty()", dictionary.isEmpty(),mapID);
 		}
 
 		@Override
@@ -140,7 +140,7 @@ enum SubValuesCollectors implements SubValuesCollector {
 	NO_OP_COLLECTOR {
 
 		@Override
-		public void addSubValues(final String name, final Object value) {/* NO-OP */}
+		public void addSubValues(final String name, final Object value, int mapID) {/* NO-OP */}
 
 		@Override
 		boolean handles(final Object object) {
@@ -148,10 +148,10 @@ enum SubValuesCollectors implements SubValuesCollector {
 		}
 	};
 
-	static void process(final String name, final Object value) {
+	static void process(final String name, final Object value, int mapID) {
 		for (SubValuesCollectors collector : values()) {
 			if (collector.handles(value)) {
-				collector.addSubValues(name, value);
+				collector.addSubValues(name, value,mapID);
 			}
 		}
 	}

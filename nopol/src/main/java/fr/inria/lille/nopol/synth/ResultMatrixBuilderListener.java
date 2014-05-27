@@ -16,13 +16,16 @@ final class ResultMatrixBuilderListener extends RunListener {
 	boolean success = true;
 
 	final boolean value;
+	
+	int mapID;
 
 	/**
 	 * @param matrix
 	 */
-	ResultMatrixBuilderListener(final InputOutputValues matrix, final boolean value) {
+	ResultMatrixBuilderListener(final InputOutputValues matrix, final boolean value, int mapID) {
 		this.matrix = matrix;
 		this.value = value;
+		this.mapID = mapID;
 	}
 
 	private void cleanUp() {

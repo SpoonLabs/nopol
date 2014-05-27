@@ -23,6 +23,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
+import fr.inria.lille.nopol.synth.ConditionalValueHolder;
 import fr.inria.lille.nopol.synth.Processor;
 
 /**
@@ -48,7 +49,14 @@ public final class ConditionalAdder implements Processor {
 		CtElement parent = element.getParent();
 		CtIf newIf = factory.Core().createIf();
 		CtCodeSnippetExpression<Boolean> condition = factory.Core().createCodeSnippetExpression();
-		condition.setValue(snippet);
+		
+		if ( snippet.equals(ConditionalValueHolder.VARIABLE_NAME)){
+			// Instrumenting
+			condition.setValue("!"+ConditionalValueHolder.ENABLE_CONDITIONAL+ConditionalValueHolder.ID_Conditional+"] || ("+snippet+" && "+ConditionalValueHolder.ENABLE_CONDITIONAL+ConditionalValueHolder.ID_Conditional+"])");
+		}else{
+			// Test patch found
+			condition.setValue(snippet);
+		}
 		newIf.setCondition(condition);
 		// Fix : warning: ignoring inconsistent parent for [CtElem1] ( [CtElem2] != [CtElem3] )
 		newIf.setParent(parent);

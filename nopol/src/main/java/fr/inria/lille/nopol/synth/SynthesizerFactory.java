@@ -22,14 +22,11 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spoon.Launcher;
-import spoon.compiler.Environment;
-import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.factory.Factory;
 import spoon.support.QueueProcessingManager;
-import spoon.support.StandardEnvironment;
 import fr.inria.lille.nopol.SourceLocation;
+import fr.inria.lille.nopol.SpoonClassLoader;
 import fr.inria.lille.nopol.synth.conditional.ConditionalReplacer;
 import fr.inria.lille.nopol.synth.conditional.SpoonConditionalPredicate;
 import fr.inria.lille.nopol.synth.precondition.ConditionalAdder;
@@ -44,13 +41,15 @@ public final class SynthesizerFactory {
 	private final File sourceFolder;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final boolean debug = logger.isDebugEnabled();
+	private final SpoonClassLoader scl;
 	private static int nbStatementsAnalysed = 0;
 
 	/**
 	 * 
 	 */
-	public SynthesizerFactory(final File sourceFolder) {
+	public SynthesizerFactory(final File sourceFolder, final SpoonClassLoader scl) {
 		this.sourceFolder = sourceFolder;
+		this.scl = scl;
 	}
 
 	public Synthesizer getFor(final SourceLocation statement) {
@@ -62,7 +61,7 @@ public final class SynthesizerFactory {
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
 			processor.addProcessor(new ConditionalReplacer(ConditionalValueHolder.VARIABLE_NAME));
 			processor.addProcessor(new ConditionalLoggingInstrumenter());
-		break;
+			break;
 		case PRECONDITION:
 			processor = new DelegatingProcessor(SpoonStatementPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
@@ -74,34 +73,16 @@ public final class SynthesizerFactory {
 			logger.debug("No synthetizer found for {}.", statement);
 			return NO_OP_SYNTHESIZER;
 		}
-
 		nbStatementsAnalysed++;
-		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, statement, processor);
+		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, statement, processor, scl, type);
 		return new DefaultSynthesizer(constraintModelBuilder, statement, type, sourceFolder);
 	}
 
 	private BugKind getType(final SourceLocation rc) {
-		Launcher l = null;
-		try {
-			l = new Launcher();
-		} catch (Exception e){
-			throw new IllegalStateException(e);
-		}
-		Environment env = new StandardEnvironment();
-		env.setDebug(debug);
-		Factory factory = l.createFactory(env);
+		Factory factory = scl.getFactory();
 		ProcessingManager processing = new QueueProcessingManager(factory);
 		BugKindDetector detector = new BugKindDetector(rc.getSourceFile(sourceFolder), rc.getLineNumber());
 		processing.addProcessor(detector);
-		SpoonCompiler builder;
-		try {
-			builder = l.createCompiler(factory);
-			builder.addInputSource(sourceFolder);
-			builder.addTemplateSource(sourceFolder);
-			builder.build();
-		}  catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 		processing.process();
 		return detector.getType();
 	}

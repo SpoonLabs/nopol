@@ -113,7 +113,6 @@ final class ConditionalLoggingInstrumenter implements Processor {
 	 * 
 	 */
 	private Collection<CtVariable<?>> _getVariablesInScope(final CtElement el, final Set<CtElement> children) {
-
 		final Set<CtVariable<?>> variables = new HashSet<>();
 
 		// we add all variables in the scope of el
@@ -221,10 +220,12 @@ final class ConditionalLoggingInstrumenter implements Processor {
 					}
 				}
 				String varName = var.getSimpleName();
-				snippet.append(VALUES_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(");")
+				snippet.append(VALUES_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(", "+ConditionalValueHolder.ID_Conditional)
+				.append(");")
 				.append(System.lineSeparator());
 				if ( !var.getType().isPrimitive() ){
-					snippet.append(NULLNESS_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(");")
+					snippet.append(NULLNESS_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(", "+ConditionalValueHolder.ID_Conditional)
+					.append(");")
 					.append(System.lineSeparator());
 				} else {
 					// huge workaround
@@ -232,7 +233,7 @@ final class ConditionalLoggingInstrumenter implements Processor {
 					// and the indices get wrong
 					// so we add a fake value so as to have the same number of collected values at runtime
 					// this value is "true", if SMT uses it, the resulting synthesize expression would still compile
-					snippet.append(ValuesCollector.class.getName() + ".collectTrue();").append(System.lineSeparator());
+					snippet.append(ValuesCollector.class.getName() + ".collectTrue("+ConditionalValueHolder.ID_Conditional+");").append(System.lineSeparator());
 				}
 			}
 		}

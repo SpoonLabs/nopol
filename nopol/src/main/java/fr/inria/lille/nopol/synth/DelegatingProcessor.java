@@ -60,7 +60,10 @@ public final class DelegatingProcessor extends AbstractProcessor<CtElement> {
 		SourcePosition position = candidate.getPosition();
 		File f1;
 		File f2;
-		boolean isNotNullPosition =	position != null; 
+		boolean isNotNullPosition =	position != null;
+		if ( !isNotNullPosition ){
+			return false;
+		}
 		boolean isPraticable =	this.predicate.apply(candidate);
 		boolean isSameLine =	position.getLine() == this.line;
 		boolean isSameFile = false;

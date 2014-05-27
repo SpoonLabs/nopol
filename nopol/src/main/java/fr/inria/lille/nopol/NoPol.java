@@ -27,9 +27,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spoon.Launcher;
+import spoon.compiler.SpoonCompiler;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.sps.SuspiciousStatement;
 import fr.inria.lille.nopol.sps.gzoltar.GZoltarSuspiciousProgramStatements;
+import fr.inria.lille.nopol.synth.ConditionalValueHolder;
+import fr.inria.lille.nopol.synth.Synthesizer;
 import fr.inria.lille.nopol.synth.SynthesizerFactory;
 import fr.inria.lille.nopol.test.junit.TestClassesFinder;
 import fr.inria.lille.nopol.test.junit.TestPatch;
@@ -47,6 +51,8 @@ final class NoPol {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final Logger patchLogger = LoggerFactory.getLogger("patch");
 	private static List<Patch> patchList = new ArrayList<>();
+	private final SpoonClassLoader scl;
+	private final File sourceFolder;
 
 	/**
 	 * @param rootPackage
@@ -54,10 +60,12 @@ final class NoPol {
 	 * @param classpath
 	 */
 	public NoPol(final File sourceFolder, final URL[] classpath) {
+		scl = new SpoonClassLoader();
 		this.classpath = classpath;
 		gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath);
-		synthetizerFactory = new SynthesizerFactory(sourceFolder);
+		synthetizerFactory = new SynthesizerFactory(sourceFolder, scl);
 		testPatch = new TestPatch(sourceFolder, classpath);
+		this.sourceFolder = sourceFolder;
 	}
 
 	public List<Patch> build() {
@@ -75,30 +83,49 @@ final class NoPol {
 			System.out.println("No suspicious statements found.");
 		}
 
-		for (SuspiciousStatement statement : statements) {
-				logger.debug("Analysing {}", statement);
-				Patch newRepair = buildPatch(testClasses, statement);
-				if (isOk(newRepair, testClasses)) {
-					patchList.add(newRepair);
-				}
-		
-		}
-		return patchList;
-	}
-
-	/**
-	 * @param testClasses
-	 * @param statement
-	 * @return
-	 */
-	private Patch buildPatch(final String[] testClasses, final SuspiciousStatement statement) {
+		/*
+		 * Build the model only once at the beginning
+		 */
 		try {
-			return synthetizerFactory.getFor(statement.getSourceLocation()).buildPatch(classpath,
-					testClasses);
-		} catch (SourceFileNotFoundException e) {
-			logger.info(e.getMessage());
-			return NO_PATCH;
+			SpoonCompiler builder;
+			builder = new Launcher().createCompiler(scl.getFactory());
+			builder.addInputSource(sourceFolder);
+			builder.build();
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
+		}		
+		
+		/*
+		 * Apply spoon modification on each statement
+		 */
+		List<Synthesizer> generatedSynthesizer = new ArrayList<>();
+		for (SuspiciousStatement statement : statements) {
+			if ( !statement.getSourceLocation().getContainingClassName().contains("Test")){ // Avoid modification on test cases
+				logger.debug("Analysing {}", statement);
+				Synthesizer synth = synthetizerFactory.getFor(statement.getSourceLocation());
+				generatedSynthesizer.add(synth);					
+			}
+
 		}
+		/*
+		 * Create the static array
+		 */
+		ConditionalValueHolder.createEnableConditionalTab();
+
+
+		
+		/*
+		 * Try to synthesis patch
+		 */
+		for ( Synthesizer synth : generatedSynthesizer ){
+			Patch newRepair = synth.buildPatch(classpath, testClasses);
+			if (isOk(newRepair, testClasses)) {
+				patchList.add(newRepair);
+			}
+		}
+		
+		
+		return patchList;
 	}
 
 	private boolean isOk(final Patch newRepair, final String[] testClasses) {
