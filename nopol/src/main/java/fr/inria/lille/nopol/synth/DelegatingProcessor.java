@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.CtBlock;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 
@@ -57,6 +58,20 @@ public final class DelegatingProcessor extends AbstractProcessor<CtElement> {
 	 */
 	@Override
 	public boolean isToBeProcessed(final CtElement candidate) {
+		/*
+		 * Avoiding CtBlock because of weird behaviour of GZoltar, can return CtBlock line number
+		 * eg : 
+		 * 1-	if ( condition ){
+		 * 2-		assignment
+		 * 3-	} else {
+		 * 4-		assignment
+		 * 5-	}
+		 * 
+		 * GZoltar can return the line number 3
+		 */
+		if ( candidate instanceof CtBlock<?>){
+			return false;
+		}
 		SourcePosition position = candidate.getPosition();
 		File f1;
 		File f2;
