@@ -15,6 +15,9 @@
  */
 package fr.inria.lille.nopol.synth.precondition;
 
+import java.util.List;
+
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCase;
 import spoon.reflect.code.CtFor;
@@ -23,7 +26,10 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.reference.CtVariableReference;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import com.google.common.base.Predicate;
 
@@ -48,13 +54,79 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 		boolean isInsideIfLoopCaseBlock = (parent instanceof CtIf || parent instanceof CtLoop || parent instanceof CtCase || parent instanceof CtBlock);
 		boolean isInsideForUpdate = parent instanceof CtFor ? ((CtFor)(parent)).getForUpdate().contains(input) : false ;
 		
+		/*
+		 * Check if the statement is a Return, if true, check for no existing return in the other branch otherwise it won't compile
+		 */
+		if ( isInsideIf && isCtReturn){
+			CtIf iff = (CtIf) parent.getParent();
+			if ( iff.getElseStatement() != null ){
+				List<CtReturn<?>> thenReturn = iff.getThenStatement().getElements(new TypeFilter<CtReturn<?>>(CtReturn.class));
+				List<CtReturn<?>> elseReturn = iff.getElseStatement().getElements(new TypeFilter<CtReturn<?>>(CtReturn.class));
+				if ( thenReturn.contains(input) && !elseReturn.isEmpty() ){
+					return false;
+				}else if ( elseReturn.contains(input) && !thenReturn.isEmpty() ){
+					return false;
+				}
+			}
+		}
+		/*
+		 * Check if the variable assigned was previously initiliaze, if not, check for no assignment in the other branch, otherwise it won't compile
+		 */
+		if ( isInsideIf && (input instanceof CtAssignment<? , ?>)){
+			CtAssignment<?, ?> assignment = (CtAssignment<?, ?>) input;
+			if ( assignment.getAssigned() instanceof CtVariableAccess<?> ){
+				CtVariableAccess<?> varAccess = (CtVariableAccess<?>) assignment.getAssigned();
+				CtVariableReference<?> var = varAccess.getVariable();
+				if (var.getDeclaration() != null) {
+					if (var.getDeclaration().getDefaultExpression() == null) {
+						/*
+						 * variable isn't initialize before this statement
+						 */
+						CtIf iff = (CtIf) parent.getParent();
+						if (iff.getElseStatement() != null) {
+							List<CtAssignment<?, ?>> thenAssignment = iff.getThenStatement().getElements(new TypeFilter<CtAssignment<?, ?>>(CtAssignment.class));
+							List<CtAssignment<?, ?>> elseAssignment = iff.getElseStatement().getElements(new TypeFilter<CtAssignment<?, ?>>(CtAssignment.class));
+							if (thenAssignment.contains(assignment)&& !elseAssignment.isEmpty()) {
+								for (CtAssignment<?, ?> tmp : elseAssignment) {
+									if (tmp.getAssigned() instanceof CtVariableAccess<?>) {
+										if (((CtVariableAccess<?>) (tmp.getAssigned())).getVariable().equals(var)) {
+											/*
+											 * variable is also assign in the
+											 * other branch
+											 */
+											return false;
+										}
+									}
+								}
+							} else if (elseAssignment.contains(assignment)&& !thenAssignment.isEmpty()) {
+								for (CtAssignment<?, ?> tmp : thenAssignment) {
+									if (tmp.getAssigned() instanceof CtVariableAccess<?>) {
+										if (((CtVariableAccess<?>) (tmp.getAssigned())).getVariable().equals(var)) {
+											/*
+											 * variable is also assign in the
+											 * other branch
+											 */
+											return false;
+										}
+									}
+								}
+
+							}
+						}
+
+					}
+				}
+			}
+			
+		}
+		
 		boolean result = isCtStamement 
 				// input instanceof CtClass ||
 
 				// cannot insert code before '{}', for example would try to add code between 'Constructor()' and '{}'
 				// input instanceof CtBlock ||
 
-				// cannot insert a conditional before 'return', it won't compile. TODO : Or it need to be inside If with no return in the other branch 
+				// cannot insert a conditional before 'return', it won't compile. 
 				&& !(isCtReturn && !( isInsideIf ))
 				// cannot insert a conditional before a variable declaration, it won't compile if the variable is used
 				// later on.
