@@ -16,7 +16,7 @@ public class CacheBasedClassLoader extends URLClassLoader {
 
 	@Override
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
-		if ( classcache.containsKey(name)){
+		if (classcache.containsKey(name)){
 			return classcache.get(name);
 		} else {
 			Class<?> c = super.loadClass(name);

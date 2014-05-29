@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.nopol.test.junit;
+package fr.inria.lille.commons.suite;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -34,21 +34,15 @@ import com.google.common.collect.ComputationException;
  * 
  */
 public final class JUnitRunner implements Callable<Result> {
-
-	/**
-	 * @param classes
-	 */
+	
 	public JUnitRunner(@Nonnull final String[] classes) {
+		this.listeners = new ArrayList<>();
 		this.classes = checkNotNull(classes);
 	}
 
-	/**
-	 * @param classes
-	 * @param listener
-	 */
 	public JUnitRunner(@Nonnull final String[] classes, @Nonnull final RunListener listener) {
+		this(classes);
 		this.listeners.add(checkNotNull(listener));
-		this.classes = checkNotNull(classes);
 	}
 
 	@Override
@@ -76,5 +70,5 @@ public final class JUnitRunner implements Callable<Result> {
 	}
 	
 	private final String[] classes;
-	private final List<RunListener> listeners = new ArrayList<>();
+	private final List<RunListener> listeners;
 }

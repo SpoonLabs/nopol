@@ -49,6 +49,13 @@ import fr.inria.lille.commons.collections.MapLibrary;
  */
 public class SpoonClassLoader extends ClassLoader {
 
+	public static Map<String, Class<?>> transformedClassesFrom(File sourceFolder, Collection<Processor<?>> processors) {
+		SpoonClassLoader spooner = new SpoonClassLoader(sourceFolder);
+		spooner.addProcessors(processors);
+		spooner.loadModelledClasses();
+		return spooner.getClasscache();
+	}
+	
 	public SpoonClassLoader(File sourceFolder) {
 		super();
 		sourcePath = sourceFolder;
@@ -57,6 +64,7 @@ public class SpoonClassLoader extends ClassLoader {
 		classcache = new TreeMap<String, Class<?>>();
 		factory = new FactoryImpl(new DefaultCoreFactory(), getEnvironment());
 		manager = new RuntimeProcessingManager(getFactory());
+		getEnvironment().setDebug(true);
 		buildModel();
 	}
 

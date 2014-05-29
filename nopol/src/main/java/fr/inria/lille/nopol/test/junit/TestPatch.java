@@ -32,6 +32,7 @@ import spoon.support.JavaOutputProcessor;
 import fr.inria.lille.commons.classes.CacheBasedClassLoader;
 import fr.inria.lille.commons.classes.ProvidedClassLoaderThreadFactory;
 import fr.inria.lille.commons.spoon.SpoonClassLoader;
+import fr.inria.lille.commons.suite.JUnitRunner;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.synth.BugKind;
 import fr.inria.lille.nopol.synth.DelegatingProcessor;

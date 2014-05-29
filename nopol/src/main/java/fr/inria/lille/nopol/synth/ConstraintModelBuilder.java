@@ -40,8 +40,8 @@ import spoon.processing.Processor;
 import fr.inria.lille.commons.classes.CacheBasedClassLoader;
 import fr.inria.lille.commons.classes.ProvidedClassLoaderThreadFactory;
 import fr.inria.lille.commons.spoon.SpoonClassLoader;
+import fr.inria.lille.commons.suite.JUnitRunner;
 import fr.inria.lille.nopol.SourceLocation;
-import fr.inria.lille.nopol.test.junit.JUnitRunner;
 
 /**
  * @author Favio D. DeMarco

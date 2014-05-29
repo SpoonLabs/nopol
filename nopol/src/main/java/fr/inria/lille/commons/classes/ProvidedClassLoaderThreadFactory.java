@@ -24,19 +24,10 @@ import java.util.concurrent.ThreadFactory;
  */
 public final class ProvidedClassLoaderThreadFactory implements ThreadFactory {
 
-	private final ClassLoader classLoader;
-
-	private final Constructor<Thread> constructor;
-
-	/**
-	 * @param classLoader
-	 */
-	@SuppressWarnings("unchecked")
 	public ProvidedClassLoaderThreadFactory(final ClassLoader classLoader) {
 		this.classLoader = classLoader;
 		try {
-			this.constructor = (Constructor<Thread>) classLoader.loadClass(Thread.class.getName()).getConstructor(
-					Runnable.class, String.class);
+			this.constructor = (Constructor<Thread>) classLoader.loadClass(Thread.class.getName()).getConstructor(Runnable.class, String.class);
 		} catch (NoSuchMethodException nse) {
 			throw new RuntimeException(nse);
 		} catch (SecurityException se) {
@@ -46,19 +37,18 @@ public final class ProvidedClassLoaderThreadFactory implements ThreadFactory {
 		}
 	}
 
-	/**
-	 * @see java.util.concurrent.ThreadFactory#newThread(java.lang.Runnable)
-	 */
 	public Thread newThread(final Runnable r) {
 		Thread newThread;
 		try {
 			newThread = this.constructor.newInstance(r, this.getClass().getSimpleName());
 		} catch (ReflectiveOperationException e) {
-			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
 		newThread.setDaemon(true);
 		newThread.setContextClassLoader(this.classLoader);
 		return newThread;
 	}
+	
+	private final ClassLoader classLoader;
+	private final Constructor<Thread> constructor;
 }

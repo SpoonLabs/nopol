@@ -8,8 +8,9 @@ import fr.inria.lille.commons.classes.TestClassesFinder;
 import fr.inria.lille.commons.collections.CollectionLibrary;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.SetLibrary;
+import fr.inria.lille.infinitel.loop.InfiniteLoopDetector;
 
-/** @name Infinite Loops Repair */
+/** Infinite Loops Repair */
 
 public class Infinitel {
 
@@ -25,7 +26,8 @@ public class Infinitel {
 	}
 
 	public void repair() {
-		
+		InfiniteLoopDetector detector = new InfiniteLoopDetector(sourceFolder(), classFolders());
+		detector.runtimeDetectedLoops(testClasses());
 	}
 
 	public void showSummary() {
