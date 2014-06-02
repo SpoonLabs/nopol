@@ -7,8 +7,6 @@ import java.util.Map;
 
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.spoon.SpoonClassLoader;
@@ -33,7 +31,7 @@ public class InfiniteLoopDetector extends AbstractProcessor<CtWhile> {
 	public Collection<CtWhile> runtimeDetectedLoops(Collection<String> testClasses) {
 		Collection<Processor<?>> processors = ListLibrary.newArrayList();
 		processors.add(this);
-		Map<String, Class<?>> loadedClases = SpoonClassLoader.transformedClassesFrom(sourceFolder(), processors);
+		Map<String, Class<?>> loadedClases = SpoonClassLoader.allClassesTranformedWith(processors, sourceFolder());
 		TestSuiteExecution.runCasesIn(testClasses, classpath(), loadedClases);
 		Collection<Integer> ids = IterationsAuditor.infiniteLoopIDs();
 		return null;
@@ -41,10 +39,7 @@ public class InfiniteLoopDetector extends AbstractProcessor<CtWhile> {
 	
 	@Override
 	public void process(CtWhile loopStatement) {
-		CtExpression<Boolean> modifiedLoopingExpression = IterationsAuditor.iterationTrackingCondition(loopStatement);
-		CtStatement loopTerminationHint = IterationsAuditor.loopTerminationHint(loopStatement, loopID());
-		loopStatement.setLoopingExpression(modifiedLoopingExpression);
-		loopStatement.insertAfter(loopTerminationHint);
+		IterationsAuditor.attachTo(loopStatement, loopID());
 		increaseLoopID();
 	}
 	

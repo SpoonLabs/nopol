@@ -35,6 +35,7 @@ import spoon.processing.Processor;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
+import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.DefaultCoreFactory;
 import spoon.support.RuntimeProcessingManager;
@@ -44,19 +45,28 @@ import fr.inria.lille.commons.collections.MapLibrary;
 
 /** 
  * A classloader that gets classes from Java source files and process them before actually loading them.
- * As any other classloader, `SpoonClassLoader` can load a given class only once. This means that to use
- * Spoon several times on the same sourceFolder you should instantiate a `SpoonClassLoader` each time.
  */
 public class SpoonClassLoader extends ClassLoader {
 
-	public static Map<String, Class<?>> transformedClassesFrom(File sourceFolder, Collection<Processor<?>> processors) {
-		SpoonClassLoader spooner = new SpoonClassLoader(sourceFolder);
-		spooner.addProcessors(processors);
-		spooner.loadModelledClasses();
+	public static Map<String, Class<?>> classesTransformedWith(Collection<Processor<?>> processors, File sourceFolder, String... classes) {
+		SpoonClassLoader spooner = new SpoonClassLoader(sourceFolder, processors);
+		for (String className : classes) {
+			try {
+				spooner.loadClass(className);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 		return spooner.getClasscache();
 	}
 	
-	public SpoonClassLoader(File sourceFolder) {
+	public static Map<String, Class<?>> allClassesTranformedWith(Collection<Processor<?>> processors, File sourceFolder) {
+		SpoonClassLoader spooner = new SpoonClassLoader(sourceFolder, processors);
+		spooner.loadClasses();
+		return spooner.getClasscache();
+	}
+	
+	private SpoonClassLoader(File sourceFolder) {
 		super();
 		sourcePath = sourceFolder;
 		compiler = new JDTByteCodeCompiler();
@@ -66,6 +76,11 @@ public class SpoonClassLoader extends ClassLoader {
 		manager = new RuntimeProcessingManager(getFactory());
 		getEnvironment().setDebug(true);
 		buildModel();
+	} 
+	
+	public SpoonClassLoader(File sourceFolder, Collection<Processor<?>> processors) {
+		this(sourceFolder);
+		addProcessors(processors);
 	}
 
 	private void buildModel() {
@@ -79,30 +94,42 @@ public class SpoonClassLoader extends ClassLoader {
 		}
 	}
 	
-	public Factory getFactory() {
+	protected Factory getFactory() {
 		return factory;
 	}
 	
-	public File getSourcePath() {
+	protected File getSourcePath() {
 		return sourcePath;
 	}
 	
-	public Environment getEnvironment() {
+	protected Environment getEnvironment() {
 		return environment;
 	}
 
-	public JDTByteCodeCompiler getCompiler() {
+	protected JDTByteCodeCompiler getCompiler() {
 		return compiler;
 	}
 	
-	public Map<String, Class<?>> getClasscache() {
+	protected Map<String, Class<?>> getClasscache() {
 		return classcache;
 	}
 	
 	protected ProcessingManager getProcessingManager() {
 		return manager;
 	}
+	
+	protected TypeFactory getTypeFactory() {
+		return getFactory().Type();
+	}
 
+	public boolean alreadyLoaded(String className) {
+		return getClasscache().containsKey(className);
+	}
+	
+	protected boolean alreadyLoaded(CtSimpleType<?> modelledClass) {
+		return alreadyLoaded(modelledClass.getQualifiedName());
+	}
+	
 	public void addProcessors(Collection<Processor<?>> processors) {
 		for (Processor<?> processor : processors) {
 			addProcessor(processor);
@@ -113,54 +140,43 @@ public class SpoonClassLoader extends ClassLoader {
 		getProcessingManager().addProcessor(processor);
 	}
 	
-	public Collection<CtSimpleType> modelledClasses() {
-		return InstanceOfClassFilter.classDefinitionsIn(getFactory());
+	public CtSimpleType<?> modelledClass(final String qualifiedName) {
+		return getTypeFactory().get(qualifiedName);
 	}
 	
-	public Map<String, Class<?>> loadModelledClasses() {
-		Map<String, Class<?>> loadedClasses = MapLibrary.newHashMap();
-		for (CtSimpleType modelledClass : modelledClasses()) {
-			loadedClasses.putAll(initializeClassFrom(modelledClass));
-		}
-		return loadedClasses;
+	public Collection<CtSimpleType<?>> modelledClasses() {
+		return getTypeFactory().getAll();
 	}
 	
 	@Override
 	public Class<?> loadClass(final String name) throws ClassNotFoundException {
-		if (getClasscache().containsKey(name)) {
+		if (alreadyLoaded(name)) {
 			return getClasscache().get(name);
 		}
-		Class<?> clas = createClass(name);
-		if (clas == null) {
-			clas = findSystemClass(name);
+		Class<?> targetClass;
+		CtSimpleType<?> modelledClass = modelledClass(name);
+		if (modelledClass == null) {
+			targetClass = findSystemClass(name);
+		} else {
+			targetClass = classesCreatedFrom(modelledClass).get(name);
 		}
-		if (clas == null) {
+		if (targetClass == null) {
 			throw new ClassNotFoundException(name);
-		}
-		return clas;
-	}
-	
-	private Class<?> createClass(final String qualifiedName) {
-		Class<?> targetClass = null;
-		try {
-			CtSimpleType<?> c = modelledClassFor(qualifiedName);
-			initializeClassFrom(c);
-			targetClass = getClasscache().get(qualifiedName);
-		} catch (Exception e) {
-
 		}
 		return targetClass;
 	}
 	
-	private CtSimpleType<?> modelledClassFor(final String qualifiedName) throws ClassNotFoundException {
-		CtSimpleType<?> c = getFactory().Type().get(qualifiedName);
-		if (c == null) {
-			throw new ClassNotFoundException(qualifiedName);
+	public Map<String, Class<?>> loadClasses() {
+		Map<String, Class<?>> loadedClasses = MapLibrary.newHashMap();
+		for (CtSimpleType<?> modelledClass : modelledClasses()) {
+			if (! alreadyLoaded(modelledClass)) {
+				loadedClasses.putAll(classesCreatedFrom(modelledClass));
+			}
 		}
-		return c;
+		return loadedClasses;
 	}
-
-	private Map<String, Class<?>> initializeClassFrom(final CtSimpleType<?> c) {
+	
+	private Map<String, Class<?>> classesCreatedFrom(final CtSimpleType<?> c) {
 		processClass(c);
 		Map<String, Class<?>> compiledClasses = compiledClassesFrom(c);
 		getClasscache().putAll(compiledClasses);

@@ -4,24 +4,28 @@ import java.util.Collection;
 import java.util.Map;
 
 import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
-import spoon.reflect.factory.CodeFactory;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.spoon.SpoonLibrary;
 
 public class IterationsAuditor {
 
-	public static CtExpression<Boolean> iterationTrackingCondition(CtWhile loopStatement) {
+	public static void attachTo(CtWhile loopStatement, int loopID) {
+		CtExpression<Boolean> modifiedLoopingExpression = iterationTrackingCondition(loopStatement);
+		CtStatement loopTerminationHint = loopTerminationHint(loopStatement, loopID);
+		loopStatement.setLoopingExpression(modifiedLoopingExpression);
+		loopStatement.insertAfter(loopTerminationHint);
+	}
+	
+	private static CtExpression<Boolean> iterationTrackingCondition(CtWhile loopStatement) {
 		String codeSnippet = canonicalName() + ".signalConditionEvaluation()";
 		return SpoonLibrary.composedExpression(codeSnippet, BinaryOperatorKind.AND, loopStatement.getLoopingExpression());
 	}
 
-	public static CtStatement loopTerminationHint(CtWhile loopStatement, int loopID) {
+	private static CtStatement loopTerminationHint(CtWhile loopStatement, int loopID) {
 		String codeSnippet = canonicalName() + String.format(".signalLoopEnd(%d)", loopID);
 		return SpoonLibrary.statementFrom(codeSnippet, loopStatement.getParent());
 	}

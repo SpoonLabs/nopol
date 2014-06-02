@@ -19,11 +19,15 @@ public class SpoonLibrary {
 		CodeFactory codeFactory = codeFactoryOf(expression);
 		CtCodeSnippetExpression<T> newExpression = codeFactory.createCodeSnippetExpression(codeSnippet);
 		CtBinaryOperator<T> composedExpression = codeFactory.createBinaryOperator(newExpression, expression, operator);
-		CtElement parent = expression.getParent();
-		newExpression.setParent(composedExpression);
-		expression.setParent(composedExpression);
-		composedExpression.setParent(parent);
+		groupBranch(expression.getParent(), composedExpression, newExpression, expression);
 		return composedExpression;
+	}
+	
+	public static void groupBranch(CtElement root, CtElement parentNode, CtElement... siblingNodes) {
+		parentNode.setParent(root);
+		for (CtElement sibling : siblingNodes) {
+			sibling.setParent(parentNode);
+		}
 	}
 	
 	public static CtCodeSnippetStatement statementFrom(String codeSnippet, CtElement parent) {

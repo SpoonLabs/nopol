@@ -18,29 +18,22 @@ package fr.inria.lille.nopol.synth;
 import static com.google.common.collect.ImmutableSet.copyOf;
 import static com.google.common.collect.Lists.transform;
 import static com.google.common.collect.Sets.intersection;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeoutException;
 
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
 import spoon.processing.Processor;
-import fr.inria.lille.commons.classes.CacheBasedClassLoader;
-import fr.inria.lille.commons.classes.ProvidedClassLoaderThreadFactory;
+import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.spoon.SpoonClassLoader;
-import fr.inria.lille.commons.suite.JUnitRunner;
+import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.nopol.SourceLocation;
 
 /**
@@ -49,65 +42,30 @@ import fr.inria.lille.nopol.SourceLocation;
  */
 public final class ConstraintModelBuilder {
 
-	/**
-	 * XXX FIXME TODO should be a parameter
-	 */
-	private static final long TIMEOUT_IN_SECONDS = MINUTES.toSeconds(5L);
-
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private final boolean debug = logger.isDebugEnabled();
-	private final ClassLoader spooner;
-	private boolean viablePatch;
-	
 	public ConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation, final Processor<?> processor) {
-		SpoonClassLoader scl = new SpoonClassLoader(sourceFolder);
-		scl.getEnvironment().setDebug(debug);
-		scl.addProcessor(processor);
-		SpoonCompiler builder;
-		try {
-			builder = new Launcher().createCompiler(scl.getFactory());
-			builder.addInputSource(sourceFolder);
-			builder.build();
-			scl.loadClass(sourceLocation.getRootClassName());
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
-		spooner = scl;
+		Collection<Processor<?>> processors = ListLibrary.newLinkedList();
+		processors.add(processor);
+		classCache = SpoonClassLoader.classesTransformedWith(processors , sourceFolder, sourceLocation.getRootClassName());
 	}
 
-	/**
-	 * @see fr.inria.lille.nopol.synth.ConstraintModelBuilder#buildFor(java.net.URL[], java.lang.String[])
-	 */
 	public InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
 		InputOutputValues model = new InputOutputValues();
-		ClassLoader cl = new CacheBasedClassLoader(classpath, ((SpoonClassLoader)(spooner)).getClasscache());		
-		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
-		try {
-			Result firstResult = executor.submit(
-					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model,
-							ConditionalValueHolder.booleanValue))).get(TIMEOUT_IN_SECONDS, SECONDS);
-			ConditionalValueHolder.flip();
-			Result secondResult = executor.submit(
-					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model,
-							ConditionalValueHolder.booleanValue))).get(TIMEOUT_IN_SECONDS, SECONDS);
-			if ( firstResult.getFailureCount()==0 || secondResult.getFailureCount() == 0){
-				/*
-				 * Return empty model because we don't want "true" or "false" as a solution
-				 */
-				return new InputOutputValues();
-			}
-			determineViability(firstResult, secondResult);
-		} catch (InterruptedException  e) {
-			throw new RuntimeException(e);
-		} catch (ExecutionException e) {
-			throw new RuntimeException(e);
-		} catch (TimeoutException e) {
-			logger.warn("Timeout after {} seconds. Infinite loop?", TIMEOUT_IN_SECONDS);
+		Result firstResult = runWithListener(model, testClasses, classpath);
+		ConditionalValueHolder.flip();
+		Result secondResult = runWithListener(model, testClasses, classpath);
+		
+		if (firstResult == null || secondResult == null) {
 			viablePatch = false;
-		} finally {
-			executor.shutdownNow();
+		} else if (firstResult.getFailureCount() == 0 || secondResult.getFailureCount() == 0){
+			return new InputOutputValues(); // Return empty model because we don't want "true" or "false" as a solution
 		}
+		determineViability(firstResult, secondResult);
 		return model;
+	}
+	
+	private Result runWithListener(InputOutputValues model, String[] testClasses, URL[] classpath) {
+		ResultMatrixBuilderListener listener = new ResultMatrixBuilderListener(model, ConditionalValueHolder.booleanValue);
+		return TestSuiteExecution.runCasesIn(testClasses, classpath, classCache, listener);
 	}
 
 	private void determineViability(final Result firstResult, final Result secondResult) {
@@ -123,10 +81,11 @@ public final class ConstraintModelBuilder {
 		}
 	}
 
-	/**
-	 * @see fr.inria.lille.nopol.synth.ConstraintModelBuilder#isAViablePatch()
-	 */
 	public boolean isAViablePatch() {
 		return viablePatch;
 	}
+	
+	private boolean viablePatch;
+	private final Map<String, Class<?>> classCache;
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 }
