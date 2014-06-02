@@ -27,7 +27,9 @@ import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -50,9 +52,25 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 		boolean isCtStamement = input instanceof CtStatement;
 		boolean isCtReturn = input instanceof CtReturn;
 		boolean isInsideIf = parent.getParent() instanceof CtIf; // Checking parent isn't enough, parent will be CtBlock and grandpa will be CtIf
+		boolean isInsideConstructor = parent.getParent() instanceof CtConstructor;
 		boolean isCtLocalVariable = input instanceof CtLocalVariable;
 		boolean isInsideIfLoopCaseBlock = (parent instanceof CtIf || parent instanceof CtLoop || parent instanceof CtCase || parent instanceof CtBlock);
 		boolean isInsideForUpdate = parent instanceof CtFor ? ((CtFor)(parent)).getForUpdate().contains(input) : false ;
+		
+		/*
+		 * Check if the statement is a assignment of final variable inside constructor
+		 */
+		if ( isInsideConstructor && (input instanceof CtAssignment<? , ?>)){
+			CtAssignment<?, ?> assignment = (CtAssignment<?, ?>) input;
+			if ( assignment.getAssigned() instanceof CtVariableAccess<?> ){
+				CtVariableAccess<?> varAccess = (CtVariableAccess<?>) assignment.getAssigned();
+				CtVariableReference<?> var = varAccess.getVariable();
+				if (var.getDeclaration().getModifiers().contains(ModifierKind.FINAL)){
+					return false;
+				}
+			}
+		}
+		
 		
 		/*
 		 * Check if the statement is a Return, if true, check for no existing return in the other branch otherwise it won't compile
