@@ -21,6 +21,7 @@ import java.util.List;
 
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 
@@ -30,7 +31,7 @@ import com.google.common.base.Predicate;
  * @author Favio D. DeMarco
  * 
  */
-public final class DelegatingProcessor extends AbstractProcessor<CtElement> {
+public final class DelegatingProcessor extends AbstractProcessor<CtStatement> {
 
 	private final File file;
 	private final int line;
@@ -57,7 +58,7 @@ public final class DelegatingProcessor extends AbstractProcessor<CtElement> {
 	 * @see spoon.processing.AbstractProcessor#isToBeProcessed(spoon.reflect.declaration.CtElement)
 	 */
 	@Override
-	public boolean isToBeProcessed(final CtElement candidate) {
+	public boolean isToBeProcessed(final CtStatement candidate) {
 		/*
 		 * Avoiding CtBlock because of weird behaviour of GZoltar, can return CtBlock line number
 		 * eg : 
@@ -94,7 +95,7 @@ public final class DelegatingProcessor extends AbstractProcessor<CtElement> {
 	}
 
 	@Override
-	public void process(final CtElement element) {
+	public void process(final CtStatement element) {
 		for (Processor processor : this.processors) {
 			processor.process(this.getFactory(), element);
 		}
