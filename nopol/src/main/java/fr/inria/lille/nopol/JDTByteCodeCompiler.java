@@ -64,6 +64,7 @@ public class JDTByteCodeCompiler implements ICompilerRequestor {
 				problems+=cp.toString()+", ";
 			}
 			classErrors.add(problems);
+			System.err.println(problems);
 		}
 
 		for (ClassFile f : result.getClassFiles()) {
