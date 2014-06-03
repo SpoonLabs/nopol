@@ -34,9 +34,12 @@ import org.junit.runner.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spoon.Launcher;
+import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import fr.inria.lille.nopol.MyClassLoader;
+import fr.inria.lille.nopol.NoPol;
 import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.SpoonClassLoader;
 import fr.inria.lille.nopol.test.junit.JUnitRunner;
@@ -63,13 +66,31 @@ public final class ConstraintModelBuilder {
 	public ConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation,
 			final Processor<?> processor, SpoonClassLoader scl, final BugKind type) {
 		this.sourceLocation = sourceLocation;
+		
+		if ( !NoPol.isOneBuild() )
+			scl = new SpoonClassLoader();
+		
+		
 		ProcessingManager processingManager = scl.getProcessingManager();
 		processingManager.addProcessor(processor);
-		processingManager.process();
 		mapID = ConditionalValueHolder.ID_Conditional;
-		ConditionalValueHolder.ID_Conditional++;
-		this.type = type;
 		
+		
+		if ( !NoPol.isOneBuild() ){
+			SpoonCompiler builder;
+			try {
+				builder = new Launcher().createCompiler(scl.getFactory());
+				builder.addInputSource(sourceFolder);
+				builder.build();
+				scl.loadClass(sourceLocation.getRootClassName());
+			} catch (Exception e) {
+				throw new IllegalStateException(e);
+			}
+		}else{
+			processingManager.process();
+			ConditionalValueHolder.ID_Conditional++;
+		}
+		this.type = type;
 		this.spooner = scl;
 		
 	}
@@ -78,18 +99,16 @@ public final class ConstraintModelBuilder {
 	 * @see fr.inria.lille.nopol.synth.ConstraintModelBuilder#buildFor(java.net.URL[], java.lang.String[])
 	 */
 	public InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
-		
-		try {
-			spooner.loadClass(sourceLocation.getRootClassName());
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
+		if (NoPol.isOneBuild()) {
+			try {
+				spooner.loadClass(sourceLocation.getRootClassName());
+			} catch (ClassNotFoundException e) {
+				throw new RuntimeException(e);
+			}
+			if (type == BugKind.CONDITIONAL || type == BugKind.PRECONDITION) {
+				ConditionalValueHolder.enableNextCondition();
+			}
 		}
-		
-		if ( type == BugKind.CONDITIONAL || type == BugKind.PRECONDITION){
-			ConditionalValueHolder.enableNextCondition();
-		}
-		
-		
 		InputOutputValues model = new InputOutputValues();
 		ClassLoader cl = new MyClassLoader(classpath, spooner.getClasscache());		
 		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));

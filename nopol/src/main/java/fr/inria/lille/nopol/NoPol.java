@@ -42,7 +42,7 @@ import fr.inria.lille.nopol.test.junit.TestPatch;
  * @author Favio D. DeMarco
  * 
  */
-final class NoPol {
+public class NoPol {
 
 	private final URL[] classpath;
 	private final GZoltarSuspiciousProgramStatements gZoltar;
@@ -51,6 +51,7 @@ final class NoPol {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final Logger patchLogger = LoggerFactory.getLogger("patch");
 	private static List<Patch> patchList = new ArrayList<>();
+	private static boolean oneBuild = true;
 	private final SpoonClassLoader scl;
 	private final File sourceFolder;
 
@@ -70,21 +71,30 @@ final class NoPol {
 
 	public List<Patch> build() {
 		String[] testClasses = new TestClassesFinder().findIn(classpath, false);			
-		
-		
 		if (testClasses.length == 0) {
 			System.out.printf("No test classes found in classpath: %s%n", Arrays.toString(classpath));
 			return null;
 		}
-
 		Collection<SuspiciousStatement> statements = gZoltar.sortBySuspiciousness(testClasses);
-
 		if (statements.isEmpty()) {
 			System.out.println("No suspicious statements found.");
 		}
-
+		if ( oneBuild ){
+			return solveWithOneBuild(statements, testClasses);
+		}else{
+			return solveWithMultipleBuild(statements, testClasses);
+		}
+	}
+	
+	/*
+	 * Optimization of Nopol
+	 * build
+	 * apply all the modifications
+	 * try to find all patches
+	 */
+	private List<Patch> solveWithOneBuild(Collection<SuspiciousStatement> statements, String[] testClasses){
 		/*
-		 * Build the model only once at the beginning
+		 * Build the model
 		 */
 		try {
 			SpoonCompiler builder;
@@ -93,40 +103,68 @@ final class NoPol {
 			builder.build();
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
-		}		
-		
-		/*
-		 * Apply spoon modification on each statement
-		 */
-		List<Synthesizer> generatedSynthesizer = new ArrayList<>();
-		for (SuspiciousStatement statement : statements) {
-			if ( !statement.getSourceLocation().getContainingClassName().contains("Test")){ // Avoid modification on test cases
-				logger.debug("Analysing {}", statement);
-				Synthesizer synth = synthetizerFactory.getFor(statement.getSourceLocation());
-				generatedSynthesizer.add(synth);					
-			}
-
 		}
+		
+		List<Synthesizer> generatedSynthesizer = createSynthesizers(statements);
 		/*
 		 * Create the static array
 		 */
 		ConditionalValueHolder.createEnableConditionalTab();
-
-
-		
+		return findPatches(generatedSynthesizer, testClasses);
+	}
+	
+	/*
+	 * Apply spoon modification on each statement
+	 */
+	private List<Synthesizer> createSynthesizers(Collection<SuspiciousStatement> statements){
+		List<Synthesizer> synthList = new ArrayList<>();
+		for (SuspiciousStatement statement : statements) {
+			if ( !statement.getSourceLocation().getContainingClassName().contains("Test")){ // Avoid modification on test cases
+				logger.debug("Analysing {}", statement);
+				Synthesizer synth = synthetizerFactory.getFor(statement.getSourceLocation());
+				synthList.add(synth);					
+			}
+		}	
+		return synthList;
+	}
+	
+	private List<Patch> findPatches(List<Synthesizer> synthList, String[] testClasses){
 		/*
 		 * Try to synthesis patch
 		 */
-		for ( Synthesizer synth : generatedSynthesizer ){
+		for ( Synthesizer synth : synthList ){
 			Patch newRepair = synth.buildPatch(classpath, testClasses);
 			if (isOk(newRepair, testClasses)) {
 				patchList.add(newRepair);
 			}
 		}
-		
-		
 		return patchList;
 	}
+	
+	
+	/*
+	 * First algorithm of Nopol,
+	 * build the initial model
+	 * apply only one modification
+	 * build
+	 * try to find patch
+	 */
+	private List<Patch> solveWithMultipleBuild(Collection<SuspiciousStatement> statements, String[] testClasses){
+		
+		for (SuspiciousStatement statement : statements) {
+			if ( !statement.getSourceLocation().getContainingClassName().contains("Test")){ // Avoid modification on test cases
+				logger.debug("Analysing {}", statement);
+				Synthesizer synth = new SynthesizerFactory(sourceFolder, scl).getFor(statement.getSourceLocation());
+				Patch patch = synth.buildPatch(classpath, testClasses);
+				if (isOk(patch, testClasses)) {
+					patchList.add(patch);
+				}	
+			}
+		}
+		return patchList;
+	}
+	
+	
 
 	private boolean isOk(final Patch newRepair, final String[] testClasses) {
 		if (newRepair == NO_PATCH) {
@@ -144,6 +182,11 @@ final class NoPol {
 		return patchList;
 	}
 	
+	public static boolean isOneBuild() {
+		return oneBuild;
+	}
 	
-	
+	public static boolean setOneBuild(boolean oneBuild) {
+		return NoPol.oneBuild = oneBuild;
+	}
 }

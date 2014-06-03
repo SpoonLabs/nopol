@@ -41,19 +41,32 @@ public class Main {
 	 */
 	public static void main(final String[] args) {
 		long startTime = System.currentTimeMillis();
-		if (2 != args.length) {
+		int sourceFolderIndex = 0;
+		int classPathIndex = 1;
+		
+		if (2 != args.length && 3 != args.length) {
 			printUsage();
 			return;
 		}
-		File sourceFolder = new File(args[0]);
+		if ( args[0].equals("-o") || args[0].equals("--onebuild") ){
+			sourceFolderIndex = 1;
+			classPathIndex = 2;
+		}else if ( args[0].equals("-m") || args[0].equals("--multiplebuild") ){
+			sourceFolderIndex = 1;
+			classPathIndex = 2;
+			NoPol.setOneBuild(false);
+		}
+		
+		
+		File sourceFolder = new File(args[sourceFolderIndex]);
 		checkArgument(sourceFolder.exists(), "%s: does not exist.", sourceFolder);
 		checkArgument(sourceFolder.isDirectory(), "%s: is not a directory.", sourceFolder);
 
 		// XXX FIXME TODO this line adds the analyzed project classpath for the compiler, it should use another thread
 		// with a URLClassLoader, for example.
 		// see JDTCompiler.getLibraryAccess()...
-		System.setProperty("java.class.path", System.getProperty("java.class.path") + File.pathSeparatorChar + args[1]);
-		String[] paths = args[1].split(Character.toString(File.pathSeparatorChar));
+		System.setProperty("java.class.path", System.getProperty("java.class.path") + File.pathSeparatorChar + args[classPathIndex]);
+		String[] paths = args[classPathIndex].split(Character.toString(File.pathSeparatorChar));
 		new Main(sourceFolder, paths).run();
 		
 		System.out.println("----Information----");
@@ -70,7 +83,7 @@ public class Main {
 	}
 
 	private static void printUsage() {
-		System.out.println("java " + Main.class.getName() + " <source folder> <classpath>");
+		System.out.println("java " + Main.class.getName() + "[-o, --onebuild, -m, --multiplebuild] <source folder> <classpath>");
 	}
 
 	private final String[] classpath;

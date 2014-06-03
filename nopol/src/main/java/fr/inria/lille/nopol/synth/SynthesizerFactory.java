@@ -22,9 +22,14 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spoon.Launcher;
+import spoon.compiler.Environment;
+import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
 import spoon.reflect.factory.Factory;
 import spoon.support.QueueProcessingManager;
+import spoon.support.StandardEnvironment;
+import fr.inria.lille.nopol.NoPol;
 import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.SpoonClassLoader;
 import fr.inria.lille.nopol.synth.conditional.ConditionalReplacer;
@@ -80,10 +85,37 @@ public final class SynthesizerFactory {
 	}
 
 	private BugKind getType(final SourceLocation rc) {
-		Factory factory = scl.getFactory();
+		Factory factory;
+		Launcher l = null;
+		if (!NoPol.isOneBuild()) {
+			try {
+				l = new Launcher();
+			} catch (Exception e) {
+				throw new IllegalStateException(e);
+			}
+			Environment env = new StandardEnvironment();
+			env.setDebug(debug);
+			factory = l.createFactory(env);
+		} else {
+			factory = scl.getFactory();
+		}
+		
 		ProcessingManager processing = new QueueProcessingManager(factory);
 		BugKindDetector detector = new BugKindDetector(rc.getSourceFile(sourceFolder), rc.getLineNumber());
 		processing.addProcessor(detector);
+	
+		if (!NoPol.isOneBuild()) {
+			SpoonCompiler builder;
+			try {
+				builder = l.createCompiler(factory);
+				builder.addInputSource(sourceFolder);
+				builder.addTemplateSource(sourceFolder);
+				builder.build();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
 		processing.process();
 		return detector.getType();
 	}

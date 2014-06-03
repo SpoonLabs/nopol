@@ -15,6 +15,8 @@
  */
 package fr.inria.lille.nopol.synth;
 
+import fr.inria.lille.nopol.NoPol;
+
 /**
  * @author Favio D. DeMarco
  * 
@@ -64,6 +66,9 @@ public final class ConditionalValueHolder {
 	}
 	
 	public static int getEnableID(){
+		if ( !NoPol.isOneBuild() ){
+			return 0;
+		}
 		for ( int i = 0 ; i < enableConditional.length ; i++ ){
 			if ( enableConditional[i] ){
 				return i;

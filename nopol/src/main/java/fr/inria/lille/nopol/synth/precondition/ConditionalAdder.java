@@ -23,6 +23,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
+import fr.inria.lille.nopol.NoPol;
 import fr.inria.lille.nopol.synth.ConditionalValueHolder;
 import fr.inria.lille.nopol.synth.Processor;
 
@@ -50,9 +51,10 @@ public final class ConditionalAdder implements Processor {
 		CtIf newIf = factory.Core().createIf();
 		CtCodeSnippetExpression<Boolean> condition = factory.Core().createCodeSnippetExpression();
 		
-		if ( snippet.equals(ConditionalValueHolder.VARIABLE_NAME)){
+		if ( snippet.equals(ConditionalValueHolder.VARIABLE_NAME) && NoPol.isOneBuild()){
 			// Instrumenting
 			condition.setValue("!"+ConditionalValueHolder.ENABLE_CONDITIONAL+ConditionalValueHolder.ID_Conditional+"] || ("+snippet+" && "+ConditionalValueHolder.ENABLE_CONDITIONAL+ConditionalValueHolder.ID_Conditional+"])");
+			
 		}else{
 			// Test patch found
 			condition.setValue(snippet);
