@@ -1,12 +1,17 @@
 package fr.inria.lille.commons.test;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 import fr.inria.lille.commons.collections.ArrayLibrary;
+import fr.inria.lille.commons.collections.CollectionLibrary;
+import fr.inria.lille.commons.collections.ListLibrary;
+import fr.inria.lille.commons.collections.SetLibrary;
 
 public class CollectionsTest {
 
@@ -40,4 +45,43 @@ public class CollectionsTest {
 		Assert.assertTrue(Arrays.equals(array, subarray));
 	}
 	
+	@Test
+	public void copyOf() {
+		List<String> listSymbols = ListLibrary.newArrayList(",", ".", "<", ":", "<", ":");
+		Collection<String> copy = CollectionLibrary.copyOf(listSymbols);
+		Assert.assertEquals(6, listSymbols.size());
+		Assert.assertEquals(6, copy.size());
+		Assert.assertEquals(listSymbols.getClass(), copy.getClass());
+		List<String> copiedList = (List) copy;
+		for (int i = 0; i < listSymbols.size(); i += 1) {
+			Assert.assertEquals(listSymbols.get(i), copiedList.get(i));
+		}
+		
+		Set<String> setSymbols = SetLibrary.newHashSet(",", ".", "<", ":", "<", ":");
+		copy = CollectionLibrary.copyOf(setSymbols);
+		Assert.assertEquals(4, setSymbols.size());
+		Assert.assertEquals(4, copy.size());
+		Assert.assertEquals(setSymbols.getClass(), copy.getClass());
+		Set<String> copiedSet = (Set) copy;
+		Assert.assertTrue(copiedSet.containsAll(setSymbols));
+	}
+	
+	@Test
+	public void any() {
+		List<String> list = ListLibrary.newArrayList(".", "..", "...");
+		Assert.assertTrue(list.contains(CollectionLibrary.any(list)));
+		Set<String> set = SetLibrary.newHashSet("-", "--", "---");
+		Assert.assertTrue(set.contains(CollectionLibrary.any(set)));
+	}
+	
+	@Test
+	public void headAndLast() {
+		List<String> list = ListLibrary.newArrayList(".", "..", "...");
+		String head = CollectionLibrary.head(list);
+		String last = CollectionLibrary.last(list);
+		Assert.assertTrue(list.contains(head));
+		Assert.assertEquals(".", head);
+		Assert.assertTrue(list.contains(last));
+		Assert.assertEquals("...", last);
+	}
 }

@@ -63,8 +63,11 @@
 		<appender-ref ref="STDERR" />
 	</logger>
 
-	<logger name="fr.inria.lille.nopol.NoPol" level="debug"
-		additivity="true">
+	<logger name="fr.inria.lille.nopol.NoPol" level="debug" additivity="true">
+		<appender-ref ref="STDERR" />
+	</logger>
+	
+	<logger name="fr.inria.lille.infinitel" level="debug" additivity="true">
 		<appender-ref ref="STDERR" />
 	</logger>
 

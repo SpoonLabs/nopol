@@ -1,94 +1,95 @@
 package fr.inria.lille.infinitel.loop;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
+import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
+import spoon.reflect.cu.SourcePosition;
 import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.collections.MapLibrary;
-import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.spoon.SpoonLibrary;
 
-public class IterationsAuditor {
+public class IterationsAuditor extends AbstractProcessor<CtWhile> {
 
-	public static void attachTo(CtWhile loopStatement, int loopID) {
-		String variableName = counterVariableName(loopID);
-		CtStatement beforeStatement = beforeLoopStatement(loopStatement, variableName);
-		CtExpression<Boolean> modifiedLoopingExpression = iterationTrackingCondition(loopStatement, variableName);
-		CtStatement afterStatement = afterLoopStatement(loopStatement, variableName, loopID);
+	public static IterationsAuditor newInstance(SourcePosition loopPosition, Number threshold) {
+		int instanceNumber = allInstances().size();
+		IterationsAuditor newInstance = new IterationsAuditor(loopPosition, threshold, instanceNumber);
+		allInstances().add(newInstance);
+		return newInstance;
+	}
+	
+	private static List<IterationsAuditor> allInstances() {
+		if (allInstances == null) {
+			allInstances = ListLibrary.newArrayList();
+		}
+		return allInstances;
+	}
+	
+	public static IterationsAuditor instance(int instanceID) {
+		return allInstances().get(instanceID);
+	}
+	
+	private IterationsAuditor(SourcePosition position, Number threshold, int instanceNumber) {
+		setThreshold(threshold);
+		this.loopPosition = position;
+		instanceID = instanceNumber;
+		iterationsRecord = ListLibrary.newLinkedList();
+	}
+	
+	@Override
+	public boolean isToBeProcessed(CtWhile loopStatement) {
+		return auditedLoopPosition().equals(loopStatement.getPosition());
+	}
+	
+	@Override
+	public void process(CtWhile loopStatement) {
+		CtStatement beforeStatement = beforeLoopStatement(loopStatement);
+		CtExpression<Boolean> modifiedExpression = modifiedLoopingExpression(loopStatement);
+		CtStatement afterStatement = afterLoopStatement(loopStatement);
 		loopStatement.insertBefore(beforeStatement);
-		loopStatement.setLoopingExpression(modifiedLoopingExpression);
+		loopStatement.setLoopingExpression(modifiedExpression);
 		loopStatement.insertAfter(afterStatement);
 	}
 	
-	private static String counterVariableName(int loopID) {
-		return String.format("loopIterations_%d", loopID);
+	private String counterVariableName() {
+		return String.format("loopIterations_%d", instanceID());
 	}
 	
-	private static CtStatement beforeLoopStatement(CtWhile loopStatement, String variableName) {
-		String codeSnippet = String.format("int %s = 0", variableName);
+	private CtStatement beforeLoopStatement(CtWhile loopStatement) {
+		String codeSnippet = String.format("int %s = -1", counterVariableName());
 		return SpoonLibrary.statementFrom(codeSnippet, loopStatement.getParent());
 	}
 	
-	private static CtExpression<Boolean> iterationTrackingCondition(CtWhile loopStatement, String variableName) {
-		String codeSnippet = canonicalName() + String.format(".instance().threshold() > (++%s)", variableName);
+	private CtExpression<Boolean> modifiedLoopingExpression(CtWhile loopStatement) {
+		String codeSnippet = canonicalName() + String.format(".instance(%d).threshold() > (++%s)", instanceID(), counterVariableName());
 		return SpoonLibrary.composedExpression(codeSnippet, BinaryOperatorKind.AND, loopStatement.getLoopingExpression());
 	}
 
-	private static CtStatement afterLoopStatement(CtWhile loopStatement, String variableName, int loopID) {
-		String codeSnippet = canonicalName() + String.format(".signalLoopEnd(%s, %d)", variableName, loopID);
+	private CtStatement afterLoopStatement(CtWhile loopStatement) {
+		String codeSnippet = canonicalName() + String.format(".instance(%d).addRecordOf(%s)", instanceID(), counterVariableName());
 		return SpoonLibrary.statementFrom(codeSnippet, loopStatement.getParent());
 	}
-	
-	public static void signalLoopEnd(int iterations, int loopID) {
-		instance().addRecordOf(iterations, loopID);
+
+	public String canonicalName() {
+		return getClass().getCanonicalName();
 	}
 	
-	public static Collection<Integer> infiniteLoopIDs() {
-		return instance().loopIDsOverThreshold();
+	public void addRecordOf(int iterations) {
+		iterationsRecord().add(iterations);
 	}
 	
-	public static String canonicalName() {
-		return instance().getClass().getCanonicalName();
-	}
-	
-	public static IterationsAuditor instance() {
-		if (instance == null) {
-			instance = new IterationsAuditor();
-		}
-		return instance;
-	}
-	
-	private IterationsAuditor() {
-		loopIterationsRecord = MapLibrary.newHashMap();
-		resetThreshold();
-	}
-	
-	private void addRecordOf(int iterations, int loopID) {
-		List<Integer> loopRecord = MapLibrary.getPutIfAbsent(iterationsRecord(), loopID, (List) ListLibrary.newArrayList());
-		loopRecord.add(iterations);
-	}
-	
-	private Collection<Integer> loopIDsOverThreshold() {
-		Collection<Integer> ids = SetLibrary.newHashSet();
-		for (Integer loopID : iterationsRecord().keySet()) {
-			if (reachesThreshold(loopID)) {
-				ids.add(loopID);
-			}
-		}
-		return ids;
-	}
-	
-	private boolean reachesThreshold(Integer loopID) {
-		return iterationsRecord().get(loopID).contains(threshold());
+	public boolean loopReachedThreshold() {
+		return iterationsRecord().contains(threshold());
 	}
 
-	private Map<Integer, List<Integer>> iterationsRecord() {
-		return loopIterationsRecord;
+	public SourcePosition auditedLoopPosition() {
+		return loopPosition;
+	}
+	
+	public List<Integer> iterationsRecord() {
+		return iterationsRecord;
 	}
 	
 	public int threshold() {
@@ -99,12 +100,15 @@ public class IterationsAuditor {
 		threshold = number.intValue();
 	}
 	
-	public void resetThreshold() {
-		setThreshold(1E6);
+	private int instanceID() {
+		return instanceID;
 	}
 	
 	private int threshold;
-	private Map<Integer, List<Integer>> loopIterationsRecord;
+	private int instanceID;
+	private SourcePosition loopPosition;
+	private List<Integer> iterationsRecord;
 	
-	private static IterationsAuditor instance;
+	// XXX This causes memory leaks
+	private static List<IterationsAuditor> allInstances;
 }

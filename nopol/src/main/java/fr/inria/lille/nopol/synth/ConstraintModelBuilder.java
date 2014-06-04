@@ -21,7 +21,6 @@ import static com.google.common.collect.Sets.intersection;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.processing.Processor;
-import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.spoon.SpoonClassLoader;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.nopol.SourceLocation;
@@ -43,9 +41,7 @@ import fr.inria.lille.nopol.SourceLocation;
 public final class ConstraintModelBuilder {
 
 	public ConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation, final Processor<?> processor) {
-		Collection<Processor<?>> processors = ListLibrary.newLinkedList();
-		processors.add(processor);
-		classCache = SpoonClassLoader.classesTransformedWith(processors , sourceFolder, sourceLocation.getRootClassName());
+		classCache = SpoonClassLoader.classesTransformedWith(processor, sourceFolder, sourceLocation.getRootClassName());
 	}
 
 	public InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {

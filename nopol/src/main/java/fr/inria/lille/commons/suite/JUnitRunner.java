@@ -17,8 +17,6 @@ package fr.inria.lille.commons.suite;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 import javax.annotation.Nonnull;
@@ -35,22 +33,15 @@ import com.google.common.collect.ComputationException;
  */
 public final class JUnitRunner implements Callable<Result> {
 	
-	public JUnitRunner(@Nonnull final String[] classes) {
-		this.listeners = new ArrayList<>();
+	public JUnitRunner(@Nonnull final String[] classes, RunListener listener) {
 		this.classes = checkNotNull(classes);
-	}
-
-	public JUnitRunner(@Nonnull final String[] classes, @Nonnull final RunListener listener) {
-		this(classes);
-		this.listeners.add(checkNotNull(listener));
+		this.listener = listener;
 	}
 
 	@Override
 	public Result call() throws Exception {
 		JUnitCore runner = new JUnitCore();
-		for (RunListener listener : this.listeners) {
-			runner.addListener(listener);
-		}
+		runner.addListener(listener);
 		Class<?>[] testClasses = classArrayFrom(classes);
 		return runner.run(testClasses);
 	}
@@ -70,5 +61,5 @@ public final class JUnitRunner implements Callable<Result> {
 	}
 	
 	private final String[] classes;
-	private final List<RunListener> listeners;
+	private final RunListener listener;
 }

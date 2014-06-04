@@ -2,6 +2,7 @@ package fr.inria.lille.commons.collections;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.List;
 
 public class CollectionLibrary {
 
@@ -26,4 +27,41 @@ public class CollectionLibrary {
 		return array;
 	}
 	
+	public static <T, C extends Collection<T>> Collection<T> newInstance(Class<C> collectionClass) {
+		try {
+			return collectionClass.newInstance();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static <T> Collection<T> copyOf(Collection<T> collection) {
+		Collection<T> copy = newInstance(collection.getClass());
+		copy.addAll(collection);
+		return copy;
+	}
+	
+	public static <T> T any(Collection<T> collection) {
+		for (T element : collection) {
+			return element;
+		}
+		return null;
+	}
+	
+	public static <T> T head(List<T> list) {
+		if (! list.isEmpty()) {
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	public static <T> T last(List<T> list) {
+		if (! list.isEmpty()) {
+			return list.get(list.size() - 1);
+		}
+		return null;
+	}
 }

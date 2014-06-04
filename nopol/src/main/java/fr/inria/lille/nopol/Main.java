@@ -36,8 +36,8 @@ public class Main {
     	try {
     		String repairMethod = args[0];
     		File sourceFolder = FileHandler.directoryFrom(args[1]);
-    		Collection<URL> classFolders = collectClassDirectories(args[2]);
-    		new Main(args, repairMethod, sourceFolder, classFolders);
+    		Collection<URL> classpath = collectClassDirectories(args[2]);
+    		new Main(args, repairMethod, sourceFolder, classpath);
     	}
     	catch (Exception e) {
     		showUsage();
@@ -45,17 +45,17 @@ public class Main {
     	}
     }
     
-	private Main(String[] args, String repairMethod, File sourceFolder, Collection<URL> classFolders) {
+	private Main(String[] args, String repairMethod, File sourceFolder, Collection<URL> classpath) {
 		if (repairMethod.equalsIgnoreCase("nopol")) {
-			executeNopol(sourceFolder, CollectionLibrary.toArray(URL.class, classFolders));
+			executeNopol(sourceFolder, CollectionLibrary.toArray(URL.class, classpath));
 		}
 		else if (repairMethod.equalsIgnoreCase("infinitel")) {
-			executeInfinitel(sourceFolder, classFolders);
+			executeInfinitel(sourceFolder, classpath);
 		}
 	}
 
-	private static Collection<URL> collectClassDirectories(String classFolders) {
-		List<String> folderNames = StringLibrary.split(classFolders, StringLibrary.javaPathSeparator());
+	private static Collection<URL> collectClassDirectories(String classpath) {
+		List<String> folderNames = StringLibrary.split(classpath, StringLibrary.javaPathSeparator());
 		List<URL> folders = ListLibrary.newArrayList();
 		for (String folderName : folderNames) {
 			folders.add(FileHandler.urlFrom(folderName));
@@ -76,8 +76,8 @@ public class Main {
 		System.out.println("Total Execution time : " + (System.currentTimeMillis() - startTime) + "ms");
 	}
     
-    public void executeInfinitel(File sourceFolder, Collection<URL> classFolders) {
-    	Infinitel.run(sourceFolder, classFolders);
+    public void executeInfinitel(File sourceFolder, Collection<URL> classpath) {
+    	Infinitel.run(sourceFolder, classpath);
     }
 	
 	private static void showUsage() {

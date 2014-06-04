@@ -41,6 +41,7 @@ import spoon.support.DefaultCoreFactory;
 import spoon.support.RuntimeProcessingManager;
 import spoon.support.StandardEnvironment;
 import spoon.support.util.BasicCompilationUnit;
+import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 
 /** 
@@ -48,6 +49,10 @@ import fr.inria.lille.commons.collections.MapLibrary;
  */
 public class SpoonClassLoader extends ClassLoader {
 
+	public static Map<String, Class<?>> classesTransformedWith(Processor<?> processor, File sourceFolder, String... classes) {
+		return classesTransformedWith((Collection) ListLibrary.newLinkedList(processor), sourceFolder, classes);
+	}
+	
 	public static Map<String, Class<?>> classesTransformedWith(Collection<Processor<?>> processors, File sourceFolder, String... classes) {
 		SpoonClassLoader spooner = new SpoonClassLoader(sourceFolder, processors);
 		for (String className : classes) {
@@ -58,6 +63,10 @@ public class SpoonClassLoader extends ClassLoader {
 			}
 		}
 		return spooner.getClasscache();
+	}
+	
+	public static Map<String, Class<?>> allClassesTranformedWith(Processor<?> processor, File sourceFolder) {
+		return allClassesTranformedWith((Collection) ListLibrary.newLinkedList(processor), sourceFolder);
 	}
 	
 	public static Map<String, Class<?>> allClassesTranformedWith(Collection<Processor<?>> processors, File sourceFolder) {
