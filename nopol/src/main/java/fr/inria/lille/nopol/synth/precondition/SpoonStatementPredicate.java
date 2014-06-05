@@ -71,7 +71,25 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 				}
 			}
 		}
-		
+		/*
+		 * Check if the statement is a loop with uninitialized variable assignment inside
+		 */
+		if ( input instanceof CtLoop ){
+			CtLoop loop = (CtLoop) input;
+			List<CtAssignment<?, ?>> assignments = loop.getParent().getElements(new TypeFilter<CtAssignment<?, ?>>(CtAssignment.class));
+			for ( CtAssignment tmp : assignments ){
+				CtVariableAccess<?> varAccess = (CtVariableAccess<?>) tmp.getAssigned();
+				CtVariableReference<?> var = varAccess.getVariable();
+				if (var.getDeclaration() != null) {
+					if (var.getDeclaration().getDefaultExpression() == null) {
+						/*
+						 * variable isn't initialize before this statement
+						 */
+						return false;
+					}
+				}
+			}
+		}
 		
 		/*
 		 * Check if the statement is a Return, if true, check for no existing return in the other branch otherwise it won't compile
