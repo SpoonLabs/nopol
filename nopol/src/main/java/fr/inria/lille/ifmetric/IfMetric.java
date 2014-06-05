@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,6 +30,13 @@ public class IfMetric {
 	private final String[] classpath;
 	private static Set<IfPosition> thenStatementsExecuted = new HashSet<>();
 	private static Set<IfPosition> elseStatementsExecuted = new HashSet<>();
+	
+	/*
+	 * IfPosition : line number and class of the if
+	 * String : testCase name
+	 * IfBranch : number of branches executed
+	 */
+	private static Map<IfPosition, Map<String, IfBranch>> executedIf = new HashMap<IfPosition, Map<String,IfBranch>>();
 	final List<String> modifyClass;
 	
 	private final File sourceFolder;
@@ -100,6 +109,7 @@ public class IfMetric {
 
 	}
 
+	
 	private static void writeOutPut(String s) {
 		try {
 			System.out.println(s);
@@ -114,13 +124,11 @@ public class IfMetric {
 	}
 
 	private void compute(String[] testClasses) {
-
 		SpoonClassLoader scl = new SpoonClassLoader();
 		ProcessingManager processing = new QueueProcessingManager(
 				scl.getFactory());
-		IfCountingInstrumentingProcessor processor = new IfCountingInstrumentingProcessor(
-				this, scl.getFactory());
-		processing.addProcessor(processor);
+		processing.addProcessor(new IfCollectorProcessor());
+		processing.addProcessor(new IfCountingInstrumentingProcessor(this, scl.getFactory()));
 		scl.setSourcePath(sourceFolder);
 		SpoonCompiler builder;
 		try {
@@ -130,34 +138,28 @@ public class IfMetric {
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		}
-
-		
-
 		processing.process();
+
 		
 		writeOutPut("ClassName.TestCaseName\t\t\tNbInpurIf\tNbPurIf");
 		try {
-
-
-			
 			for ( String modify : modifyClass ){
 				scl.loadClass(modify);
 			}
-
-			
 			ExecutorService executor = Executors
 					.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(
 							scl));
-
 			executor.submit(new JUnitRunner(testClasses)).get();
-			
 			executor.shutdown();
-
-
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-
+		
+		
+		computeSecondIfMetric();
+		System.out.println(executedIf);
+		
+		
 	}
 
 	private static void printUsage() {
@@ -179,29 +181,36 @@ public class IfMetric {
 		thenStatementsExecuted.clear();
 		elseStatementsExecuted.clear();
 	}
-
+	
 	public static void computeIfMetric(String testCaseName) {
 		Set<IfPosition> inpur = new HashSet<>();
 		Set<IfPosition> thenPur = new HashSet<>();
 		Set<IfPosition> elsePur = new HashSet<>();
 
-		
+		/*
+		 * Compute inpur if
+		 */
 		for (IfPosition tmp : thenStatementsExecuted) {
 			if (elseStatementsExecuted.contains(tmp) ) {
 				inpur.add(tmp);
+				executedIf.get(tmp).put(testCaseName, IfBranch.BOTH);
 			}
 		}
 
+		/*
+		 * Compute pur if
+		 */
 		for (IfPosition tmp : thenStatementsExecuted) {
 			if (!elseStatementsExecuted.contains(tmp)) {
 					thenPur.add(tmp);
+					executedIf.get(tmp).put(testCaseName, IfBranch.THEN);
 
 			}
 		}
-
 		for (IfPosition tmp : elseStatementsExecuted) {
 			if (!thenStatementsExecuted.contains(tmp)) {
 					elsePur.add(tmp);
+					executedIf.get(tmp).put(testCaseName, IfBranch.ELSE);
 
 			}
 		}
@@ -210,6 +219,51 @@ public class IfMetric {
 				.size() + elsePur.size())));
 	}
 
+	public static void computeSecondIfMetric(){
+		writeOutPut("##################################");
+		writeOutPut("If_Position\t\t\tNo_Execution\tOne_Branch\tBoth_Branch\tBoth_Branch_Only_On_Two_TestCases");
+		for ( IfPosition tmp : executedIf.keySet() ){
+			String display = tmp+"\t\t\t";
+			if ( executedIf.get(tmp).isEmpty() ){
+				/*
+				 * No_Execution
+				 */
+				display+="x";
+			}else {
+				display+="\t\t";
+				if ( !executedIf.get(tmp).containsValue(IfBranch.BOTH)  &&
+					(!executedIf.get(tmp).containsValue(IfBranch.THEN) || !executedIf.get(tmp).containsValue(IfBranch.ELSE))){
+					/*
+					 * One_Branch
+					 */
+					display+="x";
+				}else{
+					/*
+					 * Both_Branch	
+					 */
+					display+="\t\tx";
+					boolean thenInOnTest = false;
+					boolean elseInOnTest = false;
+					for ( String testCase : executedIf.get(tmp).keySet() ){
+						if ( executedIf.get(tmp).get(testCase).equals(IfBranch.THEN) ){
+							thenInOnTest = true;
+						}
+						if ( executedIf.get(tmp).get(testCase).equals(IfBranch.ELSE) ){
+							elseInOnTest = true;
+						}
+					}
+					if ( thenInOnTest && elseInOnTest ){
+						/*
+						 * Both_Branch_Only_On_Two_TestCases
+						 */
+						display+="\t\tx";
+					}
+				}
+			}
+			writeOutPut(display);
+		}
+	}
+	
 	public void closeWriter() {
 		try {
 			writer.close();
@@ -217,4 +271,10 @@ public class IfMetric {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public static Map<IfPosition, Map<String, IfBranch>> getExecutedIf() {
+		return executedIf;
+	}
+	
+	
 }
