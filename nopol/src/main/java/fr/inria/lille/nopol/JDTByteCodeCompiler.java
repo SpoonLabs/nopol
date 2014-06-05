@@ -61,7 +61,7 @@ public class JDTByteCodeCompiler implements ICompilerRequestor {
 		if (result.hasErrors()) {
 			String problems = "";
 			for (CategorizedProblem cp : result.getAllProblems()) {
-				problems+=cp.toString()+", ";
+				problems+=cp.toString()+"["+new String(cp.getOriginatingFileName())+":"+cp.getSourceLineNumber()+"]\n"+new String(result.getCompilationUnit().getContents())+"\n";
 			}
 			classErrors.add(problems);
 			System.err.println(problems);
