@@ -26,6 +26,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtSwitch;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -55,7 +56,7 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 		boolean isInsideConstructor = parent.getParent() instanceof CtConstructor;
 		boolean isCtLocalVariable = input instanceof CtLocalVariable;
 		boolean isInsideIfLoopCaseBlock = (parent instanceof CtIf || parent instanceof CtLoop || parent instanceof CtCase || parent instanceof CtBlock);
-		boolean isInsideForUpdate = parent instanceof CtFor ? ((CtFor)(parent)).getForUpdate().contains(input) : false ;
+		boolean isInsideForDeclaration = parent instanceof CtFor ? ((CtFor)(parent)).getForUpdate().contains(input) || ((CtFor)(parent)).getForInit().contains(input): false ;
 		
 		/*
 		 * Check if the statement is a assignment of final variable inside constructor
@@ -88,7 +89,42 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 			}
 		}
 		/*
-		 * Check if the variable assigned was previously initiliaze, if not, check for no assignment in the other branch, otherwise it won't compile
+		 * Check if the local variable assigned was previously initialize, if not, check in the block if there is other assignment later
+		 */
+		if ( input instanceof CtAssignment<?, ?>){
+			CtAssignment<?, ?> assignment = (CtAssignment<?, ?>) input;
+			if ( assignment.getAssigned() instanceof CtVariableAccess<?> ){
+				CtVariableAccess<?> varAccess = (CtVariableAccess<?>) assignment.getAssigned();
+				CtVariableReference<?> var = varAccess.getVariable();
+				if (var.getDeclaration() != null) {
+					if (var.getDeclaration().getDefaultExpression() == null) {
+						/*
+						 * variable isn't initialize before this statement
+						 */
+						List<CtAssignment<?, ?>> otherAssignments = input.getParent().getElements(new TypeFilter<CtAssignment<?, ?>>(CtAssignment.class));
+						boolean noOtherAssign = true;;
+						for (CtAssignment<?, ?> tmp : otherAssignments) {
+							if (tmp.getAssigned() instanceof CtVariableAccess<?>) {
+								if (((CtVariableAccess<?>) (tmp.getAssigned())).getVariable().equals(var) 
+										&& tmp.getPosition().getLine() > input.getPosition().getLine() ) {
+									/*
+									 * variable is assigned later
+									 */
+									noOtherAssign = false;;
+								}
+							}
+						}
+						if ( noOtherAssign ){
+							return false;
+						}
+					}
+				}
+			}
+		}
+		
+		
+		/*
+		 * Check if the variable assigned inside the if was previously initiliaze, if not, check for no assignment in the other branch, otherwise it won't compile
 		 */
 		if ( isInsideIf && (input instanceof CtAssignment<? , ?>)){
 			CtAssignment<?, ?> assignment = (CtAssignment<?, ?>) input;
@@ -153,7 +189,7 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 				// target, CtStatementList<?> statements)
 				&& isInsideIfLoopCaseBlock
 				// cannot insert if inside update statement in for loop declaration
-				&& !isInsideForUpdate
+				&& !isInsideForDeclaration
 				// cannot insert if before super() call in constructor
 				&& !isConstructorCall;
 		return  result;
