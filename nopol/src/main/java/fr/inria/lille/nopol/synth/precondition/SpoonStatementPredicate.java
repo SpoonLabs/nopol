@@ -77,15 +77,17 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 		if ( input instanceof CtLoop ){
 			CtLoop loop = (CtLoop) input;
 			List<CtAssignment<?, ?>> assignments = loop.getParent().getElements(new TypeFilter<CtAssignment<?, ?>>(CtAssignment.class));
-			for ( CtAssignment tmp : assignments ){
-				CtVariableAccess<?> varAccess = (CtVariableAccess<?>) tmp.getAssigned();
-				CtVariableReference<?> var = varAccess.getVariable();
-				if (var.getDeclaration() != null) {
-					if (var.getDeclaration().getDefaultExpression() == null) {
-						/*
-						 * variable isn't initialize before this statement
-						 */
-						return false;
+			for ( CtAssignment<?, ?> tmp : assignments ){
+				if ( tmp.getAssigned() instanceof CtVariableAccess<?> ){
+					CtVariableAccess<?> varAccess = (CtVariableAccess<?>) tmp.getAssigned();
+					CtVariableReference<?> var = varAccess.getVariable();
+					if (var.getDeclaration() != null) {
+						if (var.getDeclaration().getDefaultExpression() == null) {
+							/*
+							 * variable isn't initialize before this statement
+							 */
+							return false;
+						}
 					}
 				}
 			}
