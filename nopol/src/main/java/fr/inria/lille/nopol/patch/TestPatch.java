@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.nopol.test.junit;
+package fr.inria.lille.nopol.patch;
 
 import java.io.File;
 import java.net.URL;
@@ -31,7 +31,6 @@ import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.spoon.SpoonClassLoader;
 import fr.inria.lille.commons.spoon.SpoonLibrary;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
-import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.synth.BugKind;
 import fr.inria.lille.nopol.synth.DelegatingProcessor;
 import fr.inria.lille.nopol.synth.conditional.ConditionalReplacer;

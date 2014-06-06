@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import spoon.processing.Processor;
 import fr.inria.lille.commons.spoon.SpoonClassLoader;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
+import fr.inria.lille.commons.suite.trace.TestValuesCollectorListener;
 import fr.inria.lille.nopol.SourceLocation;
 
 /**
@@ -47,7 +48,7 @@ public final class ConstraintModelBuilder {
 	public InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
 		InputOutputValues model = new InputOutputValues();
 		Result firstResult = tracedExecutionResult(model, testClasses, classpath);
-		ConditionalValueHolder.flip();
+		GlobalBooleanVariable.flip();
 		Result secondResult = tracedExecutionResult(model, testClasses, classpath);
 		
 		if (firstResult == null || secondResult == null) {
@@ -60,7 +61,7 @@ public final class ConstraintModelBuilder {
 	}
 	
 	private Result tracedExecutionResult(InputOutputValues model, String[] testClasses, URL[] classpath) {
-		ResultMatrixBuilderListener listener = new ResultMatrixBuilderListener(model, ConditionalValueHolder.booleanValue);
+		TestValuesCollectorListener listener = new TestValuesCollectorListener(model, GlobalBooleanVariable.booleanValue);
 		return TestSuiteExecution.runCasesIn(testClasses, classpath, classCache, listener);
 	}
 

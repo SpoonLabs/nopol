@@ -1,4 +1,4 @@
-package fr.inria.lille.nopol.synth.smt;
+package fr.inria.lille.commons.synth.smt;
 
 import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.synth.smt.model.Level;

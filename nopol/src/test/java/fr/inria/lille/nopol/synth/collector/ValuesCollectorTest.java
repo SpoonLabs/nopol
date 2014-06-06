@@ -15,16 +15,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import fr.inria.lille.commons.suite.trace.RuntimeValues;
+
 public class ValuesCollectorTest {
 
 	@Before
 	public void setUp() {
-		ValuesCollector.clear();
+		RuntimeValues.discardCollectedValues();
 	}
 
 	@After
 	public void tearDown() {
-		ValuesCollector.clear();
+		RuntimeValues.discardCollectedValues();
 	}
 
 	@Test
@@ -34,12 +36,11 @@ public class ValuesCollectorTest {
 		Collection<?> value = asList(1, 2, 3);
 
 		// WHEN
-		ValuesCollector.collectValue(name, value);
-		ValuesCollector.collectNullness(name, value);
+		RuntimeValues.collectValue(name, value);
 		
 		
 		// THEN
-		Iterator<Entry<String, Object>> iterator = ValuesCollector.getValues().iterator();
+		Iterator<Entry<String, Object>> iterator = RuntimeValues.collectedValues().iterator();
 
 		Entry<String, Object> isEmpty = iterator.next();
 		assertEquals(name + ".isEmpty()", isEmpty.getKey());
@@ -63,11 +64,10 @@ public class ValuesCollectorTest {
 		Map<?, ?> value = Collections.singletonMap("key", "value");
 
 		// WHEN
-		ValuesCollector.collectValue(name, value);
-		ValuesCollector.collectNullness(name, value);
+		RuntimeValues.collectValue(name, value);
 		
 		// THEN
-		Iterator<Entry<String, Object>> iterator = ValuesCollector.getValues().iterator();
+		Iterator<Entry<String, Object>> iterator = RuntimeValues.collectedValues().iterator();
 
 		Entry<String, Object> size = iterator.next();
 		assertEquals(name + ".size()", size.getKey());
@@ -91,12 +91,11 @@ public class ValuesCollectorTest {
 		String value = "Take nothing on its looks; take everything on evidence. There's no better rule.";
 
 		// WHEN
-		ValuesCollector.collectValue(name, value);
-		ValuesCollector.collectNullness(name, value);
+		RuntimeValues.collectValue(name, value);
 
 		
 		// THEN
-		Iterator<Entry<String, Object>> iterator = ValuesCollector.getValues().iterator();
+		Iterator<Entry<String, Object>> iterator = RuntimeValues.collectedValues().iterator();
 
 		Entry<String, Object> length = iterator.next();
 		assertEquals(name + ".length()", length.getKey());
@@ -120,11 +119,10 @@ public class ValuesCollectorTest {
 		int[] value = { 1, 2, 3 };
 
 		// WHEN
-		ValuesCollector.collectValue(name, value);
-		ValuesCollector.collectNullness(name, value);
+		RuntimeValues.collectValue(name, value);
 
 		// THEN
-		Iterator<Entry<String, Object>> iterator = ValuesCollector.getValues().iterator();
+		Iterator<Entry<String, Object>> iterator = RuntimeValues.collectedValues().iterator();
 		Entry<String, Object> entry = iterator.next();
 		assertEquals(name + ".length", entry.getKey());
 		assertEquals(value.length, entry.getValue());

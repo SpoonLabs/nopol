@@ -24,10 +24,10 @@ import fr.inria.lille.commons.collections.CollectionLibrary;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.io.FileHandler;
 import fr.inria.lille.commons.string.StringLibrary;
+import fr.inria.lille.commons.synth.smt.SMTExecutionResult;
 import fr.inria.lille.infinitel.Infinitel;
 import fr.inria.lille.nopol.synth.DefaultSynthesizer;
 import fr.inria.lille.nopol.synth.SynthesizerFactory;
-import fr.inria.lille.nopol.synth.smt.SMTExecutionResult;
 import fr.inria.lille.nopol.synth.smt.constraint.ConstraintSolver;
 
 public class Main {

@@ -13,20 +13,23 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.nopol.synth.collector;
-
+package fr.inria.lille.nopol.synth;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
-interface SubValuesCollector {
+public final class GlobalBooleanVariable {
 
-	/**
-	 * 
-	 * @param name
-	 * @param value
-	 * @param values
-	 */
-	void addSubValues(String name, Object value);
+	public static final String accessName() {
+		return GlobalBooleanVariable.class.getName() + '.' + "booleanValue";
+	}
+
+	public static volatile boolean booleanValue = true;
+
+	public static void flip() {
+		booleanValue = !booleanValue;
+	}
+
+	private GlobalBooleanVariable() {}
 }

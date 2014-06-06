@@ -27,10 +27,10 @@ import org.slf4j.LoggerFactory;
 
 import fr.inria.lille.commons.classes.TestClassesFinder;
 import fr.inria.lille.nopol.patch.Patch;
+import fr.inria.lille.nopol.patch.TestPatch;
 import fr.inria.lille.nopol.sps.SuspiciousStatement;
 import fr.inria.lille.nopol.sps.gzoltar.GZoltarSuspiciousProgramStatements;
 import fr.inria.lille.nopol.synth.SynthesizerFactory;
-import fr.inria.lille.nopol.test.junit.TestPatch;
 
 /**
  * @author Favio D. DeMarco

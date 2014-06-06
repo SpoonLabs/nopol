@@ -46,7 +46,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import spoon.reflect.visitor.Filter;
-import fr.inria.lille.nopol.synth.collector.ValuesCollector;
+import fr.inria.lille.commons.suite.trace.RuntimeValues;
 
 /**
  * 
@@ -104,10 +104,6 @@ final class ConditionalLoggingInstrumenter implements Processor {
 		
 	}
 
-	private static final String VALUES_COLLECTOR_CALL = ValuesCollector.class.getName() + ".collectValue(\"";
-	private static final String NULLNESS_COLLECTOR_CALL = ValuesCollector.class.getName() + ".collectNullness(\"";
-
-	
 	/**
 	 * Returns all variables in this scope if el does not define a scope, returns an empty set
 	 * 
@@ -221,19 +217,7 @@ final class ConditionalLoggingInstrumenter implements Processor {
 					}
 				}
 				String varName = var.getSimpleName();
-				snippet.append(VALUES_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(");")
-				.append(System.lineSeparator());
-				if ( !var.getType().isPrimitive() ){
-					snippet.append(NULLNESS_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(");")
-					.append(System.lineSeparator());
-				} else {
-					// huge workaround
-					// because otherwise there are missing values in ValuesCollector at runtime
-					// and the indices get wrong
-					// so we add a fake value so as to have the same number of collected values at runtime
-					// this value is "true", if SMT uses it, the resulting synthesize expression would still compile
-					snippet.append(ValuesCollector.class.getName() + ".collectTrue();").append(System.lineSeparator());
-				}
+				snippet.append(collectionSnippet(varName));
 			}
 		}
 		if (snippet.length() > 0) {
@@ -243,5 +227,8 @@ final class ConditionalLoggingInstrumenter implements Processor {
 		}
 	}
 
-	
+	private String collectionSnippet(String variableName) {
+		String methodInvocation = String.format(".collectValue(\"%s\", %s);", variableName, variableName);
+		return RuntimeValues.class.getName() + methodInvocation + System.lineSeparator();
+	}
 }
