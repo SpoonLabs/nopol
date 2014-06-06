@@ -253,7 +253,7 @@ final class ConditionalLoggingInstrumenter implements Processor {
 	}
 
 	private void createSnippetCollect(StringBuilder snippet, String varName, CtTypedElement<?> element){
-		snippet.append(VALUES_COLLECTOR_CALL).append(varName).append("\", ").append(varName).append(", "+ConditionalValueHolder.ID_Conditional)
+		snippet.append(VALUES_COLLECTOR_CALL).append(varName.replace("\"", "\\\"")).append("\", ").append(varName).append(", "+ConditionalValueHolder.ID_Conditional)
 		.append(");")
 		.append(System.lineSeparator());
 		CtTypeReference<?> type = element.getType();
