@@ -64,6 +64,12 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 		if ( input instanceof CtThrow ){
 			return false;
 		}
+		/*
+		 * Check if the statement is a switch, skipping the switch can result compilation error
+		 */
+		if ( input instanceof CtSwitch ){
+			return false;
+		}
 		
 		
 		/*
