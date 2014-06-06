@@ -27,6 +27,7 @@ import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtSwitch;
+import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -57,6 +58,13 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 		boolean isCtLocalVariable = input instanceof CtLocalVariable;
 		boolean isInsideIfLoopCaseBlock = (parent instanceof CtIf || parent instanceof CtLoop || parent instanceof CtCase || parent instanceof CtBlock);
 		boolean isInsideForDeclaration = parent instanceof CtFor ? ((CtFor)(parent)).getForUpdate().contains(input) || ((CtFor)(parent)).getForInit().contains(input): false ;
+		/*
+		 * Check if the statement is a throw, skipping the throw can result compilation error
+		 */
+		if ( input instanceof CtThrow ){
+			return false;
+		}
+		
 		
 		/*
 		 * Check if the statement is a assignment of final variable inside constructor
