@@ -46,9 +46,9 @@ public final class ConstraintModelBuilder {
 
 	public InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
 		InputOutputValues model = new InputOutputValues();
-		Result firstResult = runWithListener(model, testClasses, classpath);
+		Result firstResult = tracedExecutionResult(model, testClasses, classpath);
 		ConditionalValueHolder.flip();
-		Result secondResult = runWithListener(model, testClasses, classpath);
+		Result secondResult = tracedExecutionResult(model, testClasses, classpath);
 		
 		if (firstResult == null || secondResult == null) {
 			viablePatch = false;
@@ -59,7 +59,7 @@ public final class ConstraintModelBuilder {
 		return model;
 	}
 	
-	private Result runWithListener(InputOutputValues model, String[] testClasses, URL[] classpath) {
+	private Result tracedExecutionResult(InputOutputValues model, String[] testClasses, URL[] classpath) {
 		ResultMatrixBuilderListener listener = new ResultMatrixBuilderListener(model, ConditionalValueHolder.booleanValue);
 		return TestSuiteExecution.runCasesIn(testClasses, classpath, classCache, listener);
 	}

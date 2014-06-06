@@ -8,37 +8,23 @@ import org.junit.runner.notification.RunListener;
 public class NullRunListener extends RunListener {
 
     @Override
-    public void testRunStarted(Description description) throws Exception {
-        super.testRunStarted(description);
-    }
+    public void testRunStarted(Description description) throws Exception {}
     
     @Override
-    public void testIgnored(Description description) throws Exception {
-        super.testIgnored(description);
-    }
+    public void testIgnored(Description description) throws Exception {}
     
     @Override
-    public void testStarted(Description description) throws Exception {
-        super.testStarted(description);
-    }
+    public void testStarted(Description description) throws Exception {}
 	
     @Override
-    public void testFinished(Description description) throws Exception {
-        super.testFinished(description);
-    }
+    public void testFinished(Description description) throws Exception {}
     
     @Override
-    public void testAssumptionFailure(Failure failure) {
-        super.testAssumptionFailure(failure);
-    }
+    public void testAssumptionFailure(Failure failure) {}
     
     @Override
-    public void testFailure(Failure failure) throws Exception {
-        super.testFailure(failure);
-    }
+    public void testFailure(Failure failure) throws Exception {}
     
     @Override
-    public void testRunFinished(Result result) throws Exception {
-        super.testRunFinished(result);
-    }
+    public void testRunFinished(Result result) throws Exception {}
 }

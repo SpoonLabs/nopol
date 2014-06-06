@@ -2,7 +2,6 @@ package fr.inria.lille.commons.collections;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
-import java.util.List;
 
 public class CollectionLibrary {
 
@@ -50,18 +49,5 @@ public class CollectionLibrary {
 		}
 		return null;
 	}
-	
-	public static <T> T head(List<T> list) {
-		if (! list.isEmpty()) {
-			return list.get(0);
-		}
-		return null;
-	}
-	
-	public static <T> T last(List<T> list) {
-		if (! list.isEmpty()) {
-			return list.get(list.size() - 1);
-		}
-		return null;
-	}
+
 }

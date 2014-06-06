@@ -6,7 +6,7 @@ import java.util.Map;
 import org.junit.runner.Result;
 
 import spoon.reflect.cu.SourcePosition;
-import fr.inria.lille.commons.collections.CollectionLibrary;
+import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.io.ProjectReference;
 import fr.inria.lille.commons.spoon.SpoonClassLoader;
@@ -32,7 +32,7 @@ public class LoopUnroller {
 	private void findTracedThresholds(Collection<TestCase> tests, IterationsAuditor auditor, Map<String, Class<?>> processedClasses, Map<TestCase, Integer> thresholdMap) {
 		for (TestCase testCase : tests) {
 			executionResult(testCase, processedClasses);
-			int tracedThreshold = CollectionLibrary.last(auditor.iterationsRecord());
+			int tracedThreshold = ListLibrary.last(auditor.iterationsRecord());
 			thresholdMap.put(testCase, tracedThreshold);
 		}
 	}

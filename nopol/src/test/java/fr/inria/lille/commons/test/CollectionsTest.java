@@ -77,8 +77,8 @@ public class CollectionsTest {
 	@Test
 	public void headAndLast() {
 		List<String> list = ListLibrary.newArrayList(".", "..", "...");
-		String head = CollectionLibrary.head(list);
-		String last = CollectionLibrary.last(list);
+		String head = ListLibrary.head(list);
+		String last = ListLibrary.last(list);
 		Assert.assertTrue(list.contains(head));
 		Assert.assertEquals(".", head);
 		Assert.assertTrue(list.contains(last));
