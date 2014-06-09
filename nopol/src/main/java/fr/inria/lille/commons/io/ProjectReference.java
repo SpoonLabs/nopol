@@ -2,37 +2,35 @@ package fr.inria.lille.commons.io;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Collection;
 
 import fr.inria.lille.commons.classes.TestClassesFinder;
-import fr.inria.lille.commons.collections.CollectionLibrary;
-import fr.inria.lille.commons.collections.SetLibrary;
 
 public class ProjectReference {
 
-	public ProjectReference(File sourceFolder, Collection<URL> classpath) {
-		this.sourceFolder = sourceFolder;
+	public ProjectReference(String sourceFile, String classpath, String[] testClasses) {
+		this(FileHandler.openFrom(sourceFile), FileHandler.classpathFrom(classpath));
+		this.testClasses = testClasses;
+	}
+	
+	public ProjectReference(File sourceFile, URL[] classpath) {
+		this.sourceFile = sourceFile;
 		this.classpath = classpath;
+		testClasses = new TestClassesFinder().findIn(classpath(), false);
 	}
 	
-	public File sourceFolder() {
-		return sourceFolder;
+	public File sourceFile() {
+		return sourceFile;
 	}
 	
-	public Collection<URL> classpath() {
+	public URL[] classpath() {
 		return classpath;
 	}
 	
-	public Collection<String> testClasses() {
-		if (testClasses == null) {
-			TestClassesFinder finder = new TestClassesFinder();
-			String[] testClassesNames = finder.findIn(CollectionLibrary.toArray(URL.class, classpath()), false);
-			testClasses = SetLibrary.newHashSet(testClassesNames);
-		}
+	public String[] testClasses() {
 		return testClasses;
 	}
 	
-	private File sourceFolder;
-	private Collection<URL> classpath;
-	private Collection<String> testClasses;
+	private File sourceFile;
+	private URL[] classpath;
+	private String[] testClasses;
 }

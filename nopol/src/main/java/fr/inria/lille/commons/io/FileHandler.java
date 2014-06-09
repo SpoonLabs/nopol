@@ -3,6 +3,9 @@ package fr.inria.lille.commons.io;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
+
+import fr.inria.lille.commons.string.StringLibrary;
 
 public class FileHandler {
 
@@ -13,7 +16,7 @@ public class FileHandler {
 	public static File openFrom(String path) {
 		File file = new File(path);
 		if (! file.exists()) {
-			throw new RuntimeException("File does not exist in: '" + path + "'");
+			throw new IllegalArgumentException("File does not exist in: '" + path + "'");
 		}
 		return file;
 	}
@@ -43,4 +46,16 @@ public class FileHandler {
 		}
 		return url;
 	}
+	
+	public static URL[] classpathFrom(String classpath) {
+		List<String> folderNames = StringLibrary.split(classpath, StringLibrary.javaPathSeparator());
+		URL[] folders = new URL[folderNames.size()];
+		int index = 0;
+		for (String folderName : folderNames) {
+			folders[index] = FileHandler.urlFrom(folderName);
+			index += 1;
+		}
+		return folders;
+	}
+	
 }

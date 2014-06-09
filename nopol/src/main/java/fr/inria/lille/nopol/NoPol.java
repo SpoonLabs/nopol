@@ -36,7 +36,7 @@ import fr.inria.lille.nopol.synth.SynthesizerFactory;
  * @author Favio D. DeMarco
  * 
  */
-final class NoPol {
+public final class NoPol {
 
 	private final URL[] classpath;
 	private final GZoltarSuspiciousProgramStatements gZoltar;
@@ -90,7 +90,7 @@ final class NoPol {
 		try {
 			return synthetizerFactory.getFor(statement.getSourceLocation()).buildPatch(classpath,
 					testClasses);
-		} catch (SourceFileNotFoundException e) {
+		} catch (IllegalArgumentException e) {
 			logger.info(e.getMessage());
 			return NO_PATCH;
 		}

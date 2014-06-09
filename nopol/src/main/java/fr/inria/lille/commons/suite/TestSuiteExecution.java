@@ -2,9 +2,7 @@ package fr.inria.lille.commons.suite;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 
-import java.net.URL;
-import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -12,72 +10,36 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.runner.Description;
 import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.inria.lille.commons.classes.CacheBasedClassLoader;
 import fr.inria.lille.commons.classes.ProvidedClassLoaderThreadFactory;
-import fr.inria.lille.commons.collections.CollectionLibrary;
-import fr.inria.lille.commons.collections.MapLibrary;
+import fr.inria.lille.commons.collections.ListLibrary;
 
 public class TestSuiteExecution {
-
-	public static Result runCasesIn(Collection<String> testClasses, Collection<URL> classpath) {
-		return runCasesIn(testClasses, classpath, (Map) MapLibrary.newHashMap());
+	
+	public static Result runCasesIn(String[] testClasses, ClassLoader classLoaderForTestThread) {
+		return runCasesIn(testClasses, classLoaderForTestThread, nullListener());
 	}
 	
-	public static Result runCasesIn(Collection<String> testClasses, Collection<URL> classpath, Map<String, Class<?>> classcache) {
-		return runCasesIn(testClasses, classpath, classcache, nullListener());
+	public static Result runCasesIn(String[] testClasses, ClassLoader classLoaderForTestThread, RunListener listener) {
+		return executionResult(new JUnitRunner(testClasses, listener), classLoaderForTestThread);
 	}
 	
-	public static Result runCasesIn(Collection<String> testClasses, Collection<URL> classpath, Map<String, Class<?>> classcache, RunListener listener) {
-		String[] testClassesArray = CollectionLibrary.toArray(String.class, testClasses);
-		URL[] classpathArray = CollectionLibrary.toArray(URL.class, classpath);
-		return runCasesIn(testClassesArray, classpathArray, classcache, listener);
+	public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread) {
+		return runTestCase(testCase, classLoaderForTestThread, nullListener());
 	}
 	
-	public static Result runCasesIn(String[] testClasses, URL[] classpath) {
-		return runCasesIn(testClasses, classpath, (Map) MapLibrary.newHashMap());
-	}
-	
-	public static Result runCasesIn(String[] testClasses, URL[] classpath, Map<String, Class<?>> classcache) {
-		return runCasesIn(testClasses, classpath, classcache, nullListener());
-	}
-	
-	public static Result runCasesIn(String[] testClasses, URL[] classpath, Map<String, Class<?>> classcache, RunListener listener) {
-		return executionResult(new JUnitRunner(testClasses, listener), classpath, classcache);
-	}
-	
-	public static Result runTestCase(TestCase testCase, Collection<URL> classpath) {
-		return runTestCase(testCase, classpath, (Map) MapLibrary.newHashMap());
-	}
-	
-	public static Result runTestCase(TestCase testCase, Collection<URL> classpath, Map<String, Class<?>> classcache) {
-		return runTestCase(testCase, classpath, classcache, nullListener());
-	}
-	
-	public static Result runTestCase(TestCase testCase, Collection<URL> classpath, Map<String, Class<?>> classcache, RunListener listener) {
-		URL[] classpathArray = CollectionLibrary.toArray(URL.class, classpath);
-		return runTestCase(testCase, classpathArray, classcache, listener);
-	}
-	
-	public static Result runTestCase(TestCase testCase, URL[] classpath) {
-		return runTestCase(testCase, classpath, (Map) MapLibrary.newHashMap());
-	}
-	
-	public static Result runTestCase(TestCase testCase, URL[] classpath, Map<String, Class<?>> classcache) {
-		return runTestCase(testCase, classpath, classcache, nullListener());
-	}
-	
-	public static Result runTestCase(TestCase testCase, URL[] classpath, Map<String, Class<?>> classcache, RunListener listener) {
-		return executionResult(new JUnitSingleTestRunner(testCase, listener), classpath, classcache);
+	public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread, RunListener listener) {
+		return executionResult(new JUnitSingleTestRunner(testCase, listener), classLoaderForTestThread);
 	}
 
-	private static Result executionResult(Callable<Result> callable, URL[] classpath, Map<String, Class<?>> classcache) {
-		ClassLoader classloader = new CacheBasedClassLoader(classpath, classcache);
-		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(classloader));
+	private static Result executionResult(Callable<Result> callable, ClassLoader classLoaderForTestThread) {
+		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(classLoaderForTestThread));
 		Result result = null;
 		try {
 			result = executor.submit(callable).get(secondsForTimeout(), TimeUnit.SECONDS);
@@ -90,6 +52,14 @@ public class TestSuiteExecution {
 		}
 		executor.shutdown();
 		return result;
+	}
+	
+	public static List<Description> collectDescription(List<Failure> failures) {
+		List<Description> descriptions = ListLibrary.newLinkedList();
+		for (Failure failure : failures) {
+			descriptions.add(failure.getDescription());
+		}
+		return descriptions;
 	}
 	
 	protected static RunListener nullListener() {

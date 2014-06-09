@@ -3,6 +3,7 @@ package fr.inria.lille.commons.test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import fr.inria.lille.commons.collections.ArrayLibrary;
 import fr.inria.lille.commons.collections.CollectionLibrary;
 import fr.inria.lille.commons.collections.ListLibrary;
+import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.collections.SetLibrary;
 
 public class CollectionsTest {
@@ -83,5 +85,18 @@ public class CollectionsTest {
 		Assert.assertEquals(".", head);
 		Assert.assertTrue(list.contains(last));
 		Assert.assertEquals("...", last);
+	}
+	
+	@Test
+	public void toStringMap() {
+		Map<Integer, Boolean> map = MapLibrary.newHashMap();
+		map.put(0, false);
+		map.put(1, true);
+		Map<String, Boolean> stringMap = MapLibrary.toStringMap(map);
+		Assert.assertEquals(2, stringMap.keySet().size());
+		Assert.assertTrue(stringMap.containsKey("0"));
+		Assert.assertEquals(false, stringMap.get("0"));
+		Assert.assertTrue(stringMap.containsKey("1"));
+		Assert.assertEquals(true, stringMap.get("1"));
 	}
 }

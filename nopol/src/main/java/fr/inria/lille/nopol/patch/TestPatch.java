@@ -27,8 +27,9 @@ import org.slf4j.LoggerFactory;
 import spoon.processing.Processor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
+import fr.inria.lille.commons.classes.CacheBasedClassLoader;
 import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.spoon.SpoonClassLoader;
+import fr.inria.lille.commons.spoon.SourceInstrumenter;
 import fr.inria.lille.commons.spoon.SpoonLibrary;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.nopol.synth.BugKind;
@@ -62,8 +63,9 @@ public final class TestPatch {
 	}
 
 	private boolean wasSuccessful(String classWithPatch, Collection<Processor<?>> processors, String[] testClasses) {
-		Map<String, Class<?>> classcache = SpoonClassLoader.classesTransformedWith(processors, sourceFolder, classWithPatch);
-		Result result = TestSuiteExecution.runCasesIn(testClasses, classpath, classcache);
+		Map<String, Class<?>> classCache = new SourceInstrumenter(sourceFolder, classpath).instrumentedWith(processors, classWithPatch);
+		ClassLoader cacheBasedClassLoader = new CacheBasedClassLoader(classpath, classCache);
+		Result result = TestSuiteExecution.runCasesIn(testClasses, cacheBasedClassLoader);
 		return result.wasSuccessful();
 	}
 

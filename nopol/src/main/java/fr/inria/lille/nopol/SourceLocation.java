@@ -17,7 +17,7 @@ package fr.inria.lille.nopol;
 
 import java.io.File;
 
-import javax.annotation.Nullable;
+import fr.inria.lille.commons.io.FileHandler;
 
 /**
  * @author Favio D. DeMarco
@@ -36,13 +36,6 @@ public final class SourceLocation {
 	public SourceLocation(final String containingClassName, final int lineNumber) {
 		this.containingClassName = containingClassName;
 		this.lineNumber = lineNumber;
-	}
-
-	private void checkState(final boolean expression, @Nullable final String errorMessageTemplate,
-			@Nullable final Object... errorMessageArgs) {
-		if (!expression) {
-			throw new SourceFileNotFoundException(String.format(errorMessageTemplate, errorMessageArgs));
-		}
 	}
 
 	/**
@@ -74,7 +67,7 @@ public final class SourceLocation {
 	public File getSourceFile(final String sourceFolder) {
 		String classPath = getRootClassName().replace('.', File.separatorChar);
 		File sourceFile = new File(sourceFolder, classPath + ".java");
-		checkState(sourceFile.exists(), "%s: does not exist.", sourceFile);
+		FileHandler.ensurePathIsValid(sourceFile.getAbsolutePath());
 		return sourceFile;
 	}
 

@@ -15,14 +15,10 @@
  */
 package fr.inria.lille.nopol.synth;
 
-import static com.google.common.collect.ImmutableSet.copyOf;
-import static com.google.common.collect.Lists.transform;
-import static com.google.common.collect.Sets.intersection;
-
 import java.io.File;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.runner.Description;
 import org.junit.runner.Result;
@@ -30,7 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.processing.Processor;
-import fr.inria.lille.commons.spoon.SpoonClassLoader;
+import fr.inria.lille.commons.classes.CacheBasedClassLoader;
+import fr.inria.lille.commons.spoon.SourceInstrumenter;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.commons.suite.trace.TestValuesCollectorListener;
 import fr.inria.lille.nopol.SourceLocation;
@@ -42,7 +39,7 @@ import fr.inria.lille.nopol.SourceLocation;
 public final class ConstraintModelBuilder {
 
 	public ConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation, final Processor<?> processor) {
-		classCache = SpoonClassLoader.classesTransformedWith(processor, sourceFolder, sourceLocation.getRootClassName());
+		classCache = new SourceInstrumenter(sourceFolder, new URL[] {}).instrumentedWith(processor, sourceLocation.getRootClassName());
 	}
 
 	public InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
@@ -61,14 +58,15 @@ public final class ConstraintModelBuilder {
 	}
 	
 	private Result tracedExecutionResult(InputOutputValues model, String[] testClasses, URL[] classpath) {
-		TestValuesCollectorListener listener = new TestValuesCollectorListener(model, GlobalBooleanVariable.booleanValue);
-		return TestSuiteExecution.runCasesIn(testClasses, classpath, classCache, listener);
+		TestValuesCollectorListener<Boolean> listener = new TestValuesCollectorListener<Boolean>(model, GlobalBooleanVariable.value);
+		ClassLoader cacheBasedClassLoader = new CacheBasedClassLoader(classpath, classCache);
+		return TestSuiteExecution.runCasesIn(testClasses, cacheBasedClassLoader, listener);
 	}
 
 	private void determineViability(final Result firstResult, final Result secondResult) {
-		Set<Description> firstFailures = copyOf(transform(firstResult.getFailures(), FailureToDescription.INSTANCE));
-		Set<Description> secondFailures = copyOf(transform(secondResult.getFailures(), FailureToDescription.INSTANCE));
-		Set<Description> failingTests = intersection(firstFailures, secondFailures);
+		Collection<Description> failingTests = TestSuiteExecution.collectDescription(firstResult.getFailures());
+		Collection<Description> secondFailures = TestSuiteExecution.collectDescription(secondResult.getFailures());
+		failingTests.retainAll(secondFailures);
 		viablePatch = failingTests.isEmpty();
 		if (!viablePatch) {
 			logger.debug("Failing test(s): {}", failingTests);
@@ -77,7 +75,7 @@ public final class ConstraintModelBuilder {
 			testsOutput.debug("Second set: \n{}", secondResult.getFailures());
 		}
 	}
-
+	
 	public boolean isAViablePatch() {
 		return viablePatch;
 	}

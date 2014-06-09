@@ -34,4 +34,12 @@ public class MapLibrary {
 		}
 		return previousValues;
 	}
+	
+	public static <K, V> Map<String, V> toStringMap(Map<K, V> sourceMap) {
+		Map<String, V> toStringMap = newHashMap();
+		for (K key : sourceMap.keySet()) {
+			toStringMap.put(key.toString(), sourceMap.get(key));
+		}
+		return toStringMap;
+	}
 }

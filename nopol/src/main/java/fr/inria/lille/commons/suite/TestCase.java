@@ -1,5 +1,6 @@
 package fr.inria.lille.commons.suite;
 
+
 public class TestCase {
 
 	public TestCase(String className, String testName) {
@@ -14,7 +15,7 @@ public class TestCase {
 	public String testName() {
 		return testName;
 	}
-	
+
 	@Override
 	public String toString() {
 		return className() + "#" + testName();

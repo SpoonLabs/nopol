@@ -13,20 +13,17 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.nopol;
+package fr.inria.lille.main;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Collection;
-import java.util.List;
 
-import fr.inria.lille.commons.collections.CollectionLibrary;
-import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.io.FileHandler;
 import fr.inria.lille.commons.string.StringLibrary;
-import fr.inria.lille.commons.synth.smt.SMTExecutionResult;
 import fr.inria.lille.infinitel.Infinitel;
+import fr.inria.lille.nopol.NoPol;
 import fr.inria.lille.nopol.synth.DefaultSynthesizer;
+import fr.inria.lille.nopol.synth.SMTExecutionResult;
 import fr.inria.lille.nopol.synth.SynthesizerFactory;
 import fr.inria.lille.nopol.synth.smt.constraint.ConstraintSolver;
 
@@ -35,9 +32,9 @@ public class Main {
 	public static void main(String[] args) {
     	try {
     		String repairMethod = args[0];
-    		File sourceFolder = FileHandler.directoryFrom(args[1]);
-    		Collection<URL> classpath = collectClassDirectories(args[2]);
-    		new Main(args, repairMethod, sourceFolder, classpath);
+    		File sourceFile = FileHandler.openFrom(args[1]);
+    		URL[] classpath = FileHandler.classpathFrom(args[2]);
+    		new Main(repairMethod, sourceFile, classpath);
     	}
     	catch (Exception e) {
     		showUsage();
@@ -45,27 +42,28 @@ public class Main {
     	}
     }
     
-	private Main(String[] args, String repairMethod, File sourceFolder, Collection<URL> classpath) {
+	private Main(String repairMethod, File sourceFile, URL[] classpath) {
+		extendClasspath(classpath);
 		if (repairMethod.equalsIgnoreCase("nopol")) {
-			executeNopol(sourceFolder, CollectionLibrary.toArray(URL.class, classpath));
+			executeNopol(sourceFile, classpath);
 		}
 		else if (repairMethod.equalsIgnoreCase("infinitel")) {
-			executeInfinitel(sourceFolder, classpath);
+			executeInfinitel(sourceFile, classpath);
 		}
-	}
-
-	private static Collection<URL> collectClassDirectories(String classpath) {
-		List<String> folderNames = StringLibrary.split(classpath, StringLibrary.javaPathSeparator());
-		List<URL> folders = ListLibrary.newArrayList();
-		for (String folderName : folderNames) {
-			folders.add(FileHandler.urlFrom(folderName));
-		}
-		return folders;
 	}
 	
-	public void executeNopol(File sourceFolder, URL[] urls) {
+	private void extendClasspath(URL[] classpaths) {
+		String newClasspath = System.getProperty("java.class.path");
+		String pathSepartor = StringLibrary.javaPathSeparator();
+		for (URL classpath : classpaths) {
+			newClasspath += pathSepartor + classpath.getPath();
+		}
+		System.setProperty("java.class.path", newClasspath);
+	}
+	
+	public void executeNopol(File sourceFile, URL[] urls) {
 		long startTime = System.currentTimeMillis();
-		System.out.println("Suggested patch: " + new NoPol(sourceFolder, urls).build());
+		System.out.println("Suggested patch: " + new NoPol(sourceFile, urls).build());
 		System.out.println("----Information----");
 		System.out.println("Nb Statements Analysed : " + SynthesizerFactory.getNbStatementsAnalysed());
 		System.out.println("Nb Statements with Angelic Value Found : " + DefaultSynthesizer.getNbStatementsWithAngelicValue());
@@ -76,16 +74,16 @@ public class Main {
 		System.out.println("Total Execution time : " + (System.currentTimeMillis() - startTime) + "ms");
 	}
     
-    public void executeInfinitel(File sourceFolder, Collection<URL> classpath) {
-    	Infinitel.run(sourceFolder, classpath);
+    public void executeInfinitel(File sourceFile, URL[] classpath) {
+    	Infinitel.run(sourceFile, classpath);
     }
 	
 	private static void showUsage() {
 		StringBuilder message = new StringBuilder();
 		String newline = StringLibrary.javaNewline();
-		message.append("$ java " + Main.class.getName() + " <repair method> <source folder> <classpath>" + newline);
+		message.append("$ java " + Main.class.getName() + " <repair method> <source path> <classpath>" + newline);
 		message.append("<repair metod>  'nopol' or 'infinitel'" + newline);
-		message.append("<source folder> path to folder containing source code to by fixed" + newline);
+		message.append("<source path>   path to file/folder containing source code to be fixed" + newline);
 		message.append("<classpath>     path(s) to folder(s) with test cases (separated by colon ':')" + newline);
 		System.out.println(message);
 	}

@@ -19,6 +19,8 @@ package fr.inria.lille.commons.spoon;
 
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -43,41 +45,16 @@ import spoon.support.StandardEnvironment;
 import spoon.support.util.BasicCompilationUnit;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
+import fr.inria.lille.commons.collections.SetLibrary;
 
 /** 
  * A classloader that gets classes from Java source files and process them before actually loading them.
  */
-public class SpoonClassLoader extends ClassLoader {
+public class SpoonClassLoader extends URLClassLoader {
 
-	public static Map<String, Class<?>> classesTransformedWith(Processor<?> processor, File sourceFolder, String... classes) {
-		return classesTransformedWith((Collection) ListLibrary.newLinkedList(processor), sourceFolder, classes);
-	}
-	
-	public static Map<String, Class<?>> classesTransformedWith(Collection<Processor<?>> processors, File sourceFolder, String... classes) {
-		SpoonClassLoader spooner = new SpoonClassLoader(sourceFolder, processors);
-		for (String className : classes) {
-			try {
-				spooner.loadClass(className);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		return spooner.getClasscache();
-	}
-	
-	public static Map<String, Class<?>> allClassesTranformedWith(Processor<?> processor, File sourceFolder) {
-		return allClassesTranformedWith((Collection) ListLibrary.newLinkedList(processor), sourceFolder);
-	}
-	
-	public static Map<String, Class<?>> allClassesTranformedWith(Collection<Processor<?>> processors, File sourceFolder) {
-		SpoonClassLoader spooner = new SpoonClassLoader(sourceFolder, processors);
-		spooner.loadClasses();
-		return spooner.getClasscache();
-	}
-	
-	private SpoonClassLoader(File sourceFolder) {
-		super();
-		sourcePath = sourceFolder;
+	public SpoonClassLoader(File sourceFile, URL[] classpath) {
+		super(classpath);
+		sourcePath = sourceFile;
 		compiler = new JDTByteCodeCompiler();
 		environment = new StandardEnvironment();
 		classcache = new TreeMap<String, Class<?>>();
@@ -87,8 +64,12 @@ public class SpoonClassLoader extends ClassLoader {
 		buildModel();
 	} 
 	
-	public SpoonClassLoader(File sourceFolder, Collection<Processor<?>> processors) {
-		this(sourceFolder);
+	public SpoonClassLoader(File sourceFolder, URL[] classpath, Processor<?>... processors) {
+		this(sourceFolder, classpath, ListLibrary.newLinkedList(processors));
+	}
+	
+	public SpoonClassLoader(File sourceFolder, URL[] classpath, Collection<Processor<?>> processors) {
+		this(sourceFolder, classpath);
 		addProcessors(processors);
 	}
 
@@ -157,6 +138,14 @@ public class SpoonClassLoader extends ClassLoader {
 		return getTypeFactory().getAll();
 	}
 	
+	public Collection<String> modelledClassesNames() {
+		Collection<String> classes = SetLibrary.newHashSet();
+		for (CtSimpleType<?> modelledClass : modelledClasses()) {
+			classes.add(modelledClass.getQualifiedName());
+		}
+		return classes;
+	}
+	
 	@Override
 	public Class<?> loadClass(final String name) throws ClassNotFoundException {
 		if (alreadyLoaded(name)) {
@@ -165,7 +154,7 @@ public class SpoonClassLoader extends ClassLoader {
 		Class<?> targetClass;
 		CtSimpleType<?> modelledClass = modelledClass(name);
 		if (modelledClass == null) {
-			targetClass = findSystemClass(name);
+			targetClass = super.loadClass(name);
 		} else {
 			targetClass = classesCreatedFrom(modelledClass).get(name);
 		}
@@ -173,16 +162,6 @@ public class SpoonClassLoader extends ClassLoader {
 			throw new ClassNotFoundException(name);
 		}
 		return targetClass;
-	}
-	
-	public Map<String, Class<?>> loadClasses() {
-		Map<String, Class<?>> loadedClasses = MapLibrary.newHashMap();
-		for (CtSimpleType<?> modelledClass : modelledClasses()) {
-			if (! alreadyLoaded(modelledClass)) {
-				loadedClasses.putAll(classesCreatedFrom(modelledClass));
-			}
-		}
-		return loadedClasses;
 	}
 	
 	private Map<String, Class<?>> classesCreatedFrom(final CtSimpleType<?> c) {
