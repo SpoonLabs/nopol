@@ -1,6 +1,7 @@
 package fr.inria.lille.infinitel.loop;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -32,33 +33,52 @@ public class LoopStatementsMonitor extends AbstractProcessor<CtWhile> {
 			if (entry.getValue().loopReachedThreshold()) {
 				positions.add(entry.getKey());
 			}
-			entry.getValue().resetRecord();
 		}
 		return positions;
 	}
 	
-	public void disable(SourcePosition position) {
-		auditors().get(position).disable();
+	public void disableAll() {
+		for (SourcePosition position : auditors().keySet()) {
+			disable(position);
+		}
 	}
 	
-	public void enable(SourcePosition position) {
-		auditors().get(position).enable();
+	public boolean disable(SourcePosition position) {
+		return auditorOf(position).disable();
+	}
+	
+	public void enableAll() {
+		for (SourcePosition position : auditors().keySet()) {
+			enable(position);
+		}
+	}
+	
+	public boolean enable(SourcePosition position) {
+		return auditorOf(position).enable();
 	}
 	
 	public boolean isEnabled(SourcePosition position) {
-		return auditorIn(position).isDisabled();
+		return auditorOf(position).isDisabled();
 	}
 	
-	public IterationAuditor auditorIn(SourcePosition position) {
+	public Number setThresholdOf(SourcePosition position, Number newThreshold) {
+		return auditorOf(position).setThreshold(newThreshold);
+	}
+	
+	public List<Integer> iterationRecordOf(SourcePosition position) {
+		return auditorOf(position).iterationsRecord();
+	}
+	
+	public int threshold() {
+		return threshold;
+	}
+	
+	private IterationAuditor auditorOf(SourcePosition position) {
 		return auditors().get(position);
 	}
 	
 	private Map<SourcePosition, IterationAuditor> auditors() {
 		return auditors;
-	}
-	
-	public int threshold() {
-		return threshold;
 	}
 	
 	private int threshold;

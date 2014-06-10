@@ -16,19 +16,22 @@ public class LoopUnroller {
 	public LoopUnroller(LoopStatementsMonitor monitor, ClassLoader classLoader) {
 		this.monitor = monitor;
 		this.classLoader = classLoader;
+		monitor().disableAll();
 	}
 
 	public Map<TestCase, Integer> thresholdForEach(Collection<TestCase> successfulTests, Collection<TestCase> failedTests, SourcePosition loopPosition) {
 		Map<TestCase, Integer> thresholdMap = MapLibrary.newHashMap();
+		monitor().enable(loopPosition);
 		findTracedThresholds(successfulTests, loopPosition, thresholdMap);
 		findThresholdsInSteps(failedTests, loopPosition, thresholdMap);
+		monitor().disable(loopPosition);
 		return thresholdMap;
 	}
 	
 	private void findTracedThresholds(Collection<TestCase> tests, SourcePosition loopPosition, Map<TestCase, Integer> thresholdMap) {
 		for (TestCase testCase : tests) {
 			execute(testCase);
-			int tracedThreshold = ListLibrary.last(monitor().auditorIn(loopPosition).iterationsRecord());
+			int tracedThreshold = ListLibrary.last(monitor().iterationRecordOf(loopPosition));
 			thresholdMap.put(testCase, tracedThreshold);
 		}
 	}
@@ -41,7 +44,7 @@ public class LoopUnroller {
 
 	private void findThreshold(TestCase testCase, SourcePosition loopPosition, Map<TestCase, Integer> iterationsNeeded) {
 		for (int iterations = 0; iterations < monitor().threshold(); iterations += 1) {
-			monitor().auditorIn(loopPosition).setThreshold(iterations); // XXX We assume the infinite loop is invoked once? Here we set the threshold for the whole test execution
+			monitor().setThresholdOf(loopPosition, iterations); // XXX We assume the infinite loop is invoked once? Here we set the threshold for the whole test execution
 			Result result = execute(testCase);
 			if (result.wasSuccessful()) {
 				iterationsNeeded.put(testCase, iterations);

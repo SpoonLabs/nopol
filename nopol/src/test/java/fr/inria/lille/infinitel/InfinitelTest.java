@@ -44,9 +44,6 @@ public class InfinitelTest {
 		SourcePosition loopPosition = (SourcePosition) infiniteLoops.toArray()[0];
 		Assert.assertEquals(10, loopPosition.getLine());
 		Assert.assertEquals("InfinitelExample1.java", loopPosition.getFile().getName());
-		
-		/* TODO disable all IterationAuditor but the one in infiniteLoops */
-		
 		LoopUnroller unroller = new LoopUnroller(monitor, classLoaderForTestThread);
 		Map<TestCase, Integer> thresholds = unroller.thresholdForEach(listener.successfulTests(), listener.failedTests(), loopPosition);
 		Map<String, Integer> thresholdsByName = MapLibrary.toStringMap(thresholds);

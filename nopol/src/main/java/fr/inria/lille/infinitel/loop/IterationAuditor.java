@@ -32,11 +32,11 @@ public class IterationAuditor extends AbstractProcessor<CtWhile> {
 	}
 	
 	private IterationAuditor(SourcePosition position, Number threshold, int instanceNumber) {
-		setThreshold(threshold);
-		disabled = false;
 		this.loopPosition = position;
 		instanceID = instanceNumber;
-		iterationsRecord = ListLibrary.newLinkedList();
+		resetRecord();
+		enable();
+		setThreshold(threshold);
 	}
 	
 	@Override
@@ -93,8 +93,8 @@ public class IterationAuditor extends AbstractProcessor<CtWhile> {
 		return loopPosition;
 	}
 	
-	public void resetRecord() {
-		iterationsRecord().clear();
+	protected void resetRecord() {
+		iterationsRecord = ListLibrary.newLinkedList();
 	}
 	
 	public List<Integer> iterationsRecord() {
@@ -105,20 +105,29 @@ public class IterationAuditor extends AbstractProcessor<CtWhile> {
 		return threshold;
 	}
 	
-	public void setThreshold(Number number) {
+	public Number setThreshold(Number number) {
+		int oldValue = threshold;
 		threshold = number.intValue();
+		return oldValue;
 	}
 	
 	private int instanceID() {
 		return instanceID;
 	}
 	
-	public void disable() {
-		disabled = true;
+	public boolean disable() {
+		resetRecord();
+		return setDisabled(true);
 	}
 	
-	public void enable() {
-		disabled = false;
+	public boolean enable() {
+		return setDisabled(false);
+	}
+	
+	private boolean setDisabled(boolean value) {
+		boolean oldValue = disabled;
+		disabled = value;
+		return value != oldValue;
 	}
 	
 	public boolean isDisabled() {
@@ -126,8 +135,8 @@ public class IterationAuditor extends AbstractProcessor<CtWhile> {
 	}
 	
 	private int threshold;
-	private boolean disabled;
 	private int instanceID;
+	private boolean disabled;
 	private SourcePosition loopPosition;
 	private List<Integer> iterationsRecord;
 	
