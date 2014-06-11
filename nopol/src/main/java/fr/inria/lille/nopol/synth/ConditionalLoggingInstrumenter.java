@@ -46,7 +46,7 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import spoon.reflect.visitor.Filter;
-import fr.inria.lille.commons.suite.trace.RuntimeValues;
+import fr.inria.lille.commons.trace.collector.RuntimeValues;
 
 /**
  * 

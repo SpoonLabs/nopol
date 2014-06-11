@@ -1,7 +1,9 @@
-package fr.inria.lille.commons.suite.trace;
+package fr.inria.lille.commons.trace.collector;
 
 import java.util.Dictionary;
 import java.util.Map;
+
+import fr.inria.lille.commons.classes.ClassLibrary;
 
 public class DictionaryCollector extends ClassTypeCollector {
 
@@ -14,6 +16,6 @@ public class DictionaryCollector extends ClassTypeCollector {
 
 	@Override
 	protected boolean handlesClassOf(Object object) {
-		return Dictionary.class.isInstance(object);
+		return ClassLibrary.isInstanceOf(Dictionary.class, object);
 	}
 }

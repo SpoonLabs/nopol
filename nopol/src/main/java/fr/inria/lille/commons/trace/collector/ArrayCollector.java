@@ -1,4 +1,4 @@
-package fr.inria.lille.commons.suite.trace;
+package fr.inria.lille.commons.trace.collector;
 
 import java.lang.reflect.Array;
 import java.util.Map;

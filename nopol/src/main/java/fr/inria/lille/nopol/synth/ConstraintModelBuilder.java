@@ -29,7 +29,7 @@ import spoon.processing.Processor;
 import fr.inria.lille.commons.classes.CacheBasedClassLoader;
 import fr.inria.lille.commons.spoon.SourceInstrumenter;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
-import fr.inria.lille.commons.suite.trace.TestValuesCollectorListener;
+import fr.inria.lille.commons.trace.collector.TestValuesCollectorListener;
 import fr.inria.lille.nopol.SourceLocation;
 
 /**

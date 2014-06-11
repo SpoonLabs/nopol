@@ -1,6 +1,8 @@
-package fr.inria.lille.commons.suite.trace;
+package fr.inria.lille.commons.trace.collector;
 
 import java.util.Map;
+
+import fr.inria.lille.commons.classes.ClassLibrary;
 
 public class CharSequenceCollector extends ClassTypeCollector {
 
@@ -13,7 +15,7 @@ public class CharSequenceCollector extends ClassTypeCollector {
 
 	@Override
 	protected boolean handlesClassOf(Object object) {
-		return CharSequence.class.isInstance(object);
+		return ClassLibrary.isInstanceOf(CharSequence.class, object);
 	}
 	
 }

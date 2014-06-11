@@ -1,6 +1,8 @@
-package fr.inria.lille.commons.suite.trace;
+package fr.inria.lille.commons.trace.collector;
 
 import java.util.Map;
+
+import fr.inria.lille.commons.classes.ClassLibrary;
 
 public class MapCollector extends ClassTypeCollector {
 
@@ -13,7 +15,7 @@ public class MapCollector extends ClassTypeCollector {
 
 	@Override
 	protected boolean handlesClassOf(Object object) {
-		return Map.class.isInstance(object);
+		return ClassLibrary.isInstanceOf(Map.class, object);
 	}
 	
 }

@@ -1,7 +1,9 @@
-package fr.inria.lille.commons.suite.trace;
+package fr.inria.lille.commons.trace.collector;
 
 import java.util.Enumeration;
 import java.util.Map;
+
+import fr.inria.lille.commons.classes.ClassLibrary;
 
 public class EnumerationCollector extends ClassTypeCollector {
 	
@@ -13,6 +15,6 @@ public class EnumerationCollector extends ClassTypeCollector {
 
 	@Override
 	protected boolean handlesClassOf(Object object) {
-		return Enumeration.class.isInstance(object);
+		return ClassLibrary.isInstanceOf(Enumeration.class, object);
 	}
 }

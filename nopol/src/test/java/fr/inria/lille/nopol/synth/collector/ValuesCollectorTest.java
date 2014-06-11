@@ -15,7 +15,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.lille.commons.suite.trace.RuntimeValues;
+import fr.inria.lille.commons.trace.collector.RuntimeValues;
 
 public class ValuesCollectorTest {
 
