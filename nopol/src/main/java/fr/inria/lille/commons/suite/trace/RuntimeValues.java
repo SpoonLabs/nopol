@@ -11,7 +11,7 @@ public final class RuntimeValues {
 	private RuntimeValues() {}
 
 	public static void collectValue(final String name, final Object value) {
-		ValuesCollector.collectFrom(name, value, storage());
+		ValueCollector.collectFrom(name, value, storage());
 	}
 	
 	public static boolean isEmpty() {

@@ -6,23 +6,23 @@ import java.util.Map;
 import fr.inria.lille.commons.collections.ListLibrary;
 
 
-public abstract class ValuesCollector {
+public abstract class ValueCollector {
 	
 	protected abstract boolean handlesClassOf(Object object);
 	
 	protected abstract void addValue(String name, Object value, Map<String, Object> storage);
 	
 	public static void collectFrom(String name, Object value, Map<String, Object> storage) {
-		for (ValuesCollector collector : collectors()) {
+		for (ValueCollector collector : collectors()) {
 			if (collector.handlesClassOf(value)) {
 				collector.addValue(name, value, storage);
 			}
 		}
 	}
 	
-	private static Collection<ValuesCollector> collectors() {
+	private static Collection<ValueCollector> collectors() {
 		if (collectors == null) {
-			Collection<ValuesCollector> allSubclassesInstances = ListLibrary.newArrayList();
+			Collection<ValueCollector> allSubclassesInstances = ListLibrary.newArrayList();
 			allSubclassesInstances.add(new BooleanCollector());
 			allSubclassesInstances.add(new NumberCollector());
 			allSubclassesInstances.add(new ArrayCollector());
@@ -37,5 +37,5 @@ public abstract class ValuesCollector {
 		return collectors;
 	}
 	
-	private static Collection<ValuesCollector> collectors;	
+	private static Collection<ValueCollector> collectors;	
 }

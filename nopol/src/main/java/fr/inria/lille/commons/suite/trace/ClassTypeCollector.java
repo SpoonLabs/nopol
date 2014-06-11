@@ -2,7 +2,7 @@ package fr.inria.lille.commons.suite.trace;
 
 import java.util.Map;
 
-public abstract class ClassTypeCollector extends ValuesCollector {
+public abstract class ClassTypeCollector extends ValueCollector {
 	
 	@Override
 	protected void addValue(String name, Object value, Map<String, Object> storage) {

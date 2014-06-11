@@ -2,7 +2,7 @@ package fr.inria.lille.commons.suite.trace;
 
 import java.util.Map;
 
-public abstract class PrimitiveTypeCollector extends ValuesCollector {
+public abstract class PrimitiveTypeCollector extends ValueCollector {
 
 	public void addValue(String name, Object value, Map<String, Object> storage) {
 		storage.put(name, value);
