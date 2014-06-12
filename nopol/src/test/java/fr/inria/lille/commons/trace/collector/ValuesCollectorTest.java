@@ -1,13 +1,16 @@
-package fr.inria.lille.nopol.synth.collector;
+package fr.inria.lille.commons.trace.collector;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -15,7 +18,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.lille.commons.trace.collector.RuntimeValues;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.Query;
+import fr.inria.lille.commons.spoon.LocationFilter;
+import fr.inria.lille.commons.spoon.SpoonLibrary;
+import fr.inria.lille.commons.trace.ConditionalLoggingInstrumenter;
+import fr.inria.lille.toolset.NopolTest;
 
 public class ValuesCollectorTest {
 
@@ -132,5 +142,48 @@ public class ValuesCollectorTest {
 		assertTrue((Boolean) isNotNull.getValue());
 
 		assertFalse(iterator.hasNext());
+	}
+	
+
+	@Test
+	public void reachedVariablesInExample1() {
+		testReachedVariableNames(1, "index == 0", "index", "s", "this.index", "NopolExample.s");
+	}
+	
+	@Test
+	public void reachedVariablesInExample2() {
+		testReachedVariableNames(2, "(b - a) < 0", "b", "a");
+	}
+	
+	@Test
+	public void reachedVariablesInExample3() {
+		testReachedVariableNames(3, "tmp != 0", "a", "tmp");
+	}
+	
+	@Test
+	public void reachedVariablesInExample4() {
+		testReachedVariableNames(4, "a = a.substring(1)", "a");
+	}
+	
+	@Test
+	public void reachedVariablesInExample5() {
+		testReachedVariableNames(5, "r = -1", "r", "a");
+	}
+	
+	@Test
+	public void reachedVariablesInExample6() {
+		testReachedVariableNames(6, "a > b", "a", "b");
+	}
+	
+	private void testReachedVariableNames(int exampleNumber, String codeSnippet, String... expectedReachedVariables) {
+		File sourceFile = NopolTest.example(exampleNumber).sourceFile();
+		Factory model = SpoonLibrary.modelFor(sourceFile);
+		Filter filter = new LocationFilter(sourceFile, codeSnippet);
+		List<CtElement> elements = Query.getElements(model, filter);
+		assertEquals(1, elements.size());
+		CtElement statement = elements.get(0);
+		Collection<String> reachedVariables = new ConditionalLoggingInstrumenter().reachableVariableNames(statement);
+		assertEquals(expectedReachedVariables.length, reachedVariables.size());
+		assertTrue(reachedVariables.containsAll(Arrays.asList(expectedReachedVariables)));
 	}
 }

@@ -17,4 +17,7 @@ public class NopolExample {
 		
 		return s.charAt(s.length()-1);
 	}
+	
+	private int index = 419382;
+	private static String s = "Overloading field name with parameter name";
 }

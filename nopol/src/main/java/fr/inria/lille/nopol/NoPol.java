@@ -45,11 +45,6 @@ public final class NoPol {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final Logger patchLogger = LoggerFactory.getLogger("patch");
 
-	/**
-	 * @param rootPackage
-	 * @param sourceFolder
-	 * @param classpath
-	 */
 	public NoPol(final File sourceFolder, final URL[] classpath) {
 		this.classpath = classpath;
 		gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath);
@@ -58,8 +53,11 @@ public final class NoPol {
 	}
 
 	public Patch build() {
-		String[] testClasses = new TestClassesFinder().findIn(classpath, false);			
-		
+		return build(new TestClassesFinder().findIn(classpath, false));
+	}
+
+	
+	public Patch build(String[] testClasses) {
 		if (testClasses.length == 0) {
 			System.out.printf("No test classes found in classpath: %s%n", Arrays.toString(classpath));
 			return NO_PATCH;
@@ -80,12 +78,7 @@ public final class NoPol {
 		}
 		return NO_PATCH;
 	}
-
-	/**
-	 * @param testClasses
-	 * @param statement
-	 * @return
-	 */
+	
 	private Patch buildPatch(final String[] testClasses, final SuspiciousStatement statement) {
 		try {
 			return synthetizerFactory.getFor(statement.getSourceLocation()).buildPatch(classpath,

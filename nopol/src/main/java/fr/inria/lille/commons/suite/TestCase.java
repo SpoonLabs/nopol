@@ -1,8 +1,20 @@
 package fr.inria.lille.commons.suite;
 
+import java.util.Collection;
+
+import fr.inria.lille.commons.collections.SetLibrary;
+
 
 public class TestCase {
 
+	public static Collection<String> testNames(Collection<TestCase> testCases) {
+    	Collection<String> testNames = SetLibrary.newHashSet();
+    	for (TestCase testCase : testCases) {
+    		testNames.add(testCase.testName());
+    	}
+    	return testNames;
+	}
+	
 	public TestCase(String className, String testName) {
 		this.className = className;
 		this.testName = testName;

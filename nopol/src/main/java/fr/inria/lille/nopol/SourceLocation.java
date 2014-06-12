@@ -61,14 +61,11 @@ public final class SourceLocation {
 	}
 
 	public File getSourceFile(final File sourceFolder) {
-		return this.getSourceFile(sourceFolder.getAbsolutePath());
-	}
-
-	public File getSourceFile(final String sourceFolder) {
+		if (sourceFolder.isFile()) {
+			return sourceFolder; 
+		}
 		String classPath = getRootClassName().replace('.', File.separatorChar);
-		File sourceFile = new File(sourceFolder, classPath + ".java");
-		FileHandler.ensurePathIsValid(sourceFile.getAbsolutePath());
-		return sourceFile;
+		return FileHandler.fileFrom(sourceFolder.getAbsolutePath() + classPath + ".java");
 	}
 
 	/**

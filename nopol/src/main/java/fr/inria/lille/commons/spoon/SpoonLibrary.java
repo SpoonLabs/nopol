@@ -1,7 +1,10 @@
 package fr.inria.lille.commons.spoon;
 
+import java.io.File;
+
 import spoon.Launcher;
 import spoon.compiler.Environment;
+import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
@@ -25,6 +28,20 @@ import com.martiansoftware.jsap.JSAPException;
 import fr.inria.lille.commons.classes.ClassLibrary;
 
 public class SpoonLibrary {
+	
+	public static Factory modelFor(File sourceFile) {
+		Factory factory = newFactory();
+		factory.getEnvironment().setDebug(true);
+		try {
+			SpoonCompiler compiler = launcher().createCompiler(factory);
+			compiler.addInputSource(sourceFile);
+			compiler.addTemplateSource(sourceFile);
+			compiler.build();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return factory;
+	}
 	
 	public static <T> CtExpression<T> composedExpression(String codeSnippet, BinaryOperatorKind operator, CtExpression<T> expression) {
 		CodeFactory codeFactory = codeFactoryOf(expression);
@@ -78,7 +95,7 @@ public class SpoonLibrary {
 	
 	public static boolean hasStaticModifier(CtElement element) {
 		if (allowsModifiers(element)) {
-			ClassLibrary.as(CtModifiable.class, element).getModifiers().contains(ModifierKind.STATIC);
+			ClassLibrary.castTo(CtModifiable.class, element).getModifiers().contains(ModifierKind.STATIC);
 		}
 		return false;
 	}

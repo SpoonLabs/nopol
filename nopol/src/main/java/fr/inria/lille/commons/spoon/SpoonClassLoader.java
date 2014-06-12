@@ -21,6 +21,7 @@ package fr.inria.lille.commons.spoon;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -29,21 +30,15 @@ import java.util.TreeMap;
 import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 
-import spoon.Launcher;
 import spoon.compiler.Environment;
-import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.FactoryImpl;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.support.DefaultCoreFactory;
 import spoon.support.RuntimeProcessingManager;
-import spoon.support.StandardEnvironment;
 import spoon.support.util.BasicCompilationUnit;
-import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.collections.SetLibrary;
 
@@ -52,37 +47,23 @@ import fr.inria.lille.commons.collections.SetLibrary;
  */
 public class SpoonClassLoader extends URLClassLoader {
 
-	public SpoonClassLoader(File sourceFile, URL[] classpath) {
-		super(classpath);
-		sourcePath = sourceFile;
-		compiler = new JDTByteCodeCompiler();
-		environment = new StandardEnvironment();
-		classcache = new TreeMap<String, Class<?>>();
-		factory = new FactoryImpl(new DefaultCoreFactory(), getEnvironment());
-		manager = new RuntimeProcessingManager(getFactory());
-		getEnvironment().setDebug(true);
-		buildModel();
-	} 
-	
 	public SpoonClassLoader(File sourceFolder, URL[] classpath, Processor<?>... processors) {
-		this(sourceFolder, classpath, ListLibrary.newLinkedList(processors));
+		this(sourceFolder, classpath, Arrays.asList(processors));
 	}
 	
 	public SpoonClassLoader(File sourceFolder, URL[] classpath, Collection<Processor<?>> processors) {
 		this(sourceFolder, classpath);
 		addProcessors(processors);
 	}
-
-	private void buildModel() {
-		try {
-			SpoonCompiler builder = new Launcher().createCompiler(getFactory());
-			builder.addInputSource(getSourcePath());
-			builder.addTemplateSource(getSourcePath());
-			builder.build();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	
+	public SpoonClassLoader(File sourceFile, URL[] classpath) {
+		super(classpath);
+		sourcePath = sourceFile;
+		compiler = new JDTByteCodeCompiler();
+		classcache = new TreeMap<String, Class<?>>();
+		factory = SpoonLibrary.modelFor(sourceFile);
+		manager = new RuntimeProcessingManager(getFactory());
+	} 
 	
 	protected Factory getFactory() {
 		return factory;
@@ -93,7 +74,7 @@ public class SpoonClassLoader extends URLClassLoader {
 	}
 	
 	protected Environment getEnvironment() {
-		return environment;
+		return getFactory().getEnvironment();
 	}
 
 	protected JDTByteCodeCompiler getCompiler() {
@@ -211,7 +192,6 @@ public class SpoonClassLoader extends URLClassLoader {
 
 	private File sourcePath;
 	private Factory factory;
-	private Environment environment;
 	private ProcessingManager manager;
 	private JDTByteCodeCompiler compiler;
 	private final Map<String, Class<?>> classcache;

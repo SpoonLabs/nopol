@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.nopol.synth;
+package fr.inria.lille.commons.trace;
 
 import static spoon.reflect.declaration.ModifierKind.STATIC;
 
@@ -46,7 +46,9 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import spoon.reflect.visitor.Filter;
+import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.trace.collector.RuntimeValues;
+import fr.inria.lille.nopol.synth.Processor;
 
 /**
  * 
@@ -54,7 +56,7 @@ import fr.inria.lille.commons.trace.collector.RuntimeValues;
  * complex semantics of "static" and "final" (w.r.t. init, anonymous classes, etc.)
  * 
  */
-final class ConditionalLoggingInstrumenter implements Processor {
+public class ConditionalLoggingInstrumenter implements Processor {
 
 	private static final class VariablesInLocalScopeVisitor extends CtAbstractVisitor {
 		private final Set<CtElement> stoppers;
@@ -179,8 +181,21 @@ final class ConditionalLoggingInstrumenter implements Processor {
 	 * That's why we consider CtElement and not only CtIf
 	 */
 	public void process(final Factory factory, final CtElement statement) {
-		boolean inStaticCode = hasStaticParent(statement);
+		Collection<String> variableNames = reachableVariableNames(statement);
 		StringBuilder snippet = new StringBuilder();
+		for (String name : variableNames) {
+			snippet.append(collectionSnippet(name));
+		}
+		if (snippet.length() > 0) {
+			CtStatement target = getStatement(statement);
+			target.insertBefore(factory.Code().createCodeSnippetStatement(snippet.toString()));
+			LoggerFactory.getLogger(this.getClass()).debug("Instrumenting [{}] in\n{}", target, target.getParent());
+		}
+	}
+	
+	public Collection<String> reachableVariableNames(CtElement statement) {
+		Collection<String> variableNames = SetLibrary.newHashSet();
+		boolean inStaticCode = hasStaticParent(statement);
 		for (CtVariable<?> var : getVariablesInScope(statement)) {
 			boolean isStaticVar = var.getModifiers().contains(STATIC);
 			// we only add if the code is non static
@@ -216,15 +231,18 @@ final class ConditionalLoggingInstrumenter implements Processor {
 						}
 					}
 				}
-				String varName = var.getSimpleName();
-				snippet.append(collectionSnippet(varName));
+				String simpleName = var.getSimpleName();
+				if (var instanceof CtField) {
+					if (isStaticVar) {
+						simpleName = ((CtField) var).getDeclaringType().getSimpleName() + "." + simpleName;
+					} else {
+						simpleName = "this." + simpleName;
+					}
+				}
+				variableNames.add(simpleName);
 			}
 		}
-		if (snippet.length() > 0) {
-			CtStatement target = getStatement(statement);
-			target.insertBefore(factory.Code().createCodeSnippetStatement(snippet.toString()));
-			LoggerFactory.getLogger(this.getClass()).debug("Instrumenting [{}] in\n{}", target, target.getParent());
-		}
+		return variableNames;
 	}
 
 	private String collectionSnippet(String variableName) {

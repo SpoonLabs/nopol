@@ -6,7 +6,7 @@ public class ClassLibrary {
 		return aClass.isInstance(object);
 	}
 	
-	public static <T> T as(Class<T> aClass, Object object) {
+	public static <T> T castTo(Class<T> aClass, Object object) {
 		return (T) object;
 	}
 }

@@ -29,6 +29,7 @@ import spoon.processing.ProcessingManager;
 import spoon.reflect.factory.Factory;
 import spoon.support.QueueProcessingManager;
 import spoon.support.StandardEnvironment;
+import fr.inria.lille.commons.trace.ConditionalLoggingInstrumenter;
 import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.synth.conditional.ConditionalReplacer;
 import fr.inria.lille.nopol.synth.conditional.SpoonConditionalPredicate;
