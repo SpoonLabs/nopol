@@ -83,14 +83,9 @@ public class RuntimeValuesProcessor extends AbstractProcessor<CtCodeElement> {
 	private String snippetToCollect(Collection<String> variableNames) {
 		StringBuilder snippet = new StringBuilder();
 		for (String variableName : variableNames) {
-			snippet.append(snippetToCollect(variableName));
+			snippet.append(RuntimeValues.collectValueInvocation(variableName));
 		}
 		return snippet.toString();
-	}
-	
-	private String snippetToCollect(String variableName) {
-		String methodInvocation = String.format(".collectValue(\"%s\", %s);", variableName, variableName);
-		return RuntimeValues.class.getName() + methodInvocation + System.lineSeparator();
 	}
 	
 	private Collection<CtVariable<?>> initializedVariablesBefore(SourcePosition position, Collection<CtVariable<?>> reachedVariables) {

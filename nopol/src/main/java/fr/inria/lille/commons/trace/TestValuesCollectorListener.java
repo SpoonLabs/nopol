@@ -1,44 +1,35 @@
 package fr.inria.lille.commons.trace;
 
 import org.junit.runner.Description;
-import org.junit.runner.notification.Failure;
-import org.junit.runner.notification.RunListener;
 
+import fr.inria.lille.commons.suite.TestCase;
+import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.nopol.synth.InputOutputValues;
 
-public class TestValuesCollectorListener<T> extends RunListener {
+public class TestValuesCollectorListener<T> extends TestCasesListener {
 
 	public TestValuesCollectorListener(final InputOutputValues matrix, T fixedValue) {
-		testFailed = false;
 		this.matrix = matrix;
 		this.fixedValue = fixedValue;
-	}
-	
-	@Override
-	public void testFailure(final Failure failure) throws Exception {
-		testFailed = true;
 	}
 
 	@Override
 	public void testFinished(final Description description) throws Exception {
-		if (! testFailed) {
-			processSuccessfulRun();
-		}
+		super.testFinished(description);
 		cleanUp();
 	}
 	
-	private void processSuccessfulRun() {
+	@Override
+	protected void processSuccessfulRun(TestCase testCase) {
 		if (! RuntimeValues.isEmpty()) {
 			matrix.addValues(RuntimeValues.collectedValues(), fixedValue);
 		}
 	}
 	
 	private void cleanUp() {
-		testFailed = false;
 		RuntimeValues.discardCollectedValues();
 	}
 	
 	private T fixedValue;
-	private boolean testFailed;
 	private InputOutputValues matrix;
 }

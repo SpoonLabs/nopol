@@ -13,6 +13,7 @@ import fr.inria.lille.commons.collections.ArrayLibrary;
 import fr.inria.lille.commons.collections.CollectionLibrary;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
+import fr.inria.lille.commons.collections.Multimap;
 import fr.inria.lille.commons.collections.SetLibrary;
 
 public class CollectionsTest {
@@ -98,5 +99,26 @@ public class CollectionsTest {
 		Assert.assertEquals(false, stringMap.get("0"));
 		Assert.assertTrue(stringMap.containsKey("1"));
 		Assert.assertEquals(true, stringMap.get("1"));
+	}
+	
+	@Test
+	public void multimap() {
+		Multimap<Integer, String> listMultimap = Multimap.newListMultimap();
+		listMultimap.addAll(1, "a", "b", "c", "a", "b", "c");
+		Assert.assertEquals(1, listMultimap.size());
+		Assert.assertTrue(listMultimap.containsKey(1));
+		Collection<String> values = listMultimap.get(1);
+		Assert.assertEquals(6, values.size());
+		Assert.assertEquals(Arrays.asList("a", "b", "c", "a", "b", "c"),  values);
+		
+		Multimap<Integer, String> setMultimap = Multimap.newSetMultimap();
+		setMultimap.addAll(1, "a", "b", "c", "a", "b", "c");
+		Assert.assertEquals(1, setMultimap.size());
+		Assert.assertTrue(setMultimap.containsKey(1));
+		values = setMultimap.get(1);
+		Assert.assertEquals(3, values.size());
+		Assert.assertTrue(values.contains("a"));
+		Assert.assertTrue(values.contains("b"));
+		Assert.assertTrue(values.contains("c"));
 	}
 }

@@ -16,17 +16,31 @@ public class TestCasesListener extends RunListener {
 	}
 	
     @Override
-    public void testFinished(Description description) throws Exception {
-        allTests().add(testCaseOf(description));
-    }
-	
-    @Override
     public void testFailure(Failure failure) throws Exception {
         Description description = failure.getDescription();
         failedTests().add(testCaseOf(description));
     }
+	
+    @Override
+    public void testFinished(Description description) throws Exception {
+        TestCase testCase = testCaseOf(description);
+		allTests().add(testCase);
+		if (! failedTests().contains(testCase)) {
+			processSuccessfulRun(testCase);
+		} else {
+			processFailedRun(testCase);
+		}
+    }
     
-    private TestCase testCaseOf(Description description) {
+	protected void processSuccessfulRun(TestCase testCase) {
+		/* subclassResponsibility */
+	}
+	
+    protected void processFailedRun(TestCase testCase) {
+    	/* subclassResponsibility */
+	}
+
+	protected TestCase testCaseOf(Description description) {
     	return new TestCase(description.getClassName(), description.getMethodName());
     }
     
