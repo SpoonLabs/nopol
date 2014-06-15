@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 
@@ -29,11 +30,11 @@ import com.google.common.base.Predicate;
  * @author Favio D. DeMarco
  * 
  */
-public final class DelegatingProcessor extends AbstractProcessor<CtElement> {
+public final class DelegatingProcessor extends AbstractProcessor<CtCodeElement> {
 
 	private final File file;
 	private final int line;
-	private final List<Processor> processors = new ArrayList<>();
+	private final List<AbstractProcessor<CtCodeElement>> processors = new ArrayList<>();
 	private final Predicate<CtElement> predicate;
 	private boolean process = true;
 
@@ -47,7 +48,7 @@ public final class DelegatingProcessor extends AbstractProcessor<CtElement> {
 		this.predicate = instance;
 	}
 
-	public DelegatingProcessor addProcessor(final Processor processor) {
+	public DelegatingProcessor addProcessor(AbstractProcessor<CtCodeElement> processor) {
 		this.processors.add(processor);
 		return this;
 	}
@@ -56,7 +57,7 @@ public final class DelegatingProcessor extends AbstractProcessor<CtElement> {
 	 * @see spoon.processing.AbstractProcessor#isToBeProcessed(spoon.reflect.declaration.CtElement)
 	 */
 	@Override
-	public boolean isToBeProcessed(final CtElement candidate) {
+	public boolean isToBeProcessed(final CtCodeElement candidate) {
 		SourcePosition position = candidate.getPosition();
 		File f1;
 		File f2;
@@ -76,9 +77,9 @@ public final class DelegatingProcessor extends AbstractProcessor<CtElement> {
 	}
 
 	@Override
-	public void process(final CtElement element) {
-		for (Processor processor : this.processors) {
-			processor.process(this.getFactory(), element);
+	public void process(final CtCodeElement element) {
+		for (AbstractProcessor<CtCodeElement> processor : this.processors) {
+			processor.process(element);
 		}
 		this.process = false;
 	}

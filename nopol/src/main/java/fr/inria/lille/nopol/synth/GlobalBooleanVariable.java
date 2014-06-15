@@ -2,7 +2,7 @@ package fr.inria.lille.nopol.synth;
 
 public final class GlobalBooleanVariable {
 
-	public static final String accessName() {
+	public static final String name() {
 		return GlobalBooleanVariable.class.getName() + '.' + "value";
 	}
 

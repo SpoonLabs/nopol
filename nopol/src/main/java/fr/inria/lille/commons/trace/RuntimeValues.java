@@ -1,10 +1,11 @@
-package fr.inria.lille.commons.trace.collector;
+package fr.inria.lille.commons.trace;
 
 import java.util.Map;
 
 import com.google.common.collect.ImmutableSet;
 
 import fr.inria.lille.commons.collections.MapLibrary;
+import fr.inria.lille.commons.trace.collector.ValueCollector;
 
 public final class RuntimeValues {
 	

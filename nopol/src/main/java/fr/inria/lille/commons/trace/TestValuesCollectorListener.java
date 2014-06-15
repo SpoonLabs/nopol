@@ -1,4 +1,4 @@
-package fr.inria.lille.commons.trace.collector;
+package fr.inria.lille.commons.trace;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;

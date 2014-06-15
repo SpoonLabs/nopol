@@ -84,45 +84,46 @@ public class NopolTest {
 	@Test
 	public void example1Fix() {
 		Collection<String> failedTests = SetLibrary.newHashSet("test5", "test6");
-		Patch patch = test(example(1), 12, BugKind.CONDITIONAL, failedTests);
+		Patch patch = test(1, 12, BugKind.CONDITIONAL, failedTests);
 		fixComparison(patch, "(index)<=(0)", "(index)<(1)");
 	}
 	
 	@Test
 	public void example2Fix() {
 		Collection<String> failedTests = SetLibrary.newHashSet("test1", "test2", "test4", "test5", "test6", "test7");
-		Patch patch = test(example(2), 9, BugKind.CONDITIONAL, failedTests);
+		Patch patch = test(2, 9, BugKind.CONDITIONAL, failedTests);
 		fixComparison(patch, "(a)<=(b)");
 	}
 	
 	@Test
 	public void example3Fix() {
 		Collection<String> failedTests = SetLibrary.newHashSet("test1", "test2", "test3", "test4", "test5", "test6", "test7", "test8", "test9");
-		Patch patch = test(example(3), 11, BugKind.CONDITIONAL, failedTests);
+		Patch patch = test(3, 11, BugKind.CONDITIONAL, failedTests);
 		fixComparison(patch, "(tmp)==(0)", "(0)==(tmp)");
 	}
 	
 	@Test
 	public void example4Fix() {
 		Collection<String> failedTests = SetLibrary.newHashSet("test5");
-		test(example(4), 17, BugKind.PRECONDITION, failedTests);
+		test(4, 23, BugKind.PRECONDITION, failedTests);
 	}
 	
 	@Test
 	public void example5Fix() {
 		Collection<String> failedTests = SetLibrary.newHashSet("test4", "test5");
-		Patch patch = test(example(5), 13, BugKind.PRECONDITION, failedTests);
-		fixComparison(patch, "(-1)<=(a)", "(1)<=(a)", "(r)<=(a)");
+		Patch patch = test(5, 13, BugKind.PRECONDITION, failedTests);
+		fixComparison(patch, "(-1)<=(a)", "(1)<=(a)", "(r)<=(a)", "(-1)<(a)");
 	}
 	
 	@Test
 	public void example6Fix() {
 		Collection<String> failedTests = SetLibrary.newHashSet("test1", "test2", "test3", "test4", "test6");
-		Patch patch = test(example(6), 7, BugKind.CONDITIONAL, failedTests);
-		fixComparison(patch, "(a)<(b)");
+		Patch patch = test(6, 7, BugKind.CONDITIONAL, failedTests);
+		fixComparison(patch, "(a)<(b)", "(a)<=(b)");
 	}
 	
-	private Patch test(ProjectReference project, int linePosition, BugKind type, Collection<String> expectedFailedTests) {
+	private Patch test(int projectNumber, int linePosition, BugKind type, Collection<String> expectedFailedTests) {
+		ProjectReference project = example(projectNumber);
 		TestCasesListener listener = new TestCasesListener();
 		URLClassLoader classLoader = new URLClassLoader(project.classpath());
 		TestSuiteExecution.runCasesIn(project.testClasses(), classLoader, listener);
@@ -131,6 +132,7 @@ public class NopolTest {
 		Patch patch = patchFor(project);
 		assertEquals(patch.getType(), type);
 		assertEquals(linePosition, patch.getLineNumber());
+		System.out.println(String.format("Patch for project %d: %s", projectNumber, patch.asString()));
 		return patch;
 	}
 	

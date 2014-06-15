@@ -18,13 +18,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.Query;
-import fr.inria.lille.commons.spoon.LocationFilter;
+import fr.inria.lille.commons.spoon.CodeSnippetFilter;
 import fr.inria.lille.commons.spoon.SpoonLibrary;
-import fr.inria.lille.commons.trace.ConditionalLoggingInstrumenter;
+import fr.inria.lille.commons.trace.RuntimeValues;
+import fr.inria.lille.commons.trace.RuntimeValuesProcessor;
 import fr.inria.lille.toolset.NopolTest;
 
 public class ValuesCollectorTest {
@@ -162,7 +165,7 @@ public class ValuesCollectorTest {
 	
 	@Test
 	public void reachedVariablesInExample4() {
-		testReachedVariableNames(4, "a = a.substring(1)", "a");
+		testReachedVariableNames(4, "a = a.substring(1)", "a", "initializedVariableShouldBeCollected", "otherInitializedVariableShouldBeCollected");
 	}
 	
 	@Test
@@ -178,11 +181,13 @@ public class ValuesCollectorTest {
 	private void testReachedVariableNames(int exampleNumber, String codeSnippet, String... expectedReachedVariables) {
 		File sourceFile = NopolTest.example(exampleNumber).sourceFile();
 		Factory model = SpoonLibrary.modelFor(sourceFile);
-		Filter filter = new LocationFilter(sourceFile, codeSnippet);
+		Filter filter = new CodeSnippetFilter(sourceFile, codeSnippet);
 		List<CtElement> elements = Query.getElements(model, filter);
 		assertEquals(1, elements.size());
-		CtElement statement = elements.get(0);
-		Collection<String> reachedVariables = new ConditionalLoggingInstrumenter().reachableVariableNames(statement);
+		CtElement firstElement = elements.get(0);
+		assertTrue(CtCodeElement.class.isInstance(firstElement));
+		CtStatement statement = SpoonLibrary.statementOf((CtCodeElement) firstElement);
+		Collection<String> reachedVariables = new RuntimeValuesProcessor().reachableVariableNames(statement);
 		assertEquals(expectedReachedVariables.length, reachedVariables.size());
 		assertTrue(reachedVariables.containsAll(Arrays.asList(expectedReachedVariables)));
 	}

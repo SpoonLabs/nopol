@@ -8,15 +8,17 @@ import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
-import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.ModifierKind;
@@ -89,13 +91,17 @@ public class SpoonLibrary {
 		return ClassLibrary.isInstanceOf(CtSimpleType.class, element);
 	}
 	
+	public static boolean isField(CtElement element) {
+		return ClassLibrary.isInstanceOf(CtField.class, element);
+	}
+	
 	public static boolean allowsModifiers(CtElement element) {
 		return ClassLibrary.isInstanceOf(CtModifiable.class, element);
 	}
 	
 	public static boolean hasStaticModifier(CtElement element) {
 		if (allowsModifiers(element)) {
-			ClassLibrary.castTo(CtModifiable.class, element).getModifiers().contains(ModifierKind.STATIC);
+			return ClassLibrary.castTo(CtModifiable.class, element).getModifiers().contains(ModifierKind.STATIC);
 		}
 		return false;
 	}
@@ -106,19 +112,13 @@ public class SpoonLibrary {
 		}
 		return hasStaticModifier(element.getParent(CtModifiable.class));
 	}
-
-	public static  boolean appearsBefore(SourcePosition queriedPosition, SourcePosition comparingPosition) {
-		if (onTheSameFile(queriedPosition, comparingPosition)) {
-			int distance = comparingPosition.getLine() - queriedPosition.getLine();
-			if (distance >= 0) {
-				return distance > 0 || queriedPosition.getColumn() < comparingPosition.getColumn();
-			}
-		}
-		return false;
-	}
 	
-	public static boolean onTheSameFile(SourcePosition aPosition, SourcePosition otherPosition) {
-		return aPosition.getFile().equals(otherPosition.getFile());
+	public static CtStatement statementOf(CtCodeElement codeElement) {
+		Class<CtStatement> statementClass = CtStatement.class;
+		if (ClassLibrary.isInstanceOf(statementClass, codeElement)) {
+			return ClassLibrary.castTo(statementClass, codeElement);
+		}
+		return codeElement.getParent(statementClass);
 	}
 	
 	public static CodeFactory codeFactoryOf(CtElement element) {

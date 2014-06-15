@@ -18,18 +18,18 @@ package fr.inria.lille.nopol.synth.precondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.factory.Factory;
-import fr.inria.lille.nopol.synth.Processor;
 
 /**
  * @author Favio D. DeMarco
  * 
  */
-public final class ConditionalAdder implements Processor {
+public final class ConditionalAdder extends AbstractProcessor<CtCodeElement> {
 
 	private final String snippet;
 
@@ -39,15 +39,12 @@ public final class ConditionalAdder implements Processor {
 		snippet = variableName;
 	}
 
-	/**
-	 * @see fr.inria.lille.nopol.synth.Processor#process(spoon.reflect.Factory, spoon.reflect.code.CtCodeElement)
-	 */
 	@Override
-	public void process(final Factory factory, final CtElement element) {
+	public void process(CtCodeElement element) {
 		logger.debug("##### {} ##### Before:\n{}", element, element.getParent());
 		CtElement parent = element.getParent();
-		CtIf newIf = factory.Core().createIf();
-		CtCodeSnippetExpression<Boolean> condition = factory.Core().createCodeSnippetExpression();
+		CtIf newIf = element.getFactory().Core().createIf();
+		CtCodeSnippetExpression<Boolean> condition = element.getFactory().Core().createCodeSnippetExpression();
 		condition.setValue(snippet);
 		newIf.setCondition(condition);
 		// Fix : warning: ignoring inconsistent parent for [CtElem1] ( [CtElem2] != [CtElem3] )

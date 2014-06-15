@@ -29,7 +29,7 @@ import spoon.processing.ProcessingManager;
 import spoon.reflect.factory.Factory;
 import spoon.support.QueueProcessingManager;
 import spoon.support.StandardEnvironment;
-import fr.inria.lille.commons.trace.ConditionalLoggingInstrumenter;
+import fr.inria.lille.commons.trace.RuntimeValuesProcessor;
 import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.synth.conditional.ConditionalReplacer;
 import fr.inria.lille.nopol.synth.conditional.SpoonConditionalPredicate;
@@ -61,14 +61,14 @@ public final class SynthesizerFactory {
 		case CONDITIONAL:
 			processor = new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
-			processor.addProcessor(new ConditionalReplacer(GlobalBooleanVariable.accessName()));
-			processor.addProcessor(new ConditionalLoggingInstrumenter());
+			processor.addProcessor(new ConditionalReplacer(GlobalBooleanVariable.name()));
+			processor.addProcessor(new RuntimeValuesProcessor());
 		break;
 		case PRECONDITION:
 			processor = new DelegatingProcessor(SpoonStatementPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
-			processor.addProcessor(new ConditionalLoggingInstrumenter());
-			processor.addProcessor(new ConditionalAdder(GlobalBooleanVariable.accessName())); 
+			processor.addProcessor(new RuntimeValuesProcessor());
+			processor.addProcessor(new ConditionalAdder(GlobalBooleanVariable.name())); 
 			logger.debug("No synthetizer found for {}, trying a precondition.", statement);
 			break;
 		default:
