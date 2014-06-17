@@ -18,10 +18,10 @@ package fr.inria.lille.nopol.sps.gzoltar;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.FluentIterable.from;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -72,7 +72,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
-		HashSet<String> classpaths = gzoltar.getClasspaths();
+		HashSet<String> classpaths = new HashSet(gzoltar.getClasspaths());
 		for (URL url : classpath) {
 			if ("file".equals(url.getProtocol())) {
 				classpaths.add(url.getPath());
@@ -80,26 +80,54 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 				classpaths.add(url.toExternalForm());
 			}
 		}
-		gzoltar.setClassPaths(classpaths);
-		gzoltar.addPackageToInstrument("");
+		gzoltar.setClassPaths(new ArrayList<String>(classpaths));
+		
+		String packageName = getPackageName(classpaths);
+		System.out.println(packageName);
+		gzoltar.addPackageToInstrument(packageName);
 		gzoltar.addPackageNotToInstrument("org.junit");
 		gzoltar.addPackageNotToInstrument("junit.framework");
 	}
 
+	private String getPackageName(HashSet<String> classpaths) {
+		String packageName = "";
+		
+		for ( String cp : classpaths ){
+			String tmp = getFirstClassFolder(new File(cp)).getAbsolutePath();
+			packageName = tmp.substring(cp.length(), tmp.lastIndexOf("/")).replace('/', '.');
+		}
+		return packageName;
+	}
+
+	private File getFirstClassFolder(File root){
+		File[] children = root.listFiles();
+		if ( children != null ){
+			for ( File child : children ){
+				if ( child.getAbsolutePath().endsWith(".class"))
+					return child;
+			}
+			for ( File child : children ){
+				if ( child.isDirectory())
+					return getFirstClassFolder(child);
+			}
+		}
+		return null;
+	}
+	
+	
 	/**
 	 * TODO delete this method
 	 */
-	private void assertExpectedOrder(final Collection<SuspiciousStatement> statements) {
-		List<SuspiciousStatement> sortedStatementsList = new ArrayList<SuspiciousStatement>(statements);
-		Collections.sort(sortedStatementsList, new Comparator<SuspiciousStatement>() {
+	private List<SuspiciousStatement> sortByDescendingOrder(List<SuspiciousStatement> statements) {
+		List<SuspiciousStatement> tmp = new ArrayList<>(statements);
+		Collections.sort(tmp, new Comparator<SuspiciousStatement>() {
 			@Override
 			public int compare(final SuspiciousStatement o1, final SuspiciousStatement o2) {
 				return Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness()); // reversed parameters because we
 				// want a descending order list
 			}
 		});
-		assert statements.equals(sortedStatementsList) : "The order does not match:\n" + statements + '\n'
-		+ sortedStatementsList;
+		return tmp;
 	}
 
 	/**
@@ -117,17 +145,22 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		}
 		gzoltar.run();
 
+		
+		
 		List<SuspiciousStatement> statements = from(gzoltar.getSuspiciousStatements())
 				.filter(IsSuspicious.INSTANCE).transform(GZoltarStatementWrapperFunction.INSTANCE).toList();
 
+		
+
+		
+		
 		Logger logger = LoggerFactory.getLogger(this.getClass());
 		if (logger.isDebugEnabled()) {
 			logger.debug("Suspicious statements:\n{}", Joiner.on('\n').join(statements));
 		}
 
-		// TODO delete this method call
-		assertExpectedOrder(statements);
+		
 
-		return statements;
+		return sortByDescendingOrder(statements);
 	}
 }
