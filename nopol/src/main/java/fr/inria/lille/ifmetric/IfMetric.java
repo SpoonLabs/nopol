@@ -228,20 +228,19 @@ public class IfMetric {
 				/*
 				 * No_Execution
 				 */
-				display+="x";
+				display+="1\t\t0\t\t0\t\t0";
 			}else {
-				display+="\t\t";
 				if ( !executedIf.get(tmp).containsValue(IfBranch.BOTH)  &&
 					(!executedIf.get(tmp).containsValue(IfBranch.THEN) || !executedIf.get(tmp).containsValue(IfBranch.ELSE))){
 					/*
 					 * One_Branch
 					 */
-					display+="x";
+					display+="0\t\t1\t\t0\t\t0";
 				}else{
 					/*
 					 * Both_Branch	
 					 */
-					display+="\t\tx";
+					display+="0\t\t0\t\t1\t\t";
 					boolean thenInOnTest = false;
 					boolean elseInOnTest = false;
 					for ( String testCase : executedIf.get(tmp).keySet() ){
@@ -256,7 +255,9 @@ public class IfMetric {
 						/*
 						 * Both_Branch_Only_On_Two_TestCases
 						 */
-						display+="\t\tx";
+						display+="1";
+					}else{
+						display+="0";
 					}
 				}
 			}
