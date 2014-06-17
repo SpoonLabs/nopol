@@ -93,8 +93,11 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		String packageName = "";
 		
 		for ( String cp : classpaths ){
-			String tmp = getFirstClassFolder(new File(cp)).getAbsolutePath();
+			File f = getFirstClassFolder(new File(cp));
+			if ( f != null ){
+			String tmp = f.getAbsolutePath();
 			packageName = tmp.substring(cp.length(), tmp.lastIndexOf("/")).replace('/', '.');
+			}
 		}
 		return packageName;
 	}
