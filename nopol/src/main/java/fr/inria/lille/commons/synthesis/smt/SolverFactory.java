@@ -1,4 +1,4 @@
-package fr.inria.lille.commons.smt;
+package fr.inria.lille.commons.synthesis.smt;
 
 import org.smtlib.ISolver;
 import org.smtlib.SMT;

@@ -32,10 +32,13 @@ public final class RuntimeValues {
 	}
 
 	private static Map<String, Object> storage() {
+		if (valuesCache == null) {
+			valuesCache = MapLibrary.newHashMap();
+		}
 		return valuesCache;
 	}
 	
 	private RuntimeValues() {}
 	
-	private static Map<String, Object> valuesCache = MapLibrary.newHashMap();
+	private static Map<String, Object> valuesCache;
 }

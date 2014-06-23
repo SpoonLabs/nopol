@@ -43,6 +43,22 @@ public class CollectionLibrary {
 		return copy;
 	}
 	
+	public static <T> int repetitions(Collection<T> collection, T targetElement) {
+		int repetitions = 0;
+		for (T element : collection) {
+			if (element.equals(targetElement)) {
+				repetitions += 1;
+			}
+		}
+		return repetitions;
+	}
+	
+	public static <T> void addMany(Collection<T> collection, int numberOfCopies, T element) {
+		for (int repetition = 0; repetition < numberOfCopies; repetition += 1) {
+			collection.add(element);
+		}
+	}
+	
 	public static <T> T any(Collection<T> collection) {
 		for (T element : collection) {
 			return element;

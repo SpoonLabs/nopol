@@ -6,8 +6,9 @@ public abstract class ClassTypeCollector extends ValueCollector {
 	
 	@Override
 	protected void addValue(String name, Object value, Map<String, Object> storage) {
-		checkNullness(name, value, storage);
-		addSpecificInformation(name, value, storage);
+		if (checkNullness(name, value, storage)) {
+			addSpecificInformation(name, value, storage);
+		}
 	}
 	
 	private boolean checkNullness(String name, Object value, Map<String, Object> storage) {

@@ -1,20 +1,43 @@
 package fr.inria.lille.commons.collections;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class MapLibrary {
 
+	public static <K, V> Map<K, V> newIdentityHashMap(int keyCapacity) {
+		return new IdentityHashMap<K, V>(keyCapacity);
+	}
+	
+	public static <K, V> Map<K, V> newIdentityHashMap(int keyCapacity, Map<K, V> baseMap) {
+		Map<K, V> newIdentityHashMap = newIdentityHashMap(keyCapacity);
+		return mapFilledWith(newIdentityHashMap, baseMap);
+	}
+	
 	public static <K, V> Map<K, V> newHashMap() {
 		return new HashMap<K, V>();
 	}
 	
 	public static <K, V> Map<K, V> newHashMap(Map<K, V> baseMap) {
-		Map<K, V> associativeArray = newHashMap();
-		for (K key : baseMap.keySet()) {
-			associativeArray.put(key, baseMap.get(key));
-		}
-		return associativeArray;
+		Map<K, V> newHashMap = newHashMap();
+		return mapFilledWith(newHashMap, baseMap);
+	}
+	
+	public static <K, V> Map<K, V> newLinkedHashMap() {
+		return new LinkedHashMap<K, V>();
+	}
+	
+	public static <K, V> Map<K, V> newLinkedHashMap(Map<K, V> baseMap) {
+		Map<K, V> newLinkedHashMap = newLinkedHashMap();
+		return mapFilledWith(newLinkedHashMap, baseMap);
+	}
+	
+	public static <K, V> Map<K, V> mapFilledWith(Map<K, V> toBeFilled, Map<K, V> sourceMap) {
+		toBeFilled.putAll(sourceMap);
+		return toBeFilled;
 	}
 
 	public static <K, V> V getPutIfAbsent(Map<K, V> map, K key, V valueIfAbsent) {
@@ -22,6 +45,12 @@ public class MapLibrary {
 			map.put(key, valueIfAbsent);
 		}
 		return map.get(key);
+	}
+	
+	public static <K, V> void putMany(Map<K, V> sourceMap, V value, Collection<K> keys) {
+		for (K key : keys) {
+			sourceMap.put(key, value);
+		}
 	}
 	
 	public static <K, V> Map<K, V> putAll(Map<K, V> sourceMap, Map<K, V> destinationMap) {

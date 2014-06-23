@@ -1,12 +1,14 @@
 package fr.inria.lille.commons.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import fr.inria.lille.commons.collections.ArrayLibrary;
@@ -24,68 +26,128 @@ public class CollectionsTest {
 		String[] subarray;
 		
 		subarray = ArrayLibrary.subarray(array, 0, 0);
-		Assert.assertEquals(0, subarray.length);
+		assertEquals(0, subarray.length);
 		
 		subarray = ArrayLibrary.subarray(array, 0, 1);
-		Assert.assertEquals(1, subarray.length);
-		Assert.assertEquals("a", subarray[0]);
+		assertEquals(1, subarray.length);
+		assertEquals("a", subarray[0]);
 		
 		subarray = ArrayLibrary.subarray(array, 0, 2);
-		Assert.assertEquals(2, subarray.length);
-		Assert.assertEquals("a", subarray[0]);
-		Assert.assertEquals("s", subarray[1]);
+		assertEquals(2, subarray.length);
+		assertEquals("a", subarray[0]);
+		assertEquals("s", subarray[1]);
 		
 		subarray = ArrayLibrary.subarray(array, 1, 2);
-		Assert.assertEquals(1, subarray.length);
-		Assert.assertEquals("s", subarray[0]);
+		assertEquals(1, subarray.length);
+		assertEquals("s", subarray[0]);
 		
 		subarray = ArrayLibrary.subarray(array, 0, 3);
-		Assert.assertEquals(3, subarray.length);
-		Assert.assertTrue(Arrays.equals(array, subarray));
+		assertEquals(3, subarray.length);
+		assertTrue(Arrays.equals(array, subarray));
 		
 		subarray = ArrayLibrary.subarray(array, 0, 4);
-		Assert.assertEquals(3, subarray.length);
-		Assert.assertTrue(Arrays.equals(array, subarray));
+		assertEquals(3, subarray.length);
+		assertTrue(Arrays.equals(array, subarray));
 	}
 	
 	@Test
-	public void copyOf() {
+	public void copyOfList() {
 		List<String> listSymbols = ListLibrary.newArrayList(",", ".", "<", ":", "<", ":");
 		Collection<String> copy = CollectionLibrary.copyOf(listSymbols);
-		Assert.assertEquals(6, listSymbols.size());
-		Assert.assertEquals(6, copy.size());
-		Assert.assertEquals(listSymbols.getClass(), copy.getClass());
+		assertEquals(6, listSymbols.size());
+		assertEquals(6, copy.size());
+		assertEquals(listSymbols.getClass(), copy.getClass());
 		List<String> copiedList = (List) copy;
 		for (int i = 0; i < listSymbols.size(); i += 1) {
-			Assert.assertEquals(listSymbols.get(i), copiedList.get(i));
+			assertEquals(listSymbols.get(i), copiedList.get(i));
 		}
-		
+	}
+	
+	@Test
+	public void copyOfSet() {
 		Set<String> setSymbols = SetLibrary.newHashSet(",", ".", "<", ":", "<", ":");
-		copy = CollectionLibrary.copyOf(setSymbols);
-		Assert.assertEquals(4, setSymbols.size());
-		Assert.assertEquals(4, copy.size());
-		Assert.assertEquals(setSymbols.getClass(), copy.getClass());
+		Collection<String> copy = CollectionLibrary.copyOf(setSymbols);
+		assertEquals(4, setSymbols.size());
+		assertEquals(4, copy.size());
+		assertEquals(setSymbols.getClass(), copy.getClass());
 		Set<String> copiedSet = (Set) copy;
-		Assert.assertTrue(copiedSet.containsAll(setSymbols));
+		assertTrue(copiedSet.containsAll(setSymbols));
 	}
 	
 	@Test
-	public void any() {
+	public void anyOfList() {
 		List<String> list = ListLibrary.newArrayList(".", "..", "...");
-		Assert.assertTrue(list.contains(CollectionLibrary.any(list)));
-		Set<String> set = SetLibrary.newHashSet("-", "--", "---");
-		Assert.assertTrue(set.contains(CollectionLibrary.any(set)));
+		assertTrue(list.contains(CollectionLibrary.any(list)));
 	}
 	
 	@Test
-	public void headAndLast() {
+	public void anyOfSet() {
+		Set<String> set = SetLibrary.newHashSet("-", "--", "---");
+		assertTrue(set.contains(CollectionLibrary.any(set)));
+	}
+	
+	@Test
+	public void headOfList() {
 		List<String> list = ListLibrary.newArrayList(".", "..", "...");
 		String head = ListLibrary.head(list);
+		assertTrue(list.contains(head));
+		assertEquals(".", head);
+	}
+	
+	@Test
+	public void lastOfList() {
+		List<String> list = ListLibrary.newArrayList(".", "..", "...");
 		String last = ListLibrary.last(list);
-		Assert.assertTrue(list.contains(head));
-		Assert.assertEquals(".", head);
-		Assert.assertTrue(list.contains(last));
-		Assert.assertEquals("...", last);
+		assertTrue(list.contains(last));
+		assertEquals("...", last);
+	}
+	
+	@Test
+	public void repetitionsInList() {
+		List<String> list = ListLibrary.newArrayList();
+		assertEquals(0, CollectionLibrary.repetitions(list, "a"));
+		list.add("a");
+		assertEquals(1, CollectionLibrary.repetitions(list, "a"));
+		list.add("a");
+		assertEquals(2, CollectionLibrary.repetitions(list, "a"));
+		list.remove("a");
+		assertEquals(1, CollectionLibrary.repetitions(list, "a"));
+	}
+	
+	@Test
+	public void repetitionsInSet() {
+		Set<String> set = SetLibrary.newHashSet();
+		assertEquals(0, CollectionLibrary.repetitions(set, "a"));
+		set.add("a");
+		assertEquals(1, CollectionLibrary.repetitions(set, "a"));
+		set.add("a");
+		assertEquals(1, CollectionLibrary.repetitions(set, "a"));
+		set.remove("a");
+		assertEquals(0, CollectionLibrary.repetitions(set, "a"));
+	}
+	
+	@Test
+	public void addManyToList() {
+		List<String> list = ListLibrary.newArrayList("a");
+		CollectionLibrary.addMany(list, 0, "a");
+		assertEquals(1, list.size());
+		CollectionLibrary.addMany(list, 1, "a");
+		assertEquals(2, list.size());
+		CollectionLibrary.addMany(list, 5, "a");
+		assertEquals(7, list.size());
+		assertEquals(7, CollectionLibrary.repetitions(list, "a"));
+	}
+	
+	@Test
+	public void addManyToSet() {
+		Set<String> set = SetLibrary.newHashSet();
+		CollectionLibrary.addMany(set, 0, "a");
+		assertEquals(0, set.size());
+		CollectionLibrary.addMany(set, 1, "a");
+		assertEquals(1, set.size());
+		CollectionLibrary.addMany(set, 5, "a");
+		assertEquals(1, set.size());
+		assertEquals(1, CollectionLibrary.repetitions(set, "a"));
 	}
 	
 	@Test
@@ -94,31 +156,124 @@ public class CollectionsTest {
 		map.put(0, false);
 		map.put(1, true);
 		Map<String, Boolean> stringMap = MapLibrary.toStringMap(map);
-		Assert.assertEquals(2, stringMap.keySet().size());
-		Assert.assertTrue(stringMap.containsKey("0"));
-		Assert.assertEquals(false, stringMap.get("0"));
-		Assert.assertTrue(stringMap.containsKey("1"));
-		Assert.assertEquals(true, stringMap.get("1"));
+		assertEquals(2, stringMap.keySet().size());
+		assertTrue(stringMap.containsKey("0"));
+		assertEquals(false, stringMap.get("0"));
+		assertTrue(stringMap.containsKey("1"));
+		assertEquals(true, stringMap.get("1"));
 	}
 	
 	@Test
-	public void multimap() {
+	public void listMultimap() {
 		Multimap<Integer, String> listMultimap = Multimap.newListMultimap();
 		listMultimap.addAll(1, "a", "b", "c", "a", "b", "c");
-		Assert.assertEquals(1, listMultimap.size());
-		Assert.assertTrue(listMultimap.containsKey(1));
+		assertEquals(1, listMultimap.size());
+		assertTrue(listMultimap.containsKey(1));
 		Collection<String> values = listMultimap.get(1);
-		Assert.assertEquals(6, values.size());
-		Assert.assertEquals(Arrays.asList("a", "b", "c", "a", "b", "c"),  values);
-		
+		assertEquals(6, values.size());
+		assertEquals(Arrays.asList("a", "b", "c", "a", "b", "c"),  values);
+	}
+	
+	@Test
+	public void setMultimap() {
 		Multimap<Integer, String> setMultimap = Multimap.newSetMultimap();
 		setMultimap.addAll(1, "a", "b", "c", "a", "b", "c");
-		Assert.assertEquals(1, setMultimap.size());
-		Assert.assertTrue(setMultimap.containsKey(1));
-		values = setMultimap.get(1);
-		Assert.assertEquals(3, values.size());
-		Assert.assertTrue(values.contains("a"));
-		Assert.assertTrue(values.contains("b"));
-		Assert.assertTrue(values.contains("c"));
+		assertEquals(1, setMultimap.size());
+		assertTrue(setMultimap.containsKey(1));
+		Collection<String> values = setMultimap.get(1);
+		assertEquals(3, values.size());
+		assertTrue(values.contains("a"));
+		assertTrue(values.contains("b"));
+		assertTrue(values.contains("c"));
 	}
+	
+	@Test
+	public void identityHashListMultimap() {
+		Multimap<String, Integer> identityListMultimap = Multimap.newIdentityHashListMultimap(3);
+		Collection<Integer> integerValues;
+		String firstA = new String("a");
+		String secondA = new String("a");
+		String thirdA = new String("a");
+		identityListMultimap.addAll(firstA, 1, 2, 3);
+		identityListMultimap.addAll(secondA, 2, 3, 4, 5);
+		identityListMultimap.addAll(thirdA, 1, 1, 1);
+		assertEquals(3, identityListMultimap.size());
+		assertTrue(identityListMultimap.containsKey(firstA));
+		assertTrue(identityListMultimap.containsKey(secondA));
+		assertTrue(identityListMultimap.containsKey(thirdA));
+		integerValues = identityListMultimap.get(firstA);
+		assertEquals(3, integerValues.size());
+		assertTrue(integerValues.contains(1));
+		assertTrue(integerValues.contains(2));
+		assertTrue(integerValues.contains(3));
+		integerValues = identityListMultimap.get(secondA);
+		assertEquals(4, integerValues.size());
+		assertTrue(integerValues.contains(2));
+		assertTrue(integerValues.contains(3));
+		assertTrue(integerValues.contains(4));
+		assertTrue(integerValues.contains(5));
+		integerValues = identityListMultimap.get(thirdA);
+		assertEquals(3, integerValues.size());
+		assertTrue(integerValues.contains(1));
+		assertTrue(integerValues.remove(1));
+		assertTrue(integerValues.remove(1));
+		assertTrue(integerValues.remove(1));
+		assertTrue(integerValues.isEmpty());
+	}
+	
+	@Test
+	public void identityHashSetMultimap() {
+		Multimap<String, Integer> identitySetMultimap = Multimap.newIdentityHashSetMultimap(3);
+		Collection<Integer> integerValues;
+		String firstA = new String("a");
+		String secondA = new String("a");
+		String thirdA = new String("a");
+		identitySetMultimap.addAll(firstA, 1, 2, 3);
+		identitySetMultimap.addAll(secondA, 2, 3, 4, 5);
+		identitySetMultimap.addAll(thirdA, 1, 1, 1);
+		assertEquals(3, identitySetMultimap.size());
+		assertTrue(identitySetMultimap.containsKey(firstA));
+		assertTrue(identitySetMultimap.containsKey(secondA));
+		assertTrue(identitySetMultimap.containsKey(thirdA));
+		integerValues = identitySetMultimap.get(firstA);
+		assertEquals(3, integerValues.size());
+		assertTrue(integerValues.contains(1));
+		assertTrue(integerValues.contains(2));
+		assertTrue(integerValues.contains(3));
+		integerValues = identitySetMultimap.get(secondA);
+		assertEquals(4, integerValues.size());
+		assertTrue(integerValues.contains(2));
+		assertTrue(integerValues.contains(3));
+		assertTrue(integerValues.contains(4));
+		assertTrue(integerValues.contains(5));
+		integerValues = identitySetMultimap.get(thirdA);
+		assertEquals(1, integerValues.size());
+		assertTrue(integerValues.contains(1));
+		assertTrue(integerValues.remove(1));
+		assertTrue(integerValues.isEmpty());
+	}
+	
+	@Test
+	public void capacityOfIdentityHashMultimap() {
+		Multimap<String, Integer> identityListMultimap = Multimap.newIdentityHashListMultimap(2);
+		identityListMultimap.addAll("qjjw", 1, 2, 4);
+		identityListMultimap.addAll("xzcv", 9, 3, 1, 2);
+		assertEquals(2, identityListMultimap.size());
+		identityListMultimap.add("extra", 0);
+		assertEquals(3, identityListMultimap.size());
+	}
+	
+	@Test
+	public void putValueInManyKeys() {
+		Map<String, String> map = MapLibrary.newHashMap();
+		assertEquals(0, map.size());
+		List<String> keys = Arrays.asList("a", "b", "c", "d");
+		MapLibrary.putMany(map, "C", keys);
+		assertEquals(4, map.size());
+		for (String key : keys) {
+			assertTrue(map.containsKey(key));
+			assertEquals("C", map.get(key));
+		}
+	}
+
 }

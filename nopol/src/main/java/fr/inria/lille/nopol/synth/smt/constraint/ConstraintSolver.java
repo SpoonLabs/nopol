@@ -39,7 +39,7 @@ import org.smtlib.ISolver;
 import org.smtlib.SMT;
 import org.smtlib.SMT.Configuration;
 
-import fr.inria.lille.commons.smt.SolverFactory;
+import fr.inria.lille.commons.synthesis.smt.SolverFactory;
 import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.synth.RepairCandidate;
 import fr.inria.lille.nopol.synth.SMTExecutionResult;

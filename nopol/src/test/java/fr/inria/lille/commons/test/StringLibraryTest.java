@@ -1,8 +1,9 @@
 package fr.inria.lille.commons.test;
 
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
-import junit.framework.Assert;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -15,12 +16,20 @@ public class StringLibraryTest {
 		String chained = "aja~adja!~ao";
 		List<String> splitted;
 		splitted = StringLibrary.split(chained, "z");
-		Assert.assertEquals(1, splitted.size());
-		Assert.assertEquals(chained, splitted.get(0));
+		assertEquals(1, splitted.size());
+		assertEquals(chained, splitted.get(0));
 		splitted = StringLibrary.split(chained, "~");
-		Assert.assertEquals(3, splitted.size());
-		Assert.assertEquals("aja", splitted.get(0));
-		Assert.assertEquals("adja!", splitted.get(1));
-		Assert.assertEquals("ao", splitted.get(2));
+		assertEquals(3, splitted.size());
+		assertEquals("aja", splitted.get(0));
+		assertEquals("adja!", splitted.get(1));
+		assertEquals("ao", splitted.get(2));
+	}
+	
+	@SuppressWarnings({"rawtypes","unchecked"})
+	@Test
+	public void join() {
+		assertEquals("", StringLibrary.join((List) Arrays.asList(), ".."));
+		assertEquals("a", StringLibrary.join(Arrays.asList("a"), ".."));
+		assertEquals("a..b", StringLibrary.join(Arrays.asList("a", "b"), ".."));
 	}
 }
