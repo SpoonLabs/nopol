@@ -20,6 +20,7 @@ import static com.google.common.collect.FluentIterable.from;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,21 +83,30 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		}
 		gzoltar.setClassPaths(new ArrayList<String>(classpaths));
 		
-		String packageName = getPackageName(classpaths);
-		System.out.println(packageName);
-		gzoltar.addPackageToInstrument(packageName);
-		gzoltar.addPackageNotToInstrument("org.junit");
-		gzoltar.addPackageNotToInstrument("junit.framework");
+		
+		try {
+			String packageName = getPackageName(classpaths);
+			System.out.println("Package : "+packageName);
+			gzoltar.addPackageToInstrument(packageName);
+			gzoltar.addPackageNotToInstrument("org.junit");
+			gzoltar.addPackageNotToInstrument("junit.framework");
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+		
 	}
 
-	private String getPackageName(HashSet<String> classpaths) {
+	private String getPackageName(HashSet<String> classpaths) throws MalformedURLException {
 		String packageName = "";
 		
 		for ( String cp : classpaths ){
 			File f = getFirstClassFolder(new File(cp));
 			if ( f != null ){
-			String tmp = f.getAbsolutePath();
-			packageName = tmp.substring(cp.length(), tmp.lastIndexOf("/")).replace('/', '.');
+			String tmp = new File(f.getAbsolutePath()).toURI().toURL().getPath(); // workaround because in Windows URL Object add "/" before the path
+			System.out.println("cp : "+cp);
+			System.out.println("tmp : "+tmp);
+			System.out.println("packageName : tmp.substring("+cp.length()+","+tmp.lastIndexOf("/")+")");
+			packageName = tmp.substring(cp.length(), tmp.lastIndexOf("/")).replace(File.separatorChar, '.');
 			}
 		}
 		return packageName;
