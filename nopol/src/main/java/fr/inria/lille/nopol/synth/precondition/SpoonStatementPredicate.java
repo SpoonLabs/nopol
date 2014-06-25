@@ -32,6 +32,7 @@ import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.ModifierKind;
+import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtVariableReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -131,12 +132,12 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 				CtVariableAccess<?> varAccess = (CtVariableAccess<?>) assignment.getAssigned();
 				CtVariableReference<?> var = varAccess.getVariable();
 				if (var.getDeclaration() != null) {
-					if (var.getDeclaration().getDefaultExpression() == null) {
+					if (var.getDeclaration().getDefaultExpression() == null && !(var instanceof CtParameterReference)) {
 						/*
 						 * variable isn't initialize before this statement
 						 */
 						List<CtAssignment<?, ?>> otherAssignments = input.getParent().getElements(new TypeFilter<CtAssignment<?, ?>>(CtAssignment.class));
-						boolean noOtherAssign = true;;
+						boolean noOtherAssign = true;
 						for (CtAssignment<?, ?> tmp : otherAssignments) {
 							if (tmp.getAssigned() instanceof CtVariableAccess<?>) {
 								if (((CtVariableAccess<?>) (tmp.getAssigned())).getVariable().equals(var) 
@@ -144,7 +145,7 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 									/*
 									 * variable is assigned later
 									 */
-									noOtherAssign = false;;
+									noOtherAssign = false;
 								}
 							}
 						}
