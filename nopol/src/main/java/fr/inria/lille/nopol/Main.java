@@ -19,15 +19,28 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+
+import sun.nio.ch.FileKey;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.synth.DefaultSynthesizer;
 import fr.inria.lille.nopol.synth.SynthesizerFactory;
 import fr.inria.lille.nopol.synth.smt.SMTExecutionResult;
+import fr.inria.lille.nopol.synth.smt.SolverFactory;
+import fr.inria.lille.nopol.synth.smt.SolverFactory.Solver;
 import fr.inria.lille.nopol.synth.smt.constraint.ConstraintSolver;
 
 /**
@@ -36,26 +49,21 @@ import fr.inria.lille.nopol.synth.smt.constraint.ConstraintSolver;
  */
 public class Main {
 
+	private static int sourceFolderIndex = 0;
+	private static int classPathIndex = 1;
+	private static int minimalSizeArgs = 2;
+	private static long startTime = -1;
+	
 	/**
 	 * @param args
 	 */
 	public static void main(final String[] args) {
-		long startTime = System.currentTimeMillis();
-		int sourceFolderIndex = 0;
-		int classPathIndex = 1;
-		
-		if (2 != args.length && 3 != args.length) {
-			printUsage();
+		startTime = System.currentTimeMillis();
+
+		if ( !handleArgs(args) ){
 			return;
 		}
-		if ( args[0].equals("-o") || args[0].equals("--onebuild") ){
-			sourceFolderIndex = 1;
-			classPathIndex = 2;
-		}else if ( args[0].equals("-m") || args[0].equals("--multiplebuild") ){
-			sourceFolderIndex = 1;
-			classPathIndex = 2;
-			NoPol.setOneBuild(false);
-		}
+		
 		
 		
 		File sourceFolder = new File(args[sourceFolderIndex]);
@@ -66,9 +74,53 @@ public class Main {
 		// with a URLClassLoader, for example.
 		// see JDTCompiler.getLibraryAccess()...
 		System.setProperty("java.class.path", System.getProperty("java.class.path") + File.pathSeparatorChar + args[classPathIndex]);
+
+		
+		
 		String[] paths = args[classPathIndex].split(Character.toString(File.pathSeparatorChar));
+		
+		
+		testSolver();
 		new Main(sourceFolder, paths).run();
 		
+		displayResult();
+	}
+	
+	private static void testSolver(){
+		InputStream testFile = Main.class.getResourceAsStream("/smt_test");
+		File smt_test;
+		try {
+			smt_test = Files.createTempFile("smt_test", "").toFile();
+			OutputStream os = new FileOutputStream(smt_test);
+			
+			byte[] buffer = new byte[1024];
+			int length = testFile.read(buffer);
+
+			while (length > 0) {
+				os.write(buffer, 0, length);
+				length = testFile.read(buffer);
+			}
+			
+			testFile.close();
+			os.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
+		
+		
+		if ( !SolverFactory.getCurrentSolver().isWorking(smt_test.getAbsolutePath()) ){
+			System.out.println("Solver Issue :\n"
+					+ "\tMay doesn't work properly.\n"
+					+ "\tMay doesn't exist in location : "+SolverFactory.getCurrentSolver().getBinaryPath()+".\n"
+							+ "\tMay doesn't match the defined Solver.");
+
+			System.exit(0);
+		}
+		smt_test.delete();
+	}
+	
+	private static void displayResult(){
 		System.out.println("----Information----");
 		System.out.println("Nb Statements Analysed : "+SynthesizerFactory.getNbStatementsAnalysed());
 		System.out.println("Nb Statements with Angelic Value Found : "+DefaultSynthesizer.getNbStatementsWithAngelicValue());
@@ -82,9 +134,139 @@ public class Main {
 		System.out.println("Total Execution time : "+(System.currentTimeMillis()-startTime)+"ms");
 	}
 
-	private static void printUsage() {
-		System.out.println("java " + Main.class.getName() + "[-o, --onebuild, -m, --multiplebuild] <source folder> <classpath>");
+	private static boolean handleArgs(String[] args){
+		if (args.length < 1 ) {
+			printUsage();
+			return false;
+		}
+		
+		
+		
+		
+		for ( String arg : args ){
+			if ( arg.equals("-o") || arg.equals("--onebuild") ){
+				NoPol.setOneBuild(true);
+				increaseDefaultValue();
+			}else if ( arg.equals("-m") || arg.equals("--multiplebuild") ){
+				NoPol.setOneBuild(false);
+				increaseDefaultValue();
+			}else if ( arg.startsWith("-solver=")){
+				String solver = arg.substring(arg.indexOf("=")+1);
+				if ( solver.equals("")){
+					System.out.println("Missing Specified SMT Solver name.");
+					return false;
+				}
+				boolean solverChanged = false;
+				for ( Solver tmp : SolverFactory.Solver.values() ){
+					if ( solver.equals(tmp.toString())){
+						SolverFactory.changeSolver(tmp);
+						solverChanged = true;
+					}
+				}
+				if ( !solverChanged ){
+					System.out.println("Specified SMT Solver is not recognized by Nopol : "+solver+".");
+					return false;
+				}
+				increaseDefaultValue();
+			}else if ( arg.startsWith("-solver_path=")){
+				String solver_path = arg.substring(arg.indexOf("=")+1);
+				if ( solver_path.equals("")){
+					System.out.println("Missing Specified SMT Solver path.");
+					return false;
+				}
+				SolverFactory.getCurrentSolver().setBinaryPath(solver_path);
+				increaseDefaultValue();
+			}else if ( arg.equals("--example") || arg.equals("-ex")){
+				runExample();
+			}
+			
+		}
+		
+		
+		if ( minimalSizeArgs > args.length ){
+			printUsage();
+			return false;
+		}
+		
+		return true;
 	}
+
+	
+	private static void runExample() {	
+		try {
+			InputStream[] inputInsideJar = new InputStream[]{
+					Main.class.getResourceAsStream("/example/src/nopol_example/NopolExample.java"),
+					Main.class.getResourceAsStream("/example/bin/nopol_example/NopolExample.class"),
+					Main.class.getResourceAsStream("/example/src/nopol_example/NopolExampleTest.java"),
+					Main.class.getResourceAsStream("/example/bin/nopol_example/NopolExampleTest.class")
+					};
+			
+			File tmpFolder = Files.createTempDirectory("NopolExample").toFile();
+			File tmpSrc = new File(tmpFolder.getAbsolutePath()+File.separatorChar+"src"+File.separatorChar+"nopol_example");
+			File tmpBin = new File(tmpFolder.getAbsolutePath()+File.separatorChar+"bin"+File.separatorChar+"nopol_example");
+			tmpSrc.mkdirs();
+			tmpBin.mkdirs();
+			
+			
+			File[] outputFile = new File[]{ 
+					new File(tmpSrc.getAbsolutePath()+File.separatorChar+"NopolExample.java"), 
+					new File(tmpBin.getAbsolutePath()+File.separatorChar+"NopolExample.class"), 
+					new File(tmpSrc.getAbsolutePath()+File.separatorChar+"NopolExampleTest.java"), 
+					new File(tmpBin.getAbsolutePath()+File.separatorChar+"NopolExampleTest.class") 
+					};
+			
+			for (int i = 0 ; i < 4 ; i++) {
+				OutputStream os = new FileOutputStream(outputFile[i]);
+
+				byte[] buffer = new byte[1024];
+				int length = inputInsideJar[i].read(buffer);
+
+				while (length > 0) {
+					os.write(buffer, 0, length);
+					length = inputInsideJar[i].read(buffer);
+				}
+				inputInsideJar[i].close();
+				os.close();
+			}
+			
+			testSolver();
+			new Main(tmpSrc.getParentFile(), new String[]{tmpBin.getParent()}).run();
+			displayResult();
+			
+			System.exit(0);
+		} catch (IOException  e) {
+			throw new RuntimeException(e);
+		}
+		
+		
+	}
+
+	private static void increaseDefaultValue(){
+		sourceFolderIndex++;
+		classPathIndex++;
+		minimalSizeArgs++;
+	}
+	
+	
+	private static void printUsage() {
+		System.out.println("usage : [OPTIONS] <source folder> <binary folder>\n"
+				+ "options :\n"
+				+ "\t -o, --onebuild, -m, --multiplebuild\n"
+				+ "\t\t Set nopol behaviour to build the model only once or not. The onebuild option should optimized time execution but some compilation errors can appears, still experimental.\n"
+				+ "\t\t Default value is onebuild\n"
+				+ "\n"
+				+ "\t-solver=SOLVER\n"
+				+ "\t\t Set the solver, for now Nopol can handle two solvers : CVC4 or Z3\n"
+				+ "\t\t Default value is Z3\n"
+				+ "\n"
+				+ "\t-solver_path=PATH\n"
+				+ "\t\t Set the solver path to PATH\n"
+				+ "\t\t Default location is /usr/bin/SOLVER_NAME\n"
+				+ "\n"
+				+ "\t-ex, --example\n"
+				+ "\t\t Run Nopol with toy example\n");
+	}
+
 
 	private final String[] classpath;
 
@@ -96,6 +278,9 @@ public class Main {
 	private Main(final File sourceFolder, final String[] classpath) {
 		this.sourceFolder = checkNotNull(sourceFolder);
 		this.classpath = checkNotNull(classpath);
+		
+		
+		
 	}
 
 	void run() {

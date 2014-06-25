@@ -41,7 +41,7 @@ public class IfMetric {
 	
 	private final File sourceFolder;
 
-	private static File output = new File("/tmp/IfMetric");
+	private static File output = new File(File.separatorChar+"tmp"+File.separatorChar+"IfMetric");
 	private static FileWriter writer;
 	private List<URL> urls;
 
@@ -57,7 +57,7 @@ public class IfMetric {
 	public IfMetric(File sourceFolder, String[] paths) {
 		this.sourceFolder = sourceFolder;
 		this.classpath = paths;
-		output = new File(sourceFolder + "/../IfMetric");
+		output = new File(sourceFolder.getAbsolutePath() + File.separatorChar+".."+File.separatorChar+"IfMetric");
 		FileWriter writer = null;
 		modifyClass = new ArrayList<>();
 		try {
