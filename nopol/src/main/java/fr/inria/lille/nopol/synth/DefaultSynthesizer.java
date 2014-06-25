@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.patch.StringPatch;
+import fr.inria.lille.nopol.synth.smt.SolverFactory;
 import fr.inria.lille.nopol.synth.smt.constraint.ConstraintSolver;
 import fr.inria.lille.nopol.synth.smt.model.InputModel;
 import fr.inria.lille.nopol.synth.smt.model.InputModelBuilder;
@@ -81,7 +82,7 @@ public final class DefaultSynthesizer implements Synthesizer {
 		ConstraintSolver constraintSolver = new ConstraintSolver(outputFolder, sourceLocation);
 		LoggerFactory.getLogger(this.getClass()).info("Trying "+level+"...");
 		RepairCandidate newRepair = constraintSolver.solve(model);
-		while (null == newRepair && level != Level.MULTIPLICATION) {
+		while (null == newRepair && level != SolverFactory.getCurrentSolver().getMaxLevel()) {
 			level = level.next();
 			model = modelBuilder.buildFor(level);
 			LoggerFactory.getLogger(this.getClass()).info("Trying "+level+"...");

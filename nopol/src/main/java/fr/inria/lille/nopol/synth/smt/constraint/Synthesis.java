@@ -32,10 +32,10 @@ import org.smtlib.IExpr.IIdentifier;
 import org.smtlib.IExpr.IQualifiedIdentifier;
 import org.smtlib.ISort;
 import org.smtlib.SMT.Configuration;
-import org.smtlib.logic.AUFNIRA;
 
 import com.google.common.collect.Iterables;
 
+import fr.inria.lille.nopol.synth.smt.SolverFactory;
 import fr.inria.lille.nopol.synth.smt.model.Component;
 import fr.inria.lille.nopol.synth.smt.model.InputModel;
 import fr.inria.lille.nopol.synth.smt.model.Type;
@@ -125,7 +125,7 @@ final class Synthesis {
 	private List<ICommand> createScriptFor(final Iterable<List<IExpr>> inputValues, final Iterable<IExpr> outputValues) {
 		List<ICommand> script = new ArrayList<ICommand>(model.getComponents().size() * 3);
 		script.add(commandFactory.set_option(efactory.keyword(PRODUCE_MODELS), TRUE));
-		script.add(commandFactory.set_logic(efactory.symbol(AUFNIRA.class.getSimpleName())));
+		script.add(commandFactory.set_logic(efactory.symbol(SolverFactory.getCurrentSolver().getLogicName())));
 		addFunctionDeclarationsTo(script);
 		addLocationFunctionsTo(script);
 		script.add(commandFactory.assertCommand(createConstraint(inputValues, outputValues)));
