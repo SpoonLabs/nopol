@@ -11,7 +11,6 @@ import java.util.List;
 import org.junit.Test;
 
 import fr.inria.lille.commons.synthesis.expression.Expression;
-import fr.inria.lille.commons.synthesis.expression.ValuedExpression;
 import fr.inria.lille.commons.synthesis.operator.BinaryOperator;
 import fr.inria.lille.commons.synthesis.operator.Operator;
 import fr.inria.lille.commons.synthesis.operator.TernaryOperator;
@@ -32,7 +31,7 @@ public class LocationVariableContainerTest {
 		Expression<Integer> thirdExpression = new Expression<>(Integer.class, "i.get(\"n\")");
 		Collection<Expression<?>> inputs = (List) Arrays.asList(firstExpression, secondExpression, thirdExpression);
 		Collection<Operator<?>> operators = (List) Arrays.asList(BinaryOperator.addition(), BinaryOperator.or(), TernaryOperator.ifThenElse(), UnaryOperator.not());
-		ValuedExpression<?> outputExpression = new ValuedExpression<>(Boolean.class, "...", false);
+		Expression<?> outputExpression = new Expression<>(Boolean.class, "...");
 		LocationVariableContainer container = new LocationVariableContainer(inputs, operators, outputExpression);
 		
 		assertEquals(3, container.inputs().size());

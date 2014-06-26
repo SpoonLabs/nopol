@@ -17,7 +17,6 @@ import fr.inria.lille.commons.collections.Multimap;
 import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.expression.ObjectTemplate;
-import fr.inria.lille.commons.synthesis.expression.ValuedExpression;
 import fr.inria.lille.commons.synthesis.operator.BinaryOperator;
 import fr.inria.lille.commons.synthesis.operator.Operator;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
@@ -163,15 +162,15 @@ public class CodeSynthesisTest {
 	}
 	
 	private LocationVariableContainer exampleWith(Collection<Operator<?>> operators) {
-		ValuedExpression<Number> up_sep = new ValuedExpression<>(Number.class, "up_sep", 11);
-		ValuedExpression<Number> inhibit = new ValuedExpression<>(Number.class, "inhibit", 1);
-		ValuedExpression<Number> down_sep = new ValuedExpression<>(Number.class, "down_sep", 110);
-		ValuedExpression<Number> constantM1 = new ValuedExpression<>(Number.class, "-1", -1);
-		ValuedExpression<Number> constant0 = new ValuedExpression<>(Number.class, "0", 0);
-		ValuedExpression<Number> constant1 = new ValuedExpression<>(Number.class, "1", 1);
-		ValuedExpression<Boolean> constantTrue = new ValuedExpression<>(Boolean.class, "true", true);
-		ValuedExpression<Boolean> constantFalse = new ValuedExpression<>(Boolean.class, "false", false);
-		ValuedExpression<?> outputExpression = new ValuedExpression<>(Boolean.class, "...", true);
+		Expression<Number> up_sep = new Expression<>(Number.class, "up_sep");
+		Expression<Number> inhibit = new Expression<>(Number.class, "inhibit");
+		Expression<Number> down_sep = new Expression<>(Number.class, "down_sep");
+		Expression<Number> constantM1 = new Expression<>(Number.class, "-1");
+		Expression<Number> constant0 = new Expression<>(Number.class, "0");
+		Expression<Number> constant1 = new Expression<>(Number.class, "1");
+		Expression<Boolean> constantTrue = new Expression<>(Boolean.class, "true");
+		Expression<Boolean> constantFalse = new Expression<>(Boolean.class, "false");
+		Expression<?> outputExpression = new Expression<>(Boolean.class, "...");
 		
 		Collection<Expression<?>> inputs = (List) Arrays.asList(up_sep, inhibit, down_sep, constantM1, constant0, constant1, constantTrue, constantFalse);
 		return new LocationVariableContainer(inputs, operators, outputExpression);

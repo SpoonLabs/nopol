@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.synthesis.expression.Expression;
-import fr.inria.lille.commons.synthesis.expression.ValuedExpression;
 import fr.inria.lille.commons.synthesis.operator.BinaryOperator;
 import fr.inria.lille.commons.synthesis.operator.Operator;
 import fr.inria.lille.commons.synthesis.operator.Parameter;
@@ -55,20 +54,6 @@ public class ComparisonTest {
 	public void differentExpressions() {
 		mustBeDifferent(new Expression<Boolean>(Boolean.class, "true"), new Expression<Boolean>(Boolean.class, "false"));
 		mustBeDifferent(new Expression<Boolean>(Boolean.class, "true"), new Expression<Integer>(Integer.class, "true"));
-	}
-	
-	@Test
-	public void equalValuedExpressions() {
-		mustBeEqual(new ValuedExpression<String>(String.class, "nnn", "aString"), new ValuedExpression<String>(String.class, "nnn", "aString"));
-		mustBeEqual(new ValuedExpression<Short>(Short.class, "mmm", (short) 10), new ValuedExpression<Short>(Short.class, "mmm", (short) 10));
-	}
-	
-	@Test
-	public void differentValuedExpressions() {
-		mustBeDifferent(new ValuedExpression<String>(String.class, "nnn", "aString"), new ValuedExpression<String>(String.class, "nnn", "otherString"));
-		mustBeDifferent(new ValuedExpression<String>(String.class, "nnn", "aString"), new ValuedExpression<String>(String.class, "---", "aString"));
-		mustBeDifferent(new ValuedExpression<Float>(Float.class, "mmm", (float) 2.0), new ValuedExpression<Double>(Double.class, "mmm", 2.0));
-		mustBeDifferent(new ValuedExpression<Number>(Number.class, "mmm", 2.0), new ValuedExpression<Double>(Double.class, "mmm", 2.0));
 	}
 	
 	@SuppressWarnings("rawtypes")

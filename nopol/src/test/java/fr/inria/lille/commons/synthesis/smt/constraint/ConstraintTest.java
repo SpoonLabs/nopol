@@ -27,7 +27,6 @@ import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.string.StringLibrary;
 import fr.inria.lille.commons.synthesis.expression.Expression;
-import fr.inria.lille.commons.synthesis.expression.ValuedExpression;
 import fr.inria.lille.commons.synthesis.operator.BinaryOperator;
 import fr.inria.lille.commons.synthesis.operator.Operator;
 import fr.inria.lille.commons.synthesis.operator.TernaryOperator;
@@ -207,7 +206,7 @@ public class ConstraintTest {
 	@Test
 	public void invocationToFunctionWithoutParameters() throws ParserException {
 		Expression<?> input = new Expression<>(Short.class, "2");
-		ValuedExpression<?> output = new ValuedExpression<>(Short.class, "a", (short) 2);
+		Expression<?> output = new Expression<>(Short.class, "a");
 		LocationVariableContainer containerWithoutOperands = new LocationVariableContainer((List) asList(input), (List) asList(), output);
 		Constraint library = new LibraryConstraint(smtlib());
 		IExpr actualInvocation = library.invocation(containerWithoutOperands);
@@ -218,7 +217,7 @@ public class ConstraintTest {
 	@Test
 	public void invocationWithArgumentsToFunctionWithoutOperands() throws ParserException {
 		Expression<?> input = new Expression<>(Short.class, "2");
-		ValuedExpression<?> output = new ValuedExpression<>(Short.class, "a", (short) 2);
+		Expression<?> output = new Expression<>(Short.class, "a");
 		LocationVariableContainer containerWithoutOperands = new LocationVariableContainer((List) asList(input), (List) asList(), output);
 		Constraint verification = new VerificationConstraint(smtlib());
 		Map<String, Object> values = (Map) MapLibrary.newHashMap(asList("2", "a"), asList(2, 3));
@@ -229,7 +228,7 @@ public class ConstraintTest {
 	
 	@Test
 	public void invocationWithArgumentsToFunctionWithoutInputs() throws ParserException {
-		ValuedExpression<?> output = new ValuedExpression<>(Short.class, "a", (short) 2);
+		Expression<?> output = new Expression<>(Short.class, "a");
 		LocationVariableContainer containerWithoutOperands = new LocationVariableContainer((List) asList(), (List) asList(), output);
 		Constraint verification = new VerificationConstraint(smtlib());
 		IExpr actualInvocation = verification.invocation(containerWithoutOperands);
@@ -243,7 +242,7 @@ public class ConstraintTest {
 		Expression<Number> thirdExpression = new Expression<>(Number.class, "i.get(\"n\")");
 		Collection<Expression<?>> inputs = (List) Arrays.asList(firstExpression, secondExpression, thirdExpression);
 		Collection<Operator<?>> operators = (List) Arrays.asList(BinaryOperator.addition(), BinaryOperator.or(), TernaryOperator.ifThenElse(), UnaryOperator.not());
-		ValuedExpression<?> outputExpression = new ValuedExpression<>(Boolean.class, "returnValue", false);
+		Expression<?> outputExpression = new Expression<>(Boolean.class, "returnValue");
 		return new LocationVariableContainer(inputs, operators, outputExpression);
 	}
 	
