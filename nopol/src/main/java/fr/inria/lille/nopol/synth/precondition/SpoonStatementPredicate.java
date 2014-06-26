@@ -38,6 +38,8 @@ import spoon.reflect.visitor.filter.TypeFilter;
 
 import com.google.common.base.Predicate;
 
+import fr.inria.lille.nopol.NoPol;
+
 /**
  * @author Favio D. DeMarco
  * 
@@ -51,7 +53,6 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 		if ( parent == null ){
 			return false;
 		}
-		boolean isConstructorCall = input.toString().contains("super(") || input.toString().contains("this("); // big workaround in order to catch super() call or this() in constructor, could be more efficient
 		boolean isCtStamement = input instanceof CtStatement;
 		boolean isCtReturn = input instanceof CtReturn;
 		boolean isInsideIf = parent.getParent() instanceof CtIf; // Checking parent isn't enough, parent will be CtBlock and grandpa will be CtIf
@@ -59,6 +60,12 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 		boolean isCtLocalVariable = input instanceof CtLocalVariable;
 		boolean isInsideIfLoopCaseBlock = (parent instanceof CtIf || parent instanceof CtLoop || parent instanceof CtCase || parent instanceof CtBlock);
 		boolean isInsideForDeclaration = parent instanceof CtFor ? ((CtFor)(parent)).getForUpdate().contains(input) || ((CtFor)(parent)).getForInit().contains(input): false ;
+		
+		if ( NoPol.isOneBuild() ){
+			if (input.toString().contains("super(") || input.toString().contains("this(")){
+				// big workaround in order to catch super() call or this() in constructor, could be more efficient
+				return false;
+			}
 		/*
 		 * Check if the statement is a throw, skipping the throw can result compilation error
 		 */
@@ -208,6 +215,7 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 			}
 			
 		}
+		}
 		
 		boolean result = isCtStamement 
 				// input instanceof CtClass ||
@@ -224,9 +232,7 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 				// target, CtStatementList<?> statements)
 				&& isInsideIfLoopCaseBlock
 				// cannot insert if inside update statement in for loop declaration
-				&& !isInsideForDeclaration
-				// cannot insert if before super() call in constructor
-				&& !isConstructorCall;
+				&& !isInsideForDeclaration;
 		return  result;
 	}
 }
