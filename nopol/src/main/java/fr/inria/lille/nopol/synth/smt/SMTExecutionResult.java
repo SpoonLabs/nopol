@@ -1,5 +1,7 @@
 package fr.inria.lille.nopol.synth.smt;
 
+import java.io.File;
+
 import org.smtlib.IResponse;
 
 import fr.inria.lille.nopol.SourceLocation;
@@ -11,13 +13,15 @@ public class SMTExecutionResult {
 	private Level level;
 	private SourceLocation sl;
 	private IResponse state;
+	private File output;
 	
 	
-	public SMTExecutionResult(long executionTime, Level level, SourceLocation sl, IResponse state){
+	public SMTExecutionResult(long executionTime, Level level, SourceLocation sl, IResponse state, File output){
 		this.executionTime = executionTime;
 		this.level = level;
 		this.sl = sl;
 		this.state = state;
+		this.output = output;
 	}
 	
 	@Override
@@ -35,6 +39,20 @@ public class SMTExecutionResult {
 				+state
 				+"]";
 	}
+
+	public File getOutput() {
+		return output;
+	}
+
+	public void setExecutionTime(long executionTime) {
+		this.executionTime = executionTime;
+	}
+
+	public void setState(IResponse state) {
+		this.state = state;
+	}
+	
+	
 	
 	
 }
