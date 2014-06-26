@@ -15,6 +15,7 @@
  */
 package fr.inria.lille.nopol.synth.smt.constraint;
 
+import static org.smtlib.impl.Response.TIMEOUT;
 import static org.smtlib.impl.Response.UNSAT;
 
 import java.io.File;
@@ -105,14 +106,19 @@ public final class ConstraintSolver {
 			log(script.commands());
 		}
 		
-		
+		File outputSMT = createOutputFile(i);
+		SMTExecutionResult solverExec = new SMTExecutionResult(-1, model.getLevel(), sl, TIMEOUT, outputSMT);
+		execResult.add(solverExec);
+		createSMTFile(script, model, TIMEOUT, outputSMT);
 		
 		long startTime = System.currentTimeMillis();
 		handleResponse(script.execute(solver));
+		
 		IResponse state = solver.check_sat();
 		
-		execResult.add(new SMTExecutionResult(System.currentTimeMillis()-startTime, model.getLevel(), sl, state));
-		createSMTFile(script, model, state);
+		solverExec.setState(state);
+		solverExec.setExecutionTime(System.currentTimeMillis()-startTime);
+		createSMTFile(script, model, state, outputSMT);
 
 		if (UNSAT.equals(state)) {
 			logger.debug("UNSAT");
@@ -135,40 +141,42 @@ public final class ConstraintSolver {
 		}
 	}
 	
-	private void createSMTFile(IScript script, InputModel model, IResponse state) {
-		File output = createOutputFile(i);
+	private void createSMTFile(IScript script, InputModel model, IResponse state, File output) {
 		PrintWriter writer=null;
 		try {
 			DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 			writer = new PrintWriter(output);
-			writer.println(df.format(new Date()));
-			writer.println("STM-File generate for project \""+outputFolder.getCanonicalPath()+"\"");
-			writer.println("Class : "+sl.getContainingClassName());
-			writer.println("Line : "+sl.getLineNumber());
-			writer.println("Level : "+model.getLevel().toString());
-			writer.println("State : "+state);
-			writer.println("-----------------------------------");
+			writer.println("; "+df.format(new Date()));
+			writer.println("; SMT-File generate for project "+outputFolder.getCanonicalPath());
+			writer.println("; Class : "+sl.getContainingClassName());
+			writer.println("; Line : "+sl.getLineNumber());
+			writer.println("; Level : "+model.getLevel().toString());
+			writer.println("; State : "+state);
+			writer.println("; -----------------------------------");
 		} catch (Exception e) {
 			throw new IllegalStateException(e);
 		} 
+		System.out.println("Executed SMT file : ");
 		for ( ICommand cmd : script.commands() ){
 			writer.println(cmd.toString());
+			System.out.println(cmd.toString());
 		}
 		writer.flush();
 		writer.close();
-		i++;
+		
 	}
 
 	private File createOutputFile(int i){
 		int index = sl.getContainingClassName().lastIndexOf(".");
 		String className = sl.getContainingClassName().substring(index+1);
-		File output = new File(outputFolder.getParent()+File.separatorChar+className+":"+sl.getLineNumber()+".smt_"+i);
+		File output = new File(outputFolder.getParent()+File.separatorChar+className+":"+sl.getLineNumber()+"-"+i+".smt");
 		try {
 			output.delete();
 			output.createNewFile();
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
+		ConstraintSolver.i++;
 		return output;	
 	}
 	

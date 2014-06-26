@@ -23,18 +23,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.channels.FileChannel;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
-import sun.nio.ch.FileKey;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.synth.DefaultSynthesizer;
 import fr.inria.lille.nopol.synth.SynthesizerFactory;
@@ -51,6 +48,7 @@ public class Main {
 
 	private static int sourceFolderIndex = 0;
 	private static int classPathIndex = 1;
+	private static int externalJarIndex = 2;
 	private static int minimalSizeArgs = 2;
 	private static long startTime = -1;
 	
@@ -79,6 +77,19 @@ public class Main {
 		
 		String[] paths = args[classPathIndex].split(Character.toString(File.pathSeparatorChar));
 		
+		/*
+		 * Add external jar to System ClassPath
+		 */
+		if ( args.length-1 == externalJarIndex ){
+			String[] external = args[externalJarIndex].split(Character.toString(File.pathSeparatorChar));
+			try{
+			addJarToClassPath(external);
+			}catch(Exception e){
+				throw new RuntimeException("Unable to add jar into classpath.");
+			}
+		}
+		
+		
 		
 		testSolver();
 		new Main(sourceFolder, paths).run();
@@ -86,6 +97,8 @@ public class Main {
 		displayResult();
 	}
 	
+	
+
 	private static void testSolver(){
 		InputStream testFile = Main.class.getResourceAsStream("/smt_test");
 		File smt_test;
@@ -121,17 +134,33 @@ public class Main {
 	}
 	
 	private static void displayResult(){
-		System.out.println("----Information----");
-		System.out.println("Nb Statements Analysed : "+SynthesizerFactory.getNbStatementsAnalysed());
+		System.out.println("----INFORMATION----");
+		System.out.println("Nb Statements Analyzed : "+SynthesizerFactory.getNbStatementsAnalysed());
 		System.out.println("Nb Statements with Angelic Value Found : "+DefaultSynthesizer.getNbStatementsWithAngelicValue());
 		System.out.println("Nb Solver Execution : "+ConstraintSolver.getExecResult().size());
+		
+		System.out.println("----TIME----");
 		for ( SMTExecutionResult result : ConstraintSolver.getExecResult() ){
 			System.out.println(result);
 		}
-		for ( Patch patch : NoPol.getPatchList() ){
-			System.out.println(patch);
+		System.out.println("Nopol Execution time : "+(System.currentTimeMillis()-startTime)+"ms");
+		
+		if ( !ConstraintSolver.getExecResult().isEmpty() ){
+			System.out.println("----SMT GENERATED FILES----");
+			for ( SMTExecutionResult result : ConstraintSolver.getExecResult() ){
+				System.out.println(result.getOutput().getAbsolutePath());
+			}
 		}
-		System.out.println("Total Execution time : "+(System.currentTimeMillis()-startTime)+"ms");
+		
+		
+		if ( !NoPol.getPatchList().isEmpty() ){
+			System.out.println("----PATCH FOUND----");
+			for ( Patch patch : NoPol.getPatchList() ){
+				System.out.println(patch);
+			}
+		}
+		
+		
 	}
 
 	private static boolean handleArgs(String[] args){
@@ -178,6 +207,8 @@ public class Main {
 				increaseDefaultValue();
 			}else if ( arg.equals("--example") || arg.equals("-ex")){
 				runExample();
+			}else if ( arg.equals("-mp") || arg.equals("--multiple-patches") ){
+				NoPol.setSinglePatch(false);
 			}
 			
 		}
@@ -240,17 +271,44 @@ public class Main {
 		
 		
 	}
-
+	private static void addJarToClassPath(String[] external) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, MalformedURLException {
+		for ( String path : external ){
+			File tmp = new File(path);
+			if ( tmp.isDirectory() ){
+				File[] sub = tmp.listFiles();
+				for ( File file : sub ){
+					if ( file.getAbsolutePath().endsWith(".jar")){
+						addToClassPath(file.toURI().toURL());
+					}
+				}
+			}else{
+				if ( tmp.getAbsolutePath().endsWith(".jar")){
+					addToClassPath(tmp.toURI().toURL());
+				}
+			}
+		}
+	}
+	private static void addToClassPath(URL url) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+		URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();  
+        Class<?> sysclass = URLClassLoader.class;   
+        Method method = sysclass.getDeclaredMethod("addURL", URL.class);  
+        method.setAccessible(true);  
+        method.invoke(sysloader, new Object[] { url });  
+         
+	}
+	
 	private static void increaseDefaultValue(){
 		sourceFolderIndex++;
 		classPathIndex++;
+		externalJarIndex++;
 		minimalSizeArgs++;
 	}
 	
 	
 	private static void printUsage() {
-		System.out.println("usage : [OPTIONS] <source folder> <binary folder>\n"
-				+ "options :\n"
+		System.out.println("usage : [OPTIONS] <source folder> <binary folder> [<external jar>]\n"
+				+ "\n<binary folder> needs to contain uncompress binaries from libraries used by the program defined by <source folder>\n"
+				+ "\noptions :\n"
 				+ "\t -o, --onebuild, -m, --multiplebuild\n"
 				+ "\t\t Set nopol behaviour to build the model only once or not. The onebuild option should optimized time execution but some compilation errors can appears, still experimental.\n"
 				+ "\t\t Default value is onebuild\n"
@@ -264,7 +322,10 @@ public class Main {
 				+ "\t\t Default location is /usr/bin/SOLVER_NAME\n"
 				+ "\n"
 				+ "\t-ex, --example\n"
-				+ "\t\t Run Nopol with toy example\n");
+				+ "\t\t Run Nopol with toy example\n"
+				+ "\n"
+				+ "\t-mp, --multiple-patches\n"
+				+ "\t\t Even if Nopol find a suitable patch it will continue to try to find another patch at different location");
 	}
 
 
@@ -294,6 +355,8 @@ public class Main {
 				throw new RuntimeException(e);
 			}
 		}
+
+
 		new NoPol(this.sourceFolder, urls.toArray(new URL[urls.size()])).build();
 	}
 }

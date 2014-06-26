@@ -54,6 +54,7 @@ public class NoPol {
 	private static boolean oneBuild = true;
 	private final SpoonClassLoader scl;
 	private final File sourceFolder;
+	private static boolean singlePatch = true;
 
 	/**
 	 * @param rootPackage
@@ -63,7 +64,7 @@ public class NoPol {
 	public NoPol(final File sourceFolder, final URL[] classpath) {
 		scl = new SpoonClassLoader();
 		this.classpath = classpath;
-		gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath);
+		gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath, sourceFolder);
 		synthetizerFactory = new SynthesizerFactory(sourceFolder, scl);
 		testPatch = new TestPatch(sourceFolder, classpath);
 		this.sourceFolder = sourceFolder;
@@ -136,6 +137,9 @@ public class NoPol {
 			Patch newRepair = synth.buildPatch(classpath, testClasses);
 			if (isOk(newRepair, testClasses)) {
 				patchList.add(newRepair);
+				if ( isSinglePatch() ){
+					return patchList;
+				}
 			}
 		}
 		return patchList;
@@ -158,6 +162,9 @@ public class NoPol {
 				Patch patch = synth.buildPatch(classpath, testClasses);
 				if (isOk(patch, testClasses)) {
 					patchList.add(patch);
+					if ( isSinglePatch() ){
+						return patchList;
+					}
 				}	
 			}
 		}
@@ -188,5 +195,13 @@ public class NoPol {
 	
 	public static boolean setOneBuild(boolean oneBuild) {
 		return NoPol.oneBuild = oneBuild;
+	}
+	
+	public static boolean isSinglePatch() {
+		return singlePatch;
+	}
+	
+	public static boolean setSinglePatch(boolean singlePatch) {
+		return NoPol.singlePatch = singlePatch;
 	}
 }
