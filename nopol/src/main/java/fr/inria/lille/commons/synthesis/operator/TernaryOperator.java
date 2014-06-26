@@ -1,15 +1,15 @@
 package fr.inria.lille.commons.synthesis.operator;
 
-import static fr.inria.lille.commons.synthesis.smt.SMTLib.smtlib;
-
 import java.util.Arrays;
 
 import org.smtlib.IExpr.ISymbol;
 
+import fr.inria.lille.commons.synthesis.smt.SMTLib;
+
 public class TernaryOperator<S, U, V, T> extends DoubleOperator<T> {
 
 	public static TernaryOperator<Boolean, Number, Number, Number> ifThenElse() {
-		return new TernaryOperator<Boolean, Number, Number, Number>(Number.class, "?", ":", smtlib().ifThenElse(),
+		return new TernaryOperator<Boolean, Number, Number, Number>(Number.class, "?", ":", SMTLib.ifThenElse(),
 				Parameter.aBoolean(), Parameter.aNumber(), Parameter.aNumber());
 	}
 	

@@ -1,20 +1,43 @@
 package fr.inria.lille.commons.synthesis.smt.locationVariables;
 
+import static java.lang.String.format;
+
 import java.util.Collection;
 import java.util.List;
 
 import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.synthesis.expression.ValuedExpression;
+import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.operator.Operator;
 
 public class LocationVariableContainer {
 
-	public LocationVariableContainer(Collection<ValuedExpression<?>> inputs, Collection<Operator<?>> operators, ValuedExpression<?> outputExpression) {
-		inputVariables = locationVariablesFor(inputs);
-		operatorVariables = operatorLocationVariablesFor(operators);
-		allParameters = parameterLocationVariablesFrom(operators());
+	public LocationVariableContainer(Collection<Expression<?>> inputs, Collection<Operator<?>> operators, Expression<?> outputExpression) {
+		addInputs(inputs);
+		addOperators(operators);
+		allParameters().addAll(parameterLocationVariablesFrom(operators()));
 		int lastLine = numberOfInputs() + numberOfOperators();
-		outputVariable = new ValuedExpressionLocationVariable<>(outputExpression, "out", lastLine);
+		outputVariable = new IndexedLocationVariable<>(outputExpression, "out", lastLine);
+	}
+	
+	private void addInputs(Collection<Expression<?>> inputs) {
+		for (Expression<?> input : inputs) {
+			addInput(input);
+		}
+	}
+	
+	private void addInput(Expression<?> input) {
+		int inputIndex = numberOfInputs();
+		inputs().add(new IndexedLocationVariable<>(input, format("in<%d>", inputIndex), inputIndex));
+	}
+		
+	private void addOperators(Collection<Operator<?>> operators) {
+		for (Operator<?> operator : operators) {
+			addOperator(operator);
+		}
+	}
+	
+	private void addOperator(Operator<?> operator) {
+		operators().add(new OperatorLocationVariable<>(operator, format("op<%d>", numberOfOperators())));
 	}
 	
 	private List<ParameterLocationVariable<?>> parameterLocationVariablesFrom(Collection<OperatorLocationVariable<?>> operators) {
@@ -25,26 +48,6 @@ public class LocationVariableContainer {
 		return parameters;
 	}
 
-	private List<ValuedExpressionLocationVariable<?>> locationVariablesFor(Collection<ValuedExpression<?>> inputs) {
-		List<ValuedExpressionLocationVariable<?>> variables = ListLibrary.newArrayList();
-		int inputIndex = 0;
-		for (ValuedExpression<?> expression : inputs) {
-			variables.add(new ValuedExpressionLocationVariable<>(expression, "in<" + inputIndex + ">", inputIndex));
-			inputIndex += 1;
-		}
-		return variables;
-	}
-	
-	private List<OperatorLocationVariable<?>> operatorLocationVariablesFor(Collection<Operator<?>> operators) {
-		List<OperatorLocationVariable<?>> variables = ListLibrary.newArrayList();
-		int operatorIndex = 0;
-		for (Operator<?> operator : operators) {
-			variables.add(new OperatorLocationVariable<>(operator, "op<" + operatorIndex + ">"));
-			operatorIndex += 1;
-		}
-		return variables;
-	}
-	
 	public int numberOfInputs() {
 		return inputs().size();
 	}
@@ -53,16 +56,16 @@ public class LocationVariableContainer {
 		return operators().size();
 	}
 	
-	public List<ValuedExpressionLocationVariable<?>> copyOfInputs() {
-		List<ValuedExpressionLocationVariable<?>> locationVariables = ListLibrary.newArrayList();
+	public List<IndexedLocationVariable<?>> copyOfInputs() {
+		List<IndexedLocationVariable<?>> locationVariables = ListLibrary.newArrayList();
 		locationVariables.addAll(inputs());
 		return locationVariables;
 	}
 	
 	public List<LocationVariable<?>> copyOfInputsAndOutput() {
 		List<LocationVariable<?>> locationVariables = ListLibrary.newLinkedList();
-		locationVariables.add(outputVariable());
 		locationVariables.addAll(inputs());
+		locationVariables.add(outputVariable());
 		return locationVariables;
 	}
 	
@@ -101,34 +104,43 @@ public class LocationVariableContainer {
 	public List<LocationVariable<?>> copyOfAllParametersAndOutput() {
 		List<LocationVariable<?>> locationVariables = ListLibrary.newLinkedList();
 		locationVariables.addAll(allParameters());
-		locationVariables.add(outputVariable);
+		locationVariables.add(outputVariable());
 		return locationVariables;
 	}
 	
 	public List<LocationVariable<?>> copyOfAllLocationVariables() {
 		List<LocationVariable<?>> locationVariables = copyOfOperatorsParametersAndOutput();
-		locationVariables.addAll(inputs());
+		locationVariables.addAll(0, inputs());
 		return locationVariables;
 	}
 	
-	public ValuedExpressionLocationVariable<?> outputVariable() {
+	public IndexedLocationVariable<?> outputVariable() {
 		return outputVariable;
 	}
 	
-	public List<ValuedExpressionLocationVariable<?>> inputs() {
+	public List<IndexedLocationVariable<?>> inputs() {
+		if (inputVariables == null) {
+			inputVariables = ListLibrary.newLinkedList();
+		}
 		return inputVariables;
 	}
 
 	public List<OperatorLocationVariable<?>> operators() {
+		if (operatorVariables == null) {
+			operatorVariables = ListLibrary.newLinkedList();
+		}
 		return operatorVariables;
 	}
 	
 	public List<ParameterLocationVariable<?>> allParameters() {
+		if (allParameters == null) {
+			allParameters = ListLibrary.newLinkedList();
+		}
 		return allParameters;
 	}
 	
-	private ValuedExpressionLocationVariable<?> outputVariable;
+	private IndexedLocationVariable<?> outputVariable;
 	private List<OperatorLocationVariable<?>> operatorVariables;
 	private List<ParameterLocationVariable<?>> allParameters;
-	private List<ValuedExpressionLocationVariable<?>> inputVariables;
+	private List<IndexedLocationVariable<?>> inputVariables;
 }

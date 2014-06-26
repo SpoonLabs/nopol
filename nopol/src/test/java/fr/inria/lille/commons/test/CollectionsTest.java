@@ -1,6 +1,8 @@
 package fr.inria.lille.commons.test;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -50,6 +52,7 @@ public class CollectionsTest {
 		assertTrue(Arrays.equals(array, subarray));
 	}
 	
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void copyOfList() {
 		List<String> listSymbols = ListLibrary.newArrayList(",", ".", "<", ":", "<", ":");
@@ -63,6 +66,7 @@ public class CollectionsTest {
 		}
 	}
 	
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void copyOfSet() {
 		Set<String> setSymbols = SetLibrary.newHashSet(",", ".", "<", ":", "<", ":");
@@ -176,7 +180,7 @@ public class CollectionsTest {
 	
 	@Test
 	public void setMultimap() {
-		Multimap<Integer, String> setMultimap = Multimap.newSetMultimap();
+		Multimap<Integer, String> setMultimap = Multimap.newLinkedHashSetMultimap();
 		setMultimap.addAll(1, "a", "b", "c", "a", "b", "c");
 		assertEquals(1, setMultimap.size());
 		assertTrue(setMultimap.containsKey(1));
@@ -223,7 +227,7 @@ public class CollectionsTest {
 	
 	@Test
 	public void identityHashSetMultimap() {
-		Multimap<String, Integer> identitySetMultimap = Multimap.newIdentityHashSetMultimap(3);
+		Multimap<String, Integer> identitySetMultimap = Multimap.newIdentityLinkedHashSetMultimap(3);
 		Collection<Integer> integerValues;
 		String firstA = new String("a");
 		String secondA = new String("a");
@@ -275,5 +279,82 @@ public class CollectionsTest {
 			assertEquals("C", map.get(key));
 		}
 	}
+	
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	@Test
+	public void unionOfkeySets() {
+		Map<String, String> stringMap = MapLibrary.newHashMap();
+		Map<String, Byte> byteMap = MapLibrary.newHashMap();
+		Collection<String> keyUnion = MapLibrary.keySetUnion((Collection) asList(stringMap, byteMap));
+		assertTrue(keyUnion.isEmpty());
+		stringMap.put("a", "b");
+		keyUnion = MapLibrary.keySetUnion((Collection) asList(stringMap, byteMap));
+		assertEquals(1, keyUnion.size());
+		assertTrue(keyUnion.contains("a"));
+		byteMap.put("a", (byte) 0x29);
+		keyUnion = MapLibrary.keySetUnion((Collection) asList(stringMap, byteMap));
+		assertEquals(1, keyUnion.size());
+		assertTrue(keyUnion.contains("a"));
+		stringMap.put("b", "c");
+		byteMap.put("z", (byte) 0x23);
+		keyUnion = MapLibrary.keySetUnion((Collection) asList(stringMap, byteMap));
+		assertEquals(3, keyUnion.size());
+		assertTrue(keyUnion.containsAll(asList("a", "b", "z")));
+	}
+	
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	@Test
+	public void mapContainsKeys() {
+		Map<String, Integer> map = MapLibrary.newHashMap(asList("a", "b", "c"), asList(10, 20, 30));
+		assertTrue(MapLibrary.containsKeys(asList("a", "b", "c"), map));
+		assertTrue(MapLibrary.containsKeys(asList("a", "b"), map));
+		assertTrue(MapLibrary.containsKeys((List) asList(), map));
+		assertFalse(MapLibrary.containsKeys(asList("a", "b", "C"), map));
+		assertFalse(MapLibrary.containsKeys(asList(""), map));
+		assertFalse(MapLibrary.containsKeys(asList("C"), map));
+	}
+	
+	@Test
+	public void assertContentOfMap() {
+		Map<String, Character> aMap = MapLibrary.newHashMap();
+		aMap.put("a", 'a');
+		aMap.put("b", 'b');
+		aMap.put("c", 'c');
+		assertTrue(MapLibrary.sameContent(aMap, asList("a", "b", "c"), asList('a', 'b', 'c')));
+		assertFalse(MapLibrary.sameContent(aMap, asList("a", "b", "c"), asList('a', 'b', 'd')));
+		assertFalse(MapLibrary.sameContent(aMap, asList("a", "b", "d"), asList('a', 'b', 'c')));
+		assertFalse(MapLibrary.sameContent(aMap, asList("a", "b", "c", "d"), asList('a', 'b', 'c', 'd')));
+		assertFalse(MapLibrary.sameContent(aMap, asList("a", "b"), asList('a', 'b')));
+		assertFalse(MapLibrary.sameContent(aMap, asList("a", "b", "c"), asList('a', 'b')));
+		assertFalse(MapLibrary.sameContent(aMap, asList("a", "b", "c"), asList('a', 'b', 'c', 'd')));
+	}
 
+	@Test
+	public void adHocHashMap() {
+		Map<String, Integer> adHocMap = MapLibrary.newHashMap(asList("A", "b", "C"), asList(1, 2, 3));
+		assertEquals(3, adHocMap.size());
+		assertTrue(adHocMap.containsKey("A"));
+		assertTrue(adHocMap.containsKey("b"));
+		assertTrue(adHocMap.containsKey("C"));
+		assertEquals(Integer.valueOf(1), adHocMap.get("A"));
+		assertEquals(Integer.valueOf(2), adHocMap.get("b"));
+		assertEquals(Integer.valueOf(3), adHocMap.get("C"));
+	}
+	
+	@Test
+	public void parseValuesOfMapAsIntegers() {
+		Map<String, String> toBeParsed = MapLibrary.newHashMap(asList("a", "b", "c"), asList("10", "20", "30"));
+		Map<String, Integer> parsed = MapLibrary.valuesParsedAsInteger(toBeParsed);
+		assertTrue(MapLibrary.sameContent(parsed, asList("a", "b", "c"), asList(10, 20, 30)));
+	}
+	
+	@Test
+	public void addAMapToManyMaps() {
+		Map<String, String> newMap = MapLibrary.newHashMap(asList("a", "b", "c"), asList("+", "++", "+++"));
+		Map<String, String> firstMap = MapLibrary.newHashMap(asList("d", "e", "f"), asList(".", "..", "..."));
+		Map<String, String> secondMap = MapLibrary.newHashMap(asList("g", "h", "i"), asList("-", "--", "---"));
+		MapLibrary.putMany(newMap, asList(firstMap, secondMap));
+		assertTrue(MapLibrary.sameContent(firstMap, asList("a", "b", "c", "d", "e", "f"), asList("+", "++", "+++", ".", "..", "...")));
+		assertTrue(MapLibrary.sameContent(secondMap, asList("a", "b", "c", "g", "h", "i"), asList("+", "++", "+++", "-", "--", "---")));
+	}
 }

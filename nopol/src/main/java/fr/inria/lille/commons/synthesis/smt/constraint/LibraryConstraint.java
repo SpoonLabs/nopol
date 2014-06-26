@@ -1,10 +1,13 @@
 package fr.inria.lille.commons.synthesis.smt.constraint;
 
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.equality;
+
 import java.util.Collection;
 import java.util.List;
 
 import org.smtlib.IExpr;
 import org.smtlib.IExpr.IDeclaration;
+import org.smtlib.IExpr.ISymbol;
 
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
@@ -24,8 +27,8 @@ public class LibraryConstraint extends Constraint {
 	}	
 
 	@Override
-	protected List<IExpr> arguments(LocationVariableContainer locationVariableContainer) {
-		return collectSubexpressions(usedLocationVariables(locationVariableContainer));
+	protected List<IExpr> invocationArguments(LocationVariableContainer locationVariableContainer) {
+		return (List) collectSubexpressions(usedLocationVariables(locationVariableContainer));
 	}
 
 	@Override
@@ -43,8 +46,8 @@ public class LibraryConstraint extends Constraint {
 	}
 	
 	private IExpr specificationOf(OperatorLocationVariable<?> operator) {
-		List<IExpr> parameters = collectSubexpressions((List) operator.parameterLocationVariables());
+		List<ISymbol> parameters = collectSubexpressions((List) operator.parameterLocationVariables());
 		IExpr specification = smtlib().expression(operator.objectTemplate().smtlibIdentifier(), parameters);
-		return smtlib().expression(smtlib().equals(), symbolFromSubexpressionOf(operator), specification);
+		return smtlib().expression(equality(), symbolFromSubexpressionOf(operator), specification);
 	}
 }

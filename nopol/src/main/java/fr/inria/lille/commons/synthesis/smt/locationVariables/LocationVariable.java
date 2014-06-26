@@ -1,43 +1,19 @@
 package fr.inria.lille.commons.synthesis.smt.locationVariables;
 
-import static fr.inria.lille.commons.synthesis.smt.SMTLib.smtlib;
-
 import java.util.Collection;
 import java.util.List;
 
 import org.smtlib.IExpr;
-import org.smtlib.ISort;
 
 import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.collections.Multimap;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.expression.ObjectTemplate;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 
 
 public abstract class LocationVariable<T> extends Expression<T> {
-
-	public static Multimap<ISort, LocationVariable<?>> bySort(Collection<LocationVariable<?>> locationVariables) {
-		Multimap<ISort, LocationVariable<?>> multimap = Multimap.newSetMultimap();
-		for (LocationVariable<?> locationVariable : locationVariables) {
-			multimap.add(sortFor(locationVariable), locationVariable);
-		}
-		return multimap;
-	}
 	
-	public static ISort sortFor(LocationVariable<?> locationVariable) {
-		return smtlib().sortFor(locationVariable.type());
-	}
-
-	public static List<String> expressionsOf(Collection<LocationVariable<?>> variables) {
-		List<String> expressions = ListLibrary.newArrayList();
-		for (LocationVariable<?> variable : variables) {
-			expressions.add(variable.expression());
-		}
-		return expressions;
-	}
-	
-	public static List<String> subexpressionsOf(Collection<LocationVariable<?>> variables) {
+	public static List<String> subexpressionsOf(Collection<? extends LocationVariable<?>> variables) {
 		List<String> identifiers = ListLibrary.newArrayList();
 		for (LocationVariable<?> variable : variables) {
 			identifiers.add(variable.subexpression());

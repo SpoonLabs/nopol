@@ -1,5 +1,12 @@
 package fr.inria.lille.commons.synthesis.smt;
 
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.boolSort;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.booleanFalse;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.booleanTrue;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.intSort;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.numberSort;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.subtraction;
+
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -24,7 +31,7 @@ public class ObjectToExpr {
 	
 	public static IExpr asIExpr(Object object) {
 		if (ClassLibrary.isInstanceOf(Boolean.class, object)) {
-			return (Boolean) object ? smtlib().booleanTrue() : smtlib().booleanFalse();
+			return (Boolean) object ? booleanTrue() : booleanFalse();
 		}
 		if (ClassLibrary.isInstanceOf(Integer.class, object)) {
 			return numeral((Integer) object);
@@ -57,7 +64,7 @@ public class ObjectToExpr {
 	}
 	
 	private static IExpr negatedNumber(IExpr numberExpression) {
-		return smtlib().expression(smtlib().substraction(), numberExpression);
+		return smtlib().expression(subtraction(), numberExpression);
 	}
 	
 	private static SMTLib smtlib() {
@@ -70,13 +77,13 @@ public class ObjectToExpr {
 	private static Map<Class<?>, ISort> conversions() {
 		if (conversions == null) {
 			Map<Class<?>, ISort> classes = MapLibrary.newHashMap();
-			classes.put(Long.class, smtlib().intSort());
-			classes.put(Short.class, smtlib().intSort());
-			classes.put(Integer.class, smtlib().intSort());
-			classes.put(Float.class, smtlib().numberSort());
-			classes.put(Double.class, smtlib().numberSort());
-			classes.put(Number.class, smtlib().numberSort());
-			classes.put(Boolean.class, smtlib().boolSort());
+			classes.put(Long.class, intSort());
+			classes.put(Short.class, intSort());
+			classes.put(Integer.class, intSort());
+			classes.put(Float.class, numberSort());
+			classes.put(Double.class, numberSort());
+			classes.put(Number.class, numberSort());
+			classes.put(Boolean.class, boolSort());
 			conversions = classes;
 		}
 		return conversions;

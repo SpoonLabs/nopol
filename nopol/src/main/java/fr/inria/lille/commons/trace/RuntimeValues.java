@@ -16,22 +16,22 @@ public final class RuntimeValues {
 	
 
 	public static void collectValue(String name, Object value) {
-		ValueCollector.collectFrom(name, value, storage());
+		ValueCollector.collectFrom(name, value, collectedValuesMap());
 	}
 	
 	public static boolean isEmpty() {
-		return storage().isEmpty();
+		return collectedValuesMap().isEmpty();
 	}
 	
 	public static void discardCollectedValues() {
-		storage().clear();
+		collectedValuesMap().clear();
 	}
 
 	public static Iterable<Map.Entry<String, Object>> collectedValues() {
-		return ImmutableSet.copyOf(storage().entrySet());
+		return ImmutableSet.copyOf(collectedValuesMap().entrySet());
 	}
 
-	private static Map<String, Object> storage() {
+	protected static Map<String, Object> collectedValuesMap() {
 		if (valuesCache == null) {
 			valuesCache = MapLibrary.newHashMap();
 		}

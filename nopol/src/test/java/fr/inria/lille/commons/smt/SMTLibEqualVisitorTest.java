@@ -1,10 +1,35 @@
 package fr.inria.lille.commons.smt;
 
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.addition;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.and;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.boolSort;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.booleanFalse;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.booleanTrue;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.distinct;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.equality;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.ifThenElse;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.implies;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.intSort;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.lessOrEqualThan;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.lessThan;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.logicAuflia;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.logicAuflira;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.logicAufnira;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.logicLra;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.logicQfLia;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.logicQfLra;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.logicQfNia;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.logicQfUf;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.multiplication;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.not;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.numberSort;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.or;
 import static fr.inria.lille.commons.synthesis.smt.SMTLib.smtlib;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.subtraction;
+import static fr.inria.lille.commons.synthesis.smt.SMTLibEqualVisitor.addIfNotContained;
 import static fr.inria.lille.commons.synthesis.smt.SMTLibEqualVisitor.areEquals;
 import static fr.inria.lille.commons.synthesis.smt.SMTLibEqualVisitor.contains;
 import static fr.inria.lille.commons.synthesis.smt.SMTLibEqualVisitor.haveSameElements;
-import static fr.inria.lille.commons.synthesis.smt.SMTLibEqualVisitor.addIfNotContained;
 import static fr.inria.lille.commons.synthesis.smt.SMTLibParser.binaryFrom;
 import static fr.inria.lille.commons.synthesis.smt.SMTLibParser.commandFrom;
 import static fr.inria.lille.commons.synthesis.smt.SMTLibParser.decimalFrom;
@@ -43,64 +68,64 @@ public class SMTLibEqualVisitorTest {
 
 	@Test
 	public void equalSymbols() throws ParserException {
-		assertTrue(check(smtlib().not(), symbolFrom("not")));
-		assertTrue(check(smtlib().and(), symbolFrom("and")));
-		assertTrue(check(smtlib().or(), symbolFrom("or")));
-		assertTrue(check(smtlib().implies(), symbolFrom("=>")));
-		assertTrue(check(smtlib().ifThenElse(), symbolFrom("ite")));
-		assertTrue(check(smtlib().equals(), symbolFrom("=")));
-		assertTrue(check(smtlib().lessThan(), symbolFrom("<")));
-		assertTrue(check(smtlib().lessOrEqualThan(), symbolFrom("<=")));
-		assertTrue(check(smtlib().distinct(), symbolFrom("distinct")));
-		assertTrue(check(smtlib().addition(), symbolFrom("+")));
-		assertTrue(check(smtlib().substraction(), symbolFrom("-")));
-		assertTrue(check(smtlib().multiplication(), symbolFrom("*")));
-		assertTrue(check(smtlib().logicAuflia(), symbolFrom("AUFLIA")));
-		assertTrue(check(smtlib().logicAuflira(), symbolFrom("AUFLIRA")));
-		assertTrue(check(smtlib().logicAufnira(), symbolFrom("AUFNIRA")));
-		assertTrue(check(smtlib().logicLra(), symbolFrom("LRA")));
-		assertTrue(check(smtlib().logicQfUf(), symbolFrom("QF_UF")));
-		assertTrue(check(smtlib().logicQfLia(), symbolFrom("QF_LIA")));
-		assertTrue(check(smtlib().logicQfLra(), symbolFrom("QF_LRA")));
-		assertTrue(check(smtlib().logicQfNia(), symbolFrom("QF_NIA")));
-		assertTrue(check(smtlib().booleanTrue(), symbolFrom("true")));
-		assertTrue(check(smtlib().booleanFalse(), symbolFrom("false")));
-		assertTrue(check(smtlib().boolSort(), sortFrom("Bool")));
-		assertTrue(check(smtlib().intSort(), sortFrom("Int")));
-		assertTrue(check(smtlib().numberSort(), sortFrom("Real")));
+		assertTrue(check(not(), symbolFrom("not")));
+		assertTrue(check(and(), symbolFrom("and")));
+		assertTrue(check(or(), symbolFrom("or")));
+		assertTrue(check(implies(), symbolFrom("=>")));
+		assertTrue(check(ifThenElse(), symbolFrom("ite")));
+		assertTrue(check(equality(), symbolFrom("=")));
+		assertTrue(check(lessThan(), symbolFrom("<")));
+		assertTrue(check(lessOrEqualThan(), symbolFrom("<=")));
+		assertTrue(check(distinct(), symbolFrom("distinct")));
+		assertTrue(check(addition(), symbolFrom("+")));
+		assertTrue(check(subtraction(), symbolFrom("-")));
+		assertTrue(check(multiplication(), symbolFrom("*")));
+		assertTrue(check(logicAuflia(), symbolFrom("AUFLIA")));
+		assertTrue(check(logicAuflira(), symbolFrom("AUFLIRA")));
+		assertTrue(check(logicAufnira(), symbolFrom("AUFNIRA")));
+		assertTrue(check(logicLra(), symbolFrom("LRA")));
+		assertTrue(check(logicQfUf(), symbolFrom("QF_UF")));
+		assertTrue(check(logicQfLia(), symbolFrom("QF_LIA")));
+		assertTrue(check(logicQfLra(), symbolFrom("QF_LRA")));
+		assertTrue(check(logicQfNia(), symbolFrom("QF_NIA")));
+		assertTrue(check(booleanTrue(), symbolFrom("true")));
+		assertTrue(check(booleanFalse(), symbolFrom("false")));
+		assertTrue(check(boolSort(), sortFrom("Bool")));
+		assertTrue(check(intSort(), sortFrom("Int")));
+		assertTrue(check(numberSort(), sortFrom("Real")));
 	}
 	
 	@Test
 	public void distinctSymbols() throws ParserException {
-		assertFalse(check(smtlib().numberSort(), symbolFrom("not")));
-		assertFalse(check(smtlib().not(), symbolFrom("and")));
-		assertFalse(check(smtlib().and(), symbolFrom("or")));
-		assertFalse(check(smtlib().or(), symbolFrom("=>")));
-		assertFalse(check(smtlib().implies(), symbolFrom("ite")));
-		assertFalse(check(smtlib().ifThenElse(), symbolFrom("=")));
-		assertFalse(check(smtlib().equals(), symbolFrom("<")));
-		assertFalse(check(smtlib().lessThan(), symbolFrom("<=")));
-		assertFalse(check(smtlib().lessOrEqualThan(), symbolFrom("distinct")));
-		assertFalse(check(smtlib().distinct(), symbolFrom("+")));
-		assertFalse(check(smtlib().addition(), symbolFrom("-")));
-		assertFalse(check(smtlib().substraction(), symbolFrom("*")));
-		assertFalse(check(smtlib().multiplication(), symbolFrom("AUFLIA")));
-		assertFalse(check(smtlib().logicAuflia(), symbolFrom("AUFLIRA")));
-		assertFalse(check(smtlib().logicAuflira(), symbolFrom("AUFNIRA")));
-		assertFalse(check(smtlib().logicAufnira(), symbolFrom("LRA")));
-		assertFalse(check(smtlib().logicLra(), symbolFrom("QF_UF")));
-		assertFalse(check(smtlib().logicQfUf(), symbolFrom("QF_LIA")));
-		assertFalse(check(smtlib().logicQfLia(), symbolFrom("QF_LRA")));
-		assertFalse(check(smtlib().logicQfLra(), symbolFrom("QF_NIA")));
-		assertFalse(check(smtlib().logicQfNia(), symbolFrom("true")));
-		assertFalse(check(smtlib().booleanTrue(), symbolFrom("false")));
-		assertFalse(check(smtlib().booleanFalse(), symbolFrom("Bool")));
-		assertFalse(check(smtlib().boolSort(), sortFrom("Int")));
-		assertFalse(check(smtlib().intSort(), sortFrom("Real")));
-		assertFalse(check(smtlib().numberSort(), sortFrom("Bool")));
-		assertFalse(check(smtlib().boolSort(), symbolFrom("Bool")));
-		assertFalse(check(smtlib().intSort(), symbolFrom("Int")));
-		assertFalse(check(smtlib().numberSort(), symbolFrom("Real")));
+		assertFalse(check(numberSort(), symbolFrom("not")));
+		assertFalse(check(not(), symbolFrom("and")));
+		assertFalse(check(and(), symbolFrom("or")));
+		assertFalse(check(or(), symbolFrom("=>")));
+		assertFalse(check(implies(), symbolFrom("ite")));
+		assertFalse(check(ifThenElse(), symbolFrom("=")));
+		assertFalse(check(equality(), symbolFrom("<")));
+		assertFalse(check(lessThan(), symbolFrom("<=")));
+		assertFalse(check(lessOrEqualThan(), symbolFrom("distinct")));
+		assertFalse(check(distinct(), symbolFrom("+")));
+		assertFalse(check(addition(), symbolFrom("-")));
+		assertFalse(check(subtraction(), symbolFrom("*")));
+		assertFalse(check(multiplication(), symbolFrom("AUFLIA")));
+		assertFalse(check(logicAuflia(), symbolFrom("AUFLIRA")));
+		assertFalse(check(logicAuflira(), symbolFrom("AUFNIRA")));
+		assertFalse(check(logicAufnira(), symbolFrom("LRA")));
+		assertFalse(check(logicLra(), symbolFrom("QF_UF")));
+		assertFalse(check(logicQfUf(), symbolFrom("QF_LIA")));
+		assertFalse(check(logicQfLia(), symbolFrom("QF_LRA")));
+		assertFalse(check(logicQfLra(), symbolFrom("QF_NIA")));
+		assertFalse(check(logicQfNia(), symbolFrom("true")));
+		assertFalse(check(booleanTrue(), symbolFrom("false")));
+		assertFalse(check(booleanFalse(), symbolFrom("Bool")));
+		assertFalse(check(boolSort(), sortFrom("Int")));
+		assertFalse(check(intSort(), sortFrom("Real")));
+		assertFalse(check(numberSort(), sortFrom("Bool")));
+		assertFalse(check(boolSort(), symbolFrom("Bool")));
+		assertFalse(check(intSort(), symbolFrom("Int")));
+		assertFalse(check(numberSort(), symbolFrom("Real")));
 	}
 	
 	@Test
@@ -150,7 +175,7 @@ public class SMTLibEqualVisitorTest {
 	
 	@Test
 	public void expression() throws ParserException {
-		IFcnExpr expression = smtlib().expression(smtlib().addition(), smtlib().symbolFor("a"), smtlib().symbolFor("b"));
+		IFcnExpr expression = smtlib().expression(addition(), smtlib().symbolFor("a"), smtlib().symbolFor("b"));
 		IFcnExpr parsedExpr;
 		
 		parsedExpr = (IFcnExpr) expressionFrom("(+ a b)");
@@ -168,7 +193,7 @@ public class SMTLibEqualVisitorTest {
 	
 	@Test
 	public void declaration() throws ParserException {
-		IDeclaration declaration = smtlib().declaration("X^2", smtlib().numberSort());
+		IDeclaration declaration = smtlib().declaration("X^2", numberSort());
 		IDeclaration parsedDeclaration;
 		
 		parsedDeclaration = declarationFrom("(X^2 Real)");

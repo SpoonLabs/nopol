@@ -7,6 +7,9 @@ import static fr.inria.lille.commons.synthesis.smt.SMTLibParser.commandFrom;
 import static fr.inria.lille.commons.synthesis.smt.SMTLibParser.declarationsFrom;
 import static fr.inria.lille.commons.synthesis.smt.SMTLibParser.expressionFrom;
 import static fr.inria.lille.commons.synthesis.smt.SMTLibParser.expressionsFrom;
+import static fr.inria.lille.commons.synthesis.smt.SMTLibParser.symbolFrom;
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -23,6 +26,7 @@ import org.smtlib.IParser.ParserException;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.string.StringLibrary;
+import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.expression.ValuedExpression;
 import fr.inria.lille.commons.synthesis.operator.BinaryOperator;
 import fr.inria.lille.commons.synthesis.operator.Operator;
@@ -41,12 +45,11 @@ public class ConstraintTest {
 		
 		List<String> arguments = LocationVariable.expressionsOf(container.copyOfOperatorsAndParameters());
 		checkArguments(acyclicity, container, arguments);
+		checkInvocation(acyclicity, container, arguments);
 
 		Map<String, String> types = typesFor(container);
 		List<String> declarations = builtDeclarations(arguments, types);
 		List<IDeclaration> smtDeclarations = checkParameters(acyclicity, container, declarations);
-		
-		checkInvocation(acyclicity, container, arguments);
 		
 		List<String> definitions = Arrays.asList("(< L@op<0><0> L@op<0>)", "(< L@op<0><1> L@op<0>)", "(< L@op<1><0> L@op<1>)", "(< L@op<1><1> L@op<1>)",
 				"(< L@op<2><0> L@op<2>)", "(< L@op<2><1> L@op<2>)", "(< L@op<2><2> L@op<2>)", "(< L@op<3><0> L@op<3>)");
@@ -62,12 +65,11 @@ public class ConstraintTest {
 		
 		List<String> arguments = LocationVariable.expressionsOf((List) container.copyOfOperators());
 		checkArguments(consistencty, container, arguments);
+		checkInvocation(consistencty, container, arguments);
 
 		Map<String, String> types = typesFor(container);
 		List<String> declarations = builtDeclarations(arguments, types);
 		List<IDeclaration> smtDeclarations = checkParameters(consistencty, container, declarations);
-		
-		checkInvocation(consistencty, container, arguments);
 		
 		List<String> definitions = Arrays.asList("(distinct L@op<0> L@op<1>)", "(distinct L@op<0> L@op<2>)", "(distinct L@op<0> L@op<3>)",
 				"(distinct L@op<1> L@op<2>)", "(distinct L@op<1> L@op<3>)", "(distinct L@op<2> L@op<3>)");
@@ -83,12 +85,11 @@ public class ConstraintTest {
 		
 		List<String> arguments = LocationVariable.expressionsOf(container.copyOfOperatorsParametersAndOutput());
 		checkArguments(lineBound, container, arguments);
+		checkInvocation(lineBound, container, arguments);
 
 		Map<String, String> types = typesFor(container);
 		List<String> declarations = builtDeclarations(arguments, types);
 		List<IDeclaration> smtDeclarations = checkParameters(lineBound, container, declarations);
-		
-		checkInvocation(lineBound, container, arguments);
 		
 		List<String> definitions = Arrays.asList("(and (<= 3 L@op<0>) (<= L@op<0> 6))", "(and (<= 3 L@op<1>) (<= L@op<1> 6))",
 				"(and (<= 3 L@op<2>) (<= L@op<2> 6))", "(and (<= 3 L@op<3>) (<= L@op<3> 6))", "(or (= L@op<2> L@op<0><0>) (= 1 L@op<0><0>) (= 2 L@op<0><0>))",
@@ -108,12 +109,11 @@ public class ConstraintTest {
 		
 		List<String> arguments = LocationVariable.subexpressionsOf(container.copyOfOperatorsAndParameters());
 		checkArguments(library, container, arguments);
+		checkInvocation(library, container, arguments);
 
 		Map<String, String> types = typesFor(container);
 		List<String> declarations = builtDeclarations(arguments, types);
 		List<IDeclaration> smtDeclarations = checkParameters(library, container, declarations);
-		
-		checkInvocation(library, container, arguments);
 		
 		List<String> definitions = Arrays.asList("(= op<0> (+ op<0><0> op<0><1>))", "(= op<1> (or op<1><0> op<1><1>))", 
 				"(= op<2> (ite op<2><0> op<2><1> op<2><2>))", "(= op<3> (not op<3><0>))");
@@ -133,12 +133,11 @@ public class ConstraintTest {
 		arguments.addAll(nonInputExpressions);
 		arguments.addAll(nonInputSubexpressions);
 		checkArguments(connectivity, container, arguments);
+		checkInvocation(connectivity, container, arguments);
 
 		Map<String, String> types = typesFor(container);
 		List<String> declarations = builtDeclarations(arguments, types);
 		List<IDeclaration> smtDeclarations = checkParameters(connectivity, container, declarations);
-		
-		checkInvocation(connectivity, container, arguments);
 		
 		List<String> definitions = Arrays.asList("(=> (= L@out L@op<1>) (= out op<1>))", "(=> (= L@out L@op<3>) (= out op<3>))",
 				"(=> (= L@out 0) (= out in<0>))", "(=> (= L@op<0><0> L@op<2>) (= op<0><0> op<2>))", "(=> (= L@op<0><0> 1) (= op<0><0> in<1>))",
@@ -159,16 +158,14 @@ public class ConstraintTest {
 		Constraint verification = new VerificationConstraint(smtlib());
 		LocationVariableContainer container = locationVariableContainerExample();
 		
-		List<String> arguments = LocationVariable.subexpressionsOf((List) container.inputs());
-		arguments.add(0, container.outputVariable().subexpression());
+		List<String> arguments = LocationVariable.subexpressionsOf(container.copyOfInputsAndOutput());
 		arguments.addAll(LocationVariable.expressionsOf(container.copyOfOperatorsParametersAndOutput()));
 		checkArguments(verification, container, arguments);
-
+		checkInvocation(verification, container, arguments);
+		
 		Map<String, String> types = typesFor(container);
 		List<String> declarations = builtDeclarations(arguments, types);
 		List<IDeclaration> smtDeclarations = checkParameters(verification, container, declarations);
-		
-		checkInvocation(verification, container, arguments);
 		
 		List<String> existsDeclarations = builtDeclarations(LocationVariable.subexpressionsOf(container.copyOfOperatorsAndParameters()), types);
 		String connectivityInvocation = "(Connectivity in<0> in<1> in<2> L@op<0> L@op<1> L@op<2> L@op<3> L@op<0><0> L@op<0><1> L@op<1><0> " +
@@ -179,6 +176,10 @@ public class ConstraintTest {
 		Collection<IExpr> smtDefinitions = checkDefinitionExpressions(verification, container, definitions);
 		
 		checkDefinition(verification, declarations, smtDeclarations, definitions, smtDefinitions, "");
+		arguments.removeAll(asList("in<0>", "in<1>", "in<2>", "out"));
+		arguments.addAll(0, asList("true", "1", "3", "false"));
+		Map<String, Object> values = MapLibrary.newHashMap(asList("i != null", "i.size()", "i.get(\"n\")", "returnValue"), (List) asList(true, 1, 3, false));
+		checkInvocationWithValues(verification, container, values, arguments);
 	}
 	
 	@Test
@@ -188,12 +189,11 @@ public class ConstraintTest {
 		
 		List<String> arguments = LocationVariable.expressionsOf(container.copyOfOperatorsParametersAndOutput());
 		checkArguments(wellFormedProgram, container, arguments);
+		checkInvocation(wellFormedProgram, container, arguments);
 
 		Map<String, String> types = typesFor(container);
 		List<String> declarations = builtDeclarations(arguments, types);
 		List<IDeclaration> smtDeclarations = checkParameters(wellFormedProgram, container, declarations);
-		
-		checkInvocation(wellFormedProgram, container, arguments);
 		
 		String acyclicityInvocation = "(Acyclicity L@op<0> L@op<1> L@op<2> L@op<3> L@op<0><0> L@op<0><1> L@op<1><0> L@op<1><1> L@op<2><0> L@op<2><1> L@op<2><2> L@op<3><0>)";
 		String consistencyInvocation = "(Consistency L@op<0> L@op<1> L@op<2> L@op<3>)";
@@ -204,18 +204,51 @@ public class ConstraintTest {
 		checkDefinition(wellFormedProgram, declarations, smtDeclarations, definitions, smtDefinitions, "and");
 	}
 	
+	@Test
+	public void invocationToFunctionWithoutParameters() throws ParserException {
+		Expression<?> input = new Expression<>(Short.class, "2");
+		ValuedExpression<?> output = new ValuedExpression<>(Short.class, "a", (short) 2);
+		LocationVariableContainer containerWithoutOperands = new LocationVariableContainer((List) asList(input), (List) asList(), output);
+		Constraint library = new LibraryConstraint(smtlib());
+		IExpr actualInvocation = library.invocation(containerWithoutOperands);
+		IExpr smtInvocation = symbolFrom("Library");
+		assertTrue(areEquals(actualInvocation, smtInvocation));
+	}
+	
+	@Test
+	public void invocationWithArgumentsToFunctionWithoutOperands() throws ParserException {
+		Expression<?> input = new Expression<>(Short.class, "2");
+		ValuedExpression<?> output = new ValuedExpression<>(Short.class, "a", (short) 2);
+		LocationVariableContainer containerWithoutOperands = new LocationVariableContainer((List) asList(input), (List) asList(), output);
+		Constraint verification = new VerificationConstraint(smtlib());
+		Map<String, Object> values = (Map) MapLibrary.newHashMap(asList("2", "a"), asList(2, 3));
+		IExpr actualInvocation = verification.invocationWithValues(containerWithoutOperands, values);
+		IExpr smtInvocation = expressionFrom(format("(%s 2 3 L@out)", verification.name()));
+		assertTrue(areEquals(actualInvocation, smtInvocation));
+	}
+	
+	@Test
+	public void invocationWithArgumentsToFunctionWithoutInputs() throws ParserException {
+		ValuedExpression<?> output = new ValuedExpression<>(Short.class, "a", (short) 2);
+		LocationVariableContainer containerWithoutOperands = new LocationVariableContainer((List) asList(), (List) asList(), output);
+		Constraint verification = new VerificationConstraint(smtlib());
+		IExpr actualInvocation = verification.invocation(containerWithoutOperands);
+		IExpr smtInvocation = expressionFrom(format("(%s out L@out)", verification.name()));
+		assertTrue(areEquals(actualInvocation, smtInvocation));
+	}
+	
 	private LocationVariableContainer locationVariableContainerExample() {
-		ValuedExpression<Boolean> firstExpression = new ValuedExpression<>(Boolean.class, "i != null", true);
-		ValuedExpression<Number> secondExpression = new ValuedExpression<>(Number.class, "i.size()", 29);
-		ValuedExpression<Number> thirdExpression = new ValuedExpression<>(Number.class, "i.get(\"n\")", 25);
-		Collection<ValuedExpression<?>> inputs = (List) Arrays.asList(firstExpression, secondExpression, thirdExpression);
+		Expression<Boolean> firstExpression = new Expression<>(Boolean.class, "i != null");
+		Expression<Number> secondExpression = new Expression<>(Number.class, "i.size()");
+		Expression<Number> thirdExpression = new Expression<>(Number.class, "i.get(\"n\")");
+		Collection<Expression<?>> inputs = (List) Arrays.asList(firstExpression, secondExpression, thirdExpression);
 		Collection<Operator<?>> operators = (List) Arrays.asList(BinaryOperator.addition(), BinaryOperator.or(), TernaryOperator.ifThenElse(), UnaryOperator.not());
-		ValuedExpression<?> outputExpression = new ValuedExpression<>(Boolean.class, "...", false);
+		ValuedExpression<?> outputExpression = new ValuedExpression<>(Boolean.class, "returnValue", false);
 		return new LocationVariableContainer(inputs, operators, outputExpression);
 	}
 	
 	private List<IExpr> checkArguments(Constraint constraint, LocationVariableContainer container, List<String> arguments) throws ParserException {
-		List<IExpr> actualArguments = constraint.arguments(container);
+		List<IExpr> actualArguments = constraint.invocationArguments(container);
 		List<IExpr> smtArguments = expressionsFrom(arguments);
 		assertTrue(haveSameElements((Collection) actualArguments, (Collection) smtArguments));
 		return smtArguments;
@@ -256,6 +289,15 @@ public class ConstraintTest {
 		ICommand smtCommand = commandFrom(command);
 		assertTrue(areEquals(actualCommand, smtCommand));
 		return smtCommand;
+	}
+	
+	private IExpr checkInvocationWithValues(Constraint constraint, LocationVariableContainer container, Map<String, Object> values, List<String> arguments) throws ParserException {
+		String constraintName = constraint.name().value();
+		IExpr actualInvocation = constraint.invocationWithValues(container, values);
+		String invocation = format("(%s %s)", constraintName, StringLibrary.join(arguments, " "));
+		IExpr smtInvocation = expressionFrom(invocation);
+		assertTrue(areEquals(actualInvocation, smtInvocation));
+		return smtInvocation;
 	}
 	
 	private Map<String,String> typesFor(LocationVariableContainer container) {

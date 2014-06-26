@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MapLibrary {
 
@@ -24,6 +26,20 @@ public class MapLibrary {
 	public static <K, V> Map<K, V> newHashMap(Map<K, V> baseMap) {
 		Map<K, V> newHashMap = newHashMap();
 		return mapFilledWith(newHashMap, baseMap);
+	}
+	
+	public static <K, V> Map<K, V> newHashMap(List<K> keys, List<V> values) {
+		Map<K, V> newHashMap = newHashMap();
+		return mapFilledWith(newHashMap, keys, values);
+	}
+	
+	public static <K, V> Map<K, V> mapFilledWith(Map<K, V> toBeFilled, List<K> keys, List<V> values) {
+		int index = 0;
+		for (K key : keys) {
+			toBeFilled.put(key, values.get(index));
+			index += 1;
+		}
+		return toBeFilled;
 	}
 	
 	public static <K, V> Map<K, V> newLinkedHashMap() {
@@ -70,5 +86,51 @@ public class MapLibrary {
 			toStringMap.put(key.toString(), sourceMap.get(key));
 		}
 		return toStringMap;
+	}
+	
+	public static <K> Map<K, Integer> valuesParsedAsInteger(Map<K, String> sourceMap) {
+		Map<K, Integer> parsedMap = newHashMap();
+		for (K key : sourceMap.keySet()) {
+			Integer parsedValue = Integer.valueOf(sourceMap.get(key));
+			parsedMap.put(key, parsedValue);
+		}
+		return parsedMap;
+	}
+	
+	public static <K, V> Set<K> keySetUnion(Collection<Map<K, V>> maps) {
+		Set<K> keys = SetLibrary.newHashSet();
+		for (Map<K, V> map : maps) {
+			keys.addAll(map.keySet());
+		}
+		return keys;
+	}
+	
+	public static <K, V> void putMany(Map<K, V> newMap, Collection<Map<K, V>> desintationMaps) {
+		for (Map<K, V> map : desintationMaps) {
+			putAll(newMap, map);
+		}
+	}
+	
+	public static <K, V> boolean containsKeys(Collection<K> keys, Map<K, V> map) {
+		for (K key : keys) {
+			if (! map.containsKey(key)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public static <K, V> boolean sameContent(Map<K, V> map, List<K> keys, List<V> values) {
+		boolean sameSize = map.size() == keys.size() && map.size() == values.size();
+		if (sameSize) {
+			int index = 0;
+			for (K key : keys) {
+				if (! (map.containsKey(key) && values.get(index).equals(map.get(key)))) {
+					return false;
+				}
+				index += 1;
+			}
+		}
+		return sameSize;
 	}
 }

@@ -1,10 +1,12 @@
 package fr.inria.lille.commons.synthesis.smt;
 
-import java.util.Arrays;
+import static java.lang.String.format;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.smtlib.IAccept;
 import org.smtlib.ICommand;
 import org.smtlib.ICommand.IScript;
 import org.smtlib.ICommand.Iassert;
@@ -51,8 +53,148 @@ public class SMTLib {
 		return smtlib;
 	}
 	
-	public SMTLib() {
+	public static ISymbol not() {
+		return smtlib().globalSymbol("not");
+	}
+	
+	public static ISymbol and() {
+		return smtlib().globalSymbol("and");
+	}
+	
+	public static ISymbol or() {
+		return smtlib().globalSymbol("or");
+	}
+	
+	public static ISymbol implies() {
+		return smtlib().globalSymbol("=>");
+	}
+	
+	public static ISymbol ifThenElse() {
+		return smtlib().globalSymbol("ite");
+	}
+	
+	public static ISymbol equality() {
+		return smtlib().globalSymbol("=");
+	}
+	
+	public static ISymbol lessThan() {
+		return smtlib().globalSymbol("<");
+	}
+	
+	public static ISymbol lessOrEqualThan() {
+		return smtlib().globalSymbol("<=");
+	}
+	
+	public static ISymbol distinct() {
+		return smtlib().globalSymbol("distinct");
+	}
+	
+	public static ISymbol addition() {
+		return smtlib().globalSymbol("+");
+	}
+	
+	public static ISymbol subtraction() {
+		return smtlib().globalSymbol("-");
+	}
+	
+	public static ISymbol multiplication() {
+		return smtlib().globalSymbol("*");
+	}
+
+	public static ISymbol logicAuflia() {
+		return smtlib().globalSymbol(AUFLIA.class.getSimpleName());
+	}
+	
+	public static ISymbol logicAuflira() {
+		return smtlib().globalSymbol(AUFLIRA.class.getSimpleName());
+	}
+	
+	public static ISymbol logicAufnira() {
+		return smtlib().globalSymbol(AUFNIRA.class.getSimpleName());
+	}
+	
+	public static ISymbol logicLra() {
+		return smtlib().globalSymbol(LRA.class.getSimpleName());
+	}
+	
+	public static ISymbol logicQfUf() {
+		return smtlib().globalSymbol(QF_UF.class.getSimpleName());
+	}
+	
+	public static ISymbol logicQfLia() {
+		return smtlib().globalSymbol(QF_LIA.class.getSimpleName());
+	}
+	
+	public static ISymbol logicQfLra() {
+		return smtlib().globalSymbol(QF_LRA.class.getSimpleName());
+	}
+	
+	public static ISymbol logicQfNia() {
+		return smtlib().globalSymbol(QF_NIA.class.getSimpleName());
+	}
+	
+	public static ISymbol booleanTrue() {
+		return org.smtlib.Utils.TRUE;
+	}
+	
+	public static ISymbol booleanFalse() {
+		return org.smtlib.Utils.FALSE;
+	}
+	
+	public static ISort boolSort() {
+		return smtlib().sortFactory().Bool();
+	}
+	
+	public static ISort intSort() {
+		return smtlib().sortFor("Int");
+	}
+	
+	public static ISort numberSort() {
+		return smtlib().sortFor("Real");
+	}
+	
+	public SMTLib()  {
 		solver().start();
+	}
+	
+	public IBinaryLiteral binary(String binary) {
+		String regex = "[01]+";
+		if (binary.matches(regex)) {
+			return expressionFactory().binary(binary);
+		}
+		throw new IllegalStateException(format("[SMTLib] Binary '%s' does not match expected format '%s'", binary, regex));
+	}
+	
+	public IHexLiteral hex(String hex) {
+		String regex = "[0-9a-fA-F]+";
+		if (hex.matches(regex)) {
+			return expressionFactory().hex(hex);
+		}
+		throw new IllegalStateException(format("[SMTLib] Hex '%s' does not match expected format '%s'", hex, regex));
+	}
+	
+	public INumeral numeral(String numeral) {
+		String regex = "0|([1-9][0-9]*)";
+		if (numeral.matches(regex)) {
+			return expressionFactory().numeral(numeral);
+		}
+		throw new IllegalStateException(format("[SMTLib] Numeral '%s' does not match expected format '%s'", numeral, regex));
+	}
+	
+	public IDecimal decimal(String decimal) {
+		String regex = "(0|([1-9][0-9]*))([.]([0-9]+))?";
+		if (decimal.matches(regex)) {
+			return expressionFactory().decimal(decimal);
+		}
+		throw new IllegalStateException(format("[SMTLib] Decimal '%s' does not match expected format '%s'", decimal, regex));
+	}
+	
+	public IKeyword keyword(String keyword) {
+		String regex = ":[0-9a-zA-Z~!@%$&*_+=<>.?/-]+";
+		if (keyword.matches(regex)) {
+			return expressionFactory().keyword(keyword);
+		}
+		throw new IllegalStateException(format("[SMTLib] Keyword '%s' does not match expected format '%s'", keyword, regex));
 	}
 	
 	public List<ISymbol> symbolsFor(Collection<String> symbols) {
@@ -63,138 +205,24 @@ public class SMTLib {
 		return smtSymbols;
 	}
 	
-	public IBinaryLiteral binary(String binary) {
-		// format:	#b[01]+
-		return expressionFactory().binary(binary);
-	}
-	
-	public IHexLiteral hex(String hex) {
-		// format:	#x[0-9a-fA-F]+
-		return expressionFactory().hex(hex);
-	}
-	
-	public INumeral numeral(String numeral) {
-		// format:	0|([1-9][0-9]*)
-		return expressionFactory().numeral(numeral);
-	}
-	
-	public IDecimal decimal(String decimal) {
-		// format:	<numeral>[.]([0-9]+)
-		return expressionFactory().decimal(decimal);
-	}
-	
-	public IKeyword keyword(String keyword) {
-		// format:	:[0-9a-zA-Z~!@%$&*_+=<>.?/-]+
-		return expressionFactory().keyword(keyword);
-	}
-	
 	public ISymbol symbolFor(String symbol) {
-		// format:	[a-zA-Z~!@%$&^*_+=<>.?/-][0-9a-zA-Z~!@%$&^*_+=<>.?/-]*
-		return expressionFactory().symbol(symbol);
-	}
-	
-	public ISymbol not() {
-		return symbolFor("not");
-	}
-	
-	public ISymbol and() {
-		return symbolFor("and");
-	}
-	
-	public ISymbol or() {
-		return symbolFor("or");
-	}
-	
-	public ISymbol implies() {
-		return symbolFor("=>");
-	}
-	
-	public ISymbol ifThenElse() {
-		return symbolFor("ite");
-	}
-	
-	public ISymbol equals() {
-		return symbolFor("=");
-	}
-	
-	public ISymbol lessThan() {
-		return symbolFor("<");
-	}
-	
-	public ISymbol lessOrEqualThan() {
-		return symbolFor("<=");
-	}
-	
-	public ISymbol distinct() {
-		return symbolFor("distinct");
-	}
-	
-	public ISymbol addition() {
-		return symbolFor("+");
-	}
-	
-	public ISymbol substraction() {
-		return symbolFor("-");
-	}
-	
-	public ISymbol multiplication() {
-		return symbolFor("*");
-	}
-
-	public ISymbol logicAuflia() {
-		return symbolFor(AUFLIA.class.getSimpleName());
-	}
-	
-	public ISymbol logicAuflira() {
-		return symbolFor(AUFLIRA.class.getSimpleName());
-	}
-	
-	public ISymbol logicAufnira() {
-		return symbolFor(AUFNIRA.class.getSimpleName());
-	}
-	
-	public ISymbol logicLra() {
-		return symbolFor(LRA.class.getSimpleName());
-	}
-	
-	public ISymbol logicQfUf() {
-		return symbolFor(QF_UF.class.getSimpleName());
-	}
-	
-	public ISymbol logicQfLia() {
-		return symbolFor(QF_LIA.class.getSimpleName());
-	}
-	
-	public ISymbol logicQfLra() {
-		return symbolFor(QF_LRA.class.getSimpleName());
-	}
-	
-	public ISymbol logicQfNia() {
-		return symbolFor(QF_NIA.class.getSimpleName());
-	}
-	
-	public ISymbol booleanTrue() {
-		return org.smtlib.Utils.TRUE;
-	}
-	
-	public ISymbol booleanFalse() {
-		return org.smtlib.Utils.FALSE;
-	}
-	
-	public ISort boolSort() {
-		return sortFactory().Bool();
-	}
-	
-	public ISort intSort() {
-		return sortFor("Int");
-	}
-	
-	public ISort numberSort() {
-		return sortFor("Real");
+		String regex = "[a-zA-Z~!@%$&^*_+=<>.?/-][0-9a-zA-Z~!@%$&^*_+=<>.?/-]*";
+		if (symbol.matches(regex)) {
+			return expressionFactory().symbol(symbol);
+		}
+		throw new IllegalStateException(format("[SMTLib] Symbol '%s' does not match expected format '%s'", symbol, regex));
 	}
 	
 	public ISort sortFor(Class<?> aClass) {
 		return ObjectToExpr.sortFor(aClass);
+	}
+	
+	public List<IExpr> asIExprs(Collection<Object> objects) {
+		List<IExpr> smtExprs = ListLibrary.newLinkedList();
+		for (Object object : objects) {
+			smtExprs.add(asIExpr(object));
+		}
+		return smtExprs;
 	}
 	
 	public IExpr asIExpr(Object object) {
@@ -202,19 +230,26 @@ public class SMTLib {
 	}
 	
 	public IFcnExpr expression(ISymbol identifier, IExpr... arguments) {
-		return expression(identifier, Arrays.asList(arguments));
+		List<IExpr> argumentList = ListLibrary.newArrayList(arguments);
+		return expression(identifier, argumentList);
 	}
 	
-	public IFcnExpr expression(ISymbol identifier, List<IExpr> arguments) {
-		return expressionFactory().fcn(identifier, arguments);
+	public IFcnExpr expression(ISymbol identifier, List<? extends IExpr> arguments) {
+		return expressionFactory().fcn(identifier, (List) arguments);
 	}
 	
 	public IExists exists(List<IDeclaration> declarations, IExpr predicate) {
-		return expressionFactory().exists(declarations, predicate);
+		if (! declarations.isEmpty()) {
+			return expressionFactory().exists(declarations, predicate);
+		}
+		throw new IllegalStateException("Can not build an IExpr.IExists statement without declarations");
 	}
 	
 	public IForall forall(List<IDeclaration> declarations, IExpr predicate) {
-		return expressionFactory().forall(declarations, predicate);
+		if (! declarations.isEmpty()) {
+			return expressionFactory().forall(declarations, predicate);
+		}
+		throw new IllegalStateException("Can not build an IExpr.IForall statement without declarations");
 	}
 	
 	public IDeclaration declaration(String name, Class<?> aClass) {
@@ -262,14 +297,11 @@ public class SMTLib {
 		return commandFactory().set_logic(logicSymbol);
 	}
 	
-	public IScript scriptFrom(ISymbol logic, Collection<ICommand> functionDeclarations, Collection<ICommand> functionDefinitions, Collection<ICommand> assertions) {
-		List<ICommand> commands = ListLibrary.newArrayList();
-		commands.add(setLogicCommand(logic));
-		commands.add(produceModelOption());
-		commands.addAll(functionDeclarations);
-		commands.addAll(functionDefinitions);
-		commands.addAll(assertions);
-		return commandFactory().script(null, commands);
+	public IScript scriptFrom(ISymbol solverLogic, Collection<ICommand> commands, Collection<ICommand> assertions) {
+		List<ICommand> allCommands = ListLibrary.newLinkedList(setLogicCommand(solverLogic), produceModelOption());
+		allCommands.addAll(commands);
+		allCommands.addAll(assertions);
+		return commandFactory().script(null, allCommands);
 	}
 	
 	public Map<String, String> satisfyingValuesFor(List<IExpr> expressions, IScript script) {
@@ -292,12 +324,22 @@ public class SMTLib {
 	}
 	
 	private ISort sortFor(String sort) {
-		if (createdSorts().containsKey(sort)) {
-			return createdSorts().get(sort);
+		return (ISort) globalElement(sort, true);
+	}
+	
+	private ISymbol globalSymbol(String name) {
+		return (ISymbol) globalElement(name, false);
+	}
+	
+	private IAccept globalElement(String name, boolean isSort) {
+		if (existsGlobalElement(name)) {
+			return globalSMTLibElement(name);
 		}
-		ISort createdSort = sortFactory().createSortParameter(symbolFor(sort));
-		createdSorts().put(sort, createdSort);
-		return createdSort;
+		IAccept createdElement = symbolFor(name);
+		if (isSort) {
+			createdElement = sortFactory().createSortParameter((ISymbol) createdElement);
+		}
+		return globalSMTLibElement(name, createdElement);
 	}
 	
 	private ISort.IFactory sortFactory() {
@@ -327,14 +369,27 @@ public class SMTLib {
 		return solver;
 	}
 	
-	private Map<String, ISort> createdSorts() {
-		if (createdSorts == null) {
-			createdSorts = MapLibrary.newHashMap();
+	private boolean existsGlobalElement(String name) {
+		return globalSMTLibElements().containsKey(name);
+	}
+	
+	private IAccept globalSMTLibElement(String name, IAccept value) {
+		globalSMTLibElements().put(name, value);
+		return value;
+	}
+	
+	private IAccept globalSMTLibElement(String name) {
+		return globalSMTLibElements().get(name);
+	}
+	
+	private Map<String, IAccept> globalSMTLibElements() {
+		if (globalSMTLibElements == null) {
+			globalSMTLibElements = MapLibrary.newHashMap();
 		}
-		return createdSorts;
+		return globalSMTLibElements;
 	}
 	
 	private ISolver solver;
 	private static SMTLib smtlib;
-	private static Map<String, ISort> createdSorts;
+	private static Map<String, IAccept> globalSMTLibElements;
 }

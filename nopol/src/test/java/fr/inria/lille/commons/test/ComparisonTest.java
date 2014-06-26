@@ -3,8 +3,11 @@ package fr.inria.lille.commons.test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Map;
+
 import org.junit.Test;
 
+import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.expression.ValuedExpression;
 import fr.inria.lille.commons.synthesis.operator.BinaryOperator;
@@ -13,9 +16,10 @@ import fr.inria.lille.commons.synthesis.operator.Parameter;
 import fr.inria.lille.commons.synthesis.operator.TernaryOperator;
 import fr.inria.lille.commons.synthesis.operator.UnaryOperator;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
+import fr.inria.lille.commons.synthesis.smt.locationVariables.IndexedLocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.OperatorLocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.ParameterLocationVariable;
-import fr.inria.lille.commons.synthesis.smt.locationVariables.ValuedExpressionLocationVariable;
+import fr.inria.lille.commons.trace.Specification;
 
 public class ComparisonTest {
 
@@ -78,19 +82,19 @@ public class ComparisonTest {
 		mustBeEqual(BinaryOperator.numberDistinction(), BinaryOperator.numberDistinction());
 		mustBeEqual(BinaryOperator.numberEquality(), BinaryOperator.numberEquality());
 		mustBeEqual(BinaryOperator.or(), BinaryOperator.or());
-		mustBeEqual(BinaryOperator.substraction(), BinaryOperator.substraction());
+		mustBeEqual(BinaryOperator.subtraction(), BinaryOperator.subtraction());
 		mustBeEqual(UnaryOperator.not(), UnaryOperator.not());
 		mustBeEqual(TernaryOperator.ifThenElse(), TernaryOperator.ifThenElse());
 		
 		Operator anOperator;
 		Operator otherOperator;
 		
-		anOperator= new BinaryOperator<>(Float.class, "//", SMTLib.smtlib().symbolFor("::"), Parameter.anInteger(), Parameter.aString());
-		otherOperator= new BinaryOperator<>(Float.class, "//", SMTLib.smtlib().symbolFor("::"), Parameter.anInteger(), Parameter.aString());
+		anOperator= new BinaryOperator<>(Float.class, "//", SMTLib.smtlib().symbolFor("**"), Parameter.anInteger(), Parameter.aString());
+		otherOperator= new BinaryOperator<>(Float.class, "//", SMTLib.smtlib().symbolFor("**"), Parameter.anInteger(), Parameter.aString());
 		mustBeEqual(anOperator, otherOperator);
 		
-		anOperator = new UnaryOperator<>(Character.class, ",.,", SMTLib.smtlib().symbolFor("[]"), Parameter.anObject());
-		otherOperator = new UnaryOperator<>(Character.class, ",.,", SMTLib.smtlib().symbolFor("[]"), Parameter.anObject());
+		anOperator = new UnaryOperator<>(Character.class, ",.,", SMTLib.smtlib().symbolFor("--"), Parameter.anObject());
+		otherOperator = new UnaryOperator<>(Character.class, ",.,", SMTLib.smtlib().symbolFor("--"), Parameter.anObject());
 		mustBeEqual(anOperator, otherOperator);
 		
 		anOperator = new TernaryOperator<>(Object.class, "0-0", "-0-", SMTLib.smtlib().symbolFor("pop"), Parameter.aBoolean(), Parameter.anInteger(), Parameter.aNumber());
@@ -108,8 +112,8 @@ public class ComparisonTest {
 		mustBeDifferent(BinaryOperator.multiplication(), BinaryOperator.numberDistinction());
 		mustBeDifferent(BinaryOperator.numberDistinction(), BinaryOperator.numberEquality());
 		mustBeDifferent(BinaryOperator.numberEquality(), BinaryOperator.or());
-		mustBeDifferent(BinaryOperator.or(), BinaryOperator.substraction());
-		mustBeDifferent(BinaryOperator.substraction(), UnaryOperator.not());
+		mustBeDifferent(BinaryOperator.or(), BinaryOperator.subtraction());
+		mustBeDifferent(BinaryOperator.subtraction(), UnaryOperator.not());
 		mustBeDifferent(UnaryOperator.not(), TernaryOperator.ifThenElse());
 		mustBeDifferent(TernaryOperator.ifThenElse(), BinaryOperator.addition());
 		
@@ -118,20 +122,20 @@ public class ComparisonTest {
 		Operator aTernaryOperator;
 		Operator otherOperator;
 		
-		aBinaryOperator = new BinaryOperator<>(Float.class, "//", SMTLib.smtlib().symbolFor("::"), Parameter.anInteger(), Parameter.aString());
-		otherOperator= new BinaryOperator<>(Float.class, "/./", SMTLib.smtlib().symbolFor("::"), Parameter.anInteger(), Parameter.aString());
+		aBinaryOperator = new BinaryOperator<>(Float.class, "//", SMTLib.smtlib().symbolFor("**"), Parameter.anInteger(), Parameter.aString());
+		otherOperator= new BinaryOperator<>(Float.class, "/./", SMTLib.smtlib().symbolFor("**"), Parameter.anInteger(), Parameter.aString());
 		mustBeDifferent(aBinaryOperator, otherOperator);
-		otherOperator= new BinaryOperator<>(Float.class, "//", SMTLib.smtlib().symbolFor(":;:"), Parameter.anInteger(), Parameter.aString());
+		otherOperator= new BinaryOperator<>(Float.class, "//", SMTLib.smtlib().symbolFor("*a*"), Parameter.anInteger(), Parameter.aString());
 		mustBeDifferent(aBinaryOperator, otherOperator);
-		otherOperator= new BinaryOperator<>(Float.class, "//", SMTLib.smtlib().symbolFor("::"), Parameter.aNumber(), Parameter.aString());
+		otherOperator= new BinaryOperator<>(Float.class, "//", SMTLib.smtlib().symbolFor("**"), Parameter.aNumber(), Parameter.aString());
 		mustBeDifferent(aBinaryOperator, otherOperator);
 		
-		aUnaryOperator = new UnaryOperator<>(Character.class, ",.,", SMTLib.smtlib().symbolFor("[]"), Parameter.anObject());
-		otherOperator = new UnaryOperator<>(Character.class, ",,", SMTLib.smtlib().symbolFor("[]"), Parameter.anObject());
+		aUnaryOperator = new UnaryOperator<>(Character.class, ",.,", SMTLib.smtlib().symbolFor("--"), Parameter.anObject());
+		otherOperator = new UnaryOperator<>(Character.class, ",,", SMTLib.smtlib().symbolFor("--"), Parameter.anObject());
 		mustBeDifferent(aUnaryOperator, otherOperator);
-		otherOperator = new UnaryOperator<>(Character.class, ",.,", SMTLib.smtlib().symbolFor("[{}]"), Parameter.anObject());
+		otherOperator = new UnaryOperator<>(Character.class, ",.,", SMTLib.smtlib().symbolFor("-+-"), Parameter.anObject());
 		mustBeDifferent(aUnaryOperator, otherOperator);
-		otherOperator = new UnaryOperator<>(Character.class, ",.,", SMTLib.smtlib().symbolFor("[]"), Parameter.aString());
+		otherOperator = new UnaryOperator<>(Character.class, ",.,", SMTLib.smtlib().symbolFor("--"), Parameter.aString());
 		mustBeDifferent(aUnaryOperator, otherOperator);
 
 		aTernaryOperator = new TernaryOperator<>(Object.class, "0-0", "-0-", SMTLib.smtlib().symbolFor("pop"), Parameter.aBoolean(), Parameter.anInteger(), Parameter.aNumber());
@@ -146,18 +150,18 @@ public class ComparisonTest {
 	}
 
 	@Test
-	public void equalValuedExpressionLocationVariable() {
-		ValuedExpression<Integer> valuedExpression = new ValuedExpression<>(Integer.class, "iii", 23);
-		mustBeEqual(new ValuedExpressionLocationVariable<>(valuedExpression, ".a", 2), new ValuedExpressionLocationVariable<>(valuedExpression, ".a", 2));
+	public void equalIndexedLocationVariable() {
+		Expression<Integer> expression = new Expression<>(Integer.class, "iii");
+		mustBeEqual(new IndexedLocationVariable<>(expression, ".a", 2), new IndexedLocationVariable<>(expression, ".a", 2));
 	}
 	
 	@Test
-	public void differentValuedExpressionLocationVariable() {
-		ValuedExpression<Integer> valuedExpression = new ValuedExpression<>(Integer.class, "iii", 23);
-		ValuedExpression<Number> otherExpression = new ValuedExpression<>(Number.class, "iii", 23);
-		mustBeDifferent(new ValuedExpressionLocationVariable<>(valuedExpression, ".a", 2), new ValuedExpressionLocationVariable<>(valuedExpression, ".", 2));
-		mustBeDifferent(new ValuedExpressionLocationVariable<>(valuedExpression, ".a", 2), new ValuedExpressionLocationVariable<>(valuedExpression, ".a", 1));
-		mustBeDifferent(new ValuedExpressionLocationVariable<>(valuedExpression, ".a", 2), new ValuedExpressionLocationVariable<>(otherExpression, ".a", 2));
+	public void differentIndexedLocationVariable() {
+		Expression<Integer> anExpression = new Expression<>(Integer.class, "iii");
+		Expression<Number> otherExpression = new Expression<>(Number.class, "iii");
+		mustBeDifferent(new IndexedLocationVariable<>(anExpression, ".a", 2), new IndexedLocationVariable<>(anExpression, ".", 2));
+		mustBeDifferent(new IndexedLocationVariable<>(anExpression, ".a", 2), new IndexedLocationVariable<>(anExpression, ".a", 1));
+		mustBeDifferent(new IndexedLocationVariable<>(anExpression, ".a", 2), new IndexedLocationVariable<>(otherExpression, ".a", 2));
 	}
 	
 	@Test
@@ -175,7 +179,7 @@ public class ComparisonTest {
 		OperatorLocationVariable secondOperator;
 		
 		firstOperator = new OperatorLocationVariable<>(BinaryOperator.addition(), "lk");
-		secondOperator = new OperatorLocationVariable<>(BinaryOperator.substraction(), "lk");
+		secondOperator = new OperatorLocationVariable<>(BinaryOperator.subtraction(), "lk");
 		mustBeDifferent(firstOperator, secondOperator);
 		mustBeDifferent(firstOperator.parameterLocationVariables(), secondOperator.parameterLocationVariables());
 		
@@ -204,7 +208,7 @@ public class ComparisonTest {
 	public void differentParameterLocationVariable() {
 		OperatorLocationVariable<Number> firstOperator = new OperatorLocationVariable<>(BinaryOperator.addition(), "lk");
 		OperatorLocationVariable<Number> secondOperator = new OperatorLocationVariable<>(BinaryOperator.addition(), "lk");
-		OperatorLocationVariable<Number> thirdOperator = new OperatorLocationVariable<>(BinaryOperator.substraction(), "lk");
+		OperatorLocationVariable<Number> thirdOperator = new OperatorLocationVariable<>(BinaryOperator.subtraction(), "lk");
 		ParameterLocationVariable firstParameter;
 		ParameterLocationVariable secondParameter;
 		
@@ -221,23 +225,36 @@ public class ComparisonTest {
 		mustBeDifferent(firstParameter, secondParameter);
 	}
 	
+	@Test
+	public void equalSpecifications() {
+		Map<String, Object> firstMap = MapLibrary.newHashMap();
+		Map<String, Object> secondMap = MapLibrary.newHashMap();
+		mustBeEqual(new Specification<Integer>(firstMap, 2), new Specification<Integer>(secondMap, 2));
+		firstMap.put("a", 3);
+		secondMap.put("a", 3);
+		mustBeEqual(new Specification<Integer>(firstMap, 2), new Specification<Integer>(secondMap, 2));
+	}
+	
+	@Test
+	public void differentSpecifications() {
+		Map<String, Object> firstMap = MapLibrary.newHashMap();
+		Map<String, Object> secondMap = MapLibrary.newHashMap();
+		mustBeDifferent(new Specification<Integer>(firstMap, 2), new Specification<Integer>(secondMap, 3));
+		firstMap.put("a", 3);
+		secondMap.put("a", 3);
+		mustBeDifferent(new Specification<Integer>(firstMap, 2), new Specification<Integer>(secondMap, 3));
+		secondMap.put("b", 4);
+		mustBeDifferent(new Specification<Integer>(firstMap, 2), new Specification<Integer>(secondMap, 2));
+	}
+	
 	private void mustBeEqual(Object a, Object b) {
-		compare(a, b, true);
+		assertTrue(a.equals(b));
+		assertTrue(b.equals(a));
+		assertTrue(a.hashCode() == b.hashCode());
 	}
 	
 	private void mustBeDifferent(Object a, Object b) {
-		compare(a, b, false);
-	}
-	
-	private void compare(Object a, Object b, boolean mustBeEqual) {
-		if (mustBeEqual) {
-			assertTrue(a.equals(b));
-			assertTrue(b.equals(a));
-			assertTrue(a.hashCode() == b.hashCode());
-		}
-		else {
-			assertFalse(a.equals(b));
-			assertFalse(b.equals(a));
-		}
+		assertFalse(a.equals(b));
+		assertFalse(b.equals(a));
 	}
 }

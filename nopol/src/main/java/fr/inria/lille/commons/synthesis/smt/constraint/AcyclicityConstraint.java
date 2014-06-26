@@ -1,11 +1,12 @@
 package fr.inria.lille.commons.synthesis.smt.constraint;
 
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.lessThan;
+
 import java.util.Collection;
 import java.util.List;
 
 import org.smtlib.IExpr;
 import org.smtlib.IExpr.IDeclaration;
-import org.smtlib.IExpr.ISymbol;
 
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
@@ -25,8 +26,8 @@ public class AcyclicityConstraint extends Constraint {
 	}
 	
 	@Override
-	protected List<IExpr> arguments(LocationVariableContainer locationVariableContainer) {
-		return collectExpressions(usedLocationVariables(locationVariableContainer));
+	protected List<IExpr> invocationArguments(LocationVariableContainer locationVariableContainer) {
+		return (List) collectExpressions(usedLocationVariables(locationVariableContainer));
 	}
 
 	@Override
@@ -37,9 +38,8 @@ public class AcyclicityConstraint extends Constraint {
 	@Override
 	protected Collection<IExpr> definitionExpressions(LocationVariableContainer locationVariableContainer) {
 		Collection<IExpr> parametersBeforeOperators = ListLibrary.newLinkedList();
-		ISymbol lessThan = smtlib().lessThan();
 		for (ParameterLocationVariable<?> parameter : locationVariableContainer.allParameters()) {
-			parametersBeforeOperators.add(binaryOperationWithExpression(lessThan, parameter, parameter.operatorLocationVariable()));
+			parametersBeforeOperators.add(binaryOperationWithExpression(lessThan(), parameter, parameter.operatorLocationVariable()));
 		}
 		return parametersBeforeOperators;
 	}

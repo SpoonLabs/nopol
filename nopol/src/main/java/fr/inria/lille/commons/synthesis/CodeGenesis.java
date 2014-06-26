@@ -1,5 +1,7 @@
 package fr.inria.lille.commons.synthesis;
 
+import static java.lang.String.format;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -7,18 +9,21 @@ import java.util.Map;
 
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
+import fr.inria.lille.commons.synthesis.smt.locationVariables.IndexedLocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.OperatorLocationVariable;
-import fr.inria.lille.commons.synthesis.smt.locationVariables.ParameterLocationVariable;
-import fr.inria.lille.commons.synthesis.smt.locationVariables.ValuedExpressionLocationVariable;
 
-public class CodeSynthesis {
+public class CodeGenesis {
 
-	public CodeSynthesis(LocationVariableContainer container, Map<String, Integer> smtSolverResult) {
+	public CodeGenesis(LocationVariableContainer container, Map<String, Integer> smtSolverResult) {
 		this.container = container;
 		this.smtSolverResult = smtSolverResult;
 		writeCode();
+	}
+	
+	public boolean isSuccessful() {
+		return true;
 	}
 	
 	public String returnStatement() {
@@ -39,14 +44,14 @@ public class CodeSynthesis {
 		return numberOfInputLines() + container().numberOfOperators();
 	}
 	
-	private void writeCode() {
+	protected void writeCode() {
 		code = new CodeLine[totalNumberOfLines()];
 		writeInputExpressions();
 		writeBody();
 	}
 	
 	private void writeInputExpressions() {
-		for (ValuedExpressionLocationVariable<?> input : container().inputs()) {
+		for (IndexedLocationVariable<?> input : container().inputs()) {
 			int lineIndex = input.index();
 			CodeLine newCodeLine = new CodeLine(lineIndex, input.objectTemplate().expression());
 			setLine(lineIndex, newCodeLine);
@@ -56,15 +61,15 @@ public class CodeSynthesis {
 	private void writeBody() {
 		for (int lineNumber = numberOfInputLines(); lineNumber < totalNumberOfLines(); lineNumber += 1) {
 			OperatorLocationVariable<?> operator = orderedOperators().get(lineNumber);
-			List<CodeLine> parameterExpressions = codeLinesFor(operator.parameterLocationVariables());
+			List<CodeLine> parameterExpressions = codeLinesFor((List) operator.parameterLocationVariables());
 			CodeLine newCodeLine = new OperationCodeLine(lineNumber, operator.objectTemplate(), parameterExpressions);
 			setLine(lineNumber, newCodeLine);
 		}
 	}
 
-	private List<CodeLine> codeLinesFor(Collection<ParameterLocationVariable<?>> parameterLocationVariables) {
+	private List<CodeLine> codeLinesFor(Collection<LocationVariable<?>> locationVariables) {
 		List<CodeLine> codeLines = ListLibrary.newArrayList();
-		for (ParameterLocationVariable<?> parameter : parameterLocationVariables) {
+		for (LocationVariable<?> parameter : locationVariables) {
 			codeLines.add(codeLineFor(parameter));
 		}
 		return codeLines;
@@ -103,6 +108,15 @@ public class CodeSynthesis {
 			orderedOperators = operatorMap;
 		}
 		return orderedOperators;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder toString = new StringBuilder();
+		for (CodeLine line : code()) {
+			toString.append(format("%d: %s\n", line.lineNumber(), line.content()));
+		}
+		return toString.toString();
 	}
 	
 	private CodeLine[] code;

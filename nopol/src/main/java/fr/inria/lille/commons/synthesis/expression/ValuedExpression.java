@@ -1,10 +1,7 @@
 package fr.inria.lille.commons.synthesis.expression;
 
-public class ValuedExpression<T> extends Expression<T> {
 
-	public static ValuedExpression<?> from(String expression, Object value) {
-		return new ValuedExpression(value.getClass(), expression, value);
-	}
+public class ValuedExpression<T> extends Expression<T> {
 	
 	public ValuedExpression(Class<T> resultType, String expression, T value) {
 		super(resultType, expression);

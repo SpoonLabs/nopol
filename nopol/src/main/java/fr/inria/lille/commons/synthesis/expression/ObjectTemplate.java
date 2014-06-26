@@ -1,15 +1,34 @@
 package fr.inria.lille.commons.synthesis.expression;
 
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.smtlib;
+
+import java.util.Collection;
+
+import org.smtlib.ISort;
+
 import fr.inria.lille.commons.classes.ClassLibrary;
+import fr.inria.lille.commons.collections.Multimap;
 
 public abstract class ObjectTemplate<T> {
-
+	
+	public static Multimap<ISort, ObjectTemplate<?>> bySort(Collection<ObjectTemplate<?>> objects) {
+		Multimap<ISort, ObjectTemplate<?>> multimap = Multimap.newLinkedHashSetMultimap();
+		for (ObjectTemplate<?> object : objects) {
+			multimap.add(object.smtSort(), object);
+		}
+		return multimap;
+	}
+	
 	public ObjectTemplate(Class<T> aClass) {
 		myClass = aClass;
 	}
 	
 	public Class<T> type() {
 		return myClass;
+	}
+	
+	public ISort smtSort() {
+		return smtlib().sortFor(type());
 	}
 	
 	public boolean typeIsSuperClassOf(Class<?> aClass) {

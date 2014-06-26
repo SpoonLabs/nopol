@@ -1,14 +1,17 @@
 package fr.inria.lille.commons.synthesis.smt.constraint;
 
+import static java.util.Arrays.asList;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.smtlib.IExpr;
 import org.smtlib.IExpr.IDeclaration;
 
-import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
+import fr.inria.lille.commons.synthesis.smt.locationVariables.IndexedLocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;
 
@@ -24,12 +27,12 @@ public class VerificationConstraint extends CompoundConstraint {
 	}
 
 	@Override
-	protected List<IExpr> arguments(LocationVariableContainer locationVariableContainer) {
-		List<IExpr> arguments = collectSubexpressions(locationVariableContainer.copyOfInputsAndOutput());
+	protected List<IExpr> invocationArguments(LocationVariableContainer locationVariableContainer) {
+		List<IExpr> arguments = (List) collectSubexpressions((List) locationVariableContainer.copyOfInputsAndOutput());
 		arguments.addAll(collectExpressions(locationVariableContainer.copyOfOperatorsParametersAndOutput()));
 		return arguments;
 	}
-
+	
 	@Override
 	protected List<IDeclaration> parameters(LocationVariableContainer locationVariableContainer) {
 		List<IDeclaration> parameters = declarationsFromSubexpressions(locationVariableContainer.copyOfInputsAndOutput());
@@ -41,6 +44,17 @@ public class VerificationConstraint extends CompoundConstraint {
 	protected Collection<IExpr> definitionExpressions(LocationVariableContainer locationVariableContainer) {
 		IExpr predicate = conjunctionOf(subconstraintInvocations(locationVariableContainer));
 		List<IDeclaration> declarations = declarationsFromSubexpressions(locationVariableContainer.copyOfOperatorsAndParameters());
-		return (List) ListLibrary.newLinkedList(smtlib().exists(declarations, predicate));
+		if (declarations.isEmpty()) {
+			return (List) asList(predicate); 
+		}
+		return (List) asList(smtlib().exists(declarations, predicate));
+	}
+	
+	@Override
+	public List<IExpr> instantiatedArguments(LocationVariableContainer container, Map<String, Object> values) {
+		List<Object> actualValues = IndexedLocationVariable.extractWithObjectExpressions(values, (List) container.copyOfInputsAndOutput());
+		List<IExpr> arguments = asSMTExpressions(actualValues);
+		arguments.addAll(collectExpressions(container.copyOfOperatorsParametersAndOutput()));
+		return arguments;
 	}
 }

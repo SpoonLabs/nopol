@@ -2,6 +2,7 @@ package fr.inria.lille.commons.collections;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
@@ -14,6 +15,10 @@ public class Multimap<K, V> implements Map<K, Collection<V>> {
 	}
 	
 	public static <K, V> Multimap<K, V> newSetMultimap() {
+		return new Multimap(MapLibrary.newHashMap(), HashSet.class);
+	}
+	
+	public static <K, V> Multimap<K, V> newLinkedHashSetMultimap() {
 		return new Multimap(MapLibrary.newHashMap(), LinkedHashSet.class);
 	}
 	
@@ -22,6 +27,10 @@ public class Multimap<K, V> implements Map<K, Collection<V>> {
 	}
 	
 	public static <K, V> Multimap<K, V> newIdentityHashSetMultimap(int keyCapacity) {
+		return new Multimap(MapLibrary.newIdentityHashMap(keyCapacity), HashSet.class);
+	}
+	
+	public static <K, V> Multimap<K, V> newIdentityLinkedHashSetMultimap(int keyCapacity) {
 		return new Multimap(MapLibrary.newIdentityHashMap(keyCapacity), LinkedHashSet.class);
 	}
 	
@@ -122,6 +131,21 @@ public class Multimap<K, V> implements Map<K, Collection<V>> {
 	
 	private Class<? extends Collection<V>> containerClass() {
 		return containerClass;
+	}
+	
+	@Override
+	public int hashCode() {
+		return realSubject().hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object object) {
+		return realSubject().equals(object);
+	}
+	
+	@Override
+	public String toString() {
+		return realSubject().toString();
 	}
 	
 	private Map<K, Collection<V>> realSubject;

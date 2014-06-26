@@ -10,26 +10,27 @@ import java.util.List;
 
 import org.junit.Test;
 
+import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.expression.ValuedExpression;
 import fr.inria.lille.commons.synthesis.operator.BinaryOperator;
 import fr.inria.lille.commons.synthesis.operator.Operator;
 import fr.inria.lille.commons.synthesis.operator.TernaryOperator;
 import fr.inria.lille.commons.synthesis.operator.UnaryOperator;
+import fr.inria.lille.commons.synthesis.smt.locationVariables.IndexedLocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.OperatorLocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.ParameterLocationVariable;
-import fr.inria.lille.commons.synthesis.smt.locationVariables.ValuedExpressionLocationVariable;
 
 public class LocationVariableContainerTest {
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void checkStateOfLocationVariableContainer() {
-		ValuedExpression<Boolean> firstExpression = new ValuedExpression<>(Boolean.class, "i != null", true);
-		ValuedExpression<Integer> secondExpression = new ValuedExpression<>(Integer.class, "i.size()", 29);
-		ValuedExpression<Integer> thirdExpression = new ValuedExpression<>(Integer.class, "i.get(\"n\")", 25);
-		Collection<ValuedExpression<?>> inputs = (List) Arrays.asList(firstExpression, secondExpression, thirdExpression);
+		Expression<Boolean> firstExpression = new Expression<>(Boolean.class, "i != null");
+		Expression<Integer> secondExpression = new Expression<>(Integer.class, "i.size()");
+		Expression<Integer> thirdExpression = new Expression<>(Integer.class, "i.get(\"n\")");
+		Collection<Expression<?>> inputs = (List) Arrays.asList(firstExpression, secondExpression, thirdExpression);
 		Collection<Operator<?>> operators = (List) Arrays.asList(BinaryOperator.addition(), BinaryOperator.or(), TernaryOperator.ifThenElse(), UnaryOperator.not());
 		ValuedExpression<?> outputExpression = new ValuedExpression<>(Boolean.class, "...", false);
 		LocationVariableContainer container = new LocationVariableContainer(inputs, operators, outputExpression);
@@ -105,7 +106,7 @@ public class LocationVariableContainerTest {
 	}
 	
 	private void checkInput(LocationVariableContainer container, Class<?> expectedClass, int inputIndex) {
-		ValuedExpressionLocationVariable<?> input = container.inputs().get(inputIndex);
+		IndexedLocationVariable<?> input = container.inputs().get(inputIndex);
 		assertEquals(String.format("%d", inputIndex), input.encodedLineNumber().toString());
 		assertEquals(expectedClass, input.type());
 		assertEquals(String.format("in<%d>", inputIndex), input.subexpression());

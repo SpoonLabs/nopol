@@ -1,7 +1,24 @@
 package fr.inria.lille.commons.synthesis.expression;
 
+import java.util.Collection;
+import java.util.List;
+
+import fr.inria.lille.commons.collections.ListLibrary;
+
 
 public class Expression<T> extends ObjectTemplate<T> {
+	
+	public static Expression<?> from(String expression, Object value) {
+		return new Expression<>(value.getClass(), expression);
+	}
+	
+	public static List<String> expressionsOf(Collection<? extends Expression<?>> expressions) {
+		List<String> collected = ListLibrary.newArrayList();
+		for (Expression<?> expression : expressions) {
+			collected.add(expression.expression());
+		}
+		return collected;
+	}
 
 	public Expression(Class<T> resultType, String expression) {
 		super(resultType);

@@ -1,11 +1,12 @@
 package fr.inria.lille.commons.synthesis.smt.constraint;
 
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.distinct;
+
 import java.util.Collection;
 import java.util.List;
 
 import org.smtlib.IExpr;
 import org.smtlib.IExpr.IDeclaration;
-import org.smtlib.IExpr.ISymbol;
 
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
@@ -25,8 +26,8 @@ public class ConsistencyConstraint extends Constraint {
 	}
 	
 	@Override
-	protected List<IExpr> arguments(LocationVariableContainer locationVariableContainer) {
-		return collectExpressions(usedLocationVariables(locationVariableContainer));
+	protected List<IExpr> invocationArguments(LocationVariableContainer locationVariableContainer) {
+		return (List) collectExpressions(usedLocationVariables(locationVariableContainer));
 	}
 
 	@Override
@@ -47,10 +48,9 @@ public class ConsistencyConstraint extends Constraint {
 
 	private Collection<IExpr> differentLineExpressionsFor(OperatorLocationVariable<?> operator, LocationVariableContainer locationVariableContainer, int startingIndex) {
 		Collection<IExpr> expressions = ListLibrary.newLinkedList();
-		ISymbol distinct = smtlib().distinct();
 		for (int index = startingIndex; index < locationVariableContainer.numberOfOperators(); index += 1) {
 			OperatorLocationVariable<?> otherOperator = locationVariableContainer.operators().get(index);
-			expressions.add(binaryOperationWithExpression(distinct, operator, otherOperator));
+			expressions.add(binaryOperationWithExpression(distinct(), operator, otherOperator));
 		}
 		return expressions;
 	}

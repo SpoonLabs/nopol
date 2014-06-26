@@ -1,7 +1,14 @@
 package fr.inria.lille.commons.synthesis.smt.constraint;
 
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.and;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.boolSort;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.booleanTrue;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.intSort;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.or;
+
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.smtlib.ICommand;
 import org.smtlib.IExpr;
@@ -11,6 +18,7 @@ import org.smtlib.ISort;
 
 import fr.inria.lille.commons.collections.CollectionLibrary;
 import fr.inria.lille.commons.collections.ListLibrary;
+import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;
@@ -19,7 +27,7 @@ public abstract class Constraint {
 
 	public abstract List<LocationVariable<?>> usedLocationVariables(LocationVariableContainer locationVariableContainer);
 	
-	protected abstract List<IExpr> arguments(LocationVariableContainer locationVariableContainer);
+	protected abstract List<IExpr> invocationArguments(LocationVariableContainer locationVariableContainer);
 	
 	protected abstract List<IDeclaration> parameters(LocationVariableContainer locationVariableContainer);
 	
@@ -31,11 +39,22 @@ public abstract class Constraint {
 	}
 	
 	public ISort outputType() {
-		return smtlib().boolSort();
+		return boolSort();
 	}
 	
 	public IExpr invocation(LocationVariableContainer locationVariableContainer) {
-		return smtlib().expression(name(), arguments(locationVariableContainer));
+		return invocationWith(invocationArguments(locationVariableContainer));
+	}
+	
+	public IExpr invocationWithValues(LocationVariableContainer locationVariableContainer, Map<String, Object> values) {
+		return invocationWith(instantiatedArguments(locationVariableContainer, values));
+	}
+	
+	public IExpr invocationWith(List<IExpr> arguments) {
+		if (arguments.isEmpty()) {
+			return name();
+		}
+		return smtlib().expression(name(), arguments);
 	}
 	
 	public ICommand definition(LocationVariableContainer locationVariableContainer) {
@@ -49,12 +68,16 @@ public abstract class Constraint {
 		return smtlib().functionDefinition(name(), parameters, outputType(), finalExpression);
 	}
 	
-	protected IExpr finalExpression(Collection<IExpr> definitionExpressions) {
-		return conjunctionOf(definitionExpressions);
+	protected List<IExpr> instantiatedArguments(LocationVariableContainer locationVariableContainer, Map<String, Object> values) {
+		throw new UnsupportedOperationException("Constraint.invocationWithValues should be overridden by subclasses");		
 	}
 	
-	protected ISort sortFor(LocationVariable<?> locationVariable) {
-		return LocationVariable.sortFor(locationVariable);
+	public boolean isCompound() {
+		return false;
+	}
+	
+	protected IExpr finalExpression(Collection<IExpr> definitionExpressions) {
+		return conjunctionOf(definitionExpressions);
 	}
 	
 	protected List<IDeclaration> declarationsFromExpressions(Collection<LocationVariable<?>> locationVariables) {
@@ -66,7 +89,7 @@ public abstract class Constraint {
 	}
 
 	protected IDeclaration declarationFromExpression(LocationVariable<?> locationVariable) {
-		return smtlib().declaration(locationVariable.expression(), smtlib().intSort());
+		return smtlib().declaration(locationVariable.expression(), intSort());
 	}
 	
 	protected List<IDeclaration> declarationsFromSubexpressions(Collection<LocationVariable<?>> locationVariables) {
@@ -78,17 +101,17 @@ public abstract class Constraint {
 	}
 	
 	protected IDeclaration declarationFromSubexpression(LocationVariable<?> locationVariable) {
-		return smtlib().declaration(locationVariable.subexpression(), sortFor(locationVariable));
+		return smtlib().declaration(locationVariable.subexpression(), locationVariable.smtSort());
 	}
 	 
-	protected List<IExpr> collectExpressions(Collection<LocationVariable<?>> locationVariables) {
-		List<String> expressions = LocationVariable.expressionsOf(locationVariables);
-		return (List) asSymbols(expressions);
+	protected List<ISymbol> collectExpressions(Collection<LocationVariable<?>> locationVariables) {
+		List<String> expressions = Expression.expressionsOf(locationVariables);
+		return asSymbols(expressions);
 	}
 	 
-	protected List<IExpr> collectSubexpressions(Collection<LocationVariable<?>> locationVariables) {
+	protected List<ISymbol> collectSubexpressions(Collection<LocationVariable<?>> locationVariables) {
 		List<String> subexpressions = LocationVariable.subexpressionsOf(locationVariables);
-		return (List) asSymbols(subexpressions);
+		return asSymbols(subexpressions);
 	}
 	
 	protected ISymbol symbolFromExpressionOf(LocationVariable<?> locationVariable) {
@@ -107,7 +130,11 @@ public abstract class Constraint {
 		return smtlib().symbolFor(string);
 	}
 
-	protected IExpr asExpr(int number) {
+	protected List<IExpr> asSMTExpressions(Collection<Object> obejcts) {
+		return smtlib().asIExprs(obejcts);
+	}
+	
+	protected IExpr asNumeral(int number) {
 		return smtlib().numeral(Integer.toString(number));
 	}
 	
@@ -140,16 +167,16 @@ public abstract class Constraint {
 	}
 	
 	protected IExpr disjunctionOf(Collection<IExpr> expressions) {
-		return chained(expressions, smtlib().or());
+		return chained(expressions, or());
 	}
 	
 	protected IExpr conjunctionOf(Collection<IExpr> expressions) {
-		return chained(expressions, smtlib().and());
+		return chained(expressions, and());
 	}
 	
 	private IExpr chained(Collection<IExpr> expressions, ISymbol symbol) {
 		if (expressions.isEmpty()) {
-			return smtlib().booleanTrue();
+			return booleanTrue();
 		}
 		if (expressions.size() == 1) {
 			return CollectionLibrary.any(expressions);

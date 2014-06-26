@@ -1,5 +1,8 @@
 package fr.inria.lille.commons.synthesis.smt.constraint;
 
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.equality;
+import static fr.inria.lille.commons.synthesis.smt.SMTLib.lessOrEqualThan;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -11,6 +14,7 @@ import org.smtlib.ISort;
 
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.Multimap;
+import fr.inria.lille.commons.synthesis.expression.ObjectTemplate;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;
@@ -29,8 +33,8 @@ public class LineBoundConstraint extends Constraint {
 	}
 
 	@Override
-	protected List<IExpr> arguments(LocationVariableContainer locationVariableContainer) {
-		return collectExpressions(usedLocationVariables(locationVariableContainer));
+	protected List<IExpr> invocationArguments(LocationVariableContainer locationVariableContainer) {
+		return (List) collectExpressions(usedLocationVariables(locationVariableContainer));
 	}
 
 	@Override
@@ -41,7 +45,7 @@ public class LineBoundConstraint extends Constraint {
 	@Override
 	protected Collection<IExpr> definitionExpressions(LocationVariableContainer locationVariableContainer) {
 		Collection<IExpr> locationVariableBounds = ListLibrary.newLinkedList();
-		Multimap<ISort, LocationVariable<?>> bySort = LocationVariable.bySort(locationVariableContainer.copyOfOperatorsAndInputs());
+		Multimap<ISort, LocationVariable<?>> bySort = (Multimap) ObjectTemplate.bySort((List) locationVariableContainer.copyOfOperatorsAndInputs());
 		addOperatorBounds(locationVariableBounds, locationVariableContainer);
 		addParameterTypeBounds(locationVariableBounds, bySort, locationVariableContainer.copyOfAllParameters());
 		addOutputTypeBound(locationVariableBounds, bySort, locationVariableContainer.outputVariable());
@@ -57,15 +61,15 @@ public class LineBoundConstraint extends Constraint {
 	}
 
 	private IExpr lineBoundaryFor(int from, int to, LocationVariable<?> variable) {
-		ISymbol lessOrEqualThan = smtlib().lessOrEqualThan();
-		IExpr lowerBoundExpr = binaryOperationWithExpression(lessOrEqualThan, asExpr(from), variable);
-		IExpr upperBoundExpr = binaryOperationWithExpression(lessOrEqualThan, variable, asExpr(to));
+		ISymbol lessOrEqualThan = lessOrEqualThan();
+		IExpr lowerBoundExpr = binaryOperationWithExpression(lessOrEqualThan, asNumeral(from), variable);
+		IExpr upperBoundExpr = binaryOperationWithExpression(lessOrEqualThan, variable, asNumeral(to));
 		return conjunctionOf(Arrays.asList(lowerBoundExpr, upperBoundExpr));
 	}
 	
 	private void addParameterTypeBounds(Collection<IExpr> expressions, Multimap<ISort, LocationVariable<?>> bySort, List<ParameterLocationVariable<?>> parameters) {
 		for (ParameterLocationVariable<?> parameter : parameters) {
-			ISort sort = sortFor(parameter);
+			ISort sort = parameter.smtSort();
 			Collection<LocationVariable<?>> operands = ListLibrary.newLinkedList(bySort.get(sort));
 			operands.remove(parameter.operatorLocationVariable());
 			expressions.add(equalToAnyExpression(operands, parameter));
@@ -73,14 +77,14 @@ public class LineBoundConstraint extends Constraint {
 	}
 	
 	private void addOutputTypeBound(Collection<IExpr> expressions, Multimap<ISort, LocationVariable<?>> bySort, LocationVariable<?> output) {
-		Collection<LocationVariable<?>> operands = bySort.get(sortFor(output));
+		Collection<LocationVariable<?>> operands = bySort.get(output.smtSort());
 		expressions.add(equalToAnyExpression(operands, output));
 	}
 	
 	private IExpr equalToAnyExpression(Collection<LocationVariable<?>> operands, LocationVariable<?> variable) {
 		Collection<IExpr> equalities = ListLibrary.newLinkedList();
 		for (LocationVariable<?> operand : operands) {
-			equalities.add(binaryOperationWithExpression(smtlib().equals(), operand.encodedLineNumber(), variable));
+			equalities.add(binaryOperationWithExpression(equality(), operand.encodedLineNumber(), variable));
 		}
 		return disjunctionOf(equalities);
 	}

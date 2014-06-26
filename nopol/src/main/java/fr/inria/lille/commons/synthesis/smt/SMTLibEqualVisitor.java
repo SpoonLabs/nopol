@@ -54,7 +54,7 @@ import fr.inria.lille.commons.collections.SetLibrary;
 
 public class SMTLibEqualVisitor implements IVisitor<Boolean>{
 
-	public static void addAllIfNotContained(Collection<IAccept> elements, Collection<IAccept> collection) {
+	public static void addAllIfNotContained(Collection<? extends IAccept> elements, Collection<IAccept> collection) {
 		for (IAccept element : elements) {
 			addIfNotContained(element, collection);
 		}
