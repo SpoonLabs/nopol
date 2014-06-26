@@ -60,13 +60,13 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 	 * @param classpath
 	 * @return
 	 */
-	public static GZoltarSuspiciousProgramStatements create(final URL[] classpath) {
-		return new GZoltarSuspiciousProgramStatements(checkNotNull(classpath));
+	public static GZoltarSuspiciousProgramStatements create(final URL[] classpath, final File sourceFolder) {
+		return new GZoltarSuspiciousProgramStatements(checkNotNull(classpath), checkNotNull(sourceFolder));
 	}
 
 	private final GZoltar gzoltar;
 
-	private GZoltarSuspiciousProgramStatements(final URL[] classpath) {
+	private GZoltarSuspiciousProgramStatements(final URL[] classpath, final File sourceFolder) {
 		try {
 			gzoltar = new GZoltarJava7();
 		} catch (IOException e) {
@@ -81,34 +81,37 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 				classpaths.add(url.toExternalForm());
 			}
 		}
+		
 		gzoltar.setClassPaths(new ArrayList<String>(classpaths));
 		
 		
 		try {
-			String packageName = getPackageName(classpaths);
-			System.out.println("Package : "+packageName);
-			gzoltar.addPackageToInstrument(packageName);
+			
 			gzoltar.addPackageNotToInstrument("org.junit");
 			gzoltar.addPackageNotToInstrument("junit.framework");
+			
+			String packageName = getPackageName(sourceFolder);
+			if ( packageName == null ){
+				throw new RuntimeException("Could not find package to instrument.");
+			}
+			System.out.println("Package : "+packageName);
+			gzoltar.addPackageToInstrument(packageName);
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
 		
 	}
 
-	private String getPackageName(HashSet<String> classpaths) throws MalformedURLException {
+	private String getPackageName(File sourceFolder) throws MalformedURLException {
 		String packageName = "";
 		
-		for ( String cp : classpaths ){
-			File f = getFirstClassFolder(new File(cp));
+		
+			File f = getFirstClassFolder(sourceFolder);
 			if ( f != null ){
-			String tmp = new File(f.getAbsolutePath()).toURI().toURL().getPath(); // workaround because in Windows URL Object add "/" before the path
-			System.out.println("cp : "+cp);
-			System.out.println("tmp : "+tmp);
-			System.out.println("packageName : tmp.substring("+cp.length()+","+tmp.lastIndexOf("/")+")");
-			packageName = tmp.substring(cp.length(), tmp.lastIndexOf("/")).replace(File.separatorChar, '.');
+				String tmp = new File(f.getAbsolutePath()).toURI().toURL().getPath(); // workaround because in Windows URL Object add "/" before the path
+				packageName = tmp.substring(sourceFolder.getAbsolutePath().length()+1, tmp.lastIndexOf("/")).replace(File.separatorChar, '.');
 			}
-		}
+		
 		return packageName;
 	}
 
@@ -116,7 +119,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		File[] children = root.listFiles();
 		if ( children != null ){
 			for ( File child : children ){
-				if ( child.getAbsolutePath().endsWith(".class"))
+				if ( child.getAbsolutePath().endsWith(".java"))
 					return child;
 			}
 			for ( File child : children ){
