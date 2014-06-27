@@ -161,6 +161,8 @@ public final class ConstraintSolver {
 			writer.println(cmd.toString());
 			System.out.println(cmd.toString());
 		}
+		writer.println("(check-sat)");
+		writer.println("(get-model)");
 		writer.flush();
 		writer.close();
 		

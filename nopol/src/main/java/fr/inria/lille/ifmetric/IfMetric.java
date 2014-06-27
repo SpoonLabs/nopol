@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.processing.ProcessingManager;
 import spoon.support.QueueProcessingManager;
+import fr.inria.lille.nopol.Main;
 import fr.inria.lille.nopol.SpoonClassLoader;
 import fr.inria.lille.nopol.test.junit.JUnitRunner;
 import fr.inria.lille.nopol.test.junit.TestClassesFinder;
@@ -40,8 +42,9 @@ public class IfMetric {
 	final List<String> modifyClass;
 	
 	private final File sourceFolder;
-
-	private static File output = new File(File.separatorChar+"tmp"+File.separatorChar+"IfMetric");
+	private static File output1;
+	private File output2;
+	
 	private static FileWriter writer;
 	private List<URL> urls;
 
@@ -57,13 +60,14 @@ public class IfMetric {
 	public IfMetric(File sourceFolder, String[] paths) {
 		this.sourceFolder = sourceFolder;
 		this.classpath = paths;
-		output = new File(sourceFolder.getAbsolutePath() + File.separatorChar+".."+File.separatorChar+"IfMetric");
+		output1 = new File(sourceFolder.getAbsolutePath() + File.separatorChar+".."+File.separatorChar+"IfMetricPurAndImpur");
+		output2 = new File(sourceFolder.getAbsolutePath() + File.separatorChar+".."+File.separatorChar+"IfMetricExecutionDuringTest");
 		FileWriter writer = null;
 		modifyClass = new ArrayList<>();
 		try {
-			writer = new FileWriter(output);
+			writer = new FileWriter(output1);
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		IfMetric.writer = writer;
 	}
@@ -88,6 +92,7 @@ public class IfMetric {
 
 		new IfMetric(sourceFolder, paths).run();
 
+		System.exit(0);
 	}
 
 	private void run() {
@@ -114,7 +119,7 @@ public class IfMetric {
 		try {
 			System.out.println(s);
 			if ( writer == null ){
-				writer = new FileWriter(output);
+				writer = new FileWriter(output1);
 			}
 			writer.write(s + "\n");
 			writer.flush();
@@ -154,17 +159,22 @@ public class IfMetric {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		System.out.println("First metric has been compute in : "+output1.getAbsoluteFile());
 		
+		
+		try {
+			writer = new FileWriter(output2);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		
 		computeSecondIfMetric();
-		System.out.println(executedIf);
-		
+		System.out.println("Second metric has been compute in : "+output2.getAbsoluteFile());
 		
 	}
 
 	private static void printUsage() {
-		System.out.println("java " + IfMetric.class.getName()
-				+ " <source folder> <classpath>");
+		Main.printUsage();
 	}
 
 	public static void thenStatementExecuted(String className, int ifLine) {
@@ -220,7 +230,6 @@ public class IfMetric {
 	}
 
 	public static void computeSecondIfMetric(){
-		writeOutPut("##################################");
 		writeOutPut("If_Position\t\t\tNo_Execution\tOne_Branch\tBoth_Branch\tBoth_Branch_Only_On_Two_TestCases");
 		for ( IfPosition tmp : executedIf.keySet() ){
 			String display = tmp+"\t\t\t";

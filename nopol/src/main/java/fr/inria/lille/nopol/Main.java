@@ -32,6 +32,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.lille.ifmetric.IfMetric;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.synth.DefaultSynthesizer;
 import fr.inria.lille.nopol.synth.SynthesizerFactory;
@@ -52,6 +53,11 @@ public class Main {
 	private static int minimalSizeArgs = 2;
 	private static long startTime = -1;
 	
+	private static final int PATCH_FOUND = 0;
+	private static final int ERR_DEFAULT = 1;
+	private static final int ERR_NO_ANGELIC_VALUE = 2;
+	private static final int ERR_NO_SYNTHESIS = 3;
+	
 	/**
 	 * @param args
 	 */
@@ -59,7 +65,7 @@ public class Main {
 		startTime = System.currentTimeMillis();
 
 		if ( !handleArgs(args) ){
-			return;
+			System.exit(ERR_DEFAULT);
 		}
 		
 		
@@ -85,7 +91,8 @@ public class Main {
 			try{
 			addJarToClassPath(external);
 			}catch(Exception e){
-				throw new RuntimeException("Unable to add jar into classpath.");
+				System.out.println("Unable to add jar into classpath.");
+				System.exit(ERR_DEFAULT);
 			}
 		}
 		
@@ -128,7 +135,7 @@ public class Main {
 					+ "\tMay doesn't exist in location : "+SolverFactory.getCurrentSolver().getBinaryPath()+".\n"
 							+ "\tMay doesn't match the defined Solver.");
 
-			System.exit(0);
+			System.exit(ERR_DEFAULT);
 		}
 		smt_test.delete();
 	}
@@ -158,6 +165,13 @@ public class Main {
 			for ( Patch patch : NoPol.getPatchList() ){
 				System.out.println(patch);
 			}
+			System.exit(PATCH_FOUND);
+		}
+		
+		if ( DefaultSynthesizer.getNbStatementsWithAngelicValue() == 0 ){
+			System.exit(ERR_NO_ANGELIC_VALUE);
+		}else{
+			System.exit(ERR_NO_SYNTHESIS);
 		}
 		
 		
@@ -209,6 +223,15 @@ public class Main {
 				runExample();
 			}else if ( arg.equals("-mp") || arg.equals("--multiple-patches") ){
 				NoPol.setSinglePatch(false);
+			}else if ( arg.equals("-metric") || arg.equals("--compute-if-metric") ){
+				if ( args.length < 3 ){
+					printUsage();
+					return false;
+				}
+				String[] ifArgs= new String[2];
+				ifArgs[0] = checkNotNull(args[args.length-2]);
+				ifArgs[1] = checkNotNull(args[args.length-1]);
+				IfMetric.main(ifArgs);
 			}
 			
 		}
@@ -305,27 +328,33 @@ public class Main {
 	}
 	
 	
-	private static void printUsage() {
+	public static void printUsage() {
 		System.out.println("usage : [OPTIONS] <source folder> <binary folder> [<external jar>]\n"
-				+ "\n<binary folder> needs to contain uncompress binaries from libraries used by the program defined by <source folder>\n"
+				+ "\n<binary folder> doesn't need to contain uncompress binaries from libraries used by the program defined by <source folder>.\n"
+				+ "<external jar> is used to add external jar to classpath during execution.\n"
 				+ "\noptions :\n"
 				+ "\t -o, --onebuild, -m, --multiplebuild\n"
-				+ "\t\t Set nopol behaviour to build the model only once or not. The onebuild option should optimized time execution but some compilation errors can appears, still experimental.\n"
-				+ "\t\t Default value is onebuild\n"
+				+ "\t\t Set nopol behaviour to build the model only once or not.\n"
+				+ "\t\t The onebuild option should optimized time execution but some compilation errors can appears, still experimental.\n"
+				+ "\t\t Default value is onebuild.\n"
 				+ "\n"
 				+ "\t-solver=SOLVER\n"
-				+ "\t\t Set the solver, for now Nopol can handle two solvers : CVC4 or Z3\n"
-				+ "\t\t Default value is Z3\n"
+				+ "\t\t Set the solver, for now Nopol can handle two solvers : CVC4 or Z3.\n"
+				+ "\t\t Default value is Z3.\n"
 				+ "\n"
 				+ "\t-solver_path=PATH\n"
-				+ "\t\t Set the solver path to PATH\n"
-				+ "\t\t Default location is /usr/bin/SOLVER_NAME\n"
+				+ "\t\t Set the solver path to PATH.\n"
+				+ "\t\t Default location is /usr/bin/SOLVER_NAME.\n"
 				+ "\n"
 				+ "\t-ex, --example\n"
-				+ "\t\t Run Nopol with toy example\n"
+				+ "\t\t Run Nopol with toy example.\n"
 				+ "\n"
 				+ "\t-mp, --multiple-patches\n"
-				+ "\t\t Even if Nopol find a suitable patch it will continue to try to find another patch at different location");
+				+ "\t\t Even if Nopol find a suitable patch it will continue to try to find another patch at different location.\n"
+				+ "\n"
+				+ "\t-metric, --compute-if-metric\n"
+				+ "\t\t Compute how many pur and impur if are executed per test case. \n"
+				+ "\t\t Also compute the number of if executed with one or two branches ( in one test case or multiple test case ).");
 	}
 
 

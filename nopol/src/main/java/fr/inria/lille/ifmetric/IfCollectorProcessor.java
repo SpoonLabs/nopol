@@ -12,7 +12,6 @@ public class IfCollectorProcessor extends AbstractProcessor<CtIf>{
 		String className = element.getPosition().getCompilationUnit().getMainType().getSimpleName();
 		int line = element.getPosition().getLine();
 		IfMetric.getExecutedIf().put(IfPosition.create(className, line), new HashMap<String, IfBranch>());
-		System.out.println(element);
 	}
 
 }

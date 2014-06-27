@@ -48,14 +48,14 @@ public final class InputModelBuilder {
 			new MultiplicationModelBuilder().addTo(model);
 		case ITE_ARRAY_ACCESS_2:
 			new IfThenElseModelBuilder().addTo(model);
-		case ARITHMETIC_2:
-			new ArithmeticModelBuilder().addTo(model);
-		case LOGIC_2:
-			new LogicModelBuilder().addTo(model);
 		case MULTIPLICATION:
 			new MultiplicationModelBuilder().addTo(model);
 		case ITE_ARRAY_ACCESS:
 			new IfThenElseModelBuilder().addTo(model);
+		case ARITHMETIC_2:
+			new ArithmeticModelBuilder().addTo(model);
+		case LOGIC_2:
+			new LogicModelBuilder().addTo(model);
 		case COMPARISON_2:
 			new ComparisonModelBuilder().addTo(model);
 		case ARITHMETIC:
