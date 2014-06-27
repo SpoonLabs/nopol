@@ -39,7 +39,6 @@ public class IfCountingInstrumentingProcessor extends
 	}
 
 	private void instrumentIfInsideMethod(CtIf elem) {
-		System.out.println("###### Before ###### \n" + elem);
 		
 		String className = elem.getPosition().getCompilationUnit().getMainType().getSimpleName();
 		
@@ -91,13 +90,11 @@ public class IfCountingInstrumentingProcessor extends
 			elem.setElseStatement(block);
 		}
 
-		System.out.println("###### After ###### \n" + elem);
 		
 	}
 
 	private void instrumentMethod(CtMethod<?> method) {
 
-		System.out.println("###### Before ###### \n" + method);
 
 		String className = method.getPosition().getCompilationUnit().getMainType().getSimpleName();
 		
@@ -137,7 +134,6 @@ public class IfCountingInstrumentingProcessor extends
 			}
 		}
 
-		System.out.println("###### After ###### \n" + method);
 	}
 
 	private boolean isTestCase(CtMethod<?> method) {
@@ -160,10 +156,8 @@ public class IfCountingInstrumentingProcessor extends
 
 	@Override
 	public void process(final CtMethod<?> method) {
-		System.out.println(method.getPosition().getCompilationUnit().getFile().getName());
 		if (method != null) {
 			if (isTestCase(method)) {
-				System.out.println(method.toString());
 				instrumentMethod(method);
 			} else {
 				if (method.getBody() != null) {
