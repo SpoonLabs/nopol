@@ -23,6 +23,7 @@ import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CodeFactory;
+import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 
 import com.martiansoftware.jsap.JSAPException;
@@ -44,7 +45,7 @@ public class SpoonLibrary {
 		}
 		return factory;
 	}
-	
+
 	public static <T> CtExpression<T> composedExpression(String codeSnippet, BinaryOperatorKind operator, CtExpression<T> expression) {
 		CodeFactory codeFactory = codeFactoryOf(expression);
 		CtCodeSnippetExpression<T> newExpression = codeFactory.createCodeSnippetExpression(codeSnippet);
@@ -119,6 +120,10 @@ public class SpoonLibrary {
 			return ClassLibrary.castTo(statementClass, codeElement);
 		}
 		return codeElement.getParent(statementClass);
+	}
+	
+	public static CoreFactory coreFactoryOf(CtElement element) {
+		return element.getFactory().Core();
 	}
 	
 	public static CodeFactory codeFactoryOf(CtElement element) {

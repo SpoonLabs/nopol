@@ -10,8 +10,8 @@ import fr.inria.lille.commons.trace.collector.ValueCollector;
 public final class RuntimeValues {
 
 	public static String collectValueInvocation(String variableName) {
-		String methodInvocation = String.format(".collectValue(\"%s\", %s);", variableName, variableName);
-		return RuntimeValues.class.getName() + methodInvocation + System.lineSeparator();
+		String methodInvocation = String.format(".collectValue(\"%s\", %s)", variableName, variableName);
+		return RuntimeValues.class.getName() + methodInvocation;
 	}
 	
 

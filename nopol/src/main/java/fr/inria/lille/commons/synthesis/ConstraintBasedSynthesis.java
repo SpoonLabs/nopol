@@ -34,8 +34,8 @@ public class ConstraintBasedSynthesis {
 		scriptBuilder = new SynthesisScriptBuilder();
 	}
 	
-	public Expression<?> outputExpressionFor(Class<?> outputClass) {
-		Class<?> smtLibCompatibleClass = smtLibCompatibleClassFor(outputClass);
+	public <T> Expression<T> outputExpressionFor(Class<? extends T> outputClass) {
+		Class<T> smtLibCompatibleClass = smtLibCompatibleClassFor(outputClass);
 		return new Expression<>(smtLibCompatibleClass, "result");
 	}
 	
@@ -81,11 +81,11 @@ public class ConstraintBasedSynthesis {
 		return smtLibCompatibleClassFor(object.getClass());
 	}
 	
-	private Class<?> smtLibCompatibleClassFor(Class<?> queriedClass) {
+	private <T> Class<T> smtLibCompatibleClassFor(Class<? extends T> queriedClass) {
 		if (ClassLibrary.isSubclassOf(Boolean.class, queriedClass)) {
-			return Boolean.class;
+			return (Class) Boolean.class;
 		} else if (ClassLibrary.isSubclassOf(Number.class, queriedClass)) {
-			return Number.class;
+			return (Class) Number.class;
 		}
 		throw new IllegalStateException(format("SMT can only use Bool or Real types, the requested type is '%s'.", queriedClass.getName()));
 	}

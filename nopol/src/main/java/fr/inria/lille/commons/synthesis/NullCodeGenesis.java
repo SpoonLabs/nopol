@@ -36,4 +36,9 @@ public class NullCodeGenesis extends CodeGenesis {
 	public int totalNumberOfLines() {
 		return 0;
 	}
+	
+	@Override
+	public String toString() {
+		return "Unsuccessful code genesis";
+	}
 }

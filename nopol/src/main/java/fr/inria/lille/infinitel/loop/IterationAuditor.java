@@ -1,5 +1,7 @@
 package fr.inria.lille.infinitel.loop;
 
+import static java.lang.String.format;
+
 import java.util.List;
 
 import spoon.processing.AbstractProcessor;
@@ -64,7 +66,7 @@ public class IterationAuditor extends AbstractProcessor<CtWhile> {
 	}
 	
 	private CtExpression<Boolean> modifiedLoopingExpression(CtWhile loopStatement) {
-		String codeSnippet = canonicalName() + String.format(".instance(%d).allowsIteration(++%s)", instanceID(), counterVariableName());
+		String codeSnippet = canonicalName() + format(".instance(%d).allowsIteration(++%s)", instanceID(), counterVariableName());
 		return SpoonLibrary.composedExpression(codeSnippet, BinaryOperatorKind.AND, loopStatement.getLoopingExpression());
 	}
 

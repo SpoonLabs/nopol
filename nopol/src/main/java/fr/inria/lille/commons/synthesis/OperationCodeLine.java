@@ -27,7 +27,7 @@ public class OperationCodeLine extends CodeLine implements OperatorVisitor<Strin
 	
 	@Override
 	public String visitUnaryOperator(UnaryOperator<?, ?> operator) {
-		return operator.symbol() + subContent(0);
+		return operator.symbol() + "(" +  subContent(0) + ")";
 	}
 
 	@Override

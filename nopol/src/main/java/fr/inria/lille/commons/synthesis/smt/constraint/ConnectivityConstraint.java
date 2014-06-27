@@ -60,8 +60,11 @@ public class ConnectivityConstraint extends Constraint {
 	}
 
 	private void addImplicationsForOutput(Collection<IExpr> implications, IndexedLocationVariable<?> outputVariable, Multimap<ISort, LocationVariable<?>> bySort) {
-		Collection<LocationVariable<?>> sameTypeVariables = bySort.get(outputVariable.smtSort());
-		addImplicationsBetween(implications, outputVariable, sameTypeVariables);
+		ISort outputSort = outputVariable.smtSort();
+		if (bySort.containsKey(outputSort)) {
+			Collection<LocationVariable<?>> sameTypeVariables = bySort.get(outputSort);
+			addImplicationsBetween(implications, outputVariable, sameTypeVariables);
+		}
 	}
 	
 	private void addImplicationsForParameters(Collection<IExpr> implications, List<ParameterLocationVariable<?>> parameters, Multimap<ISort, LocationVariable<?>> bySort) {

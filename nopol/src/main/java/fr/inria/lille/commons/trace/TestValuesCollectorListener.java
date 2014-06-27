@@ -13,6 +13,11 @@ public class TestValuesCollectorListener<T> extends TestCasesListener {
 		this.matrix = matrix;
 		this.fixedValue = fixedValue;
 		specifications = SetLibrary.newHashSet();
+		cleanUp();
+	}
+	
+	public Collection<Specification<T>> specifications() {
+		return specifications;
 	}
 
 	@Override
@@ -23,11 +28,16 @@ public class TestValuesCollectorListener<T> extends TestCasesListener {
 		if (! RuntimeValues.isEmpty()) {
 			specifications().add(new Specification<>(RuntimeValues.collectedValuesMap(), fixedValue()));
 		}
-		RuntimeValues.discardCollectedValues();
+		cleanUp();
 	}
 	
-	private Collection<Specification<T>> specifications() {
-		return specifications;
+	@Override
+	protected void processFailedRun(TestCase testCase) {
+		cleanUp();
+	}
+	
+	private void cleanUp() {
+		RuntimeValues.discardCollectedValues();
 	}
 	
 	private T fixedValue() {

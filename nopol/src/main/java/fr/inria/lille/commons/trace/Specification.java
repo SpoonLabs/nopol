@@ -4,10 +4,12 @@ import static java.lang.String.format;
 
 import java.util.Map;
 
+import fr.inria.lille.commons.collections.MapLibrary;
+
 public class Specification<T> {
 
 	public Specification(Map<String, Object> values, T expectedOutput) {
-		this.values = values;
+		this.values = MapLibrary.newHashMap(values);
 		this.expectedOutput = expectedOutput;
 	}
 	

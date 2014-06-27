@@ -82,6 +82,14 @@ public class LocationVariableContainer {
 		return locationVariables;
 	}
 	
+	public List<LocationVariable<?>> copyOfOperatorsInputsAndOutput() {
+		List<LocationVariable<?>> locationVariables = ListLibrary.newLinkedList();
+		locationVariables.addAll(operators());
+		locationVariables.addAll(inputs());
+		locationVariables.add(outputVariable());
+		return locationVariables;
+	}
+	
 	public List<LocationVariable<?>> copyOfOperatorsAndParameters() {
 		List<LocationVariable<?>> locationVariables = ListLibrary.newLinkedList();
 		locationVariables.addAll(operators());

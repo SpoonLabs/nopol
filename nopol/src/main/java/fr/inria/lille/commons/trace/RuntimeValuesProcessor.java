@@ -30,23 +30,43 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.CompositeFilter;
 import spoon.reflect.visitor.filter.FilteringOperator;
+import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.spoon.BeforeLocationFilter;
+import fr.inria.lille.commons.spoon.InsertBeforeStrategy;
+import fr.inria.lille.commons.spoon.InsertionStrategy;
 import fr.inria.lille.commons.spoon.ReachableVariableVisitor;
 import fr.inria.lille.commons.spoon.SpoonLibrary;
 import fr.inria.lille.commons.spoon.VariableAssignmentFilter;
 
 public class RuntimeValuesProcessor extends AbstractProcessor<CtCodeElement> {
 	
+	public RuntimeValuesProcessor() {
+		this(new InsertBeforeStrategy());
+	}
+	
+	public RuntimeValuesProcessor(InsertionStrategy insertionStrategy) {
+		this.insertionStrategy = insertionStrategy;
+	}
+	
 	@Override
 	public void process(CtCodeElement codeElement) {
 		CtStatement statement = SpoonLibrary.statementOf(codeElement);
 		Collection<String> variableNames = reachableVariableNames(statement);
-		String snippet = snippetToCollect(variableNames);
-		if (snippet.length() > 0) {
-			CtCodeSnippetStatement newStatement = SpoonLibrary.statementFrom(snippet, statement.getParent());
-			statement.insertBefore(newStatement);
+		if (! variableNames.isEmpty()) {
+			Collection<CtCodeSnippetStatement> newStatements = valueColectingStatements(statement, variableNames);
+			insertionStrategy().insertNewStatements(statement, newStatements);
 		}
+	}
+
+	private Collection<CtCodeSnippetStatement> valueColectingStatements(CtStatement statement, Collection<String> variableNames) {
+		Collection<CtCodeSnippetStatement> newStatements = ListLibrary.newLinkedList();
+		for (String variableName : variableNames) {
+			String invocation = RuntimeValues.collectValueInvocation(variableName);
+			CtCodeSnippetStatement newStatement = SpoonLibrary.statementFrom(invocation, statement.getParent());
+			newStatements.add(newStatement);
+		}
+		return newStatements;
 	}
 	
 	public Collection<String> reachableVariableNames(CtStatement statement) {
@@ -80,14 +100,6 @@ public class RuntimeValuesProcessor extends AbstractProcessor<CtCodeElement> {
 		return simpleName;
 	}
 	
-	private String snippetToCollect(Collection<String> variableNames) {
-		StringBuilder snippet = new StringBuilder();
-		for (String variableName : variableNames) {
-			snippet.append(RuntimeValues.collectValueInvocation(variableName));
-		}
-		return snippet.toString();
-	}
-	
 	private Collection<CtVariable<?>> initializedVariablesBefore(SourcePosition position, Collection<CtVariable<?>> reachedVariables) {
 		Collection<CtVariable<?>> initializedVariables = SetLibrary.newHashSet();
 		for (CtVariable<?> variable : reachedVariables) {
@@ -112,4 +124,10 @@ public class RuntimeValuesProcessor extends AbstractProcessor<CtCodeElement> {
 		BeforeLocationFilter beforeLocation = new BeforeLocationFilter<CtAssignment>(CtAssignment.class, position);
 		return new CompositeFilter(FilteringOperator.INTERSECTION, variableAssignment, beforeLocation);
 	}
+	
+	protected InsertionStrategy insertionStrategy() {
+		return insertionStrategy;
+	}
+	
+	private InsertionStrategy insertionStrategy;
 }

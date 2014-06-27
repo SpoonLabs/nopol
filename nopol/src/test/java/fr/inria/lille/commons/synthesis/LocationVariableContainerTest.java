@@ -59,6 +59,11 @@ public class LocationVariableContainerTest {
 		containsCopiesOf((Collection) container.inputs(), (Collection) container.copyOfOperatorsAndInputs());
 		containsCopiesOf((Collection) container.operators(), (Collection) container.copyOfOperatorsAndInputs());
 		
+		assertEquals(8, container.copyOfOperatorsInputsAndOutput().size());
+		containsCopiesOf((Collection) container.inputs(), (Collection) container.copyOfOperatorsInputsAndOutput());
+		containsCopiesOf((Collection) container.operators(), (Collection) container.copyOfOperatorsInputsAndOutput());
+		containsCopiesOf((Collection) Arrays.asList(container.outputVariable()), (Collection) container.copyOfOperatorsInputsAndOutput());
+		
 		assertEquals(12, container.copyOfOperatorsAndParameters().size());
 		containsCopiesOf((Collection) container.allParameters(), (Collection) container.copyOfOperatorsAndParameters());
 		containsCopiesOf((Collection) container.operators(), (Collection) container.copyOfOperatorsAndParameters());

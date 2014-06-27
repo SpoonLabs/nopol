@@ -24,6 +24,7 @@ import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableCo
 import fr.inria.lille.commons.synthesis.theory.EmptyTheory;
 import fr.inria.lille.commons.synthesis.theory.IfThenElseTheory;
 import fr.inria.lille.commons.synthesis.theory.LinearTheory;
+import fr.inria.lille.commons.synthesis.theory.NumberComparisonTheory;
 import fr.inria.lille.commons.synthesis.theory.OperatorTheory;
 import fr.inria.lille.commons.trace.Specification;
 
@@ -57,6 +58,18 @@ public class CodeSynthesisTest {
 	}
 	
 	@Test
+	public void scriptResolutionWithoutInputs() {
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis();
+		Map<String, Object> firstValues = (Map) MapLibrary.newHashMap();
+		Map<String, Object> secondValues = (Map) MapLibrary.newHashMap();
+		Specification firstSpecification = new Specification<>(firstValues, 0);
+		Specification secondSpecification = new Specification<>(secondValues, 0);
+		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Number.class, (List) asList(firstSpecification, secondSpecification));
+		assertTrue(genesis.isSuccessful());
+		assertEquals("0", genesis.returnStatement());
+	}
+	
+	@Test
 	public void scriptResolutionWithOneTheory() {
 		Collection<OperatorTheory> theories = (List) asList(new LinearTheory());
 		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis((Map) MapLibrary.newHashMap(), theories);
@@ -67,6 +80,21 @@ public class CodeSynthesisTest {
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Number.class, (List) asList(firstSpecification, secondSpecification));
 		assertTrue(genesis.isSuccessful());
 		assertEquals("(iterations)+(array.length)", genesis.returnStatement());
+	}
+	
+	@Test
+	public void scriptResolutionWithOneTheoryBooleanOutput() {
+		Collection<OperatorTheory> theories = (List) asList(new NumberComparisonTheory());
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis((Map) MapLibrary.newHashMap(), theories);
+		Map<String, Object> firstValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(4, 15));
+		Map<String, Object> secondValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(16, 5));
+		Map<String, Object> thirdValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(16, 16));
+		Specification<Boolean> firstSpecification = new Specification<>(firstValues, false);
+		Specification<Boolean> secondSpecification = new Specification<>(secondValues, true);
+		Specification<Boolean> thirdSpecification = new Specification<>(thirdValues, true);
+		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Boolean.class, (List) asList(firstSpecification, secondSpecification, thirdSpecification));
+		assertTrue(genesis.isSuccessful());
+		assertEquals("(iterations)<=(array.length)", genesis.returnStatement());
 	}
 	
 	@Test

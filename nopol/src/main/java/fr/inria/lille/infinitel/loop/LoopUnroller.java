@@ -30,7 +30,7 @@ public class LoopUnroller {
 	
 	private void findTracedThresholds(Collection<TestCase> tests, SourcePosition loopPosition, Map<TestCase, Integer> thresholdMap) {
 		for (TestCase testCase : tests) {
-			execute(testCase);
+			Result result = execute(testCase);
 			int tracedThreshold = ListLibrary.last(monitor().iterationRecordOf(loopPosition));
 			thresholdMap.put(testCase, tracedThreshold);
 		}

@@ -77,8 +77,13 @@ public class LineBoundConstraint extends Constraint {
 	}
 	
 	private void addOutputTypeBound(Collection<IExpr> expressions, Multimap<ISort, LocationVariable<?>> bySort, LocationVariable<?> output) {
-		Collection<LocationVariable<?>> operands = bySort.get(output.smtSort());
-		expressions.add(equalToAnyExpression(operands, output));
+		ISort outputSort = output.smtSort();
+		if (bySort.containsKey(outputSort)) {
+			Collection<LocationVariable<?>> operands = bySort.get(outputSort);
+			expressions.add(equalToAnyExpression(operands, output));
+		} else {
+			expressions.add(SMTLib.booleanFalse());
+		}
 	}
 	
 	private IExpr equalToAnyExpression(Collection<LocationVariable<?>> operands, LocationVariable<?> variable) {
