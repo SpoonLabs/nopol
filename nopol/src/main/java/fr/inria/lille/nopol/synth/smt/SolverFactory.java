@@ -67,7 +67,7 @@ public final class SolverFactory {
 
 			@Override
 			public Level getMaxLevel() {
-				return Level.MULTIPLICATION;
+				return Level.MULTIPLICATION_2;
 			}
 		}, 
 		CVC4 {
@@ -106,7 +106,7 @@ public final class SolverFactory {
 
 			@Override
 			public Level getMaxLevel() {
-				return Level.ARITHMETIC;
+				return Level.ARITHMETIC_2;
 			}
 		};
 
