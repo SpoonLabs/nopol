@@ -28,6 +28,7 @@ import static fr.inria.lille.commons.synthesis.smt.SMTLib.smtlib;
 import static fr.inria.lille.commons.synthesis.smt.SMTLib.subtraction;
 import static fr.inria.lille.commons.synthesis.smt.SMTLibParser.declarationFrom;
 import static fr.inria.lille.commons.synthesis.smt.SMTLibParser.expressionFrom;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -62,7 +63,6 @@ import fr.inria.lille.commons.synthesis.smt.SMTLib;
 
 public class SMTLibTest {
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void solutionForAProblemWithUniqueSolution() {
 		SMTLib smtlib = new SMTLib();
@@ -86,7 +86,7 @@ public class SMTLibTest {
 		List<ICommand> assertions = Arrays.asList(firstAssertion, secondAssertion);
 		
 		IScript script = smtlib.scriptFrom(SMTLib.logicQfLia(), variables, assertions);
-		Map<String, String> values = smtlib.satisfyingValuesFor((List) Arrays.asList(x, y), script);
+		Map<String, String> values = smtlib.satisfyingValuesFor(asList(x, y), script);
 		
 		assertEquals(2, values.size());
 		assertTrue(values.containsKey("x"));
@@ -95,7 +95,6 @@ public class SMTLibTest {
 		assertEquals("6", values.get("y"));
 	}
 	
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void noSlutionForAProblemWithoutSolution() {
 		SMTLib smtlib = new SMTLib();
@@ -119,12 +118,11 @@ public class SMTLibTest {
 		List<ICommand> assertions = Arrays.asList(firstAssertion, secondAssertion);
 		
 		IScript script = smtlib.scriptFrom(SMTLib.logicQfLia(), variables, assertions);
-		Map<String, String> values = smtlib.satisfyingValuesFor((List) Arrays.asList(x, y), script);
+		Map<String, String> values = smtlib.satisfyingValuesFor(asList(x, y), script);
 		
 		assertEquals(0, values.size());
 	}
 	
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void problemWithNegativeIntegers() {
 		SMTLib smtlib = new SMTLib();
@@ -148,7 +146,7 @@ public class SMTLibTest {
 		List<ICommand> assertions = Arrays.asList(firstAssertion, secondAssertion);
 		
 		IScript script = smtlib.scriptFrom(SMTLib.logicQfLia(), variables, assertions);
-		Map<String, String> values = smtlib.satisfyingValuesFor((List) Arrays.asList(x, y), script);
+		Map<String, String> values = smtlib.satisfyingValuesFor(asList(x, y), script);
 		
 		assertEquals(2, values.size());
 		assertTrue(values.containsKey("x"));

@@ -2,14 +2,13 @@ package fr.inria.lille.commons.synthesis.smt.constraint;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.smtlib.IExpr;
-import org.smtlib.IExpr.IDeclaration;
 
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
-import fr.inria.lille.commons.synthesis.smt.SMTLibEqualVisitor;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;
 
@@ -30,32 +29,21 @@ public abstract class CompoundConstraint extends Constraint {
 	}
 	
 	@Override
-	public List<LocationVariable<?>> usedLocationVariables(LocationVariableContainer locationVariableContainer) {
-		Collection<LocationVariable<?>> locationVariables = SetLibrary.newLinkedHashSet();
+	public List<LocationVariable<?>> variablesForExpression(LocationVariableContainer container) {
+		Set<LocationVariable<?>> linkedSet = SetLibrary.newLinkedHashSet();
 		for (Constraint constraint : subconstraints()) {
-			locationVariables.addAll(constraint.usedLocationVariables(locationVariableContainer));
+			linkedSet.addAll(constraint.variablesForExpression(container));
 		}
-		return ListLibrary.newLinkedList(locationVariables);
+		return ListLibrary.newLinkedList(linkedSet);
 	}
-
+	
 	@Override
-	protected List<IExpr> invocationArguments(LocationVariableContainer locationVariableContainer) {
-		List<IExpr> locationVariables = ListLibrary.newLinkedList();
+	public List<LocationVariable<?>> variablesForSubexpression(LocationVariableContainer container) {
+		Set<LocationVariable<?>> linkedSet = SetLibrary.newLinkedHashSet();
 		for (Constraint constraint : subconstraints()) {
-			List<IExpr> arguments = constraint.invocationArguments(locationVariableContainer);
-			SMTLibEqualVisitor.addAllIfNotContained(arguments, (List) locationVariables);
+			linkedSet.addAll(constraint.variablesForSubexpression(container));
 		}
-		return locationVariables;
-	}
-
-	@Override
-	protected List<IDeclaration> parameters(LocationVariableContainer locationVariableContainer) {
-		List<IDeclaration> locationVariables = ListLibrary.newLinkedList();
-		for (Constraint constraint : subconstraints()) {
-			List<IDeclaration> parameters = constraint.parameters(locationVariableContainer);
-			SMTLibEqualVisitor.addAllIfNotContained(parameters, (List) locationVariables);
-		}
-		return locationVariables;
+		return ListLibrary.newLinkedList(linkedSet);
 	}
 	
 	protected Collection<IExpr> subconstraintInvocations(LocationVariableContainer locationVariableContainer) {

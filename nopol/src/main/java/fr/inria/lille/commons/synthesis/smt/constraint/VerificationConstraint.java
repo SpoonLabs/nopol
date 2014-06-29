@@ -22,39 +22,32 @@ public class VerificationConstraint extends CompoundConstraint {
 	}
 
 	@Override
-	public List<LocationVariable<?>> usedLocationVariables(LocationVariableContainer locationVariableContainer) {
-		return locationVariableContainer.copyOfAllLocationVariables();
-	}
-
-	@Override
-	protected List<IExpr> invocationArguments(LocationVariableContainer locationVariableContainer) {
-		List<IExpr> arguments = (List) collectSubexpressions((List) locationVariableContainer.copyOfInputsAndOutput());
-		arguments.addAll(collectExpressions(locationVariableContainer.copyOfOperatorsParametersAndOutput()));
-		return arguments;
+	public List<LocationVariable<?>> variablesForExpression(LocationVariableContainer container) {
+		return container.operatorsParametersAndOutput();
 	}
 	
 	@Override
-	protected List<IDeclaration> parameters(LocationVariableContainer locationVariableContainer) {
-		List<IDeclaration> parameters = declarationsFromSubexpressions(locationVariableContainer.copyOfInputsAndOutput());
-		parameters.addAll(declarationsFromExpressions(locationVariableContainer.copyOfOperatorsParametersAndOutput()));
-		return parameters;
+	public List<LocationVariable<?>> variablesForSubexpression(LocationVariableContainer container) {
+		return (List) container.inputsAndOutput();
 	}
-
+	
 	@Override
-	protected Collection<IExpr> definitionExpressions(LocationVariableContainer locationVariableContainer) {
-		IExpr predicate = conjunctionOf(subconstraintInvocations(locationVariableContainer));
-		List<IDeclaration> declarations = declarationsFromSubexpressions(locationVariableContainer.copyOfOperatorsAndParameters());
-		if (declarations.isEmpty()) {
+	protected Collection<IExpr> definitionExpressions(LocationVariableContainer container) {
+		IExpr predicate = conjunctionOf(subconstraintInvocations(container));
+		List<LocationVariable<?>> variables = container.operatorsAndParameters();
+		if (variables.isEmpty()) {
 			return (List) asList(predicate); 
 		}
+		List<IDeclaration> declarations = declarationsFromSubexpression(variables);
 		return (List) asList(smtlib().exists(declarations, predicate));
 	}
 	
 	@Override
 	public List<IExpr> instantiatedArguments(LocationVariableContainer container, Map<String, Object> values) {
-		List<Object> actualValues = IndexedLocationVariable.extractWithObjectExpressions(values, (List) container.copyOfInputsAndOutput());
-		List<IExpr> arguments = asSMTExpressions(actualValues);
-		arguments.addAll(collectExpressions(container.copyOfOperatorsParametersAndOutput()));
+		List<IndexedLocationVariable<?>> instantiables = container.inputsAndOutput();
+		List<Object> actualValues = IndexedLocationVariable.extractWithObjectExpressions(values, instantiables);
+		List<IExpr> arguments = (List) expressionSymbolsOf(variablesForExpression(container));
+		arguments.addAll(asSMTExpressions(actualValues));
 		return arguments;
 	}
 }

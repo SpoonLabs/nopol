@@ -4,16 +4,27 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 
 public class CollectionLibrary {
-
-	protected static <T> Collection<T> collectionWith(Collection<T> collection, T... elements) {
-		addTo(collection, elements);
-		return collection;
+	
+	protected static <T> Collection<T> addAll(Collection<T> destination, T... elements) {
+		for (T element : elements) {
+			destination.add(element);
+		}
+		return destination;
 	}
 	
-	protected static <T> void addTo(Collection<T> aCollection, T... elements) {
-		for (T element : elements) {
-			aCollection.add(element);
+	protected static <T> Collection<T> addAllFlat(Collection<T> destination, Collection<? extends T>... toBeAdded) {
+		for (Collection<? extends T> collection : toBeAdded) {
+			destination.addAll(collection);
 		}
+		return destination;
+	}
+	
+	public static int combinedSize(Collection<?>... collections) {
+		int size = 0;
+		for (Collection<?> collection : collections) {
+			size += collection.size();
+		}
+		return size;
 	}
 	
 	public static <T> T[] toArray(Class<T> aClass, Collection<T> aCollection) {

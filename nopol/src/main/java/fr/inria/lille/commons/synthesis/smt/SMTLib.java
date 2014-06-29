@@ -304,7 +304,7 @@ public class SMTLib {
 		return commandFactory().script(null, allCommands);
 	}
 	
-	public Map<String, String> satisfyingValuesFor(List<IExpr> expressions, IScript script) {
+	public Map<String, String> satisfyingValuesFor(List<? extends IExpr> expressions, IScript script) {
 		IResponse response = script.execute(solver());
 		if (response.isOK() && isSatisfitable(solver())) {
 			IExpr[] expressionArray = expressions.toArray(new IExpr[expressions.size()]);

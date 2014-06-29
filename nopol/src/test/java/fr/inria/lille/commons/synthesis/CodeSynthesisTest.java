@@ -99,15 +99,15 @@ public class CodeSynthesisTest {
 	
 	@Test
 	public void scriptResolutionWithTwoTheories() {
-		Collection<OperatorTheory> theories = (List) asList(new LinearTheory(), new IfThenElseTheory());
-		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis((Map) MapLibrary.newHashMap(), theories);
-		Map<String, Object> firstValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations", "isEmpty"), asList(11, 10, true));
-		Map<String, Object> secondValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations", "isEmpty"), asList(10, 11, false));
+		Collection<OperatorTheory> theories = (List) asList(new IfThenElseTheory(), new LinearTheory());
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis((Map) MapLibrary.newHashMap(asList("1"), asList(1)), theories);
+		Map<String, Object> firstValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations", "isEmpty"), asList(12, 11, true));
+		Map<String, Object> secondValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations", "isEmpty"), asList(11, 15, false));
 		Specification firstSpecification = new Specification<>(firstValues, 10);
 		Specification secondSpecification = new Specification<>(secondValues, 10);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Number.class, (List) asList(firstSpecification, secondSpecification));
 		assertTrue(genesis.isSuccessful());
-		assertEquals("(isEmpty)?(iterations):(array.length)", genesis.returnStatement());
+		assertEquals("((isEmpty)?(iterations):(array.length))-(1)", genesis.returnStatement());
 	}
 	
 	@Test

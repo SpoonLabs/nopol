@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.smtlib.IExpr;
-import org.smtlib.IExpr.IDeclaration;
 import org.smtlib.ISort;
 
 import fr.inria.lille.commons.collections.ListLibrary;
@@ -26,36 +25,21 @@ public class ConnectivityConstraint extends Constraint {
 	}
 
 	@Override
-	public List<LocationVariable<?>> usedLocationVariables(LocationVariableContainer locationVariableContainer) {
-		return locationVariableContainer.copyOfAllLocationVariables();
-	}
-
-	@Override
-	protected List<IExpr> invocationArguments(LocationVariableContainer locationVariableContainer) {
-		List<IExpr> arguments = ListLibrary.newLinkedList();
-		arguments.addAll(collectSubexpressions((List) locationVariableContainer.inputs()));
-		List<LocationVariable<?>> restOfVariables = locationVariableContainer.copyOfOperatorsParametersAndOutput();
-		arguments.addAll(collectExpressions(restOfVariables));
-		arguments.addAll(collectSubexpressions(restOfVariables));
-		return arguments;
-	}
-
-	@Override
-	protected List<IDeclaration> parameters(LocationVariableContainer locationVariableContainer) {
-		List<IDeclaration> parameters = ListLibrary.newLinkedList();
-		parameters.addAll(declarationsFromSubexpressions((List) locationVariableContainer.inputs()));
-		List<LocationVariable<?>> restOfVariables = locationVariableContainer.copyOfOperatorsParametersAndOutput();
-		parameters.addAll(declarationsFromExpressions(restOfVariables));
-		parameters.addAll(declarationsFromSubexpressions(restOfVariables));
-		return parameters;
+	public List<LocationVariable<?>> variablesForExpression(LocationVariableContainer container) {
+		return container.operatorsParametersAndOutput();
 	}
 	
 	@Override
-	protected Collection<IExpr> definitionExpressions(LocationVariableContainer locationVariableContainer) {
+	public List<LocationVariable<?>> variablesForSubexpression(LocationVariableContainer container) {
+		return container.allVariables();
+	}
+	
+	@Override
+	protected Collection<IExpr> definitionExpressions(LocationVariableContainer container) {
 		Collection<IExpr> implications = ListLibrary.newLinkedList();
-		Multimap<ISort, LocationVariable<?>> bySort = (Multimap) ObjectTemplate.bySort((List) locationVariableContainer.copyOfOperatorsAndInputs());
-		addImplicationsForOutput(implications, locationVariableContainer.outputVariable(), bySort);
-		addImplicationsForParameters(implications, locationVariableContainer.allParameters(), bySort);
+		Multimap<ISort, LocationVariable<?>> bySort = (Multimap) ObjectTemplate.bySort(container.inputsAndOperators());
+		addImplicationsForOutput(implications, container.outputVariable(), bySort);
+		addImplicationsForParameters(implications, container.allParameters(), bySort);
 		return implications;
 	}
 
@@ -86,8 +70,8 @@ public class ConnectivityConstraint extends Constraint {
 	}
 
 	private IExpr sameLineSameVariableImplication(LocationVariable<?> firstVariable, LocationVariable<?> secondVariable) {
-		IExpr sameLine = binaryOperationWithExpression(equality(), firstVariable, secondVariable.encodedLineNumber());
-		IExpr sameVariable = binaryOperationWithSubexpression(equality(), firstVariable, secondVariable);
-		return binaryOperation(implies(), sameLine, sameVariable);
+		IExpr sameLine = binaryOperation(expressionSymbolOf(firstVariable), equality(), secondVariable.encodedLineNumber());
+		IExpr sameVariable = binaryOperation(subexpressionSymbolOf(firstVariable), equality(), subexpressionSymbolOf(secondVariable));
+		return binaryOperation(sameLine, implies(), sameVariable);
 	}
 }

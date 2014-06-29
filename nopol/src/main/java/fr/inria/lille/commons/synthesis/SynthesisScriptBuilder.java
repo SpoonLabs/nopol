@@ -1,6 +1,7 @@
 package fr.inria.lille.commons.synthesis;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.smtlib.ICommand;
@@ -62,7 +63,8 @@ public class SynthesisScriptBuilder {
 	}
 	
 	private void addLocationVariableDeclarations(Collection<ICommand> commands, LocationVariableContainer container) {
-		for (LocationVariable<?> locationVariable : container.copyOfOperatorsParametersAndOutput()) {
+		List<LocationVariable<?>> variables = container.operatorsParametersAndOutput();
+		for (LocationVariable<?> locationVariable : variables) {
 			commands.add(smtlib().constant(locationVariable.expression(), SMTLib.intSort()));
 		}
 	}

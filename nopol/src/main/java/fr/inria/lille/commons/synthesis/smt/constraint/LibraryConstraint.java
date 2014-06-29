@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.smtlib.IExpr;
-import org.smtlib.IExpr.IDeclaration;
 import org.smtlib.IExpr.ISymbol;
 
 import fr.inria.lille.commons.collections.ListLibrary;
@@ -22,20 +21,10 @@ public class LibraryConstraint extends Constraint {
 	}
 
 	@Override
-	public List<LocationVariable<?>> usedLocationVariables(LocationVariableContainer locationVariableContainer) {
-		return locationVariableContainer.copyOfOperatorsAndParameters();
-	}	
-
-	@Override
-	protected List<IExpr> invocationArguments(LocationVariableContainer locationVariableContainer) {
-		return (List) collectSubexpressions(usedLocationVariables(locationVariableContainer));
+	public List<LocationVariable<?>> variablesForSubexpression(LocationVariableContainer container) {
+		return container.operatorsAndParameters();
 	}
-
-	@Override
-	protected List<IDeclaration> parameters(LocationVariableContainer locationVariableContainer) {
-		return declarationsFromSubexpressions(usedLocationVariables(locationVariableContainer));
-	}
-
+	
 	@Override
 	protected Collection<IExpr> definitionExpressions(LocationVariableContainer locationVariableContainer) {
 		Collection<IExpr> expressions = ListLibrary.newLinkedList();
@@ -46,8 +35,8 @@ public class LibraryConstraint extends Constraint {
 	}
 	
 	private IExpr specificationOf(OperatorLocationVariable<?> operator) {
-		List<ISymbol> parameters = collectSubexpressions((List) operator.parameterLocationVariables());
+		List<ISymbol> parameters = subexpressionSymbolsOf((List) operator.parameterLocationVariables());
 		IExpr specification = smtlib().expression(operator.objectTemplate().smtlibIdentifier(), parameters);
-		return smtlib().expression(equality(), symbolFromSubexpressionOf(operator), specification);
+		return binaryOperation(subexpressionSymbolOf(operator), equality(), specification);
 	}
 }

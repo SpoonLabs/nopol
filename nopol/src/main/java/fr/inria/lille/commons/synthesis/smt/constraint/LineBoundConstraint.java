@@ -2,13 +2,12 @@ package fr.inria.lille.commons.synthesis.smt.constraint;
 
 import static fr.inria.lille.commons.synthesis.smt.SMTLib.equality;
 import static fr.inria.lille.commons.synthesis.smt.SMTLib.lessOrEqualThan;
+import static java.util.Arrays.asList;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import org.smtlib.IExpr;
-import org.smtlib.IExpr.IDeclaration;
 import org.smtlib.IExpr.ISymbol;
 import org.smtlib.ISort;
 
@@ -28,43 +27,34 @@ public class LineBoundConstraint extends Constraint {
 	}
 
 	@Override
-	public List<LocationVariable<?>> usedLocationVariables(LocationVariableContainer locationVariableContainer) {
-		return locationVariableContainer.copyOfOperatorsParametersAndOutput();
+	public List<LocationVariable<?>> variablesForExpression(LocationVariableContainer container) {
+		return container.operatorsParametersAndOutput();
 	}
-
+	
 	@Override
-	protected List<IExpr> invocationArguments(LocationVariableContainer locationVariableContainer) {
-		return (List) collectExpressions(usedLocationVariables(locationVariableContainer));
-	}
-
-	@Override
-	protected List<IDeclaration> parameters(LocationVariableContainer locationVariableContainer) {
-		return declarationsFromExpressions(usedLocationVariables(locationVariableContainer));
-	}
-
-	@Override
-	protected Collection<IExpr> definitionExpressions(LocationVariableContainer locationVariableContainer) {
+	protected Collection<IExpr> definitionExpressions(LocationVariableContainer container) {
 		Collection<IExpr> locationVariableBounds = ListLibrary.newLinkedList();
-		Multimap<ISort, LocationVariable<?>> bySort = (Multimap) ObjectTemplate.bySort((List) locationVariableContainer.copyOfOperatorsAndInputs());
-		addOperatorBounds(locationVariableBounds, locationVariableContainer);
-		addParameterTypeBounds(locationVariableBounds, bySort, locationVariableContainer.copyOfAllParameters());
-		addOutputTypeBound(locationVariableBounds, bySort, locationVariableContainer.outputVariable());
+		Multimap<ISort, LocationVariable<?>> bySort = (Multimap) ObjectTemplate.bySort(container.inputsAndOperators());
+		addOperatorBounds(locationVariableBounds, container);
+		addParameterTypeBounds(locationVariableBounds, bySort, container.allParameters());
+		addOutputTypeBound(locationVariableBounds, bySort, container.outputVariable());
 		return locationVariableBounds;
 	}
 	
-	private void addOperatorBounds(Collection<IExpr> expressions, LocationVariableContainer locationVariableContainer) {
-		int from = locationVariableContainer.numberOfInputs();
-		int to = from + locationVariableContainer.numberOfOperators() - 1;
-		for (OperatorLocationVariable<?> operator : locationVariableContainer.operators()) {
+	private void addOperatorBounds(Collection<IExpr> expressions, LocationVariableContainer container) {
+		IExpr from = asNumeral(container.numberOfInputs());
+		IExpr to = asNumeral(container.numberOfInputs() + container.numberOfOperators() - 1);
+		for (OperatorLocationVariable<?> operator : container.operators()) {
 			expressions.add(lineBoundaryFor(from, to, operator));
 		}
 	}
 
-	private IExpr lineBoundaryFor(int from, int to, LocationVariable<?> variable) {
+	private IExpr lineBoundaryFor(IExpr from, IExpr to, LocationVariable<?> variable) {
 		ISymbol lessOrEqualThan = lessOrEqualThan();
-		IExpr lowerBoundExpr = binaryOperationWithExpression(lessOrEqualThan, asNumeral(from), variable);
-		IExpr upperBoundExpr = binaryOperationWithExpression(lessOrEqualThan, variable, asNumeral(to));
-		return conjunctionOf(Arrays.asList(lowerBoundExpr, upperBoundExpr));
+		ISymbol variableExpr = expressionSymbolOf(variable);
+		IExpr lowerBoundExpr = binaryOperation(from, lessOrEqualThan, variableExpr);
+		IExpr upperBoundExpr = binaryOperation(variableExpr, lessOrEqualThan, to);
+		return conjunctionOf(asList(lowerBoundExpr, upperBoundExpr));
 	}
 	
 	private void addParameterTypeBounds(Collection<IExpr> expressions, Multimap<ISort, LocationVariable<?>> bySort, List<ParameterLocationVariable<?>> parameters) {
@@ -81,13 +71,15 @@ public class LineBoundConstraint extends Constraint {
 		if (bySort.containsKey(outputSort)) {
 			Collection<LocationVariable<?>> operands = bySort.get(outputSort);
 			expressions.add(equalToAnyExpression(operands, output));
+		} else {
+			expressions.add(SMTLib.booleanFalse());
 		}
 	}
 	
 	private IExpr equalToAnyExpression(Collection<LocationVariable<?>> operands, LocationVariable<?> variable) {
 		Collection<IExpr> equalities = ListLibrary.newLinkedList();
 		for (LocationVariable<?> operand : operands) {
-			equalities.add(binaryOperationWithExpression(equality(), operand.encodedLineNumber(), variable));
+			equalities.add(binaryOperation(operand.encodedLineNumber(), equality(), expressionSymbolOf(variable)));
 		}
 		return disjunctionOf(equalities);
 	}

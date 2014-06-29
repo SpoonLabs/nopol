@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.smtlib.ICommand.IScript;
-import org.smtlib.IExpr;
+import org.smtlib.IExpr.ISymbol;
 
 import fr.inria.lille.commons.classes.ClassLibrary;
 import fr.inria.lille.commons.collections.CollectionLibrary;
@@ -99,8 +99,9 @@ public class ConstraintBasedSynthesis {
 
 	private Map<String, String> scriptSolution(LocationVariableContainer container, IScript smtScript) {
 		SMTLib newSMTLib = new SMTLib();
-		Collection<String> expressions = LocationVariable.expressionsOf(container.copyOfOperatorsParametersAndOutput());
-		List<IExpr> smtExpressions = (List) scriptBuilder().smtlib().symbolsFor(expressions);
+		List<LocationVariable<?>> variables = container.operatorsParametersAndOutput(); 
+		Collection<String> expressions = LocationVariable.expressionsOf(variables);
+		List<ISymbol> smtExpressions = newSMTLib.symbolsFor(expressions);
 		Map<String, String> satisfyingValues = newSMTLib.satisfyingValuesFor(smtExpressions, smtScript);
 		return satisfyingValues;
 	}

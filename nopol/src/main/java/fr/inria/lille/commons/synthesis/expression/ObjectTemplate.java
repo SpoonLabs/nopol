@@ -11,7 +11,7 @@ import fr.inria.lille.commons.collections.Multimap;
 
 public abstract class ObjectTemplate<T> {
 	
-	public static Multimap<ISort, ObjectTemplate<?>> bySort(Collection<ObjectTemplate<?>> objects) {
+	public static Multimap<ISort, ObjectTemplate<?>> bySort(Collection<? extends ObjectTemplate<?>> objects) {
 		Multimap<ISort, ObjectTemplate<?>> multimap = Multimap.newLinkedHashSetMultimap();
 		for (ObjectTemplate<?> object : objects) {
 			multimap.add(object.smtSort(), object);

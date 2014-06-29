@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -356,5 +357,87 @@ public class CollectionsTest {
 		MapLibrary.putMany(newMap, asList(firstMap, secondMap));
 		assertTrue(MapLibrary.sameContent(firstMap, asList("a", "b", "c", "d", "e", "f"), asList("+", "++", "+++", ".", "..", "...")));
 		assertTrue(MapLibrary.sameContent(secondMap, asList("a", "b", "c", "g", "h", "i"), asList("+", "++", "+++", "-", "--", "---")));
+	}
+	
+	@SuppressWarnings({"unchecked"})
+	@Test
+	public void listAddAllInOne() {
+		List<String> firstList = ListLibrary.newLinkedList("a", "b", "c");
+		List<String> secondList = ListLibrary.newLinkedList("d", "e", "f");
+		List<String> combined = ListLibrary.flatArrayList(firstList, secondList);
+		List<String> linkedCombined = ListLibrary.flatLinkedList(firstList, secondList);
+		assertEquals(firstList.size() + secondList.size(), combined.size());
+		assertTrue(combined.containsAll(firstList));
+		assertTrue(combined.containsAll(secondList));
+		assertEquals(combined.subList(0, 3), firstList);
+		assertEquals(combined.subList(3, 6), secondList);
+		assertEquals(combined, linkedCombined);
+	}
+	
+	@Test
+	public void listAddAllInOneForSuperClass() {
+		List<List<Integer>> integers = asList(asList(1,2), asList(3, 4));
+		LinkedList<Integer> linkedList = new LinkedList<Integer>(asList(5, 6));
+		List<LinkedList<Integer>> otherIntegers = asList(linkedList);
+		List<List<Integer>> numbers = ListLibrary.flatLinkedList(integers, otherIntegers);
+		assertEquals(3, numbers.size());
+		assertTrue(numbers.contains(asList(1, 2)));
+		assertTrue(numbers.contains(asList(3, 4)));
+		assertTrue(numbers.contains(asList(5, 6)));
+	}
+	
+	
+	@SuppressWarnings({"unchecked"})
+	@Test
+	public void setAddAllInOne() {
+		Set<String> firstSet = SetLibrary.newLinkedHashSet("a", "b", "c");
+		Set<String> secondSet  = SetLibrary.newLinkedHashSet("d", "e", "f");
+		Set<String> combined = SetLibrary.flatLinkedHashSet(firstSet, secondSet, firstSet);
+		Set<String> hashedCombined = SetLibrary.flatHashSet(firstSet, secondSet, firstSet);
+		assertEquals(firstSet.size() + secondSet.size(), combined.size());
+		assertTrue(combined.containsAll(firstSet));
+		assertTrue(combined.containsAll(secondSet));
+		assertEquals(asList(combined.toArray()).subList(0, 3), asList(firstSet.toArray()));
+		assertEquals(asList(combined.toArray()).subList(3, 6), asList(secondSet.toArray()));
+		assertEquals(combined, hashedCombined);
+	}
+	
+	@Test
+	public void combinedSizeOfCollections() {
+		List<Character> firstList = asList('a', 'b', 'c', 'd');
+		List<Integer> secondList = asList(1, 2, 3);
+		Set<String> empty = SetLibrary.newHashSet();
+		Set<Boolean> set = SetLibrary.newHashSet(true, true, false, true, false);
+		int combinedSize;
+		combinedSize = CollectionLibrary.combinedSize();
+		assertEquals(0, combinedSize);
+		combinedSize = CollectionLibrary.combinedSize(empty);
+		assertEquals(0, combinedSize);
+		combinedSize = CollectionLibrary.combinedSize(firstList);
+		assertEquals(4, combinedSize);
+		combinedSize = CollectionLibrary.combinedSize(firstList, secondList, empty, set);
+		assertEquals(9, combinedSize);
+	}
+	
+	@SuppressWarnings({"unchecked"})
+	@Test
+	public void isPartitionOfList() {
+		List<Character> list = asList('a', 'b', 'c', 'd', 'e');
+		List<Character> empty = asList();
+		List<Character> copy = asList('a', 'b', 'c', 'd', 'e');
+		List<Character> subpartition1 = asList('a', 'b');
+		List<Character> subpartition2 = asList('c', 'd');
+		List<Character> subpartition3 = asList('e');
+		List<Character> subpartition4 = asList('d', 'e');
+		List<Character> subpartition5 = asList('b', 'e');
+		assertTrue(ListLibrary.isPartitionOf(list, subpartition1, subpartition2, subpartition3));
+		assertTrue(ListLibrary.isPartitionOf(list, subpartition1, empty, subpartition2, subpartition3));
+		assertTrue(ListLibrary.isPartitionOf(list, subpartition1, empty, subpartition2, empty, subpartition3));
+		assertTrue(ListLibrary.isPartitionOf(list, copy));
+		assertFalse(ListLibrary.isPartitionOf(list));
+		assertFalse(ListLibrary.isPartitionOf(list, empty));
+		assertFalse(ListLibrary.isPartitionOf(list, subpartition1, subpartition2, subpartition4));
+		assertFalse(ListLibrary.isPartitionOf(list, subpartition1, subpartition5, subpartition3));
+		assertFalse(ListLibrary.isPartitionOf(list, subpartition1, subpartition3, subpartition2));
 	}
 }

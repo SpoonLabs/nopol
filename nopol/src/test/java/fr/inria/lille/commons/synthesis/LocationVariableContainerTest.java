@@ -1,7 +1,7 @@
 package fr.inria.lille.commons.synthesis;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -10,13 +10,13 @@ import java.util.List;
 
 import org.junit.Test;
 
+import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.operator.BinaryOperator;
 import fr.inria.lille.commons.synthesis.operator.Operator;
 import fr.inria.lille.commons.synthesis.operator.TernaryOperator;
 import fr.inria.lille.commons.synthesis.operator.UnaryOperator;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.IndexedLocationVariable;
-import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.OperatorLocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.ParameterLocationVariable;
@@ -33,52 +33,7 @@ public class LocationVariableContainerTest {
 		Collection<Operator<?>> operators = (List) Arrays.asList(BinaryOperator.addition(), BinaryOperator.or(), TernaryOperator.ifThenElse(), UnaryOperator.not());
 		Expression<?> outputExpression = new Expression<>(Boolean.class, "...");
 		LocationVariableContainer container = new LocationVariableContainer(inputs, operators, outputExpression);
-		
-		assertEquals(3, container.inputs().size());
-		assertEquals(3, container.copyOfInputs().size());
-		equalButDistinct(container.inputs(), container.copyOfInputs());
-
-		assertEquals(4, container.operators().size());
-		assertEquals(4, container.copyOfOperators().size());
-		equalButDistinct(container.operators(), container.copyOfOperators());
-		
-		assertEquals(8, container.allParameters().size());
-		assertEquals(8, container.copyOfAllParameters().size());
-		equalButDistinct(container.allParameters(), container.copyOfAllParameters());
-		
-		assertEquals(4, container.copyOfInputsAndOutput().size());
-		containsCopiesOf((Collection) container.inputs(), (Collection) container.copyOfInputsAndOutput());
-		containsCopiesOf((Collection) Arrays.asList(container.outputVariable()), (Collection) container.copyOfInputsAndOutput());
-		
-		assertEquals(9, container.copyOfAllParametersAndOutput().size());
-		containsCopiesOf((Collection) container.allParameters(), (Collection) container.copyOfAllParametersAndOutput());
-		containsCopiesOf((Collection) Arrays.asList(container.outputVariable()), (Collection) container.copyOfInputsAndOutput());
-		containsCopiesOf((Collection) Arrays.asList(container.outputVariable()), (Collection) container.copyOfInputsAndOutput());
-		
-		assertEquals(7, container.copyOfOperatorsAndInputs().size());
-		containsCopiesOf((Collection) container.inputs(), (Collection) container.copyOfOperatorsAndInputs());
-		containsCopiesOf((Collection) container.operators(), (Collection) container.copyOfOperatorsAndInputs());
-		
-		assertEquals(8, container.copyOfOperatorsInputsAndOutput().size());
-		containsCopiesOf((Collection) container.inputs(), (Collection) container.copyOfOperatorsInputsAndOutput());
-		containsCopiesOf((Collection) container.operators(), (Collection) container.copyOfOperatorsInputsAndOutput());
-		containsCopiesOf((Collection) Arrays.asList(container.outputVariable()), (Collection) container.copyOfOperatorsInputsAndOutput());
-		
-		assertEquals(12, container.copyOfOperatorsAndParameters().size());
-		containsCopiesOf((Collection) container.allParameters(), (Collection) container.copyOfOperatorsAndParameters());
-		containsCopiesOf((Collection) container.operators(), (Collection) container.copyOfOperatorsAndParameters());
-		
-		assertEquals(13, container.copyOfOperatorsParametersAndOutput().size());
-		containsCopiesOf((Collection) container.allParameters(), (Collection) container.copyOfOperatorsParametersAndOutput());
-		containsCopiesOf((Collection) container.operators(), (Collection) container.copyOfOperatorsParametersAndOutput());
-		containsCopiesOf((Collection) Arrays.asList(container.outputVariable()), (Collection) container.copyOfOperatorsParametersAndOutput());
-		
-		assertEquals(16, container.copyOfAllLocationVariables().size());
-		containsCopiesOf((Collection) container.inputs(), (Collection) container.copyOfAllLocationVariables());
-		containsCopiesOf((Collection) container.allParameters(), (Collection) container.copyOfAllLocationVariables());
-		containsCopiesOf((Collection) container.operators(), (Collection) container.copyOfAllLocationVariables());
-		containsCopiesOf((Collection) Arrays.asList(container.outputVariable()), (Collection) container.copyOfAllLocationVariables());
-		
+	
 		checkInput(container, Boolean.class, 0);
 		checkInput(container, Integer.class, 1);
 		checkInput(container, Integer.class, 2);
@@ -96,19 +51,14 @@ public class LocationVariableContainerTest {
 		checkParameter(container, Number.class, 5, 2, 1);
 		checkParameter(container, Number.class, 6, 2, 2);
 		checkParameter(container, Boolean.class, 7, 3, 0);
+		
+		assertTrue(ListLibrary.isPartitionOf(container.inputsAndOutput(), container.inputs(), asList(container.outputVariable())));
+		assertTrue(ListLibrary.isPartitionOf(container.inputsAndOperators(), container.inputs(), container.operators()));
+		assertTrue(ListLibrary.isPartitionOf(container.operatorsAndParameters(), container.operators(), container.allParameters()));
+		assertTrue(ListLibrary.isPartitionOf(container.operatorsParametersAndOutput(), container.operatorsAndParameters(), asList(container.outputVariable())));
+		assertTrue(ListLibrary.isPartitionOf(container.allVariables(), container.inputs(), container.operatorsParametersAndOutput()));
 	}
-	
-	private void equalButDistinct(Object anObject, Object otherObject) {
-		assertTrue(anObject.equals(otherObject));
-		assertTrue(otherObject.equals(anObject));
-		assertFalse(anObject == otherObject);
-	}
-	
-	private void containsCopiesOf(Collection<LocationVariable<?>> aCollection, Collection<LocationVariable<?>> queriedCollection) {
-		assertTrue(queriedCollection.containsAll(aCollection));
-		assertFalse(aCollection == queriedCollection);
-	}
-	
+
 	private void checkInput(LocationVariableContainer container, Class<?> expectedClass, int inputIndex) {
 		IndexedLocationVariable<?> input = container.inputs().get(inputIndex);
 		assertEquals(String.format("%d", inputIndex), input.encodedLineNumber().toString());

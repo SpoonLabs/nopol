@@ -12,11 +12,15 @@ public class SetLibrary {
 	}
 	
 	public static <T> Set<T> newHashSet(T... elements) {
-		return (Set) CollectionLibrary.collectionWith(newHashSet(), elements);
+		return (Set) CollectionLibrary.addAll(newHashSet(), elements);
 	}
 	
 	public static <T> Set<T> newHashSet(Collection<T> collection) {
 		return (Set) newHashSet(collection.toArray());
+	}
+	
+	public static <T> Set<T> flatHashSet(Collection<T>... collections) {
+		return (Set) CollectionLibrary.addAllFlat((Set) newHashSet(), collections);
 	}
 	
 	public static <T> Set<T> newLinkedHashSet() {
@@ -24,10 +28,14 @@ public class SetLibrary {
 	}
 	
 	public static <T> Set<T> newLinkedHashSet(T... elements) {
-		return (Set) CollectionLibrary.collectionWith(newLinkedHashSet(), elements);
+		return (Set) CollectionLibrary.addAll(newLinkedHashSet(), elements);
 	}
 	
 	public static <T> Set<T> newLinkedHashSet(Collection<T> collection) {
 		return (Set) newLinkedHashSet(collection.toArray());
+	}
+	
+	public static <T> Set<T> flatLinkedHashSet(Collection<T>... collections) {
+		return (Set) CollectionLibrary.addAllFlat((Set) newLinkedHashSet(), collections);
 	}
 }
