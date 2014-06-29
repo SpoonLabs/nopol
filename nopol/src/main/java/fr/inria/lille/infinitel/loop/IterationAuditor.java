@@ -4,22 +4,25 @@ import static java.lang.String.format;
 
 import java.util.List;
 
-import spoon.processing.AbstractProcessor;
-import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.factory.Factory;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.spoon.SpoonLibrary;
 
-public class IterationAuditor extends AbstractProcessor<CtWhile> {
+public class IterationAuditor {
 
 	public static IterationAuditor newInstance(SourcePosition loopPosition, Number threshold) {
 		int instanceNumber = allInstances().size();
 		IterationAuditor newInstance = new IterationAuditor(loopPosition, threshold, instanceNumber);
 		allInstances().add(newInstance);
 		return newInstance;
+	}
+	
+	public static IterationAuditor instance(int instanceID) {
+		return allInstances().get(instanceID);
 	}
 	
 	private static List<IterationAuditor> allInstances() {
@@ -29,58 +32,35 @@ public class IterationAuditor extends AbstractProcessor<CtWhile> {
 		return allInstances;
 	}
 	
-	public static IterationAuditor instance(int instanceID) {
-		return allInstances().get(instanceID);
+	public String canonicalInstanceName() {
+		return getClass().getCanonicalName() + format(".instance(%d)", instanceID());
 	}
 	
-	private IterationAuditor(SourcePosition position, Number threshold, int instanceNumber) {
-		this.loopPosition = position;
-		instanceID = instanceNumber;
-		resetRecord();
-		enable();
-		setThreshold(threshold);
-	}
-	
-	@Override
-	public boolean isToBeProcessed(CtWhile loopStatement) {
-		return auditedLoopPosition().equals(loopStatement.getPosition());
-	}
-	
-	@Override
-	public void process(CtWhile loopStatement) {
-		CtStatement beforeStatement = beforeLoopStatement(loopStatement);
-		CtExpression<Boolean> modifiedExpression = modifiedLoopingExpression(loopStatement);
-		CtStatement afterStatement = afterLoopStatement(loopStatement);
-		loopStatement.insertBefore(beforeStatement);
-		loopStatement.setLoopingExpression(modifiedExpression);
-		loopStatement.insertAfter(afterStatement);
-	}
-	
-	private String counterVariableName() {
+	public String counterVariableName() {
 		return String.format("loopIterations_%d", instanceID());
 	}
 	
-	private CtStatement beforeLoopStatement(CtWhile loopStatement) {
-		String codeSnippet = String.format("int %s = -1", counterVariableName());
-		return SpoonLibrary.statementFrom(codeSnippet, loopStatement.getParent());
+	public CtLocalVariable<Integer> counterCreation(Factory factory) {
+		return SpoonLibrary.newLocalVariableDeclaration(factory, "int", counterVariableName(), 0);
 	}
 	
-	private CtExpression<Boolean> modifiedLoopingExpression(CtWhile loopStatement) {
-		String codeSnippet = canonicalName() + format(".instance(%d).allowsIteration(++%s)", instanceID(), counterVariableName());
-		return SpoonLibrary.composedExpression(codeSnippet, BinaryOperatorKind.AND, loopStatement.getLoopingExpression());
+	public CtExpression<Boolean> loopCondition(Factory factory) {
+		String codeSnippet = canonicalInstanceName() + format(".allowsIteration(%s)", counterVariableName());
+		return SpoonLibrary.newExpressionFromSnippet(factory, codeSnippet, Boolean.class);
+	}
+	
+	public CtStatement incrementStatement(Factory factory) {
+		String codeSnippet = counterVariableName() + " += 1";
+		return SpoonLibrary.newStatementFromSnippet(factory, codeSnippet);
 	}
 
-	private CtStatement afterLoopStatement(CtWhile loopStatement) {
-		String codeSnippet = canonicalName() + String.format(".instance(%d).addRecordOf(%s)", instanceID(), counterVariableName());
-		return SpoonLibrary.statementFrom(codeSnippet, loopStatement.getParent());
+	public CtStatement afterLoopStatement(Factory factory) {
+		String codeSnippet = canonicalInstanceName() + format(".addRecordOf(%s)", counterVariableName());
+		return SpoonLibrary.newStatementFromSnippet(factory, codeSnippet);
 	}
 
 	public boolean allowsIteration(int numberOfIterations) {
 		return isDisabled() || numberOfIterations < threshold();  
-	}
-	
-	public String canonicalName() {
-		return getClass().getCanonicalName();
 	}
 	
 	public void addRecordOf(int iterations) {
@@ -93,10 +73,6 @@ public class IterationAuditor extends AbstractProcessor<CtWhile> {
 
 	public SourcePosition auditedLoopPosition() {
 		return loopPosition;
-	}
-	
-	protected void resetRecord() {
-		iterationsRecord = ListLibrary.newLinkedList();
 	}
 	
 	public List<Integer> iterationsRecord() {
@@ -113,10 +89,6 @@ public class IterationAuditor extends AbstractProcessor<CtWhile> {
 		return oldValue;
 	}
 	
-	private int instanceID() {
-		return instanceID;
-	}
-	
 	public boolean disable() {
 		resetRecord();
 		return setDisabled(true);
@@ -126,14 +98,30 @@ public class IterationAuditor extends AbstractProcessor<CtWhile> {
 		return setDisabled(false);
 	}
 	
+	public boolean isDisabled() {
+		return disabled;
+	}
+	
+	protected void resetRecord() {
+		iterationsRecord = ListLibrary.newLinkedList();
+	}
+	
+	private int instanceID() {
+		return instanceID;
+	}
+	
 	private boolean setDisabled(boolean value) {
 		boolean oldValue = disabled;
 		disabled = value;
 		return value != oldValue;
 	}
 	
-	public boolean isDisabled() {
-		return disabled;
+	private IterationAuditor(SourcePosition position, Number threshold, int instanceNumber) {
+		this.loopPosition = position;
+		instanceID = instanceNumber;
+		resetRecord();
+		enable();
+		setThreshold(threshold);
 	}
 	
 	private int threshold;
@@ -142,6 +130,6 @@ public class IterationAuditor extends AbstractProcessor<CtWhile> {
 	private SourcePosition loopPosition;
 	private List<Integer> iterationsRecord;
 	
-	// XXX This causes memory leaks
+	/** XXX This causes memory leaks **/
 	private static List<IterationAuditor> allInstances;
 }

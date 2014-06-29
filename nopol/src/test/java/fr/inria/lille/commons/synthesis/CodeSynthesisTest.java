@@ -111,6 +111,13 @@ public class CodeSynthesisTest {
 	}
 	
 	@Test
+	public void defaultConstants() {
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis();
+		Map<String, Integer> expectedDefaultContants = MapLibrary.newHashMap(asList("-1", "0", "1"), asList(-1 , 0, 1));
+		assertEquals(expectedDefaultContants, synthesiser.constants());
+	}
+	
+	@Test
 	public void justABooleanConstant() {
 		Map<String, Integer> locations = MapLibrary.newHashMap();
 		locations.put("L@out", 6);

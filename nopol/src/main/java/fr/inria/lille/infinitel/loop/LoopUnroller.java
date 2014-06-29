@@ -1,5 +1,8 @@
 package fr.inria.lille.infinitel.loop;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -9,13 +12,15 @@ import spoon.reflect.cu.SourcePosition;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.suite.TestCase;
+import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
 
 public class LoopUnroller {
-
-	public LoopUnroller(LoopStatementsMonitor monitor, ClassLoader classLoader) {
+	
+	public LoopUnroller(LoopStatementsMonitor monitor, ClassLoader classLoader, TestCasesListener listener) {
 		this.monitor = monitor;
 		this.classLoader = classLoader;
+		this.listener = listener;
 		monitor().disableAll();
 	}
 
@@ -30,7 +35,7 @@ public class LoopUnroller {
 	
 	private void findTracedThresholds(Collection<TestCase> tests, SourcePosition loopPosition, Map<TestCase, Integer> thresholdMap) {
 		for (TestCase testCase : tests) {
-			Result result = execute(testCase);
+			assertTrue("Wrong threshold for passing test " + testCase, execute(testCase).wasSuccessful());
 			int tracedThreshold = ListLibrary.last(monitor().iterationRecordOf(loopPosition));
 			thresholdMap.put(testCase, tracedThreshold);
 		}
@@ -48,13 +53,15 @@ public class LoopUnroller {
 			Result result = execute(testCase);
 			if (result.wasSuccessful()) {
 				iterationsNeeded.put(testCase, iterations);
-				break;
+				return;
 			}
+			listener().failedTests().remove(testCase);
 		}
+		assertFalse("Did not find threshold for " + testCase, true);
 	}
 
 	private Result execute(TestCase testCase) {
-		return TestSuiteExecution.runTestCase(testCase, classLoader());
+		return TestSuiteExecution.runTestCase(testCase, classLoader(), listener());
 	}
 	
 	public LoopStatementsMonitor monitor() {
@@ -65,6 +72,11 @@ public class LoopUnroller {
 		return classLoader;
 	}
 	
-	private LoopStatementsMonitor monitor;
+	private TestCasesListener listener() {
+		return listener;
+	}
+	
 	private ClassLoader classLoader;
+	private LoopStatementsMonitor monitor;
+	private TestCasesListener listener;
 }

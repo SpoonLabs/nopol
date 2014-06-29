@@ -1,5 +1,7 @@
 package fr.inria.lille.toolset;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -7,18 +9,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.SourcePosition;
 import fr.inria.lille.commons.classes.CacheBasedClassLoader;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.io.ProjectReference;
-import fr.inria.lille.commons.spoon.CompoundProcessor;
-import fr.inria.lille.commons.spoon.InsertAfterStrategy;
 import fr.inria.lille.commons.spoon.SourceInstrumenter;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
-import fr.inria.lille.commons.trace.RuntimeValuesProcessor;
+import fr.inria.lille.commons.synthesis.CodeGenesis;
+import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
+import fr.inria.lille.commons.trace.TestValuesIterativeCollectorListener;
 import fr.inria.lille.infinitel.InfinitelConfiguration;
 import fr.inria.lille.infinitel.loop.LoopStatementsMonitor;
 import fr.inria.lille.infinitel.loop.LoopUnroller;
@@ -38,9 +39,7 @@ public class InfinitelTest {
 		Number threshold = InfinitelConfiguration.iterationsThreshold();
 		SourceInstrumenter instrumenter = new SourceInstrumenter(example1());
 		LoopStatementsMonitor monitor = new LoopStatementsMonitor(threshold);
-		RuntimeValuesProcessor valuesProcessor = new RuntimeValuesProcessor(new InsertAfterStrategy());
-		CompoundProcessor<CtWhile> compoundProcessor = new CompoundProcessor<>(CtWhile.class, monitor, valuesProcessor);
-		Map<String, Class<?>> processedClassCache = instrumenter.instrumentedWith(compoundProcessor);
+		Map<String, Class<?>> processedClassCache = instrumenter.instrumentedWith(monitor);
 		ClassLoader classLoaderForTestThread = new CacheBasedClassLoader(example1().classpath(), processedClassCache);
 		TestCasesListener listener = new TestCasesListener();
 		TestSuiteExecution.runCasesIn(example1().testClasses(), classLoaderForTestThread, listener);
@@ -51,7 +50,9 @@ public class InfinitelTest {
 		SourcePosition loopPosition = (SourcePosition) infiniteLoops.toArray()[0];
 		Assert.assertEquals(8, loopPosition.getLine());
 		Assert.assertEquals("InfinitelExample.java", loopPosition.getFile().getName());
-		LoopUnroller unroller = new LoopUnroller(monitor, classLoaderForTestThread);
+		
+		TestValuesIterativeCollectorListener specificationListener = new TestValuesIterativeCollectorListener();
+		LoopUnroller unroller = new LoopUnroller(monitor, classLoaderForTestThread, specificationListener);
 		Map<TestCase, Integer> thresholds = unroller.thresholdForEach(listener.successfulTests(), listener.failedTests(), loopPosition);
 		Map<String, Integer> thresholdsByName = MapLibrary.toStringMap(thresholds);
 		String qualifiedName = "infinitel_examples.infinitel_example_1.InfinitelExampleTest";
@@ -60,6 +61,9 @@ public class InfinitelTest {
 		Assert.assertEquals(Integer.valueOf(2), thresholdsByName.get(qualifiedName + "#test3"));
 		Assert.assertEquals(Integer.valueOf(3), thresholdsByName.get(qualifiedName + "#test4"));
 		Assert.assertEquals(Integer.valueOf(4), thresholdsByName.get(qualifiedName + "#testNegative"));
+		
+//		CodeGenesis synthesisedCode = new ConstraintBasedSynthesis().codesSynthesisedFrom(Boolean.class, specificationListener.specifications());
+//		assertTrue(synthesisedCode.isSuccessful());
 	}
 
 	private ProjectReference example1() {

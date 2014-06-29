@@ -21,7 +21,6 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtField;
@@ -39,36 +38,41 @@ import fr.inria.lille.commons.spoon.ReachableVariableVisitor;
 import fr.inria.lille.commons.spoon.SpoonLibrary;
 import fr.inria.lille.commons.spoon.VariableAssignmentFilter;
 
-public class RuntimeValuesProcessor extends AbstractProcessor<CtCodeElement> {
+public class RuntimeValuesProcessor<T extends CtCodeElement> extends AbstractProcessor<T> {
 	
 	public RuntimeValuesProcessor() {
-		this(new InsertBeforeStrategy());
+		this.insertionStrategy = new InsertBeforeStrategy();
 	}
 	
-	public RuntimeValuesProcessor(InsertionStrategy insertionStrategy) {
-		this.insertionStrategy = insertionStrategy;
+	protected CtStatement statementOf(T codeElement) {
+		return SpoonLibrary.statementOf(codeElement);
 	}
 	
 	@Override
-	public void process(CtCodeElement codeElement) {
-		CtStatement statement = SpoonLibrary.statementOf(codeElement);
+	public void process(T codeElement) {
+		CtStatement statement = statementOf(codeElement);
 		Collection<String> variableNames = reachableVariableNames(statement);
 		if (! variableNames.isEmpty()) {
-			Collection<CtCodeSnippetStatement> newStatements = valueColectingStatements(statement, variableNames);
+			Collection<CtStatement> newStatements = valueColectingStatements(statement, variableNames);
 			insertionStrategy().insertNewStatements(statement, newStatements);
 		}
 	}
-
-	private Collection<CtCodeSnippetStatement> valueColectingStatements(CtStatement statement, Collection<String> variableNames) {
-		Collection<CtCodeSnippetStatement> newStatements = ListLibrary.newLinkedList();
+	
+	protected Collection<CtStatement> valueColectingStatements(CtStatement statement, Collection<String> variableNames) {
+		Collection<CtStatement> newStatements = ListLibrary.newLinkedList();
 		for (String variableName : variableNames) {
-			String invocation = RuntimeValues.collectValueInvocation(variableName);
-			CtCodeSnippetStatement newStatement = SpoonLibrary.statementFrom(invocation, statement.getParent());
+			String invocation = valueCollectingSnippet(variableName);
+			CtStatement newStatement = SpoonLibrary.newStatementFromSnippet(statement.getFactory(), invocation);
+			newStatement.setParent(statement.getParent());
 			newStatements.add(newStatement);
 		}
 		return newStatements;
 	}
 	
+	protected String valueCollectingSnippet(String variableName) {
+		return RuntimeValues.collectValueInvocation(variableName);
+	}
+
 	public Collection<String> reachableVariableNames(CtStatement statement) {
 		Collection<CtVariable<?>> reachableVariables = reachableVariables(statement);
 		return variableNames(reachableVariables);
@@ -80,7 +84,7 @@ public class RuntimeValuesProcessor extends AbstractProcessor<CtCodeElement> {
 		return initializedVariablesBefore(statement.getPosition(), reachedVariables);
 	}
 	
-	private Collection<String> variableNames(Collection<CtVariable<?>> reachedVariables) {
+	protected Collection<String> variableNames(Collection<CtVariable<?>> reachedVariables) {
 		Collection<String> names = SetLibrary.newHashSet();
 		for (CtVariable<?> variable : reachedVariables) {
 			names.add(nameFor(variable));

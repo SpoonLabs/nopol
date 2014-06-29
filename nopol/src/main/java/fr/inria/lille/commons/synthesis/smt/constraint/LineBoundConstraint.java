@@ -81,8 +81,6 @@ public class LineBoundConstraint extends Constraint {
 		if (bySort.containsKey(outputSort)) {
 			Collection<LocationVariable<?>> operands = bySort.get(outputSort);
 			expressions.add(equalToAnyExpression(operands, output));
-		} else {
-			expressions.add(SMTLib.booleanFalse());
 		}
 	}
 	

@@ -64,6 +64,8 @@ public class ConnectivityConstraint extends Constraint {
 		if (bySort.containsKey(outputSort)) {
 			Collection<LocationVariable<?>> sameTypeVariables = bySort.get(outputSort);
 			addImplicationsBetween(implications, outputVariable, sameTypeVariables);
+		} else {
+			implications.add(SMTLib.booleanFalse());
 		}
 	}
 	

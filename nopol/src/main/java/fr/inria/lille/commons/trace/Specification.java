@@ -54,7 +54,7 @@ public class Specification<T> {
 	
 	@Override
 	public String toString() {
-		return format("input: %s\noutput: %s", inputs().toString(), output().toString());
+		return format("input: %s. output: %s", inputs().toString(), output().toString());
 	}
 
 	private T expectedOutput;

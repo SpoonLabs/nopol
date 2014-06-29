@@ -36,21 +36,21 @@ public class ValuesCollectorTest {
 	public void setUp() {
 		RuntimeValues.discardCollectedValues();
 	}
-
+	
 	@After
 	public void tearDown() {
 		RuntimeValues.discardCollectedValues();
 	}
-
+	
 	@Test
 	public final void adding_a_Collection_should_add_the_size_and_if_it_is_empty() {
+		
 		// GIVEN
 		String name = "collection";
 		Collection<?> value = asList(1, 2, 3);
 
 		// WHEN
 		RuntimeValues.collectValue(name, value);
-		
 		
 		// THEN
 		Iterator<Entry<String, Object>> iterator = RuntimeValues.collectedValues().iterator();
@@ -106,7 +106,6 @@ public class ValuesCollectorTest {
 		// WHEN
 		RuntimeValues.collectValue(name, value);
 
-		
 		// THEN
 		Iterator<Entry<String, Object>> iterator = RuntimeValues.collectedValues().iterator();
 
@@ -187,7 +186,7 @@ public class ValuesCollectorTest {
 		CtElement firstElement = elements.get(0);
 		assertTrue(CtCodeElement.class.isInstance(firstElement));
 		CtStatement statement = SpoonLibrary.statementOf((CtCodeElement) firstElement);
-		Collection<String> reachedVariables = new RuntimeValuesProcessor().reachableVariableNames(statement);
+		Collection<String> reachedVariables = new RuntimeValuesProcessor<>().reachableVariableNames(statement);
 		assertEquals(expectedReachedVariables.length, reachedVariables.size());
 		assertTrue(reachedVariables.containsAll(Arrays.asList(expectedReachedVariables)));
 	}

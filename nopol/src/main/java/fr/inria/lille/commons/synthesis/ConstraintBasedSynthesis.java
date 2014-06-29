@@ -25,7 +25,7 @@ import fr.inria.lille.commons.trace.Specification;
 public class ConstraintBasedSynthesis {
 
 	public ConstraintBasedSynthesis() {
-		this(MapLibrary.newHashMap(asList("-1", "0", "1"), asList(1, 0, -1)), SynthesisTheoriesBuilder.theoriesForConstraintBasedSynthesis());
+		this(MapLibrary.newHashMap(asList("-1", "0", "1"), asList(-1, 0, 1)), SynthesisTheoriesBuilder.theoriesForConstraintBasedSynthesis());
 	}
 	
 	public ConstraintBasedSynthesis(Map<String, Integer> constants, Collection<OperatorTheory> theories) {
@@ -113,7 +113,7 @@ public class ConstraintBasedSynthesis {
 		return scriptBuilder;
 	}
 	
-	private Map<String, Integer> constants() {
+	protected Map<String, Integer> constants() {
 		return constants;
 	}
 	

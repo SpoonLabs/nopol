@@ -62,12 +62,12 @@ public final class SynthesizerFactory {
 			processor = new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
 			processor.addProcessor(new ConditionalReplacer(GlobalBooleanVariable.name()));
-			processor.addProcessor(new RuntimeValuesProcessor());
+			processor.addProcessor(new RuntimeValuesProcessor<>());
 		break;
 		case PRECONDITION:
 			processor = new DelegatingProcessor(SpoonStatementPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
-			processor.addProcessor(new RuntimeValuesProcessor());
+			processor.addProcessor(new RuntimeValuesProcessor<>());
 			processor.addProcessor(new ConditionalAdder(GlobalBooleanVariable.name())); 
 			logger.debug("No synthetizer found for {}, trying a precondition.", statement);
 			break;

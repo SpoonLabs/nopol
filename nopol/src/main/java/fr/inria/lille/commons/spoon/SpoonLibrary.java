@@ -1,6 +1,7 @@
 package fr.inria.lille.commons.spoon;
 
 import java.io.File;
+import java.util.List;
 
 import spoon.Launcher;
 import spoon.compiler.Environment;
@@ -8,10 +9,11 @@ import spoon.compiler.SpoonCompiler;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtCodeSnippetExpression;
-import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
@@ -25,10 +27,12 @@ import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtTypeReference;
 
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.lille.commons.classes.ClassLibrary;
+import fr.inria.lille.commons.collections.ListLibrary;
 
 public class SpoonLibrary {
 	
@@ -45,27 +49,64 @@ public class SpoonLibrary {
 		}
 		return factory;
 	}
-
-	public static <T> CtExpression<T> composedExpression(String codeSnippet, BinaryOperatorKind operator, CtExpression<T> expression) {
-		CodeFactory codeFactory = codeFactoryOf(expression);
-		CtCodeSnippetExpression<T> newExpression = codeFactory.createCodeSnippetExpression(codeSnippet);
-		CtBinaryOperator<T> composedExpression = codeFactory.createBinaryOperator(newExpression, expression, operator);
-		groupBranch(expression.getParent(), composedExpression, newExpression, expression);
+	
+	public static CtBreak newBreak(Factory factory) {
+		return factory.Core().createBreak();
+	}
+	
+	public static <T> CtLiteral<T> newLiteral(Factory factory, T value) {
+		CtLiteral<T> newLiteral = factory.Core().createLiteral();
+		newLiteral.setValue(value);
+		return newLiteral;
+	}
+	
+	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, String classSimpleName, String variableName, T defaultValue) {
+		CtTypeReference<T> type = factory.Core().createTypeReference();
+		type.setSimpleName(classSimpleName);
+		CtLiteral<T> defaultExpression = factory.Core().createLiteral();
+		defaultExpression.setValue(defaultValue);
+		return factory.Code().createLocalVariable(type, variableName, defaultExpression);
+	}
+	
+	public static <T> CtExpression<T> newExpressionFromSnippet(Factory factory, String codeSnippet, Class<T> expressionClass) {
+		return factory.Code().createCodeSnippetExpression(codeSnippet);
+	}
+	
+	public static CtStatement newStatementFromSnippet(Factory factory, String codeSnippet) {
+		return factory.Code().createCodeSnippetStatement(codeSnippet);
+	}
+	
+	public static CtBlock<CtStatement> newBlock(Factory factory, CtStatement... statements) {
+		CtBlock<CtStatement> newBlock = factory.Core().createBlock();
+		setParent(newBlock, statements);
+		List<CtStatement> blockStatements = ListLibrary.newArrayList(statements);
+		newBlock.setStatements(blockStatements);
+		return newBlock;
+	}
+	
+	public static CtExpression<Boolean> newConjunctionExpression(Factory factory, CtExpression<Boolean> leftExpression, CtExpression<Boolean> rightExpression) {
+		return newComposedExpression(factory, leftExpression, rightExpression, BinaryOperatorKind.AND);
+	}
+	
+	public static <T> CtExpression<T> newComposedExpression(Factory factory, CtExpression<T> leftExpression, CtExpression<T> rightExpression, BinaryOperatorKind operator) {
+		CtBinaryOperator<T> composedExpression = factory.Code().createBinaryOperator(leftExpression, rightExpression, operator);
+		setParent(composedExpression, leftExpression, rightExpression);
 		return composedExpression;
 	}
 	
-	public static void groupBranch(CtElement root, CtElement parentNode, CtElement... siblingNodes) {
-		parentNode.setParent(root);
-		for (CtElement sibling : siblingNodes) {
-			sibling.setParent(parentNode);
-		}
+	public static CtIf newIf(Factory factory, CtExpression<Boolean> condition, CtStatement thenBranch, CtStatement elseBranch) {
+		CtIf newIf = factory.Core().createIf();
+		setParent(newIf, condition, thenBranch, elseBranch);
+		newIf.setCondition(condition);
+		newIf.setThenStatement(thenBranch);
+		newIf.setElseStatement(elseBranch);
+		return newIf;
 	}
 	
-	public static CtCodeSnippetStatement statementFrom(String codeSnippet, CtElement parent) {
-		CodeFactory codeFactory = codeFactoryOf(parent);
-		CtCodeSnippetStatement newStatement = codeFactory.createCodeSnippetStatement(codeSnippet);
-		newStatement.setParent(parent);
-		return newStatement;
+	public static void setParent(CtElement parent, CtElement... children) {
+		for (CtElement child : children) {
+			child.setParent(parent);
+		}
 	}
 	
 	public static boolean isBlock(CtElement element) {

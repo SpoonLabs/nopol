@@ -7,31 +7,30 @@ import com.google.common.collect.ImmutableSet;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.trace.collector.ValueCollector;
 
-public final class RuntimeValues {
+public class RuntimeValues {
 
 	public static String collectValueInvocation(String variableName) {
 		String methodInvocation = String.format(".collectValue(\"%s\", %s)", variableName, variableName);
 		return RuntimeValues.class.getName() + methodInvocation;
 	}
 	
-
-	public static void collectValue(String name, Object value) {
-		ValueCollector.collectFrom(name, value, collectedValuesMap());
+	public static void collectValue(String variableName, Object value) {
+		ValueCollector.collectFrom(variableName, value, valuesCache());
+	}
+	
+	public static Iterable<Map.Entry<String, Object>> collectedValues() {
+		return ImmutableSet.copyOf(valuesCache().entrySet());
 	}
 	
 	public static boolean isEmpty() {
-		return collectedValuesMap().isEmpty();
+		return valuesCache().isEmpty();
 	}
 	
 	public static void discardCollectedValues() {
-		collectedValuesMap().clear();
+		valuesCache().clear();
 	}
 
-	public static Iterable<Map.Entry<String, Object>> collectedValues() {
-		return ImmutableSet.copyOf(collectedValuesMap().entrySet());
-	}
-
-	protected static Map<String, Object> collectedValuesMap() {
+	private static Map<String, Object> valuesCache() {
 		if (valuesCache == null) {
 			valuesCache = MapLibrary.newHashMap();
 		}

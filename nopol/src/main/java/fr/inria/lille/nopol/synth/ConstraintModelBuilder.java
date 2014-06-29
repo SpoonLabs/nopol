@@ -29,6 +29,7 @@ import spoon.processing.Processor;
 import fr.inria.lille.commons.classes.CacheBasedClassLoader;
 import fr.inria.lille.commons.spoon.SourceInstrumenter;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
+import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.TestValuesCollectorListener;
 import fr.inria.lille.nopol.SourceLocation;
 
@@ -58,7 +59,7 @@ public final class ConstraintModelBuilder {
 	}
 	
 	private Result tracedExecutionResult(InputOutputValues model, String[] testClasses, URL[] classpath) {
-		TestValuesCollectorListener<Boolean> listener = new TestValuesCollectorListener<Boolean>(model, GlobalBooleanVariable.value);
+		TestValuesCollectorListener listener = new TestValuesCollectorListener(model, GlobalBooleanVariable.value);
 		ClassLoader cacheBasedClassLoader = new CacheBasedClassLoader(classpath, classCache);
 		return TestSuiteExecution.runCasesIn(testClasses, cacheBasedClassLoader, listener);
 	}

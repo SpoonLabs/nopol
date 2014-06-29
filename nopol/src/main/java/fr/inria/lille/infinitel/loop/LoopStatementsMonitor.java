@@ -16,13 +16,14 @@ public class LoopStatementsMonitor extends AbstractProcessor<CtWhile> {
 	public LoopStatementsMonitor(Number threshold) {
 		this.threshold = threshold.intValue();
 		auditors = MapLibrary.newHashMap();
+		stateProcessor = new LoopStateProcessor();
 	}
 
 	@Override
 	public void process(CtWhile loopStatement) {
 		SourcePosition position = loopStatement.getPosition();
 		IterationAuditor auditor = IterationAuditor.newInstance(position, threshold());
-		auditor.process(loopStatement);
+		stateProcessor().process(loopStatement, auditor);
 		auditors().put(position, auditor);
 		enable(position);
 	}
@@ -73,7 +74,11 @@ public class LoopStatementsMonitor extends AbstractProcessor<CtWhile> {
 		return threshold;
 	}
 	
-	private IterationAuditor auditorOf(SourcePosition position) {
+	private LoopStateProcessor stateProcessor() {
+		return stateProcessor;
+	}
+	
+	public IterationAuditor auditorOf(SourcePosition position) {
 		return auditors().get(position);
 	}
 	
@@ -82,5 +87,6 @@ public class LoopStatementsMonitor extends AbstractProcessor<CtWhile> {
 	}
 	
 	private int threshold;
+	private LoopStateProcessor stateProcessor;
 	private Map<SourcePosition, IterationAuditor> auditors;
 }
