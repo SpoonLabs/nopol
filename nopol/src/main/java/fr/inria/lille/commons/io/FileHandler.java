@@ -54,7 +54,7 @@ public class FileHandler {
 		return file;
 	}
 	
-	public static Collection<File> nameMatchingFilesIn(String directoryPath, String regexToMatch) {
+	public static Collection<File> filesMatchingNameIn(String directoryPath, String regexToMatch) {
 		File directory = directoryFrom(directoryPath);
 		Collection<File> matchingFiles = ListLibrary.newLinkedList();
 		for (File file : directory.listFiles()) {

@@ -94,11 +94,17 @@ public class SpoonLibrary {
 		return composedExpression;
 	}
 	
-	public static CtIf newIf(Factory factory, CtExpression<Boolean> condition, CtStatement thenBranch, CtStatement elseBranch) {
+	public static CtIf newIf(Factory factory, CtExpression<Boolean> condition, CtStatement thenBranch) {
 		CtIf newIf = factory.Core().createIf();
-		setParent(newIf, condition, thenBranch, elseBranch);
+		setParent(newIf, condition, thenBranch);
 		newIf.setCondition(condition);
 		newIf.setThenStatement(thenBranch);
+		return newIf;
+	}
+	
+	public static CtIf newIf(Factory factory, CtExpression<Boolean> condition, CtStatement thenBranch, CtStatement elseBranch) {
+		CtIf newIf = newIf(factory, condition, thenBranch);
+		setParent(newIf, elseBranch);
 		newIf.setElseStatement(elseBranch);
 		return newIf;
 	}

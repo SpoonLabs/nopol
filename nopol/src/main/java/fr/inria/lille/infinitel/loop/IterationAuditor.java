@@ -83,23 +83,23 @@ public class IterationAuditor {
 		return threshold;
 	}
 	
-	public Number setThreshold(Number number) {
-		int oldValue = threshold;
-		threshold = number.intValue();
-		return oldValue;
-	}
-	
 	public boolean disable() {
-		resetRecord();
 		return setDisabled(true);
 	}
 	
 	public boolean enable() {
+		resetRecord();
 		return setDisabled(false);
 	}
 	
 	public boolean isDisabled() {
 		return disabled;
+	}
+	
+	protected Number setThreshold(Number number) {
+		int oldValue = threshold;
+		threshold = number.intValue();
+		return oldValue;
 	}
 	
 	protected void resetRecord() {

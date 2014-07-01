@@ -5,6 +5,7 @@ import spoon.reflect.code.CtCodeElement;
 public class IterationRuntimeValuesProcessor<T extends CtCodeElement> extends RuntimeValuesProcessor<T> {
 
 	public IterationRuntimeValuesProcessor(String iterationVariableName) {
+		super();
 		this.iterationVariableName = iterationVariableName;
 	}
 

@@ -23,7 +23,7 @@ import fr.inria.lille.commons.collections.ListLibrary;
 public class TestSuiteExecution {
 	
 	public static Result runCasesIn(String[] testClasses, ClassLoader classLoaderForTestThread) {
-		return runCasesIn(testClasses, classLoaderForTestThread, nullListener());
+		return runCasesIn(testClasses, classLoaderForTestThread, NullRunListener.instance());
 	}
 	
 	public static Result runCasesIn(String[] testClasses, ClassLoader classLoaderForTestThread, RunListener listener) {
@@ -31,7 +31,7 @@ public class TestSuiteExecution {
 	}
 	
 	public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread) {
-		return runTestCase(testCase, classLoaderForTestThread, nullListener());
+		return runTestCase(testCase, classLoaderForTestThread, NullRunListener.instance());
 	}
 	
 	public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread, RunListener listener) {
@@ -62,10 +62,6 @@ public class TestSuiteExecution {
 		return descriptions;
 	}
 	
-	protected static RunListener nullListener() {
-		return nullListener;
-	}
-	
 	protected static long secondsForTimeout() {
 		return secondsForTimeout;
 	}
@@ -74,7 +70,6 @@ public class TestSuiteExecution {
 		logger.warn(message);
 	}
 	
-	private static RunListener nullListener = new NullRunListener();
 	private static long secondsForTimeout = MINUTES.toSeconds(5L);
 	private static Logger logger = LoggerFactory.getLogger(TestSuiteExecution.class);
 }

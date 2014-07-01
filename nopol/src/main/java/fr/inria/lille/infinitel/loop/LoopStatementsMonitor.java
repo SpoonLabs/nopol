@@ -58,12 +58,12 @@ public class LoopStatementsMonitor extends AbstractProcessor<CtWhile> {
 		return auditorOf(position).enable();
 	}
 	
-	public boolean isEnabled(SourcePosition position) {
-		return auditorOf(position).isDisabled();
-	}
-	
 	public Number setThresholdOf(SourcePosition position, Number newThreshold) {
 		return auditorOf(position).setThreshold(newThreshold);
+	}
+	
+	public void resetRecordOf(SourcePosition position) {
+		auditorOf(position).resetRecord();
 	}
 	
 	public List<Integer> iterationRecordOf(SourcePosition position) {

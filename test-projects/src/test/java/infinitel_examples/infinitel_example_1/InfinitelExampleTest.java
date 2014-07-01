@@ -1,6 +1,8 @@
 package infinitel_examples.infinitel_example_1;
 
 
+import infinitel_examples.infinitel_example_1.InfinitelExample;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

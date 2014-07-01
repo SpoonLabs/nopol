@@ -125,7 +125,7 @@ public class RuntimeValuesProcessor<T extends CtCodeElement> extends AbstractPro
 
 	private Filter<CtAssignment> compositeFilterFor(CtVariable<?> variable, SourcePosition position) {
 		VariableAssignmentFilter variableAssignment = new VariableAssignmentFilter(variable);
-		BeforeLocationFilter beforeLocation = new BeforeLocationFilter<CtAssignment>(CtAssignment.class, position);
+		BeforeLocationFilter<CtAssignment> beforeLocation = new BeforeLocationFilter<>(CtAssignment.class, position);
 		return new CompositeFilter(FilteringOperator.INTERSECTION, variableAssignment, beforeLocation);
 	}
 	

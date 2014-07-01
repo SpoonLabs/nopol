@@ -56,13 +56,13 @@ public class NopolTest {
 
 	private static ProjectReference projectForExample(String exampleName) {
 		String sourceFile = sourceFolderPathForExample(exampleName) + "NopolExample.java";
-		String classpath = "../test-projects/target/classes/";
+		String classpath = "../test-projects/target/test-classes:../test-projects/target/classes";
 		String[] testClasses = new String[] { packageNameFor(exampleName) + ".NopolExampleTest" };
 		return new ProjectReference(sourceFile, classpath, testClasses);
 	}
 	
 	private static String sourceFolderPathForExample(String exampleName) {
-		return String.format("../test-projects/src/nopol_examples/nopol_%s/", exampleName);
+		return String.format("../test-projects/src/main/java/nopol_examples/nopol_%s/", exampleName);
 	}
 	
 	private static String packageNameFor(String exampleName) {
@@ -70,7 +70,7 @@ public class NopolTest {
 	}
 	
 	private static void removeSMTFiles(String exampleName) {
-		Collection<File> smtFiles = FileHandler.nameMatchingFilesIn(sourceFolderPathForExample(exampleName), "NopolExample:[0-9]+.smt_[0-9]+");
+		Collection<File> smtFiles = FileHandler.filesMatchingNameIn(sourceFolderPathForExample(exampleName), "NopolExample:[0-9]+.smt_[0-9]+");
 		FileHandler.deleteFiles(smtFiles);
 	}
 	
@@ -132,7 +132,7 @@ public class NopolTest {
 		Patch patch = patchFor(project);
 		assertEquals(patch.getType(), type);
 		assertEquals(linePosition, patch.getLineNumber());
-		System.out.println(String.format("Patch for project %d: %s", projectNumber, patch.asString()));
+		System.out.println(String.format("Patch for nopol example %d: %s", projectNumber, patch.asString()));
 		return patch;
 	}
 	

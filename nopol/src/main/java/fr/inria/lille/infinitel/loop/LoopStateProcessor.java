@@ -48,8 +48,8 @@ public class LoopStateProcessor {
 	}
 	
 	private void traceReachableVariables(CtIf newIf, IterationAuditor auditor) {
-		String iterationCounterName = auditor.counterVariableName();
-		RuntimeValuesProcessor<CtIf> valuesProcessor = new IterationRuntimeValuesProcessor<CtIf>(iterationCounterName);
+		String counterName = auditor.counterVariableName();
+		RuntimeValuesProcessor<CtStatement> valuesProcessor = new IterationRuntimeValuesProcessor<CtStatement>(counterName);
 		valuesProcessor.process(newIf);
 	}
 	
