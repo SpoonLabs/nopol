@@ -24,7 +24,6 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.CompositeFilter;
@@ -116,16 +115,16 @@ public class RuntimeValuesProcessor<T extends CtCodeElement> extends AbstractPro
 	
 	private boolean wasInitializedBefore(SourcePosition position, CtVariable<?> variable) {
 		if (variable.getDefaultExpression() == null) {
-			CtBlock block = variable.getParent(CtMethod.class).getBody();
-			Filter<CtAssignment> filter = compositeFilterFor(variable, position);
+			CtBlock<?> block = variable.getParent(CtBlock.class);
+			Filter<CtAssignment<?,?>> filter = compositeFilterFor(variable, position);
 			return ! block.getElements(filter).isEmpty();
 		}
 		return true;
 	}
-
-	private Filter<CtAssignment> compositeFilterFor(CtVariable<?> variable, SourcePosition position) {
+	
+	private Filter<CtAssignment<?,?>> compositeFilterFor(CtVariable<?> variable, SourcePosition position) {
 		VariableAssignmentFilter variableAssignment = new VariableAssignmentFilter(variable);
-		BeforeLocationFilter<CtAssignment> beforeLocation = new BeforeLocationFilter<>(CtAssignment.class, position);
+		BeforeLocationFilter<CtAssignment<?,?>> beforeLocation = new BeforeLocationFilter(CtAssignment.class, position);
 		return new CompositeFilter(FilteringOperator.INTERSECTION, variableAssignment, beforeLocation);
 	}
 	

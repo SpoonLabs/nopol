@@ -164,6 +164,7 @@ public class ValuesCollectorTest {
 	
 	@Test
 	public void reachedVariablesInExample4() {
+		existsCodeSnippet(4, "int uninitializedVariableShouldNotBeCollected");
 		testReachedVariableNames(4, "a = a.substring(1)", "a", "initializedVariableShouldBeCollected", "otherInitializedVariableShouldBeCollected");
 	}
 	
@@ -177,17 +178,26 @@ public class ValuesCollectorTest {
 		testReachedVariableNames(6, "a > b", "a", "b");
 	}
 	
+	@Test
+	public void reachedVariablesInsideConstructor() {
+		testReachedVariableNames(1, "index = 2 * variableInsideConstructor", "variableInsideConstructor");
+	}
+	
 	private void testReachedVariableNames(int exampleNumber, String codeSnippet, String... expectedReachedVariables) {
-		File sourceFile = NopolTest.example(exampleNumber).sourceFile();
-		Factory model = SpoonLibrary.modelFor(sourceFile);
-		Filter filter = new CodeSnippetFilter(sourceFile, codeSnippet);
-		List<CtElement> elements = Query.getElements(model, filter);
-		assertEquals(1, elements.size());
-		CtElement firstElement = elements.get(0);
+		CtElement firstElement = existsCodeSnippet(exampleNumber, codeSnippet);
 		assertTrue(CtCodeElement.class.isInstance(firstElement));
 		CtStatement statement = SpoonLibrary.statementOf((CtCodeElement) firstElement);
 		Collection<String> reachedVariables = new RuntimeValuesProcessor<>().reachableVariableNames(statement);
 		assertEquals(expectedReachedVariables.length, reachedVariables.size());
 		assertTrue(reachedVariables.containsAll(Arrays.asList(expectedReachedVariables)));
+	}
+	
+	private CtElement existsCodeSnippet(int exampleNumber, String codeSnippet) {
+		File sourceFile = NopolTest.example(exampleNumber).sourceFile();
+		Factory model = SpoonLibrary.modelFor(sourceFile);
+		Filter filter = new CodeSnippetFilter(sourceFile, codeSnippet);
+		List<CtElement> elements = Query.getElements(model, filter);
+		assertEquals(1, elements.size());
+		return elements.get(0);
 	}
 }

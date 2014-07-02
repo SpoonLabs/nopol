@@ -18,6 +18,12 @@ public class NopolExample {
 		return s.charAt(s.length()-1);
 	}
 	
+	public NopolExample() {
+		int variableInsideConstructor;
+		variableInsideConstructor = 15; 
+		index = 2 * variableInsideConstructor;
+	}
+	
 	private int index = 419382;
 	private static String s = "Overloading field name with parameter name";
 }
