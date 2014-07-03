@@ -3,6 +3,7 @@ package fr.inria.lille.commons.io;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
@@ -100,6 +101,10 @@ public class FileHandler {
 			throw new RuntimeException("Illegal name for '" + path + "' while converting to URL");
 		}
 		return url;
+	}
+	
+	public static URI uriFrom(String scheme) {
+		return URI.create(scheme);
 	}
 	
 	public static URL[] classpathFrom(String classpath) {

@@ -32,4 +32,30 @@ public class StringLibraryTest {
 		assertEquals("a", StringLibrary.join(Arrays.asList("a"), ".."));
 		assertEquals("a..b", StringLibrary.join(Arrays.asList("a", "b"), ".."));
 	}
+	
+	@Test
+	public void stripEnd() {
+		String suffix = "ly";
+		assertEquals("", StringLibrary.stripEnd("", suffix));
+		assertEquals("l", StringLibrary.stripEnd("l", suffix));
+		assertEquals("window", StringLibrary.stripEnd("window", suffix));
+		assertEquals("dramatical", StringLibrary.stripEnd("dramatically", suffix));
+		assertEquals(suffix, StringLibrary.stripEnd(suffix + suffix, suffix));
+	}
+	
+	@Test
+	public void firstSubstringOfSplit() {
+		String chained = "c.a.q.f.q.mq.e";
+		assertEquals(chained, StringLibrary.firstAfterSplit(chained, "<"));
+		assertEquals("c", StringLibrary.firstAfterSplit(chained, "[.]"));
+		assertEquals("c.a.", StringLibrary.firstAfterSplit(chained, "q"));
+	}
+	
+	@Test
+	public void lastSubstringOfSplit() {
+		String chained = "c.a.q.f.q.mq.e";
+		assertEquals(chained, StringLibrary.lastAfterSplit(chained, "<"));
+		assertEquals("e", StringLibrary.lastAfterSplit(chained, "[.]"));
+		assertEquals(".e", StringLibrary.lastAfterSplit(chained, "q"));
+	}
 }

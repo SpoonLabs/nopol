@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import fr.inria.lille.commons.collections.ArrayLibrary;
 import fr.inria.lille.commons.collections.CollectionLibrary;
+import fr.inria.lille.commons.collections.IterableLibrary;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.collections.Multimap;
@@ -439,5 +440,23 @@ public class CollectionsTest {
 		assertFalse(ListLibrary.isPartitionOf(list, subpartition1, subpartition2, subpartition4));
 		assertFalse(ListLibrary.isPartitionOf(list, subpartition1, subpartition5, subpartition3));
 		assertFalse(ListLibrary.isPartitionOf(list, subpartition1, subpartition3, subpartition2));
+	}
+
+	@Test
+	public void addIterableToCollection() {
+		Iterable<String> iterable = asList("a", "b", "c");
+		List<String> list = ListLibrary.newArrayList();
+		assertTrue(list.isEmpty());
+		IterableLibrary.addTo(list, iterable);
+		assertEquals(3, list.size());
+		assertTrue(list.containsAll(asList("a", "b", "c")));
+	}
+	
+	@Test
+	public void iterableAsList() {
+		Iterable<String> iterable = asList("a", "b", "c");
+		List<String> list = IterableLibrary.asList(iterable);
+		assertEquals(3, list.size());
+		assertTrue(list.containsAll(asList("a", "b", "c")));
 	}
 }
