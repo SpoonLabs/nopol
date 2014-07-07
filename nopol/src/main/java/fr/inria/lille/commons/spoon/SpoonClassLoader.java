@@ -32,6 +32,7 @@ import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.RuntimeProcessingManager;
 import fr.inria.lille.commons.collections.MapLibrary;
+import fr.inria.lille.commons.compiler.BytecodeClassLoaderBuilder;
 import fr.inria.lille.commons.compiler.DynamicClassCompiler;
 
 
@@ -95,7 +96,8 @@ public class SpoonClassLoader {
 	
 	public ClassLoader classLoaderProcessing(Collection<CtSimpleType<?>> modelledClasses) {
 		Map<String, String> processedClasses = processedSources(modelledClasses);
-		return getCompiler().classLoaderFor(processedClasses);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(processedClasses);
+		return loader;
 	}
 	
 	private Map<String, String> processedSources(Collection<CtSimpleType<?>> modelledClasses) {

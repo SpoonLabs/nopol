@@ -459,4 +459,13 @@ public class CollectionsTest {
 		assertEquals(3, list.size());
 		assertTrue(list.containsAll(asList("a", "b", "c")));
 	}
+	
+	@Test
+	public void mapConstructorWithOneAssociation() {
+		Map<String, Integer> adHocMap = MapLibrary.newHashMap("aaaa", 4);
+		assertFalse(adHocMap.isEmpty());
+		assertEquals(1, adHocMap.size());
+		assertTrue(adHocMap.containsKey("aaaa"));
+		assertEquals(Integer.valueOf(4),  adHocMap.get("aaaa"));
+	}
 }

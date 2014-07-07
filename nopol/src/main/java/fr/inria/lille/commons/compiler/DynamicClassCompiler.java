@@ -23,32 +23,23 @@ import fr.inria.lille.commons.string.StringLibrary;
 public class DynamicClassCompiler {
 
 	public DynamicClassCompiler() {
-		this(new DynamicallyCompiledClassLoader());
-	}
-	
-	public DynamicClassCompiler(ClassLoader dynamicallyCompiledClassLoaderParent) {
-		this(new DynamicallyCompiledClassLoader(dynamicallyCompiledClassLoaderParent));
-	}
-	
-	protected DynamicClassCompiler(DynamicallyCompiledClassLoader classLoader) {
 		options = asList("-nowarn");
 		compiler = ToolProvider.getSystemJavaCompiler();
 		diagnostics = new DiagnosticCollector<>();
 		StandardJavaFileManager standardFileManager = compiler().getStandardFileManager(diagnostics(), null, null);
-		fileManager = new VirtualFileObjectManager(classLoader, standardFileManager);
+		fileManager = new VirtualFileObjectManager(standardFileManager);
 	}
 
-	public synchronized ClassLoader classLoaderFor(String qualifiedName, String sourceContent) {
-		Map<String, String> adHocMap = MapLibrary.newHashMap();
-		adHocMap.put(qualifiedName, sourceContent);
-		return classLoaderFor(adHocMap);
+	public synchronized byte[] javaBytecodeFor(String qualifiedName, String sourceContent) {
+		Map<String, String> adHocMap = MapLibrary.newHashMap(qualifiedName, sourceContent);
+		return javaBytecodeFor(adHocMap).get(qualifiedName);
 	}
 	
-	public synchronized ClassLoader classLoaderFor(Map<String, String> qualifiedNameAndContent) {
+	public synchronized Map<String, byte[]>javaBytecodeFor(Map<String, String> qualifiedNameAndContent) {
 		Collection<JavaFileObject> units = addCompilationUnits(qualifiedNameAndContent);
 		CompilationTask task = compiler().getTask(null, fileManager(), diagnostics(), options(), null, units);
 		runCompilationTask(task);
-		return dynamicClassLoader().copy();
+		return collectBytecodes(fileManager().classFiles());
 	}
 	
 	protected Collection<JavaFileObject> addCompilationUnits(Map<String, String> qualifiedNameAndContent) {
@@ -79,23 +70,26 @@ public class DynamicClassCompiler {
 		return success;
 	}
 	
-	protected VirtualFileObjectManager fileManager() {
-		return fileManager;
+	private Map<String, byte[]> collectBytecodes(Map<String, VirtualClassFileObject> classFiles) {
+		Map<String, byte[]> allBytecodes = MapLibrary.newHashMap();
+		for (String qualifiedName : classFiles.keySet()) {
+			byte[] bytecodes = classFiles.get(qualifiedName).byteCodes();
+			allBytecodes.put(qualifiedName, bytecodes);
+		}
+		return allBytecodes;
 	}
 	
-	protected DynamicallyCompiledClassLoader dynamicClassLoader() {
-		return fileManager().classLoader();
+	protected VirtualFileObjectManager fileManager() {
+		return fileManager;
 	}
 	
 	private List<String> options() {
 		return options;
 	}
 	
-	
 	private JavaCompiler compiler() {
 		return compiler;
 	}
-	
 	
 	private DiagnosticCollector<JavaFileObject> diagnostics() {
 		return diagnostics;

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -28,7 +29,6 @@ public class DynamicClassCompilerTest {
 	@Test
 	public void helloWorldCompilation() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		String qualifiedName = "test.dynamic.compiler.HelloWorld";
-		DynamicClassCompiler compiler = new DynamicClassCompiler();
 		String code = 
 				"package test.dynamic.compiler;" +
 				"public class HelloWorld {" +
@@ -37,7 +37,7 @@ public class DynamicClassCompilerTest {
 				"		return \"Hello World!\";" +
 				"	}" + 
 				"}";
-		ClassLoader loader = compiler.classLoaderFor(qualifiedName, code);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
 		Class<?> newClass = loader.loadClass(qualifiedName);
 		Object newInstance = newClass.newInstance();
 		assertEquals("Hello World!", newInstance.toString());
@@ -46,7 +46,6 @@ public class DynamicClassCompilerTest {
 	@Test
 	public void onceLoadedReturnTheSameObject() throws ClassNotFoundException {
 		String qualifiedName = "test.dynamic.compiler.HelloWorld";
-		DynamicClassCompiler compiler = new DynamicClassCompiler();
 		String code = 
 				"package test.dynamic.compiler;" +
 				"public class HelloWorld {" +
@@ -55,7 +54,7 @@ public class DynamicClassCompilerTest {
 				"		return \"Hello World!\";" +
 				"	}" + 
 				"}";
-		ClassLoader loader = compiler.classLoaderFor(qualifiedName, code);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
 		Class<?> newClass = loader.loadClass(qualifiedName);
 		Class<?> sameClass = loader.loadClass(qualifiedName);
 		assertTrue(newClass == sameClass);
@@ -78,8 +77,8 @@ public class DynamicClassCompilerTest {
 				"		return 12;" +
 				"	}" +
 				"}";
-		DynamicClassCompiler compiler = new DynamicClassCompiler();
-		ClassLoader loader = compiler.classLoaderFor(MapLibrary.newHashMap(asList(qualifiedAbstractName, qualifiedSubclassName), asList(abstractCode, subclassCode)));
+		Map<String, String> sources = MapLibrary.newHashMap(asList(qualifiedAbstractName, qualifiedSubclassName), asList(abstractCode, subclassCode));
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources);
 		Class<?> subclass = loader.loadClass(qualifiedSubclassName);
 		Object newInstance = subclass.newInstance();
 		assertEquals(12, subclass.getMethod("id").invoke(newInstance));
@@ -98,8 +97,7 @@ public class DynamicClassCompilerTest {
 				"		}" +
 				"	}" +
 				"}";
-		DynamicClassCompiler compiler = new DynamicClassCompiler();
-		ClassLoader loader = compiler.classLoaderFor(qualifiedOuterName, code);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedOuterName, code);
 		Class<?> outerClass = loader.loadClass(qualifiedOuterName);
 		Class<?>[] classes = outerClass.getClasses();
 		assertEquals(1, classes.length);
@@ -122,8 +120,7 @@ public class DynamicClassCompilerTest {
 				"		return \"Hello World!\";" +
 				"	}" +
 				"}";
-		DynamicClassCompiler compiler = new DynamicClassCompiler();
-		ClassLoader loader = compiler.classLoaderFor(qualifiedName, code);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
 		Class<?> newClass = loader.loadClass(qualifiedName);
 		Object newInstance = newClass.newInstance();
 		assertEquals("Hello World!", newInstance.toString());
@@ -151,10 +148,9 @@ public class DynamicClassCompilerTest {
 				"		assertEquals(\"Hello World!\", new HelloWorld().toString());" +
 				"	}" + 
 				"}";
-		DynamicClassCompiler parentCompiler = new DynamicClassCompiler();
-		ClassLoader parentLoader = parentCompiler.classLoaderFor(qualifiedName, code);
-		DynamicClassCompiler compiler = new DynamicClassCompiler(parentLoader);
-		ClassLoader loader = compiler.classLoaderFor(MapLibrary.newHashMap(asList(qualifiedName, qualifiedTestName), asList(code, testCode)));
+		ClassLoader parentLoader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
+		Map<String, String> sources = MapLibrary.newHashMap(asList(qualifiedName, qualifiedTestName), asList(code, testCode));
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources, parentLoader);
 		Class<?> testClass = loader.loadClass(qualifiedTestName);
 		Class<?> theClass = loader.loadClass(qualifiedName);
 		assertFalse(parentLoader == loader);
@@ -187,8 +183,8 @@ public class DynamicClassCompilerTest {
 				"		assertEquals(\"Hello World!\", new HelloWorld().message());" +
 				"	}" + 
 				"}";
-		DynamicClassCompiler compiler = new DynamicClassCompiler();
-		ClassLoader loader = compiler.classLoaderFor(MapLibrary.newHashMap(asList(qualifiedName, qualifiedTestName), asList(code, testCode)));
+		Map<String, String> sources = MapLibrary.newHashMap(asList(qualifiedName, qualifiedTestName), asList(code, testCode));
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources);
 		Class<?> testClass = loader.loadClass(qualifiedTestName);
 		Class<?> theClass = loader.loadClass(qualifiedName);
 		assertTrue(loader == theClass.getClassLoader());
@@ -220,10 +216,9 @@ public class DynamicClassCompilerTest {
 				"		assertEquals(\"Hello World!\", new HelloWorld().message());" +
 				"	}" + 
 				"}";
-		DynamicClassCompiler parentCompiler = new DynamicClassCompiler();
-		ClassLoader parentLoader = parentCompiler.classLoaderFor(qualifiedName, code);
-		DynamicClassCompiler compiler = new DynamicClassCompiler(parentLoader);
-		ClassLoader loader = compiler.classLoaderFor(MapLibrary.newHashMap(asList(qualifiedName, qualifiedTestName), asList(code, testCode)));
+		Map<String, String> sources = MapLibrary.newHashMap(asList(qualifiedName, qualifiedTestName), asList(code, testCode));
+		ClassLoader parentLoader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources, parentLoader);
 		Class<?> testClass = loader.loadClass(qualifiedTestName);
 		Class<?> theClass = loader.loadClass(qualifiedName);
 		assertFalse(parentLoader == loader);
@@ -250,8 +245,7 @@ public class DynamicClassCompilerTest {
 				"		return new LinkedList<String>();" +
 				"	}" +
 				"}";
-		DynamicClassCompiler compiler = new DynamicClassCompiler();
-		final ClassLoader loader = compiler.classLoaderFor(qualifiedName, code);
+		final ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
 
 		ThreadFactory normalFactory = new ThreadFactory() {
 			@Override

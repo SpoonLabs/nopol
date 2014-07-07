@@ -1,5 +1,7 @@
 package fr.inria.lille.commons.collections;
 
+import static java.util.Arrays.asList;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -19,6 +21,16 @@ public class MapLibrary {
 		return mapFilledWith(newIdentityHashMap, baseMap);
 	}
 	
+	public static <K, V> Map<K, V> newIdentityHashMap(int keyCapacity, K key, V value) {
+		Map<K, V> newIdentityHashMap = newIdentityHashMap(keyCapacity);
+		return mapFilledWith(newIdentityHashMap, asList(key), asList(value));
+	}
+	
+	public static <K, V> Map<K, V> newIdentityHashMap(int keyCapacity, List<K> keys, List<V> values) {
+		Map<K, V> newIdentityHashMap = newIdentityHashMap(keyCapacity);
+		return mapFilledWith(newIdentityHashMap, keys, values);
+	}
+	
 	public static <K, V> Map<K, V> newHashMap() {
 		return new HashMap<K, V>();
 	}
@@ -26,6 +38,11 @@ public class MapLibrary {
 	public static <K, V> Map<K, V> newHashMap(Map<K, V> baseMap) {
 		Map<K, V> newHashMap = newHashMap();
 		return mapFilledWith(newHashMap, baseMap);
+	}
+	
+	public static <K, V> Map<K, V> newHashMap(K key, V value) {
+		Map<K, V> newHashMap = newHashMap();
+		return mapFilledWith(newHashMap, asList(key), asList(value));
 	}
 	
 	public static <K, V> Map<K, V> newHashMap(List<K> keys, List<V> values) {
@@ -49,6 +66,16 @@ public class MapLibrary {
 	public static <K, V> Map<K, V> newLinkedHashMap(Map<K, V> baseMap) {
 		Map<K, V> newLinkedHashMap = newLinkedHashMap();
 		return mapFilledWith(newLinkedHashMap, baseMap);
+	}
+	
+	public static <K, V> Map<K, V> newLinkedHashMap(K key, V value) {
+		Map<K, V> newLinkedHashMap = newLinkedHashMap();
+		return mapFilledWith(newLinkedHashMap, asList(key), asList(value));
+	}
+	
+	public static <K, V> Map<K, V> newLinkedHashMap(List<K> keys, List<V> values) {
+		Map<K, V> newLinkedHashMap = newLinkedHashMap();
+		return mapFilledWith(newLinkedHashMap, keys, values);
 	}
 	
 	public static <K, V> Map<K, V> mapFilledWith(Map<K, V> toBeFilled, Map<K, V> sourceMap) {

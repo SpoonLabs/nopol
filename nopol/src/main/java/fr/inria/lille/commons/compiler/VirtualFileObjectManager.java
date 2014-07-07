@@ -20,9 +20,9 @@ import fr.inria.lille.commons.io.FileHandler;
 
 public class VirtualFileObjectManager extends ForwardingJavaFileManager<JavaFileManager> {
 
-	protected VirtualFileObjectManager(DynamicallyCompiledClassLoader classLoader, JavaFileManager fileManager) {
+	protected VirtualFileObjectManager(JavaFileManager fileManager) {
 		super(fileManager);
-		this.classLoader = classLoader;
+		classFiles = MapLibrary.newHashMap();
 		sourceFiles = MapLibrary.newHashMap();
 	}
 	
@@ -38,7 +38,7 @@ public class VirtualFileObjectManager extends ForwardingJavaFileManager<JavaFile
 	@Override
 	public JavaFileObject getJavaFileForOutput(Location location, String qualifiedName, Kind kind, FileObject outputFile) throws IOException {
 		VirtualClassFileObject classFile = new VirtualClassFileObject(qualifiedName, kind);
-		classLoader().addClassFileObject(qualifiedName, classFile);
+		classFiles().put(qualifiedName, classFile);
 		return classFile;
 	}
 	
@@ -60,7 +60,7 @@ public class VirtualFileObjectManager extends ForwardingJavaFileManager<JavaFile
 					files.add(file);
 				}
 			}
-			files.addAll(classLoader().compiledClasses());
+			files.addAll(classFiles().values());
 		} else if (location == StandardLocation.SOURCE_PATH && kinds.contains(JavaFileObject.Kind.SOURCE)) {
 			for (JavaFileObject file : sourceFiles().values()) {
 				if (file.getKind() == Kind.SOURCE && file.getName().startsWith(packageName)) {
@@ -85,19 +85,19 @@ public class VirtualFileObjectManager extends ForwardingJavaFileManager<JavaFile
 		return sourceFiles().get(fileURI);
 	}
 
-	public DynamicallyCompiledClassLoader classLoader() {
-		return classLoader;
-	}
-	
 	private URI uriFor(Location location, String packageName, String simpleClassName) {
 		String uriScheme = location.getName() + '/' + packageName + '/' + simpleClassName + ".java";
 		return FileHandler.uriFrom(uriScheme);
+	}
+	
+	protected Map<String, VirtualClassFileObject> classFiles() {
+		return classFiles;
 	}
 	
 	private Map<URI, VirtualSourceFileObject> sourceFiles() {
 		return sourceFiles;
 	}
 	
-	private DynamicallyCompiledClassLoader classLoader;
 	private Map<URI, VirtualSourceFileObject> sourceFiles;
+	private Map<String, VirtualClassFileObject> classFiles;
 }
