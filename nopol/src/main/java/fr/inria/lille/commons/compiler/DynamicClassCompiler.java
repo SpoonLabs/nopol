@@ -21,27 +21,34 @@ import fr.inria.lille.commons.string.StringLibrary;
 
 
 public class DynamicClassCompiler {
-	
+
 	public DynamicClassCompiler() {
-		options = asList("-verbose", "-nowarn");
+		this(new DynamicallyCompiledClassLoader());
+	}
+	
+	public DynamicClassCompiler(ClassLoader dynamicallyCompiledClassLoaderParent) {
+		this(new DynamicallyCompiledClassLoader(dynamicallyCompiledClassLoaderParent));
+	}
+	
+	protected DynamicClassCompiler(DynamicallyCompiledClassLoader classLoader) {
+		options = asList("-nowarn");
 		compiler = ToolProvider.getSystemJavaCompiler();
 		diagnostics = new DiagnosticCollector<>();
-		DynamicallyCompiledClassLoader classLoader = new DynamicallyCompiledClassLoader();
 		StandardJavaFileManager standardFileManager = compiler().getStandardFileManager(diagnostics(), null, null);
-		fileManager = new BufferedFileObjectManager(classLoader, standardFileManager);
+		fileManager = new VirtualFileObjectManager(classLoader, standardFileManager);
 	}
-	
-	public synchronized Class<?> compileSource(String qualifiedName, String sourceContent) throws ClassNotFoundException {
+
+	public synchronized ClassLoader classLoaderFor(String qualifiedName, String sourceContent) {
 		Map<String, String> adHocMap = MapLibrary.newHashMap();
 		adHocMap.put(qualifiedName, sourceContent);
-		return compileSources(adHocMap).get(qualifiedName);
+		return classLoaderFor(adHocMap);
 	}
 	
-	public synchronized Map<String, Class<?>> compileSources(Map<String, String> qualifiedNameAndContent) throws ClassNotFoundException {
+	public synchronized ClassLoader classLoaderFor(Map<String, String> qualifiedNameAndContent) {
 		Collection<JavaFileObject> units = addCompilationUnits(qualifiedNameAndContent);
 		CompilationTask task = compiler().getTask(null, fileManager(), diagnostics(), options(), null, units);
 		runCompilationTask(task);
-		return compiledClasses(qualifiedNameAndContent.keySet());
+		return dynamicClassLoader().copy();
 	}
 	
 	protected Collection<JavaFileObject> addCompilationUnits(Map<String, String> qualifiedNameAndContent) {
@@ -57,7 +64,7 @@ public class DynamicClassCompiler {
 	protected JavaFileObject addCompilationUnit(String qualifiedName, String sourceContent) {
 		String simpleClassName = StringLibrary.lastAfterSplit(qualifiedName, "[.]");
 		String packageName = StringLibrary.stripEnd(qualifiedName, "." + simpleClassName);
-		BufferedSourceFileObject sourceFile = new BufferedSourceFileObject(simpleClassName, sourceContent);
+		VirtualSourceFileObject sourceFile = new VirtualSourceFileObject(simpleClassName, sourceContent);
 		fileManager().addSourceFile(StandardLocation.SOURCE_PATH, packageName, simpleClassName, sourceFile);
 		return sourceFile;
 	}
@@ -72,19 +79,11 @@ public class DynamicClassCompiler {
 		return success;
 	}
 	
-	protected Map<String, Class<?>> compiledClasses(Collection<String> qualifiedNames) throws ClassNotFoundException {
-		Map<String, Class<?>> compiledClasses = MapLibrary.newHashMap();
-		for (String qualifiedName : qualifiedNames) {
-			compiledClasses.put(qualifiedName, dynamicClassLoader().loadClass(qualifiedName));
-		}
-		return compiledClasses;
-	}
-	
-	protected BufferedFileObjectManager fileManager() {
+	protected VirtualFileObjectManager fileManager() {
 		return fileManager;
 	}
 	
-	protected ClassLoader dynamicClassLoader() {
+	protected DynamicallyCompiledClassLoader dynamicClassLoader() {
 		return fileManager().classLoader();
 	}
 	
@@ -104,6 +103,6 @@ public class DynamicClassCompiler {
 	
 	private List<String> options;
 	private JavaCompiler compiler;
+	private VirtualFileObjectManager fileManager;
 	private DiagnosticCollector<JavaFileObject> diagnostics;
-	private BufferedFileObjectManager fileManager;
 }

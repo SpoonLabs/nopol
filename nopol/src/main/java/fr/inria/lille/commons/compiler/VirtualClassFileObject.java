@@ -9,9 +9,9 @@ import javax.tools.SimpleJavaFileObject;
 
 import fr.inria.lille.commons.io.FileHandler;
 
-public class BufferedClassFileObject extends SimpleJavaFileObject {
+public class VirtualClassFileObject extends SimpleJavaFileObject {
 
-	public BufferedClassFileObject(String qualifiedName, Kind kind) {
+	public VirtualClassFileObject(String qualifiedName, Kind kind) {
 		super(FileHandler.uriFrom(qualifiedName), kind);
 	}
 	

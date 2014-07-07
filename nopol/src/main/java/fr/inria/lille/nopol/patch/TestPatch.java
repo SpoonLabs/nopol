@@ -17,8 +17,8 @@ package fr.inria.lille.nopol.patch;
 
 import java.io.File;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collection;
-import java.util.Map;
 
 import org.junit.runner.Result;
 import org.slf4j.Logger;
@@ -27,9 +27,8 @@ import org.slf4j.LoggerFactory;
 import spoon.processing.Processor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
-import fr.inria.lille.commons.classes.CacheBasedClassLoader;
 import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.spoon.SourceInstrumenter;
+import fr.inria.lille.commons.spoon.SpoonClassLoader;
 import fr.inria.lille.commons.spoon.SpoonLibrary;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.nopol.synth.BugKind;
@@ -48,6 +47,7 @@ public final class TestPatch {
 	public TestPatch(final File sourceFolder, final URL[] classpath) {
 		this.sourceFolder = sourceFolder;
 		this.classpath = classpath;
+		spooner = new SpoonClassLoader(sourceFolder);
 	}
 
 	public static String getGeneratedPatchDirectorie(){
@@ -63,9 +63,10 @@ public final class TestPatch {
 	}
 
 	private boolean wasSuccessful(String classWithPatch, Collection<Processor<?>> processors, String[] testClasses) {
-		Map<String, Class<?>> classCache = new SourceInstrumenter(sourceFolder, classpath).instrumentedWith(processors, classWithPatch);
-		ClassLoader cacheBasedClassLoader = new CacheBasedClassLoader(classpath, classCache);
-		Result result = TestSuiteExecution.runCasesIn(testClasses, cacheBasedClassLoader);
+		spooner.addProcessors(processors);
+		ClassLoader loader = spooner.classLoaderProcessing(spooner.modelledClass(classWithPatch));
+		ClassLoader urlClassLoader = new URLClassLoader(classpath, loader);
+		Result result = TestSuiteExecution.runCasesIn(testClasses, urlClassLoader);
 		return result.wasSuccessful();
 	}
 
@@ -87,6 +88,7 @@ public final class TestPatch {
 	
 	private final URL[] classpath;
 	private final File sourceFolder;
+	private final SpoonClassLoader spooner;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	private static final String SPOON_DIRECTORY = File.separator + ".." + File.separator + "spooned";

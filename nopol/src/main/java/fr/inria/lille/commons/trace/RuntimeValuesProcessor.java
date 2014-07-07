@@ -15,6 +15,8 @@
  */
 package fr.inria.lille.commons.trace;
 
+import static java.util.Arrays.asList;
+
 import java.util.Collection;
 
 import spoon.processing.AbstractProcessor;
@@ -22,7 +24,6 @@ import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.visitor.Filter;
@@ -31,6 +32,7 @@ import spoon.reflect.visitor.filter.FilteringOperator;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.spoon.BeforeLocationFilter;
+import fr.inria.lille.commons.spoon.InBlockFilter;
 import fr.inria.lille.commons.spoon.InsertBeforeStrategy;
 import fr.inria.lille.commons.spoon.InsertionStrategy;
 import fr.inria.lille.commons.spoon.ReachableVariableVisitor;
@@ -80,7 +82,7 @@ public class RuntimeValuesProcessor<T extends CtCodeElement> extends AbstractPro
 	private Collection<CtVariable<?>> reachableVariables(CtStatement statement) {
 		ReachableVariableVisitor variableVisitor = new ReachableVariableVisitor(statement);
 		Collection<CtVariable<?>> reachedVariables = variableVisitor.reachedVariables();
-		return initializedVariablesBefore(statement.getPosition(), reachedVariables);
+		return initializedVariablesBefore(statement, reachedVariables);
 	}
 	
 	protected Collection<String> variableNames(Collection<CtVariable<?>> reachedVariables) {
@@ -94,38 +96,42 @@ public class RuntimeValuesProcessor<T extends CtCodeElement> extends AbstractPro
 	private String nameFor(CtVariable<?> variable) {
 		String simpleName = variable.getSimpleName();
 		if (SpoonLibrary.isField(variable)) {
+			String declaringClass = ((CtField<?>) variable).getDeclaringType().getSimpleName();
 			if (SpoonLibrary.hasStaticModifier(variable)) {
-				simpleName = ((CtField<?>) variable).getDeclaringType().getSimpleName() + "." + simpleName;
+				simpleName = declaringClass + "." + simpleName;
 			} else {
-				simpleName = "this." + simpleName;
+				simpleName = declaringClass + ".this." + simpleName;
 			}
 		}
 		return simpleName;
 	}
 	
-	private Collection<CtVariable<?>> initializedVariablesBefore(SourcePosition position, Collection<CtVariable<?>> reachedVariables) {
+	private Collection<CtVariable<?>> initializedVariablesBefore(CtStatement statement, Collection<CtVariable<?>> reachedVariables) {
 		Collection<CtVariable<?>> initializedVariables = SetLibrary.newHashSet();
 		for (CtVariable<?> variable : reachedVariables) {
-			if (! SpoonLibrary.isLocalVariable(variable) || wasInitializedBefore(position, variable)) {
+			if (! SpoonLibrary.isLocalVariable(variable) || wasInitializedBefore(statement, variable)) {
 				initializedVariables.add(variable);
 			}
 		}
 		return initializedVariables;
 	}
 	
-	private boolean wasInitializedBefore(SourcePosition position, CtVariable<?> variable) {
+	private boolean wasInitializedBefore(CtStatement statement, CtVariable<?> variable) {
 		if (variable.getDefaultExpression() == null) {
 			CtBlock<?> block = variable.getParent(CtBlock.class);
-			Filter<CtAssignment<?,?>> filter = compositeFilterFor(variable, position);
+			Filter<CtAssignment<?,?>> filter = initializationAssignmentsFilterFor(variable, statement);
 			return ! block.getElements(filter).isEmpty();
 		}
 		return true;
 	}
 	
-	private Filter<CtAssignment<?,?>> compositeFilterFor(CtVariable<?> variable, SourcePosition position) {
+	private Filter<CtAssignment<?,?>> initializationAssignmentsFilterFor(CtVariable<?> variable, CtStatement statement) {
 		VariableAssignmentFilter variableAssignment = new VariableAssignmentFilter(variable);
-		BeforeLocationFilter<CtAssignment<?,?>> beforeLocation = new BeforeLocationFilter(CtAssignment.class, position);
-		return new CompositeFilter(FilteringOperator.INTERSECTION, variableAssignment, beforeLocation);
+		BeforeLocationFilter<CtAssignment<?,?>> beforeLocation = new BeforeLocationFilter(CtAssignment.class, statement.getPosition());
+		InBlockFilter<CtAssignment<?,?>> inVariableDeclarationBlock = new InBlockFilter(CtAssignment.class, asList(variable.getParent(CtBlock.class)));
+		InBlockFilter<CtAssignment<?,?>> inStatementBlock = new InBlockFilter(CtAssignment.class, asList(statement.getParent(CtBlock.class)));
+		Filter<CtAssignment<?,?>> inBlockFilter = new CompositeFilter(FilteringOperator.UNION, inStatementBlock, inVariableDeclarationBlock);
+		return new CompositeFilter(FilteringOperator.INTERSECTION, variableAssignment, beforeLocation, inBlockFilter);
 	}
 	
 	protected InsertionStrategy insertionStrategy() {

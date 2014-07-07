@@ -7,9 +7,9 @@ import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 
-public class LoopIterativeValueCollectorListener extends TestCasesListener {
+public class LoopIterationValuesCollectorListener extends TestCasesListener {
 
-	public LoopIterativeValueCollectorListener() {
+	public LoopIterationValuesCollectorListener() {
 		cleanUp();
 		specifications = SetLibrary.newHashSet();
 	}

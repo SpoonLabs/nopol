@@ -34,7 +34,7 @@ import com.google.common.collect.ComputationException;
 public final class JUnitRunner implements Callable<Result> {
 	
 	public JUnitRunner(@Nonnull final String[] classes, RunListener listener) {
-		this.classes = checkNotNull(classes);
+		this.testClasses = checkNotNull(classes);
 		this.listener = listener;
 	}
 
@@ -42,14 +42,14 @@ public final class JUnitRunner implements Callable<Result> {
 	public Result call() throws Exception {
 		JUnitCore runner = new JUnitCore();
 		runner.addListener(listener);
-		Class<?>[] testClasses = classArrayFrom(classes);
+		Class<?>[] testClasses = testClassesFromCustomClassLoader();
 		return runner.run(testClasses);
 	}
 
-	private Class<?>[] classArrayFrom(String[] classNames) {
-		Class<?>[] classes = new Class<?>[classNames.length];
+	private Class<?>[] testClassesFromCustomClassLoader() {
+		Class<?>[] classes = new Class<?>[testClasses.length];
 		int index = 0;
-		for (String className : classNames) {
+		for (String className : testClasses) {
 			try {
 				classes[index] = Thread.currentThread().getContextClassLoader().loadClass(className);
 			} catch (ClassNotFoundException e) {
@@ -60,6 +60,6 @@ public final class JUnitRunner implements Callable<Result> {
 		return classes;
 	}
 	
-	private final String[] classes;
+	private final String[] testClasses;
 	private final RunListener listener;
 }

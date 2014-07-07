@@ -149,12 +149,12 @@ public class ValuesCollectorTest {
 
 	@Test
 	public void reachedVariablesInExample1() {
-		testReachedVariableNames(1, "index == 0", "index", "s", "this.index", "NopolExample.s");
+		testReachedVariableNames(1, "index == 0", "index", "s", "NopolExample.this.index", "NopolExample.s");
 	}
 	
 	@Test
 	public void reachedVariablesInExample2() {
-		testReachedVariableNames(2, "(b - a) < 0", "b", "a");
+		testReachedVariableNames(2, "(b - a) < 0", "b", "a", "NopolExample.this.fieldOfOuterClass");
 	}
 	
 	@Test
@@ -181,6 +181,23 @@ public class ValuesCollectorTest {
 	@Test
 	public void reachedVariablesInsideConstructor() {
 		testReachedVariableNames(1, "index = 2 * variableInsideConstructor", "variableInsideConstructor");
+	}
+	
+	@Test
+	public void reachedVariableOfOuterClass() {
+		testReachedVariableNames(2, "int result = 29", "aBoolean", "NopolExample.this.fieldOfOuterClass", "InnerNopolExample.this.fieldOfInnerClass");
+	}
+	
+	@Test
+	public void unreachedVariableInIfBranch() {
+		existsCodeSnippet(3, "int unreachableVariable");
+		testReachedVariableNames(3, "(!aBoolean) || (reachableVariable < 2)", "aBoolean", "reachableVariable");
+	}
+	
+	@Test
+	public void reachedVariableInIfBranch() {
+		existsCodeSnippet(3, "int uninitializedReachableVariable");
+		testReachedVariableNames(3, "(!aBoolean) && (uninitializedReachableVariable < 2)", "aBoolean", "uninitializedReachableVariable");
 	}
 	
 	private void testReachedVariableNames(int exampleNumber, String codeSnippet, String... expectedReachedVariables) {

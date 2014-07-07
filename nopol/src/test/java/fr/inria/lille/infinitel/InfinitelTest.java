@@ -3,6 +3,7 @@ package fr.inria.lille.infinitel;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -13,18 +14,49 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.filter.TypeFilter;
 import fr.inria.lille.commons.collections.CollectionLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.collections.Pair;
 import fr.inria.lille.commons.io.FileHandler;
+import fr.inria.lille.commons.spoon.SpoonLibrary;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
-import fr.inria.lille.commons.trace.LoopIterativeValueCollectorListener;
+import fr.inria.lille.commons.trace.LoopIterationValuesCollectorListener;
+import fr.inria.lille.infinitel.loop.LoopStatementsMonitor;
 import fr.inria.lille.infinitel.loop.LoopUnroller;
 
 public class InfinitelTest {
+	
+	@Test
+	public void loopNotProcessedInNonVoidReturningMethodLastStatement() {
+		LoopStatementsMonitor monitor = new LoopStatementsMonitor(0);
+		Infinitel infinitel = loopFixerForExample(1);
+		Map<String, CtWhile> loops = loopsByMethodIn(infinitel.project().sourceFile(), 4);
+		assertTrue(monitor.isToBeProcessed(loops.get("loopResult")));
+		assertTrue(monitor.isToBeProcessed(loops.get("fixableInfiniteLoop")));
+		assertFalse(monitor.isToBeProcessed(loops.get("unfixableInfiniteLoop")));
+		assertFalse(monitor.isToBeProcessed(loops.get("otherUnfixableInfiniteLoop")));
+	}
+	
+	private Map<String, CtWhile> loopsByMethodIn(File sourceFile, int numberOfLoops) {
+		Factory model = SpoonLibrary.modelFor(sourceFile);
+		TypeFilter<CtWhile> filter = new TypeFilter<>(CtWhile.class);
+		List<CtWhile> elements = Query.getElements(model, filter);
+		assertEquals(numberOfLoops, elements.size());
+		Map<String, CtWhile> byMethod = MapLibrary.newHashMap();
+		for (CtWhile loop : elements) {
+			String methodName = loop.getParent(CtMethod.class).getSimpleName();
+			byMethod.put(methodName, loop);
+		}
+		return byMethod;
+	}
 	
 	@Test
 	public void example1LoopDetector() {
@@ -39,7 +71,7 @@ public class InfinitelTest {
 		Pair<Collection<TestCase>, Collection<TestCase>> checkedTests = checkTests(infinitel, classLoader, loopPosition, listener, 1, 4);
 		Collection<TestCase> passingTests = checkedTests.first();
 		Collection<TestCase> failingTests = checkedTests.second();
-		LoopIterativeValueCollectorListener specificationListener = checkThresholds(infinitel, classLoader, loopPosition, passingTests, failingTests, expected);
+		LoopIterationValuesCollectorListener specificationListener = checkThresholds(infinitel, classLoader, loopPosition, passingTests, failingTests, expected);
 		checkSynthesisedFix(infinitel, specificationListener);
 	}
 	
@@ -72,9 +104,9 @@ public class InfinitelTest {
 		return new Pair<>(passingTestsUsingLoop, failingTestsUsingLoop);
 	}
 	
-	private LoopIterativeValueCollectorListener checkThresholds(Infinitel infinitel, ClassLoader classLoader, SourcePosition loopPosition, 
+	private LoopIterationValuesCollectorListener checkThresholds(Infinitel infinitel, ClassLoader classLoader, SourcePosition loopPosition, 
 			Collection<TestCase> passingTests, Collection<TestCase> failingTests, Map<String, Integer> expected) {
-		LoopIterativeValueCollectorListener specificationListener = new LoopIterativeValueCollectorListener();
+		LoopIterationValuesCollectorListener specificationListener = new LoopIterationValuesCollectorListener();
 		LoopUnroller unroller = new LoopUnroller(infinitel.monitor(), classLoader, specificationListener);
 		Map<TestCase, Integer> thresholds = unroller.numberOfIterationsByTestIn(loopPosition, passingTests, failingTests);
 		Map<String, Integer> thresholdsByName = MapLibrary.toStringMap(thresholds);
@@ -82,7 +114,7 @@ public class InfinitelTest {
 		return specificationListener;
 	}
 	
-	private void checkSynthesisedFix(Infinitel infinitel, LoopIterativeValueCollectorListener listener) {
+	private void checkSynthesisedFix(Infinitel infinitel, LoopIterationValuesCollectorListener listener) {
 		CodeGenesis genesis = infinitel.synthesiseCodeFor(listener.specifications());
 		assertTrue(genesis.isSuccessful());
 	}

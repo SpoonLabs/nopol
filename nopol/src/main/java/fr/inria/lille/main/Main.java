@@ -81,10 +81,10 @@ public class Main {
 	private static void showUsage() {
 		StringBuilder message = new StringBuilder();
 		String newline = StringLibrary.javaNewline();
-		message.append("$ java " + Main.class.getName() + " <repair method> <source path> <classpath>" + newline);
+		message.append("$ java " + Main.class.getName() + " <repair method> <source path> <class path>" + newline);
 		message.append("<repair metod>  'nopol' or 'infinitel'" + newline);
 		message.append("<source path>   path to file/folder containing source code to be fixed" + newline);
-		message.append("<classpath>     path(s) to folder(s) with test cases (separated by colon ':')" + newline);
+		message.append("<class path>    path(s) to folder(s) with class files (separated by colon ':')" + newline);
 		System.out.println(message);
 	}
 }

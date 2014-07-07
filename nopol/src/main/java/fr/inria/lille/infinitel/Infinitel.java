@@ -2,9 +2,11 @@ package fr.inria.lille.infinitel;
 
 import static fr.inria.lille.commons.string.StringLibrary.javaNewline;
 import static fr.inria.lille.infinitel.InfinitelConfiguration.iterationsThreshold;
+import static java.util.Arrays.asList;
 
 import java.io.File;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.Map;
 
@@ -12,15 +14,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.reflect.cu.SourcePosition;
-import fr.inria.lille.commons.classes.CacheBasedClassLoader;
 import fr.inria.lille.commons.io.ProjectReference;
-import fr.inria.lille.commons.spoon.SourceInstrumenter;
+import fr.inria.lille.commons.spoon.SpoonClassLoader;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
-import fr.inria.lille.commons.trace.LoopIterativeValueCollectorListener;
+import fr.inria.lille.commons.trace.LoopIterationValuesCollectorListener;
+import fr.inria.lille.commons.trace.RuntimeValuesCleanerListener;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.infinitel.loop.LoopStatementsMonitor;
 import fr.inria.lille.infinitel.loop.LoopUnroller;
@@ -51,7 +53,7 @@ public class Infinitel {
 	public void repair() {
 		log("# Starting repair process");
 		ClassLoader classLoader = loaderWithInstrumentedClasses();
-		TestCasesListener listener = new TestCasesListener();
+		TestCasesListener listener = new RuntimeValuesCleanerListener();
 		Collection<SourcePosition> infiniteLoops = infiniteLoopsRunningTests(classLoader, listener);
 		for (SourcePosition loopPosition : infiniteLoops) {
 			findRepairIn(loopPosition, classLoader, listener.successfulTests(), listener.failedTests());
@@ -60,23 +62,22 @@ public class Infinitel {
 	
 	protected ClassLoader loaderWithInstrumentedClasses() {
 		log("- Instrumenting project classes");
-		SourceInstrumenter instrumenter = new SourceInstrumenter(project());
-		Map<String, Class<?>> processedClassCache = instrumenter.instrumentedWith(monitor());
-		return new CacheBasedClassLoader(project().classpath(), processedClassCache);
+		SpoonClassLoader spooner = new SpoonClassLoader(project().sourceFile(), asList(monitor()));
+		ClassLoader loader = spooner.classLoaderProcessing(spooner.modelledClasses());
+		return new URLClassLoader(project().classpath(), loader);
 	}
 
 	protected Collection<SourcePosition> infiniteLoopsRunningTests(ClassLoader classLoader, TestCasesListener listener) {
 		log("- Running test cases to find infinite loops");
 		TestSuiteExecution.runCasesIn(project().testClasses(), classLoader, listener);
 		Collection<SourcePosition> loopsAboveThreshold = monitor().loopsAboveThreshold();
-		log("-- Failing tests: " + listener.failedTests());
 		log("-- Number of infinite loops: " + loopsAboveThreshold.size());
 		return loopsAboveThreshold;
 	}
 	
 	protected void findRepairIn(SourcePosition loopPosition, ClassLoader classLoader, Collection<TestCase> passedTests, Collection<TestCase> failures) {
 		log("# Finding repair in " + loopPosition);
-		LoopIterativeValueCollectorListener loopListener = new LoopIterativeValueCollectorListener();
+		LoopIterationValuesCollectorListener loopListener = new LoopIterationValuesCollectorListener();
 		LoopUnroller unroller = new LoopUnroller(monitor(), classLoader, loopListener);
 		Map<TestCase, Integer> thresholds = unroller.numberOfIterationsByTestIn(loopPosition, passedTests, failures);
 		log("- Number of iterations for each test:" + javaNewline() + thresholds);

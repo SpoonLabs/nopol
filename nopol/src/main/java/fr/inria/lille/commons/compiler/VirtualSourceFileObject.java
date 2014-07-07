@@ -4,9 +4,9 @@ import javax.tools.SimpleJavaFileObject;
 
 import fr.inria.lille.commons.io.FileHandler;
 
-public class BufferedSourceFileObject extends SimpleJavaFileObject {
+public class VirtualSourceFileObject extends SimpleJavaFileObject {
 
-	public BufferedSourceFileObject(String simpleClassName, String sourceContent) {
+	public VirtualSourceFileObject(String simpleClassName, String sourceContent) {
 		super(FileHandler.uriFrom(simpleClassName + Kind.SOURCE.extension), Kind.SOURCE);
 		this.sourceContent = sourceContent;
 	}

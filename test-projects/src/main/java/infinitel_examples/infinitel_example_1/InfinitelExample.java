@@ -12,4 +12,36 @@ public class InfinitelExample {
 		return b / 2;
 	}
 
+    private void fixableInfiniteLoop(int a) {
+        while (true) {
+            if (unfixableInfiniteLoop(a-1)) {
+                return;
+            } else if (unfixableInfiniteLoop(a+1)) {
+                return;
+            }
+        }
+    }
+    
+    private boolean unfixableInfiniteLoop(int a) {
+        while (true) {
+            if (unfixableInfiniteLoop(a-1)) {
+                return true;
+            } else if (unfixableInfiniteLoop(a+1)) {
+                return false;
+            }
+        }
+    }
+    
+    private int otherUnfixableInfiniteLoop(boolean a, int b) {
+    	if (a)
+    		while (true) {
+	            if (unfixableInfiniteLoop(b-1)) {
+	                return b-1;
+	            } else if (unfixableInfiniteLoop(b+1)) {
+	                return b+1;
+	            }
+    		}
+    	else
+    		return 0;
+    }
 }

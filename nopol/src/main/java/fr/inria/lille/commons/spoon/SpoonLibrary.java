@@ -1,5 +1,8 @@
 package fr.inria.lille.commons.spoon;
 
+import static fr.inria.lille.commons.classes.ClassLibrary.castTo;
+import static fr.inria.lille.commons.classes.ClassLibrary.isInstanceOf;
+
 import java.io.File;
 import java.util.List;
 
@@ -21,6 +24,7 @@ import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.ModifierKind;
@@ -31,7 +35,6 @@ import spoon.reflect.reference.CtTypeReference;
 
 import com.martiansoftware.jsap.JSAPException;
 
-import fr.inria.lille.commons.classes.ClassLibrary;
 import fr.inria.lille.commons.collections.ListLibrary;
 
 public class SpoonLibrary {
@@ -116,40 +119,52 @@ public class SpoonLibrary {
 	}
 	
 	public static boolean isBlock(CtElement element) {
-		return ClassLibrary.isInstanceOf(CtBlock.class, element);
+		return isInstanceOf(CtBlock.class, element);
+	}
+	
+	public static boolean isMethod(CtElement element) {
+		return isInstanceOf(CtMethod.class, element);
 	}
 	
 	public static boolean isLocalVariable(CtElement element) {
-		return ClassLibrary.isInstanceOf(CtLocalVariable.class, element);
+		return isInstanceOf(CtLocalVariable.class, element);
 	}
 	
 	public static boolean isAnonymousClass(CtElement element) {
-		return ClassLibrary.isInstanceOf(CtNewClass.class, element);
+		return isInstanceOf(CtNewClass.class, element);
 	}
 	
 	public static boolean isConstructor(CtElement element) {
-		return ClassLibrary.isInstanceOf(CtConstructor.class, element);
+		return isInstanceOf(CtConstructor.class, element);
 	}
 	
 	public static boolean isInitializationBlock(CtElement element) {
-		return ClassLibrary.isInstanceOf(CtAnonymousExecutable.class, element);
+		return isInstanceOf(CtAnonymousExecutable.class, element);
 	}
 	
 	public static boolean isAType(CtElement element) {
-		return ClassLibrary.isInstanceOf(CtSimpleType.class, element);
+		return isInstanceOf(CtSimpleType.class, element);
 	}
 	
 	public static boolean isField(CtElement element) {
-		return ClassLibrary.isInstanceOf(CtField.class, element);
+		return isInstanceOf(CtField.class, element);
+	}
+	
+	public static boolean isStatement(CtElement element) {
+		return isInstanceOf(CtStatement.class, element);
+	}
+	
+	public static boolean isVoidType(CtTypeReference<?> type) {
+		return type.getSimpleName().equalsIgnoreCase("void");
 	}
 	
 	public static boolean allowsModifiers(CtElement element) {
-		return ClassLibrary.isInstanceOf(CtModifiable.class, element);
+		return isInstanceOf(CtModifiable.class, element);
 	}
 	
 	public static boolean hasStaticModifier(CtElement element) {
 		if (allowsModifiers(element)) {
-			return ClassLibrary.castTo(CtModifiable.class, element).getModifiers().contains(ModifierKind.STATIC);
+			return castTo(CtModifiable.class, element).getModifiers().contains(ModifierKind.STATIC);
 		}
 		return false;
 	}
@@ -161,10 +176,33 @@ public class SpoonLibrary {
 		return hasStaticModifier(element.getParent(CtModifiable.class));
 	}
 	
+	public static boolean isLastStatementOfMethod(CtStatement statement) {
+		CtElement statementParent = statement.getParent();
+		if (! isBlock(statementParent)) {
+			return isLastStatementOfMethod((CtStatement) statementParent);
+		}
+		CtBlock<?> block = (CtBlock<?>) statementParent;
+		if (isLastStatementOf(block, statement)) {
+			CtElement blockParent = block.getParent();
+			if (isStatement(blockParent)) {
+				return isLastStatementOfMethod((CtStatement) blockParent);
+			} else {
+				return isMethod(blockParent);
+			}
+		}
+		return false;
+	}
+	
+	public static boolean isLastStatementOf(CtBlock<?> block, CtStatement statement) {
+		List<CtStatement> statements = block.getStatements();
+		CtStatement lastStatement = ListLibrary.last(statements);
+		return lastStatement == statement;
+	}
+	
 	public static CtStatement statementOf(CtCodeElement codeElement) {
 		Class<CtStatement> statementClass = CtStatement.class;
-		if (ClassLibrary.isInstanceOf(statementClass, codeElement)) {
-			return ClassLibrary.castTo(statementClass, codeElement);
+		if (isInstanceOf(statementClass, codeElement)) {
+			return castTo(statementClass, codeElement);
 		}
 		return codeElement.getParent(statementClass);
 	}

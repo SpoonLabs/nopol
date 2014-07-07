@@ -20,9 +20,14 @@ public class DynamicallyCompiledClassLoader extends ClassLoader {
 		initialize();
 	}
 	
+	public DynamicallyCompiledClassLoader copy() {
+		DynamicallyCompiledClassLoader copy = new DynamicallyCompiledClassLoader(getParent());
+		copy.classFiles().putAll(classFiles());
+		return copy;
+	}
+	
 	private void initialize() {
-		classByteCodes = MapLibrary.newHashMap();
-		loadedClasses = MapLibrary.newHashMap();
+		classFiles = MapLibrary.newHashMap();
 	}
 	
 	@Override
@@ -32,12 +37,9 @@ public class DynamicallyCompiledClassLoader extends ClassLoader {
    
 	@Override
 	protected Class<?> findClass(String qualifiedName) throws ClassNotFoundException {
-		if (alreadyLoaded(qualifiedName)) {
-			return loadedClass(qualifiedName);
-		}
 		if (containsCompiledClassFor(qualifiedName)) {
 			byte[] bytes = compiledClass(qualifiedName).byteCodes();
-			return definedClass(qualifiedName, bytes);
+			return defineClass(qualifiedName, bytes, 0, bytes.length);
 		}
 		try {
 			return Class.forName(qualifiedName);
@@ -46,12 +48,6 @@ public class DynamicallyCompiledClassLoader extends ClassLoader {
 		return super.findClass(qualifiedName);
 	}
    
-	private Class<?> definedClass(String qualifiedName, byte[] bytes) {
-		Class<?> definedClass = defineClass(qualifiedName, bytes, 0, bytes.length);
-		loadedClasses().put(qualifiedName, definedClass);
-		return definedClass;
-	}
-
 	@Override
 	public InputStream getResourceAsStream(String resourceName) {
 	   if (resourceName.endsWith(".class")) {
@@ -63,38 +59,25 @@ public class DynamicallyCompiledClassLoader extends ClassLoader {
       	return super.getResourceAsStream(resourceName);
    	}
 	
-	public void addClassFileObject(String qualifiedName, BufferedClassFileObject classFile) {
-		classByteCodes().put(qualifiedName, classFile);
+	public void addClassFileObject(String qualifiedName, VirtualClassFileObject classFile) {
+		classFiles().put(qualifiedName, classFile);
 	}
 
 	public boolean containsCompiledClassFor(String qualifiedName) {
-		return classByteCodes().containsKey(qualifiedName);
+		return classFiles().containsKey(qualifiedName);
 	}
 	
-	public boolean alreadyLoaded(String qualifiedName) {
-		return loadedClasses().containsKey(qualifiedName);
+	public VirtualClassFileObject compiledClass(String qualifiedName) {
+		return classFiles().get(qualifiedName);
 	}
 	
-	public BufferedClassFileObject compiledClass(String qualifiedName) {
-		return classByteCodes().get(qualifiedName);
+	public Collection<VirtualClassFileObject> compiledClasses() {
+		return classFiles().values();
 	}
 	
-	public Class<?> loadedClass(String qualifiedName) {
-		return loadedClasses().get(qualifiedName);
+	private Map<String, VirtualClassFileObject> classFiles() {
+		return classFiles;
 	}
 	
-	public Collection<BufferedClassFileObject> compiledClasses() {
-		return classByteCodes().values();
-	}
-	
-	public Map<String, Class<?>> loadedClasses() {
-		return loadedClasses;
-	}
-	
-	private Map<String, BufferedClassFileObject> classByteCodes() {
-		return classByteCodes;
-	}
-	
-	private Map<String, BufferedClassFileObject> classByteCodes;
-	private Map<String, Class<?>> loadedClasses;
+	private Map<String, VirtualClassFileObject> classFiles;
 }

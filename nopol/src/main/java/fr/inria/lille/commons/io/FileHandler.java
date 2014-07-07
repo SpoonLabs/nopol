@@ -13,6 +13,10 @@ import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.string.StringLibrary;
 
 public class FileHandler {
+	
+	public static String systemClasspath() {
+		return System.getProperty("java.class.path");
+	}
 
 	public static boolean ensurePathIsValid(String path) {
 		return openFrom(path).exists();
@@ -79,7 +83,7 @@ public class FileHandler {
 	public static void deleteFile(String path) {
 		File file = openFrom(path);
 		if (file.isFile()) {
-			log(String.format("Warning: file '%s' was deleted", file.getAbsolutePath()));
+			log(String.format("Warning: deleting file '%s'", file.getAbsolutePath()));
 			file.delete();
 		} else {
 			deleteDirectory(path);
@@ -88,7 +92,7 @@ public class FileHandler {
 	
 	public static void deleteDirectory(String path) {
 		File directory = directoryFrom(path);
-		log(String.format("Warning: directory '%s' was deleted", directory.getAbsolutePath()));
+		log(String.format("Warning: deleting directory '%s'", directory.getAbsolutePath()));
 		deleteFiles(Arrays.asList(directory.listFiles()));
 		directory.delete();
 	}

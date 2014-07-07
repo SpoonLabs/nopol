@@ -21,7 +21,7 @@ import fr.inria.lille.commons.synthesis.smt.locationVariables.ParameterLocationV
 import fr.inria.lille.commons.trace.Specification;
 
 public class ComparisonTest {
-
+	
 	@Test
 	public void equalParameters() {
 		mustBeEqual(Parameter.anObject(), Parameter.anObject());

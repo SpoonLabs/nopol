@@ -15,4 +15,27 @@ public class NopolExample {
 		
 	}
 	
+	private void method(boolean aBoolean) {
+		int reachableVariable = 3;
+		int unreachableVariable;
+		if (aBoolean) {
+			unreachableVariable = 23;
+		} else {
+			if (! aBoolean || reachableVariable < 2) {
+				unreachableVariable = 10;
+			}
+		}
+	}
+	
+	private void otherMethod(boolean aBoolean) {
+		int uninitializedReachableVariable;
+		if (aBoolean) {
+			uninitializedReachableVariable = 23;
+		} else {
+			uninitializedReachableVariable = 11;
+			if (! aBoolean && uninitializedReachableVariable < 2) {
+				uninitializedReachableVariable = 10;
+			}
+		}
+	}
 }

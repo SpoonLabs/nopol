@@ -18,9 +18,9 @@ import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.io.FileHandler;
 
-public class BufferedFileObjectManager extends ForwardingJavaFileManager<JavaFileManager> {
+public class VirtualFileObjectManager extends ForwardingJavaFileManager<JavaFileManager> {
 
-	protected BufferedFileObjectManager(DynamicallyCompiledClassLoader classLoader, JavaFileManager fileManager) {
+	protected VirtualFileObjectManager(DynamicallyCompiledClassLoader classLoader, JavaFileManager fileManager) {
 		super(fileManager);
 		this.classLoader = classLoader;
 		sourceFiles = MapLibrary.newHashMap();
@@ -37,17 +37,17 @@ public class BufferedFileObjectManager extends ForwardingJavaFileManager<JavaFil
 	
 	@Override
 	public JavaFileObject getJavaFileForOutput(Location location, String qualifiedName, Kind kind, FileObject outputFile) throws IOException {
-		BufferedClassFileObject classFile = new BufferedClassFileObject(qualifiedName, kind);
+		VirtualClassFileObject classFile = new VirtualClassFileObject(qualifiedName, kind);
 		classLoader().addClassFileObject(qualifiedName, classFile);
 		return classFile;
 	}
 	
 	@Override
-	public String inferBinaryName(Location loc, JavaFileObject file) {
-		if (BufferedSourceFileObject.class.isInstance(file) || BufferedClassFileObject.class.isInstance(file)) {
+	public String inferBinaryName(Location location, JavaFileObject file) {
+		if (VirtualSourceFileObject.class.isInstance(file) || VirtualClassFileObject.class.isInstance(file)) {
 			return file.getName();
 		}
-		return super.inferBinaryName(loc, file);
+		return super.inferBinaryName(location, file);
 	}
 	
 	@Override
@@ -72,7 +72,7 @@ public class BufferedFileObjectManager extends ForwardingJavaFileManager<JavaFil
 		return files;
 	}
 
-	public void addSourceFile(Location location, String packageName, String simpleClassName, BufferedSourceFileObject sourceFile) {
+	public void addSourceFile(Location location, String packageName, String simpleClassName, VirtualSourceFileObject sourceFile) {
 		URI fileURI = uriFor(location, packageName, simpleClassName);
 		sourceFiles().put(fileURI, sourceFile);
 	}
@@ -81,7 +81,7 @@ public class BufferedFileObjectManager extends ForwardingJavaFileManager<JavaFil
 		return sourceFiles().containsKey(fileURI);
 	}
 	
-	public BufferedSourceFileObject sourceFile(URI fileURI) {
+	public VirtualSourceFileObject sourceFile(URI fileURI) {
 		return sourceFiles().get(fileURI);
 	}
 
@@ -94,10 +94,10 @@ public class BufferedFileObjectManager extends ForwardingJavaFileManager<JavaFil
 		return FileHandler.uriFrom(uriScheme);
 	}
 	
-	private Map<URI, BufferedSourceFileObject> sourceFiles() {
+	private Map<URI, VirtualSourceFileObject> sourceFiles() {
 		return sourceFiles;
 	}
 	
 	private DynamicallyCompiledClassLoader classLoader;
-	private Map<URI, BufferedSourceFileObject> sourceFiles;
+	private Map<URI, VirtualSourceFileObject> sourceFiles;
 }

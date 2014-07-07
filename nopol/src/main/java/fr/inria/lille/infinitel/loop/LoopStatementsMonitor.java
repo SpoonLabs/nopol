@@ -8,8 +8,10 @@ import java.util.Map.Entry;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtMethod;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.collections.SetLibrary;
+import fr.inria.lille.commons.spoon.SpoonLibrary;
 
 public class LoopStatementsMonitor extends AbstractProcessor<CtWhile> {
 
@@ -17,6 +19,15 @@ public class LoopStatementsMonitor extends AbstractProcessor<CtWhile> {
 		this.threshold = threshold.intValue();
 		auditors = MapLibrary.newHashMap();
 		stateProcessor = new LoopStateProcessor();
+	}
+	
+	@Override
+	public boolean isToBeProcessed(CtWhile loopStatement) {
+		CtMethod<?> correspondingMethod = loopStatement.getParent(CtMethod.class);
+		if (SpoonLibrary.isLastStatementOfMethod(loopStatement)) {
+			return SpoonLibrary.isVoidType(correspondingMethod.getType());
+		}
+		return true;
 	}
 
 	@Override

@@ -62,7 +62,7 @@ public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
 
 	public String[] findIn(final URL[] classpath, boolean acceptTestSuite) {
 
-		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(
+		ExecutorService executor = Executors.newSingleThreadExecutor(new CustomContextClassLoaderThreadFactory(
 				new URLClassLoader(classpath)));
 
 		String[] testClasses;

@@ -15,10 +15,12 @@
  */
 package fr.inria.lille.nopol.synth;
 
+import static java.util.Arrays.asList;
+
 import java.io.File;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collection;
-import java.util.Map;
 
 import org.junit.runner.Description;
 import org.junit.runner.Result;
@@ -26,10 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.processing.Processor;
-import fr.inria.lille.commons.classes.CacheBasedClassLoader;
-import fr.inria.lille.commons.spoon.SourceInstrumenter;
+import fr.inria.lille.commons.spoon.SpoonClassLoader;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
-import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.TestValuesCollectorListener;
 import fr.inria.lille.nopol.SourceLocation;
 
@@ -40,7 +40,9 @@ import fr.inria.lille.nopol.SourceLocation;
 public final class ConstraintModelBuilder {
 
 	public ConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation, final Processor<?> processor) {
-		classCache = new SourceInstrumenter(sourceFolder, new URL[] {}).instrumentedWith(processor, sourceLocation.getRootClassName());
+		SpoonClassLoader spooner = new SpoonClassLoader(sourceFolder, asList(processor));
+		String modifiedClassName = sourceLocation.getRootClassName();
+		loader = spooner.classLoaderProcessing(spooner.modelledClass(modifiedClassName));
 	}
 
 	public InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
@@ -60,8 +62,8 @@ public final class ConstraintModelBuilder {
 	
 	private Result tracedExecutionResult(InputOutputValues model, String[] testClasses, URL[] classpath) {
 		TestValuesCollectorListener listener = new TestValuesCollectorListener(model, GlobalBooleanVariable.value);
-		ClassLoader cacheBasedClassLoader = new CacheBasedClassLoader(classpath, classCache);
-		return TestSuiteExecution.runCasesIn(testClasses, cacheBasedClassLoader, listener);
+		ClassLoader urlClassloader = new URLClassLoader(classpath, loader);
+		return TestSuiteExecution.runCasesIn(testClasses, urlClassloader, listener);
 	}
 
 	private void determineViability(final Result firstResult, final Result secondResult) {
@@ -82,6 +84,6 @@ public final class ConstraintModelBuilder {
 	}
 	
 	private boolean viablePatch;
-	private final Map<String, Class<?>> classCache;
+	private final ClassLoader loader;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 }
