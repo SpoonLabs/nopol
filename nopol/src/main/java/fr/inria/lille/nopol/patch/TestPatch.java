@@ -28,7 +28,7 @@ import spoon.processing.Processor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.spoon.SpoonClassLoader;
+import fr.inria.lille.commons.spoon.SpoonClassLoaderFactory;
 import fr.inria.lille.commons.spoon.SpoonLibrary;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.nopol.synth.BugKind;
@@ -47,7 +47,7 @@ public final class TestPatch {
 	public TestPatch(final File sourceFolder, final URL[] classpath) {
 		this.sourceFolder = sourceFolder;
 		this.classpath = classpath;
-		spooner = new SpoonClassLoader(sourceFolder);
+		spooner = new SpoonClassLoaderFactory(sourceFolder);
 	}
 
 	public static String getGeneratedPatchDirectorie(){
@@ -88,7 +88,7 @@ public final class TestPatch {
 	
 	private final URL[] classpath;
 	private final File sourceFolder;
-	private final SpoonClassLoader spooner;
+	private final SpoonClassLoaderFactory spooner;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	private static final String SPOON_DIRECTORY = File.separator + ".." + File.separator + "spooned";

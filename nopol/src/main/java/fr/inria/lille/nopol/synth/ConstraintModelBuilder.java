@@ -15,8 +15,6 @@
  */
 package fr.inria.lille.nopol.synth;
 
-import static java.util.Arrays.asList;
-
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -28,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.processing.Processor;
-import fr.inria.lille.commons.spoon.SpoonClassLoader;
+import fr.inria.lille.commons.spoon.SpoonClassLoaderFactory;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.commons.trace.TestValuesCollectorListener;
 import fr.inria.lille.nopol.SourceLocation;
@@ -40,7 +38,7 @@ import fr.inria.lille.nopol.SourceLocation;
 public final class ConstraintModelBuilder {
 
 	public ConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation, final Processor<?> processor) {
-		SpoonClassLoader spooner = new SpoonClassLoader(sourceFolder, asList(processor));
+		SpoonClassLoaderFactory spooner = new SpoonClassLoaderFactory(sourceFolder, processor);
 		String modifiedClassName = sourceLocation.getRootClassName();
 		loader = spooner.classLoaderProcessing(spooner.modelledClass(modifiedClassName));
 	}

@@ -2,11 +2,9 @@ package fr.inria.lille.infinitel;
 
 import static fr.inria.lille.commons.string.StringLibrary.javaNewline;
 import static fr.inria.lille.infinitel.InfinitelConfiguration.iterationsThreshold;
-import static java.util.Arrays.asList;
 
 import java.io.File;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.Map;
 
@@ -15,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import spoon.reflect.cu.SourcePosition;
 import fr.inria.lille.commons.io.ProjectReference;
-import fr.inria.lille.commons.spoon.SpoonClassLoader;
+import fr.inria.lille.commons.spoon.SpoonClassLoaderFactory;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
@@ -62,9 +60,9 @@ public class Infinitel {
 	
 	protected ClassLoader loaderWithInstrumentedClasses() {
 		log("- Instrumenting project classes");
-		SpoonClassLoader spooner = new SpoonClassLoader(project().sourceFile(), asList(monitor()));
-		ClassLoader loader = spooner.classLoaderProcessing(spooner.modelledClasses());
-		return new URLClassLoader(project().classpath(), loader);
+		SpoonClassLoaderFactory spooner = new SpoonClassLoaderFactory(project().sourceFile(), monitor());
+		ClassLoader loader = spooner.classLoaderProcessing(spooner.modelledClasses(), project().classpath());
+		return loader;
 	}
 
 	protected Collection<SourcePosition> infiniteLoopsRunningTests(ClassLoader classLoader, TestCasesListener listener) {

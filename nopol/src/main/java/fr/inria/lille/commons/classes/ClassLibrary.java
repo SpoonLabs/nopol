@@ -1,5 +1,7 @@
 package fr.inria.lille.commons.classes;
 
+import java.lang.reflect.Modifier;
+
 public class ClassLibrary {
 
 	public static <T> T castTo(Class<T> aClass, Object object) {
@@ -16,6 +18,10 @@ public class ClassLibrary {
 	
 	public static boolean isSubclassOf(Class<?> aClass, Class<?> queriedClass) {
 		return aClass.isAssignableFrom(queriedClass);
+	}
+	
+	public static boolean isAbstract(Class<?> aClass) {
+		return Modifier.isAbstract(aClass.getModifiers());
 	}
 	
 }

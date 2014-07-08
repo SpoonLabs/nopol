@@ -1,25 +1,10 @@
 package fr.inria.lille.commons.spoon;
 
-/*
- * Spoon - http://spoon.gforge.inria.fr/
- * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
- * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify
- * and/or redistribute the software under the terms of the CeCILL-C license as
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- * 
- * The fact that you are presently reading this means that you have had
- * knowledge of the CeCILL-C license and that you accept its terms.
- */
 import static fr.inria.lille.commons.string.StringLibrary.javaNewline;
 import static java.util.Arrays.asList;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
@@ -35,43 +20,23 @@ import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.compiler.BytecodeClassLoaderBuilder;
 import fr.inria.lille.commons.compiler.DynamicClassCompiler;
 
+public class SpoonClassLoaderFactory {
 
-/** 
- * A classloader that gets classes from Java source files and process them before actually loading them.
- */
-public class SpoonClassLoader {
-
-	public SpoonClassLoader(File sourceFolder, Collection<? extends Processor<?>> processors) {
+	public SpoonClassLoaderFactory(File sourceFolder, Processor<?> processor) {
+		this(sourceFolder, asList(processor));
+	}
+	
+	public SpoonClassLoaderFactory(File sourceFolder, Collection<? extends Processor<?>> processors) {
 		this(sourceFolder);
 		addProcessors(processors);
 	}
 	
-	public SpoonClassLoader(File sourceFile) {
+	public SpoonClassLoaderFactory(File sourceFile) {
 		compiler = new DynamicClassCompiler();
 		factory = SpoonLibrary.modelFor(sourceFile);
-		manager = new RuntimeProcessingManager(getFactory());
+		manager = new RuntimeProcessingManager(spoonFactory());
 	} 
 	
-	protected Factory getFactory() {
-		return factory;
-	}
-	
-	protected Environment getEnvironment() {
-		return getFactory().getEnvironment();
-	}
-
-	protected DynamicClassCompiler getCompiler() {
-		return compiler;
-	}
-	
-	protected ProcessingManager getProcessingManager() {
-		return manager;
-	}
-	
-	protected TypeFactory getTypeFactory() {
-		return getFactory().Type();
-	}
-
 	public void addProcessors(Collection<? extends Processor<?>> processors) {
 		for (Processor<?> processor : processors) {
 			addProcessor(processor);
@@ -79,15 +44,15 @@ public class SpoonClassLoader {
 	}
 
 	public void addProcessor(Processor<?> processor) {
-		getProcessingManager().addProcessor(processor);
+		processingManager().addProcessor(processor);
 	}
 	
 	public CtSimpleType<?> modelledClass(final String qualifiedName) {
-		return getTypeFactory().get(qualifiedName);
+		return typeFactory().get(qualifiedName);
 	}
 	
 	public Collection<CtSimpleType<?>> modelledClasses() {
-		return getTypeFactory().getAll();
+		return typeFactory().getAll();
 	}
 	
 	public ClassLoader classLoaderProcessing(CtSimpleType<?> modelledClass) {
@@ -97,6 +62,12 @@ public class SpoonClassLoader {
 	public ClassLoader classLoaderProcessing(Collection<CtSimpleType<?>> modelledClasses) {
 		Map<String, String> processedClasses = processedSources(modelledClasses);
 		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(processedClasses);
+		return loader;
+	}
+	
+	public ClassLoader classLoaderProcessing(Collection<CtSimpleType<?>> modelledClasses, URL[] classpath) {
+		Map<String, String> processedClasses = processedSources(modelledClasses);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(processedClasses, classpath);
 		return loader;
 	}
 	
@@ -112,13 +83,33 @@ public class SpoonClassLoader {
 	}
 	
 	private void processClass(CtSimpleType<?> c) {
-		getProcessingManager().process(c);
+		processingManager().process(c);
 	}
 
 	private String sourceContent(CtSimpleType<?> c) {
-		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getEnvironment());
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(spoonEnvironment());
 		printer.scan(c);
 		return c.getPackage().toString() + javaNewline() +  printer.toString();
+	}
+	
+	protected Factory spoonFactory() {
+		return factory;
+	}
+	
+	protected TypeFactory typeFactory() {
+		return spoonFactory().Type();
+	}
+	
+	protected Environment spoonEnvironment() {
+		return spoonFactory().getEnvironment();
+	}
+
+	protected DynamicClassCompiler compiler() {
+		return compiler;
+	}
+	
+	protected ProcessingManager processingManager() {
+		return manager;
 	}
 	
 	private Factory factory;

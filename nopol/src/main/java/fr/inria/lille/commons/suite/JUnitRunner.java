@@ -17,6 +17,7 @@ package fr.inria.lille.commons.suite;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import javax.annotation.Nonnull;
@@ -26,6 +27,9 @@ import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 
 import com.google.common.collect.ComputationException;
+
+import fr.inria.lille.commons.classes.ClassLibrary;
+import fr.inria.lille.commons.collections.ListLibrary;
 
 /**
  * @author Favio D. DeMarco
@@ -47,17 +51,18 @@ public final class JUnitRunner implements Callable<Result> {
 	}
 
 	private Class<?>[] testClassesFromCustomClassLoader() {
-		Class<?>[] classes = new Class<?>[testClasses.length];
-		int index = 0;
+		Collection<Class<?>> classes = ListLibrary.newLinkedList();
 		for (String className : testClasses) {
 			try {
-				classes[index] = Thread.currentThread().getContextClassLoader().loadClass(className);
+				Class<?> testClass = Thread.currentThread().getContextClassLoader().loadClass(className);
+				if (! ClassLibrary.isAbstract(testClass)) {
+					classes.add(testClass);
+				}
 			} catch (ClassNotFoundException e) {
 				throw new ComputationException(e);
 			}
-			index += 1;
 		}
-		return classes;
+		return classes.toArray(new Class<?>[classes.size()]);
 	}
 	
 	private final String[] testClasses;
