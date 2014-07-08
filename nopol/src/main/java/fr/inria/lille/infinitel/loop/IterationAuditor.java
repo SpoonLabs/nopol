@@ -7,16 +7,15 @@ import java.util.List;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.factory.Factory;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.spoon.SpoonLibrary;
 
 public class IterationAuditor {
 
-	public static IterationAuditor newInstance(SourcePosition loopPosition, Number threshold) {
+	public static IterationAuditor newInstance(Number threshold) {
 		int instanceNumber = allInstances().size();
-		IterationAuditor newInstance = new IterationAuditor(loopPosition, threshold, instanceNumber);
+		IterationAuditor newInstance = new IterationAuditor(threshold, instanceNumber);
 		allInstances().add(newInstance);
 		return newInstance;
 	}
@@ -71,10 +70,6 @@ public class IterationAuditor {
 		return iterationsRecord().contains(threshold());
 	}
 
-	public SourcePosition auditedLoopPosition() {
-		return loopPosition;
-	}
-	
 	public List<Integer> iterationsRecord() {
 		return iterationsRecord;
 	}
@@ -116,8 +111,7 @@ public class IterationAuditor {
 		return value != oldValue;
 	}
 	
-	private IterationAuditor(SourcePosition position, Number threshold, int instanceNumber) {
-		this.loopPosition = position;
+	private IterationAuditor(Number threshold, int instanceNumber) {
 		instanceID = instanceNumber;
 		resetRecord();
 		enable();
@@ -127,7 +121,6 @@ public class IterationAuditor {
 	private int threshold;
 	private int instanceID;
 	private boolean disabled;
-	private SourcePosition loopPosition;
 	private List<Integer> iterationsRecord;
 	
 	/** XXX This causes memory leaks **/

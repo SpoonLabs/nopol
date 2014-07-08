@@ -4,9 +4,9 @@ import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.nopol.synth.InputOutputValues;
 
-public class TestValuesCollectorListener extends TestCasesListener {
+public class RuntimeValuesListener extends TestCasesListener {
 
-	public TestValuesCollectorListener(final InputOutputValues matrix, boolean fixedValue) {
+	public RuntimeValuesListener(final InputOutputValues matrix, boolean fixedValue) {
 		this.matrix = matrix;
 		this.fixedValue = fixedValue;
 		cleanUp();

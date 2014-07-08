@@ -34,7 +34,7 @@ public class ConstraintBasedSynthesis {
 		scriptBuilder = new SynthesisScriptBuilder();
 	}
 	
-	public <T> Expression<T> outputExpressionFor(Class<? extends T> outputClass) {
+	protected <T> Expression<T> outputExpressionFor(Class<? extends T> outputClass) {
 		Class<T> smtLibCompatibleClass = smtLibCompatibleClassFor(outputClass);
 		return new Expression<>(smtLibCompatibleClass, "result");
 	}

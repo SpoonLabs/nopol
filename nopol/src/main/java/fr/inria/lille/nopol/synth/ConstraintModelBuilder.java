@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import spoon.processing.Processor;
 import fr.inria.lille.commons.spoon.SpoonClassLoaderFactory;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
-import fr.inria.lille.commons.trace.TestValuesCollectorListener;
+import fr.inria.lille.commons.trace.RuntimeValuesListener;
 import fr.inria.lille.nopol.SourceLocation;
 
 /**
@@ -59,7 +59,7 @@ public final class ConstraintModelBuilder {
 	}
 	
 	private Result tracedExecutionResult(InputOutputValues model, String[] testClasses, URL[] classpath) {
-		TestValuesCollectorListener listener = new TestValuesCollectorListener(model, GlobalBooleanVariable.value);
+		RuntimeValuesListener listener = new RuntimeValuesListener(model, GlobalBooleanVariable.value);
 		ClassLoader urlClassloader = new URLClassLoader(classpath, loader);
 		return TestSuiteExecution.runCasesIn(testClasses, urlClassloader, listener);
 	}

@@ -28,7 +28,7 @@ import fr.inria.lille.commons.spoon.SpoonLibrary;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
-import fr.inria.lille.commons.trace.LoopIterationValuesCollectorListener;
+import fr.inria.lille.commons.trace.IterationRuntimeValuesListener;
 import fr.inria.lille.infinitel.loop.LoopStatementsMonitor;
 import fr.inria.lille.infinitel.loop.LoopUnroller;
 
@@ -71,7 +71,7 @@ public class InfinitelTest {
 		Pair<Collection<TestCase>, Collection<TestCase>> checkedTests = checkTests(infinitel, classLoader, loopPosition, listener, 1, 4);
 		Collection<TestCase> passingTests = checkedTests.first();
 		Collection<TestCase> failingTests = checkedTests.second();
-		LoopIterationValuesCollectorListener specificationListener = checkThresholds(infinitel, classLoader, loopPosition, passingTests, failingTests, expected);
+		IterationRuntimeValuesListener specificationListener = checkThresholds(infinitel, classLoader, loopPosition, passingTests, failingTests, expected);
 		checkSynthesisedFix(infinitel, specificationListener);
 	}
 	
@@ -104,9 +104,9 @@ public class InfinitelTest {
 		return new Pair<>(passingTestsUsingLoop, failingTestsUsingLoop);
 	}
 	
-	private LoopIterationValuesCollectorListener checkThresholds(Infinitel infinitel, ClassLoader classLoader, SourcePosition loopPosition, 
+	private IterationRuntimeValuesListener checkThresholds(Infinitel infinitel, ClassLoader classLoader, SourcePosition loopPosition, 
 			Collection<TestCase> passingTests, Collection<TestCase> failingTests, Map<String, Integer> expected) {
-		LoopIterationValuesCollectorListener specificationListener = new LoopIterationValuesCollectorListener();
+		IterationRuntimeValuesListener specificationListener = new IterationRuntimeValuesListener();
 		LoopUnroller unroller = new LoopUnroller(infinitel.monitor(), classLoader, specificationListener);
 		Map<TestCase, Integer> thresholds = unroller.numberOfIterationsByTestIn(loopPosition, passingTests, failingTests);
 		Map<String, Integer> thresholdsByName = MapLibrary.toStringMap(thresholds);
@@ -114,7 +114,7 @@ public class InfinitelTest {
 		return specificationListener;
 	}
 	
-	private void checkSynthesisedFix(Infinitel infinitel, LoopIterationValuesCollectorListener listener) {
+	private void checkSynthesisedFix(Infinitel infinitel, IterationRuntimeValuesListener listener) {
 		CodeGenesis genesis = infinitel.synthesiseCodeFor(listener.specifications());
 		assertTrue(genesis.isSuccessful());
 	}

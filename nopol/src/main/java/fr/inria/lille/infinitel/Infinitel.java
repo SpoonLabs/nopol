@@ -19,8 +19,8 @@ import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
-import fr.inria.lille.commons.trace.LoopIterationValuesCollectorListener;
-import fr.inria.lille.commons.trace.RuntimeValuesCleanerListener;
+import fr.inria.lille.commons.trace.IterationRuntimeValuesListener;
+import fr.inria.lille.commons.trace.IterationRuntimeValuesCleaner;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.infinitel.loop.LoopStatementsMonitor;
 import fr.inria.lille.infinitel.loop.LoopUnroller;
@@ -51,7 +51,7 @@ public class Infinitel {
 	public void repair() {
 		log("# Starting repair process");
 		ClassLoader classLoader = loaderWithInstrumentedClasses();
-		TestCasesListener listener = new RuntimeValuesCleanerListener();
+		TestCasesListener listener = new IterationRuntimeValuesCleaner();
 		Collection<SourcePosition> infiniteLoops = infiniteLoopsRunningTests(classLoader, listener);
 		for (SourcePosition loopPosition : infiniteLoops) {
 			findRepairIn(loopPosition, classLoader, listener.successfulTests(), listener.failedTests());
@@ -75,7 +75,7 @@ public class Infinitel {
 	
 	protected void findRepairIn(SourcePosition loopPosition, ClassLoader classLoader, Collection<TestCase> passedTests, Collection<TestCase> failures) {
 		log("# Finding repair in " + loopPosition);
-		LoopIterationValuesCollectorListener loopListener = new LoopIterationValuesCollectorListener();
+		IterationRuntimeValuesListener loopListener = new IterationRuntimeValuesListener();
 		LoopUnroller unroller = new LoopUnroller(monitor(), classLoader, loopListener);
 		Map<TestCase, Integer> thresholds = unroller.numberOfIterationsByTestIn(loopPosition, passedTests, failures);
 		log("- Number of iterations for each test:" + javaNewline() + thresholds);

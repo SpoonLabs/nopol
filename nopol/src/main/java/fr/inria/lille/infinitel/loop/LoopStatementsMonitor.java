@@ -33,7 +33,7 @@ public class LoopStatementsMonitor extends AbstractProcessor<CtWhile> {
 	@Override
 	public void process(CtWhile loopStatement) {
 		SourcePosition position = loopStatement.getPosition();
-		IterationAuditor auditor = IterationAuditor.newInstance(position, threshold());
+		IterationAuditor auditor = IterationAuditor.newInstance(threshold());
 		stateProcessor().process(loopStatement, auditor);
 		auditors().put(position, auditor);
 		enable(position);
