@@ -64,12 +64,8 @@
 	</logger>
 	
 	
-	<!--.-->
-	<logger name="spoon.support.StandardEnvironment" level="warning" additivity="true">
-		<appender-ref ref="STDERR" />
-	</logger>
-	
-	<logger name="fr.inria.lille.infinitel" level="debug" additivity="true">
+	<!--.-->	
+	<logger name="fr.inria.lille.infinitel.Infinitel" level="debug" additivity="true">
 		<appender-ref ref="STDERR" />
 	</logger>
 
@@ -86,6 +82,14 @@
 	</logger>
 	
 	<logger name="fr.inria.lille.commons.spoon.SpoonClassLoaderFactory" level="debug" additivity="true">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<logger name="fr.inria.lille.infinitel.loop.LoopUnroller" level="debug" additivity="true">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<logger name="fr.inria.lille.infinitel.loop.LoopSpecificationCollector" level="debug" additivity="true">
 		<appender-ref ref="STDOUT" />
 	</logger>
 	<!--.-->

@@ -1,7 +1,13 @@
 package fr.inria.lille.infinitel.loop;
 
+import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
+import static fr.inria.lille.commons.classes.LoggerLibrary.newLoggerFor;
+import static java.lang.String.format;
+
 import java.util.Collection;
 import java.util.Map;
+
+import org.slf4j.Logger;
 
 import spoon.reflect.cu.SourcePosition;
 import fr.inria.lille.commons.collections.SetLibrary;
@@ -26,6 +32,7 @@ public class LoopSpecificationCollector {
 	}
 
 	protected void executeCollectingRuntimeValues(TestCase testCase, SourcePosition loopPosition, Integer threshold) {
+		logDebug(logger, format("[Executing %s to collect runtime values in %s]", testCase.toString(), loopPosition.toString()));
 		runtimeValues().enable();
 		testExecutor().execute(testCase, loopPosition, threshold);
 		runtimeValues().disable();
@@ -52,4 +59,5 @@ public class LoopSpecificationCollector {
 	}
 	
 	private MonitoringTestExecutor testExecutor;
+	private static Logger logger = newLoggerFor(LoopSpecificationCollector.class);
 }

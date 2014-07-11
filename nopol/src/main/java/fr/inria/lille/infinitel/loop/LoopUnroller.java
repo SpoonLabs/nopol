@@ -1,5 +1,7 @@
 package fr.inria.lille.infinitel.loop;
 
+import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
+import static fr.inria.lille.commons.classes.LoggerLibrary.newLoggerFor;
 import static java.lang.String.format;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -9,6 +11,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.junit.runner.Result;
+import org.slf4j.Logger;
 
 import spoon.reflect.cu.SourcePosition;
 import fr.inria.lille.commons.collections.ListLibrary;
@@ -41,6 +44,7 @@ public class LoopUnroller {
 	}
 	
 	public boolean testUsesLoop(SourcePosition loopPosition, TestCase testCase) {
+		logDebug(logger, format("[Running %s to see if it uses loop (%s)]", testCase.toString(), loopPosition.toString()));
 		testExecutor().execute(testCase, loopPosition, 0);
 		Integer lastRecord = monitor().lastRecordIn(loopPosition);
 		if (lastRecord != null) {
@@ -54,6 +58,7 @@ public class LoopUnroller {
 	private void findTracedThresholds(Collection<TestCase> tests, SourcePosition loopPosition, Map<TestCase, Integer> thresholdMap) {
 		Integer threshold = monitor().threshold();
 		for (TestCase testCase : tests) {
+			logDebug(logger, format("[Executing %s to get iteration threshold from run in %s]", testCase.toString(), loopPosition.toString()));
 			Result result = testExecutor().execute(testCase, loopPosition);
 			assertTrue("Wrong threshold for passing test " + testCase, result.wasSuccessful());
 			Integer tracedThreshold = monitor().lastRecordIn(loopPosition);
@@ -69,6 +74,7 @@ public class LoopUnroller {
 
 	private void findThresholdsInSteps(Collection<TestCase> tests, SourcePosition loopPosition, Map<TestCase, Integer> thresholdMap) {
 		for (TestCase testCase : tests) {
+			logDebug(logger, format("[Finding iteration threshold of %s in %s]", testCase.toString(), loopPosition.toString()));
 			findThreshold(testCase, loopPosition, thresholdMap);
 		}
 	}
@@ -93,4 +99,5 @@ public class LoopUnroller {
 	}
 	
 	private MonitoringTestExecutor testExecutor;
+	private static Logger logger = newLoggerFor(LoopUnroller.class);
 }
