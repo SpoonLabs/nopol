@@ -146,6 +146,21 @@ public class ValuesCollectorTest {
 		assertFalse(iterator.hasNext());
 	}
 	
+	@Test
+	public final void collectingNullObjectOnlyAddsNullCheck() {
+		// GIVEN
+		String name = "null";
+
+		// WHEN
+		RuntimeValues.collectValue(name, null);
+
+		// THEN
+		Iterator<Entry<String, Object>> iterator = RuntimeValues.collectedValues().iterator();
+		Entry<String, Object> isNotNull = iterator.next();
+		assertEquals(name + "!=null", isNotNull.getKey());
+		assertFalse((Boolean) isNotNull.getValue());
+		assertFalse(iterator.hasNext());
+	}
 
 	@Test
 	public void reachedVariablesInExample1() {

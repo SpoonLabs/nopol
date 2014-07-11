@@ -1,7 +1,9 @@
 package fr.inria.lille.infinitel;
 
-import static fr.inria.lille.commons.string.StringLibrary.javaNewline;
+import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
+import static fr.inria.lille.commons.classes.LoggerLibrary.newLoggerFor;
 import static fr.inria.lille.infinitel.InfinitelConfiguration.iterationsThreshold;
+import static java.lang.String.format;
 
 import java.io.File;
 import java.net.URL;
@@ -9,21 +11,19 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import spoon.reflect.cu.SourcePosition;
 import fr.inria.lille.commons.io.ProjectReference;
 import fr.inria.lille.commons.spoon.SpoonClassLoaderFactory;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
-import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
-import fr.inria.lille.commons.trace.IterationRuntimeValuesListener;
-import fr.inria.lille.commons.trace.IterationRuntimeValuesCleaner;
 import fr.inria.lille.commons.trace.Specification;
-import fr.inria.lille.infinitel.loop.LoopStatementsMonitor;
+import fr.inria.lille.infinitel.loop.CentralLoopMonitor;
+import fr.inria.lille.infinitel.loop.LoopSpecificationCollector;
 import fr.inria.lille.infinitel.loop.LoopUnroller;
+import fr.inria.lille.infinitel.loop.MonitoringTestExecutor;
 
 /** Infinite Loops Repair */
 
@@ -40,8 +40,6 @@ public class Infinitel {
 	
 	public Infinitel(ProjectReference project) {
 		this.project = project;
-		monitor = new LoopStatementsMonitor(iterationsThreshold());
-		synthesis = new ConstraintBasedSynthesis();
 	}
 	
 	public ProjectReference project() {
@@ -49,65 +47,72 @@ public class Infinitel {
 	}
 	
 	public void repair() {
-		log("# Starting repair process");
-		ClassLoader classLoader = loaderWithInstrumentedClasses();
-		TestCasesListener listener = new IterationRuntimeValuesCleaner();
-		Collection<SourcePosition> infiniteLoops = infiniteLoopsRunningTests(classLoader, listener);
+		TestCasesListener listener = new TestCasesListener();
+		MonitoringTestExecutor testExecutor = newTestExecutor();
+		Collection<SourcePosition> infiniteLoops = infiniteLoopsRunningTests(testExecutor, listener);
 		for (SourcePosition loopPosition : infiniteLoops) {
-			findRepairIn(loopPosition, classLoader, listener.successfulTests(), listener.failedTests());
+			findRepairIn(loopPosition, testExecutor, listener.successfulTests(), listener.failedTests());
 		}
 	}
 	
-	protected ClassLoader loaderWithInstrumentedClasses() {
-		log("- Instrumenting project classes");
-		SpoonClassLoaderFactory spooner = new SpoonClassLoaderFactory(project().sourceFile(), monitor());
+	protected MonitoringTestExecutor newTestExecutor() {
+		CentralLoopMonitor monitor = new CentralLoopMonitor(iterationsThreshold());
+		ClassLoader classLoader = loaderWithInstrumentedClasses(monitor);
+		MonitoringTestExecutor testExecutor = new MonitoringTestExecutor(classLoader, monitor);
+		return testExecutor;
+	}
+	
+	protected ClassLoader loaderWithInstrumentedClasses(CentralLoopMonitor monitor) {
+		logDebug(logger, "# Instrumenting project classes");
+		SpoonClassLoaderFactory spooner = new SpoonClassLoaderFactory(project().sourceFile(), monitor);
 		ClassLoader loader = spooner.classLoaderProcessing(spooner.modelledClasses(), project().classpath());
+		logDebug(logger, "# Classes were instrumented and compiled successfully");
 		return loader;
 	}
 
-	protected Collection<SourcePosition> infiniteLoopsRunningTests(ClassLoader classLoader, TestCasesListener listener) {
-		log("- Running test cases to find infinite loops");
-		TestSuiteExecution.runCasesIn(project().testClasses(), classLoader, listener);
-		Collection<SourcePosition> loopsAboveThreshold = monitor().loopsAboveThreshold();
-		log("-- Number of infinite loops: " + loopsAboveThreshold.size());
+	protected Collection<SourcePosition> infiniteLoopsRunningTests(MonitoringTestExecutor testExecutor, TestCasesListener listener) {
+		logDebug(logger, "# Running test cases to find infinite loops");
+		String[] testClasses = project().testClasses();
+		Collection<SourcePosition> loopsAboveThreshold = testExecutor.loopsAboveThresholdFor(testClasses, listener);
+		logDebug(logger, "# Number of infinite loops: " + loopsAboveThreshold.size());
 		return loopsAboveThreshold;
 	}
 	
-	protected void findRepairIn(SourcePosition loopPosition, ClassLoader classLoader, Collection<TestCase> passedTests, Collection<TestCase> failures) {
-		log("# Finding repair in " + loopPosition);
-		IterationRuntimeValuesListener loopListener = new IterationRuntimeValuesListener();
-		LoopUnroller unroller = new LoopUnroller(monitor(), classLoader, loopListener);
-		Map<TestCase, Integer> thresholds = unroller.numberOfIterationsByTestIn(loopPosition, passedTests, failures);
-		log("- Number of iterations for each test:" + javaNewline() + thresholds);
-		synthesiseCodeFor(loopListener.specifications());
+	protected void findRepairIn(SourcePosition loopPosition, MonitoringTestExecutor testExecutor, Collection<TestCase> passedTests, Collection<TestCase> failedTests) {
+		Map<TestCase, Integer> testsAndThresholds = testsAndThresholds(loopPosition, testExecutor, passedTests, failedTests);
+		Collection<Specification<Boolean>> testSpecifications = testSpecifications(testsAndThresholds, testExecutor, loopPosition);
+		synthesiseCodeFor(testSpecifications);
+	}
+	
+	protected Map<TestCase, Integer> testsAndThresholds(SourcePosition loopPosition, MonitoringTestExecutor testExecutor, 
+			Collection<TestCase> passedTests, Collection<TestCase> failedTests) {
+		logDebug(logger, "# Finding iteration thresholds for each test");
+		LoopUnroller unroller = new LoopUnroller(testExecutor);
+		Map<TestCase, Integer> thresholds = unroller.correctIterationsByTestIn(loopPosition, passedTests, failedTests);
+		logDebug(logger, format("# Found thresholds for %d tests which use the loop (%s) only once", thresholds.size(), loopPosition));
+		return thresholds;
+	}
+	
+	protected Collection<Specification<Boolean>> testSpecifications(Map<TestCase, Integer> testsAndThresholds, MonitoringTestExecutor testExecutor, SourcePosition loopPosition) {
+		logDebug(logger, "# Running each test individually to colllect runtime values");
+		LoopSpecificationCollector collector = new LoopSpecificationCollector(testExecutor);
+		Collection<Specification<Boolean>> testSpecifications = collector.testSpecifications(testsAndThresholds, loopPosition);
+		logDebug(logger, "# Finished runtime value collection");
+		return testSpecifications;
 	}
 	
 	protected CodeGenesis synthesiseCodeFor(Collection<Specification<Boolean>> specifications) {
-		log("- Code synthesis begins");
-		CodeGenesis synthesisedCode = synthesis().codesSynthesisedFrom(Boolean.class, specifications);
+		logDebug(logger, "# Code synthesis begins");
+		ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis();
+		CodeGenesis synthesisedCode = synthesis.codesSynthesisedFrom(Boolean.class, specifications);
 		if (synthesisedCode.isSuccessful()) {
-			log("-- Code synthesis completed successfully. A working looping condition is:");
-			log(synthesisedCode.returnStatement());
+			logDebug(logger, "# Code synthesis completed successfully", "A working looping condition is:", synthesisedCode.returnStatement());
 		} else {
-			log("-- Code synthesis failed");
+			logDebug(logger, "# Code synthesis failed");
 		}
 		return synthesisedCode;
 	}
-
-	protected LoopStatementsMonitor monitor() {
-		return monitor;
-	}
-	
-	private ConstraintBasedSynthesis synthesis() {
-		return synthesis;
-	}
-	
-	protected static void log(String message) {
-		logger.debug(message);
-	}
 	
 	private ProjectReference project;
-	private LoopStatementsMonitor monitor;
-	private ConstraintBasedSynthesis synthesis;
-	private static Logger logger = LoggerFactory.getLogger(Infinitel.class);
+	private static Logger logger = newLoggerFor(Infinitel.class);
 }

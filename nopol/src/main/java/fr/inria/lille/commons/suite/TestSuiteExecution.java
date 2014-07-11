@@ -1,6 +1,7 @@
 package fr.inria.lille.commons.suite;
 
-import static fr.inria.lille.commons.string.StringLibrary.javaNewline;
+import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
+import static fr.inria.lille.commons.classes.LoggerLibrary.newLoggerFor;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 import java.util.List;
@@ -16,7 +17,6 @@ import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import fr.inria.lille.commons.classes.CustomContextClassLoaderThreadFactory;
 import fr.inria.lille.commons.collections.ListLibrary;
@@ -49,9 +49,8 @@ public class TestSuiteExecution {
 		} catch (ExecutionException e) {
 			throw new RuntimeException(e);
 		} catch (TimeoutException e) {
-			log(String.format("Timeout after %d seconds. Infinite loop?", secondsForTimeout()));
+			logDebug(logger, String.format("Timeout after %d seconds. Infinite loop?", secondsForTimeout()));
 		}
-		logTestRunFinished(result);
 		executor.shutdown();
 		return result;
 	}
@@ -64,34 +63,10 @@ public class TestSuiteExecution {
 		return descriptions;
 	}
 	
-	private static void logTestRunFinished(Result result) {
-		StringBuilder builder = new StringBuilder();
-		String endl = javaNewline();
-		builder.append("Tests run finished" + endl);
-		builder.append("~ Total tests run: " + result.getRunCount() + endl);
-		builder.append("~ Ignored tests: " + result.getIgnoreCount() + endl);
-		builder.append("~ Failed tests: " + result.getFailureCount() + endl);
-		for (Failure failure : result.getFailures()) {
-			builder.append("~ " + failure.getTestHeader() + endl);
-			builder.append("[" + failure.getMessage() + "]" + endl);
-			Throwable exception = failure.getException();
-			builder.append(exception.toString() + endl);
-			for (int i = 0; i <= 5; i += 1) {
-				StackTraceElement element = exception.getStackTrace()[i];
-				builder.append("    at " + element.toString() + endl);
-			}
-		}
-		log(builder.toString());
-	}
-	
 	protected static long secondsForTimeout() {
 		return secondsForTimeout;
 	}
 	
-	protected static void log(String message) {
-		logger.warn(message);
-	}
-	
 	private static long secondsForTimeout = MINUTES.toSeconds(60L);
-	private static Logger logger = LoggerFactory.getLogger(TestSuiteExecution.class);
+	private static Logger logger = newLoggerFor(TestSuiteExecution.class);
 }

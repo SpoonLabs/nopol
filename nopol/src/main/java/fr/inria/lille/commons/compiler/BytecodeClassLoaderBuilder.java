@@ -1,7 +1,12 @@
 package fr.inria.lille.commons.compiler;
 
+import static fr.inria.lille.commons.classes.LoggerLibrary.*;
+import static java.lang.String.format;
+
 import java.net.URL;
 import java.util.Map;
+
+import org.slf4j.Logger;
 
 import fr.inria.lille.commons.collections.MapLibrary;
 
@@ -43,7 +48,12 @@ public class BytecodeClassLoaderBuilder {
 	}
 	
 	private static Map<String, byte[]> bytecodes(Map<String, String> qualifiedNameAndContent) {
+		logDebug(logger, format("[Compiling %d classes]", qualifiedNameAndContent.size()));
 		DynamicClassCompiler compiler = new DynamicClassCompiler();
-		return compiler.javaBytecodeFor(qualifiedNameAndContent);
+		Map<String, byte[]> bytecodes = compiler.javaBytecodeFor(qualifiedNameAndContent);
+		logDebug(logger, "[Compilation finished successfully]");
+		return bytecodes;
 	}
+	
+	private static Logger logger = newLoggerFor(BytecodeClassLoaderBuilder.class);
 }

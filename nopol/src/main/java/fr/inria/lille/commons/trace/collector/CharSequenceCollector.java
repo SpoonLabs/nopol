@@ -2,20 +2,18 @@ package fr.inria.lille.commons.trace.collector;
 
 import java.util.Map;
 
-import fr.inria.lille.commons.classes.ClassLibrary;
-
-public class CharSequenceCollector extends ClassTypeCollector {
+public class CharSequenceCollector extends ValueCollector {
 
 	@Override
-	protected void addSpecificInformation(final String name, final Object value, Map<String, Object> storage) {
+	protected void addValue(final String name, final Object value, Map<String, Object> storage) {
 		CharSequence string = (CharSequence) value;
 		storage.put(name + ".length()", string.length());
 		storage.put(name + ".length()==0", string.length() == 0);
 	}
 
 	@Override
-	protected boolean handlesClassOf(Object object) {
-		return ClassLibrary.isInstanceOf(CharSequence.class, object);
+	protected Class<?> collectingClass() {
+		return CharSequence.class;
 	}
 	
 }

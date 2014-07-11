@@ -48,6 +48,15 @@ public class StringLibrary {
 		return string;
 	}
 	
+	public static String reversed(String string) {
+		int length = string.length();
+		StringBuilder builder = new StringBuilder(length);
+		for (int index = length - 1; index >= 0; index -= 1) {
+			builder.append(string.charAt(index));
+		}
+		return builder.toString();
+	}
+	
 	public static String javaPathSeparator() {
 		return javaPathSeparator;
 	}

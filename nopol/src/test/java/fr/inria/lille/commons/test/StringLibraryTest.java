@@ -58,4 +58,11 @@ public class StringLibraryTest {
 		assertEquals("e", StringLibrary.lastAfterSplit(chained, "[.]"));
 		assertEquals(".e", StringLibrary.lastAfterSplit(chained, "q"));
 	}
+	
+	@Test
+	public void reversedString() {
+		assertEquals("", StringLibrary.reversed(""));
+		assertEquals("a", StringLibrary.reversed("a"));
+		assertEquals("noemoc", StringLibrary.reversed("comeon"));
+	}
 }

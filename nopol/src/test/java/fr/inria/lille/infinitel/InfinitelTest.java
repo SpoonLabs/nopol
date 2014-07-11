@@ -7,7 +7,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -24,19 +23,21 @@ import fr.inria.lille.commons.collections.CollectionLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.collections.Pair;
 import fr.inria.lille.commons.io.FileHandler;
+import fr.inria.lille.commons.io.ProjectReference;
 import fr.inria.lille.commons.spoon.SpoonLibrary;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
-import fr.inria.lille.commons.trace.IterationRuntimeValuesListener;
-import fr.inria.lille.infinitel.loop.LoopStatementsMonitor;
+import fr.inria.lille.commons.trace.Specification;
+import fr.inria.lille.infinitel.loop.CentralLoopMonitor;
 import fr.inria.lille.infinitel.loop.LoopUnroller;
+import fr.inria.lille.infinitel.loop.MonitoringTestExecutor;
 
 public class InfinitelTest {
 	
 	@Test
 	public void loopNotProcessedInNonVoidReturningMethodLastStatement() {
-		LoopStatementsMonitor monitor = new LoopStatementsMonitor(0);
+		CentralLoopMonitor monitor = new CentralLoopMonitor(0);
 		Infinitel infinitel = loopFixerForExample(1);
 		Map<String, CtWhile> loops = loopsByMethodIn(infinitel.project().sourceFile(), 4);
 		assertTrue(monitor.isToBeProcessed(loops.get("loopResult")));
@@ -59,32 +60,41 @@ public class InfinitelTest {
 	}
 	
 	@Test
-	public void example1LoopDetector() {
-		int exampleNumber = 1;
-		Infinitel infinitel = loopFixerForExample(exampleNumber);
-		ClassLoader classLoader = infinitel.loaderWithInstrumentedClasses();
-		Map<String, Integer> expected = expectedThresholdsMap(exampleNumber, asList("test1", "test2", "test3", "test4", "testNegative"), asList(0, 1, 2, 3, 4));
-		
-		Pair<SourcePosition, TestCasesListener> pair = checkInfiniteLoop(infinitel, classLoader, 8);
+	public void infinitelExample1() {
+		Map<String, Integer> expected = expectedThresholdsMap(1, asList("test1", "test2", "test3", "test4", "testNegative"), asList(0, 1, 2, 3, 4));
+		checkInfinitel(1, 8, 4, 1, expected);
+	}
+	
+	@Test
+	public void infinitelExample2() {
+		Map<String, Integer> expected = expectedThresholdsMap(2, asList("infiniteLoop", "oneIteration"), asList(1, 1));
+		checkInfinitel(2, 7, 1, 1, expected);
+	}
+	
+	public void checkInfinitel(int infinitelExample, int infiniteLoopLine, int passingTests, int failingTests, Map<String, Integer> thresholdsMap) {
+		Infinitel infinitel = loopFixerForExample(infinitelExample);
+		MonitoringTestExecutor testExecutor = infinitel.newTestExecutor();
+		Pair<SourcePosition, TestCasesListener> pair = checkInfiniteLoop(infinitel, testExecutor, infiniteLoopLine);
 		SourcePosition loopPosition = pair.first();
 		TestCasesListener listener = pair.second();
-		Pair<Collection<TestCase>, Collection<TestCase>> checkedTests = checkTests(infinitel, classLoader, loopPosition, listener, 1, 4);
-		Collection<TestCase> passingTests = checkedTests.first();
-		Collection<TestCase> failingTests = checkedTests.second();
-		IterationRuntimeValuesListener specificationListener = checkThresholds(infinitel, classLoader, loopPosition, passingTests, failingTests, expected);
-		checkSynthesisedFix(infinitel, specificationListener);
+		Pair<Collection<TestCase>, Collection<TestCase>> checkedTests = checkTests(infinitel, testExecutor, loopPosition, listener, passingTests, failingTests);
+		Collection<TestCase> passedTests = checkedTests.first();
+		Collection<TestCase> failedTests = checkedTests.second();
+		Map<TestCase, Integer> testsAndThresholds = checkThresholds(infinitel, testExecutor, loopPosition, passedTests, failedTests, thresholdsMap);
+		checkSynthesisedFix(infinitel, testExecutor, testsAndThresholds, loopPosition);
 	}
 	
 	private Infinitel loopFixerForExample(int exampleNumber) {
 		String sourcePath = format("../test-projects/src/main/java/infinitel_examples/infinitel_example_%d/InfinitelExample.java", exampleNumber);
-		File sourceFile = FileHandler.fileFrom(sourcePath);
-		URL[] classPath = FileHandler.classpathFrom("../test-projects/target/classes/:../test-projects/target/test-classes/");
-		return new Infinitel(sourceFile, classPath);
+		String classPath = "../test-projects/target/classes/:../test-projects/target/test-classes/";
+		String testClass = format("infinitel_examples.infinitel_example_%d.InfinitelExampleTest", exampleNumber);
+		ProjectReference project = new ProjectReference(sourcePath, classPath, new String[] { testClass });
+		return new Infinitel(project);
 	}
 	
-	private Pair<SourcePosition, TestCasesListener> checkInfiniteLoop(Infinitel infinitel, ClassLoader classLoader, int line) {
+	private Pair<SourcePosition, TestCasesListener> checkInfiniteLoop(Infinitel infinitel, MonitoringTestExecutor testExecutor, int line) {
 		TestCasesListener listener = new TestCasesListener();
-		Collection<SourcePosition> infiniteLoops = infinitel.infiniteLoopsRunningTests(classLoader, listener);
+		Collection<SourcePosition> infiniteLoops = infinitel.infiniteLoopsRunningTests(testExecutor, listener);
 		assertEquals(1, infiniteLoops.size());
 		SourcePosition loopPosition = CollectionLibrary.any(infiniteLoops);
 		assertTrue(FileHandler.isSameFile(infinitel.project().sourceFile(), loopPosition.getFile()));
@@ -92,9 +102,9 @@ public class InfinitelTest {
 		return new Pair<>(loopPosition, listener);
 	}
 	
-	private Pair<Collection<TestCase>,Collection<TestCase>> checkTests(Infinitel infinitel, ClassLoader classLoader, SourcePosition loopPosition,
-			TestCasesListener listener, int failingTests, int passingTests) {
-		LoopUnroller unroller = new LoopUnroller(infinitel.monitor(), classLoader, listener);
+	private Pair<Collection<TestCase>,Collection<TestCase>> checkTests(Infinitel infinitel, MonitoringTestExecutor testExecutor, SourcePosition loopPosition,
+			TestCasesListener listener, int passingTests, int failingTests) {
+		LoopUnroller unroller = new LoopUnroller(testExecutor);
 		Collection<TestCase> passingTestsUsingLoop = unroller.testsUsingLoop(loopPosition, listener.successfulTests());
 		assertEquals(passingTests, passingTestsUsingLoop.size());
 		Collection<TestCase> failingTestsUsingLoop = unroller.testsUsingLoop(loopPosition, listener.failedTests());
@@ -104,18 +114,17 @@ public class InfinitelTest {
 		return new Pair<>(passingTestsUsingLoop, failingTestsUsingLoop);
 	}
 	
-	private IterationRuntimeValuesListener checkThresholds(Infinitel infinitel, ClassLoader classLoader, SourcePosition loopPosition, 
-			Collection<TestCase> passingTests, Collection<TestCase> failingTests, Map<String, Integer> expected) {
-		IterationRuntimeValuesListener specificationListener = new IterationRuntimeValuesListener();
-		LoopUnroller unroller = new LoopUnroller(infinitel.monitor(), classLoader, specificationListener);
-		Map<TestCase, Integer> thresholds = unroller.numberOfIterationsByTestIn(loopPosition, passingTests, failingTests);
-		Map<String, Integer> thresholdsByName = MapLibrary.toStringMap(thresholds);
+	private Map<TestCase, Integer> checkThresholds(Infinitel infinitel, MonitoringTestExecutor testExecutor, SourcePosition loopPosition, 
+			Collection<TestCase> passedTests, Collection<TestCase> failedTests, Map<String, Integer> expected) {
+		Map<TestCase, Integer> actual = infinitel.testsAndThresholds(loopPosition, testExecutor, passedTests, failedTests);
+		Map<String, Integer> thresholdsByName = MapLibrary.toStringMap(actual);
 		assertEquals(expected, thresholdsByName);
-		return specificationListener;
+		return actual;
 	}
 	
-	private void checkSynthesisedFix(Infinitel infinitel, IterationRuntimeValuesListener listener) {
-		CodeGenesis genesis = infinitel.synthesiseCodeFor(listener.specifications());
+	private void checkSynthesisedFix(Infinitel infinitel, MonitoringTestExecutor testExecutor, Map<TestCase, Integer> testsAndThresholds, SourcePosition loopPosition) {
+		Collection<Specification<Boolean>> specifications = infinitel.testSpecifications(testsAndThresholds, testExecutor, loopPosition);
+		CodeGenesis genesis = infinitel.synthesiseCodeFor(specifications);
 		assertTrue(genesis.isSuccessful());
 	}
 	

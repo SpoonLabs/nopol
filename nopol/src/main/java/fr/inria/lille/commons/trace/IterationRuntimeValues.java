@@ -2,10 +2,11 @@ package fr.inria.lille.commons.trace;
 
 import java.util.Map;
 
+import fr.inria.lille.commons.classes.Toggle;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.trace.collector.ValueCollector;
 
-public class IterationRuntimeValues {
+public class IterationRuntimeValues extends Toggle {
 
 	public static IterationRuntimeValues instance() {
 		if (instance == null) {
@@ -14,17 +15,26 @@ public class IterationRuntimeValues {
 		return instance;
 	}
 	
+	@Override
+	public void reset() {
+		iterationValuesCache().clear();
+	}
+	
 	public String collectValueInvocation(String counterName, String variableName) {
 		String methodInvocation = String.format(".collectValue(%s, \"%s\", %s)", counterName, variableName, variableName);
-		return getClass().getName() + ".instance()" + methodInvocation;
+		return qualifiedInstanceName() + methodInvocation;
+	}
+	
+	public String isEnabledCondition() {
+		return qualifiedInstanceName() + ".isEnabled()";
+	}
+	
+	public String qualifiedInstanceName() {
+		return getClass().getName() + ".instance()";
 	}
 	
 	public void collectValue(int iterationNumber, String variableName, Object value) {
 		ValueCollector.collectFrom(variableName, value, valuesCacheFor(iterationNumber));
-	}
-	
-	public void discardCollectedValues() {
-		iterationValuesCache().clear();
 	}
 	
 	public int numberOfIterations() {

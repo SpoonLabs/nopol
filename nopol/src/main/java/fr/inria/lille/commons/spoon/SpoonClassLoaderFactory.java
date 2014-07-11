@@ -1,12 +1,17 @@
 package fr.inria.lille.commons.spoon;
 
+import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
+import static fr.inria.lille.commons.classes.LoggerLibrary.newLoggerFor;
 import static fr.inria.lille.commons.string.StringLibrary.javaNewline;
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
+
+import org.slf4j.Logger;
 
 import spoon.compiler.Environment;
 import spoon.processing.ProcessingManager;
@@ -33,6 +38,7 @@ public class SpoonClassLoaderFactory {
 	
 	public SpoonClassLoaderFactory(File sourceFile) {
 		compiler = new DynamicClassCompiler();
+		logDebug(logger, format("[Building Spoon model from %s]", sourceFile.getPath()));
 		factory = SpoonLibrary.modelFor(sourceFile);
 		manager = new RuntimeProcessingManager(spoonFactory());
 	} 
@@ -83,6 +89,7 @@ public class SpoonClassLoaderFactory {
 	}
 	
 	private void processClass(CtSimpleType<?> c) {
+		logDebug(logger, format("[Spoon processing of %s]", c.getQualifiedName()));
 		processingManager().process(c);
 	}
 
@@ -115,4 +122,6 @@ public class SpoonClassLoaderFactory {
 	private Factory factory;
 	private ProcessingManager manager;
 	private DynamicClassCompiler compiler;
+	
+	private static Logger logger = newLoggerFor(SpoonClassLoaderFactory.class);
 }
