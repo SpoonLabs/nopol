@@ -10,6 +10,7 @@ import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 
 import spoon.reflect.cu.SourcePosition;
+import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.suite.NullRunListener;
 import fr.inria.lille.commons.suite.TestCase;
 
@@ -28,6 +29,15 @@ public class MonitoringTestExecutor {
 	public Collection<SourcePosition> loopsAboveThresholdFor(String[] testClasses, RunListener listener) {
 		execute(testClasses, listener);
 		return monitor().loopsAboveThreshold();
+	}
+	
+	public Map<TestCase, Integer> invocationsPerTest(SourcePosition loopPosition, Collection<TestCase> testCases) {
+		Map<TestCase, Integer> invocations = MapLibrary.newHashMap();
+		for (TestCase testCase : testCases) {
+			execute(testCase, loopPosition, 0);
+			invocations.put(testCase, monitor().numberOfRecords(loopPosition));
+		}
+		return invocations;
 	}
 	
 	public Result execute(TestCase testCase, SourcePosition loopPosition, Number threshold) {
@@ -71,7 +81,7 @@ public class MonitoringTestExecutor {
 		}
 		return success; 
 	}
-
+	
 	protected ClassLoader classLoader() {
 		return classLoader;
 	}

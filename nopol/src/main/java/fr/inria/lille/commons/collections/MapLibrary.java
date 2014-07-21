@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -125,7 +126,7 @@ public class MapLibrary {
 	}
 	
 	public static <K, V> Set<K> keySetUnion(Collection<Map<K, V>> maps) {
-		Set<K> keys = SetLibrary.newHashSet();
+		Set<K> keys = new HashSet<K>();
 		for (Map<K, V> map : maps) {
 			keys.addAll(map.keySet());
 		}
@@ -159,5 +160,32 @@ public class MapLibrary {
 			}
 		}
 		return sameSize;
+	}
+	
+	public static <K, V> boolean onlyValueIs(V value, Map<K, V> map) {
+		return valuesAreIn(asList(value), map);
+	}
+	
+	public static <K, V> boolean valuesAreIn(Collection<V> restrictedValues, Map<K, V> map) {
+		for (K key : map.keySet()) {
+			if (! restrictedValues.contains(map.get(key))) {
+				return false;
+			}
+		}
+		return ! map.isEmpty();
+	}
+	
+	public static <K, V> Collection<K> keysWithValue(V value, Map<K, V> map) {
+		return keysWithValuesIn(asList(value), map);
+	}
+	
+	public static <K, V> Collection<K> keysWithValuesIn(Collection<V> values, Map<K, V> map) {
+		Collection<K> keys = new HashSet<K>();
+		for (K key : map.keySet()) {
+			if (values.contains(map.get(key))) {
+				keys.add(key);
+			}
+		}
+		return keys;
 	}
 }

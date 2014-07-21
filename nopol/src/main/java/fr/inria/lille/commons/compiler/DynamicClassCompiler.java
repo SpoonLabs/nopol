@@ -35,7 +35,7 @@ public class DynamicClassCompiler {
 		return javaBytecodeFor(adHocMap).get(qualifiedName);
 	}
 	
-	public synchronized Map<String, byte[]>javaBytecodeFor(Map<String, String> qualifiedNameAndContent) {
+	public synchronized Map<String, byte[]> javaBytecodeFor(Map<String, String> qualifiedNameAndContent) {
 		Collection<JavaFileObject> units = addCompilationUnits(qualifiedNameAndContent);
 		CompilationTask task = compiler().getTask(null, fileManager(), diagnostics(), options(), null, units);
 		runCompilationTask(task);

@@ -375,6 +375,7 @@ public class CollectionsTest {
 		assertEquals(combined, linkedCombined);
 	}
 	
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void listAddAllInOneForSuperClass() {
 		List<List<Integer>> integers = asList(asList(1,2), asList(3, 4));
@@ -467,5 +468,54 @@ public class CollectionsTest {
 		assertEquals(1, adHocMap.size());
 		assertTrue(adHocMap.containsKey("aaaa"));
 		assertEquals(Integer.valueOf(4),  adHocMap.get("aaaa"));
+	}
+	
+	@Test
+	public void restrictedValueOfAMap() {
+		Map<String, String> map = MapLibrary.newHashMap(asList("a", "b", "c"), asList("z", "z", "z"));
+		assertTrue(MapLibrary.onlyValueIs("z", map));
+		assertFalse(MapLibrary.onlyValueIs("y", map));
+		assertFalse(MapLibrary.onlyValueIs("z", MapLibrary.newHashMap()));
+		map.put("x", "x");
+		assertFalse(MapLibrary.onlyValueIs("x", map));
+		assertFalse(MapLibrary.onlyValueIs("z", map));
+	}
+	
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	@Test
+	public void restricedValuesOfAMap() {
+		Map<String, String> map = MapLibrary.newHashMap(asList("a", "b", "c"), asList("x", "y", "z"));
+		assertTrue(MapLibrary.valuesAreIn(asList("x", "y", "z"), map));
+		assertTrue(MapLibrary.valuesAreIn(asList("x", "y", "z", "t"), map));
+		assertFalse(MapLibrary.valuesAreIn(asList("w", "y", "z"), map));
+		assertFalse(MapLibrary.valuesAreIn(asList("y", "z"), map));
+		assertFalse(MapLibrary.valuesAreIn((List) asList(), map));
+		assertFalse(MapLibrary.valuesAreIn((List) asList(), MapLibrary.newHashMap()));
+		map.put("w", "w");
+		assertFalse(MapLibrary.valuesAreIn(asList("x", "y", "z"), map));
+	}
+	
+	@Test
+	public void mapKeysByValue() {
+		Map<String, String> map = MapLibrary.newHashMap(asList("a", "b", "c"), asList("z", "z", "z"));
+		Collection<String> keys = MapLibrary.keysWithValue("z", map);
+		assertEquals(3, keys.size());
+		assertEquals(map.keySet(), keys);
+		keys = MapLibrary.keysWithValue("", map);
+		assertEquals(0, keys.size());
+		keys = MapLibrary.keysWithValue("y", map);
+		assertEquals(0, keys.size());
+	}
+	
+	@Test
+	public void mapKeysWithByValues() {
+		Map<String, String> map = MapLibrary.newHashMap(asList("a", "b", "c"), asList("x", "y", "z"));
+		Collection<String> keys = MapLibrary.keysWithValuesIn(asList("x", "y"), map);
+		assertEquals(2, keys.size());
+		assertTrue(keys.contains("a"));
+		assertTrue(keys.contains("b"));
+		keys = MapLibrary.keysWithValuesIn(asList("v", "w", "x", "y", "z"), map);
+		assertEquals(3, keys.size());
+		assertEquals(map.keySet(), keys);
 	}
 }

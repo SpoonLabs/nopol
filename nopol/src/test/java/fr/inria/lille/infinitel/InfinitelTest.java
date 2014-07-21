@@ -30,7 +30,7 @@ import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.infinitel.loop.CentralLoopMonitor;
-import fr.inria.lille.infinitel.loop.LoopUnroller;
+import fr.inria.lille.infinitel.loop.FixableLoop;
 import fr.inria.lille.infinitel.loop.MonitoringTestExecutor;
 
 public class InfinitelTest {
@@ -94,7 +94,7 @@ public class InfinitelTest {
 	
 	private Pair<SourcePosition, TestCasesListener> checkInfiniteLoop(Infinitel infinitel, MonitoringTestExecutor testExecutor, int line) {
 		TestCasesListener listener = new TestCasesListener();
-		Collection<SourcePosition> infiniteLoops = infinitel.infiniteLoopsRunningTests(testExecutor, listener);
+		Collection<SourcePosition> infiniteLoops = infinitel.infiniteLoops(testExecutor, listener);
 		assertEquals(1, infiniteLoops.size());
 		SourcePosition loopPosition = CollectionLibrary.any(infiniteLoops);
 		assertTrue(FileHandler.isSameFile(infinitel.project().sourceFile(), loopPosition.getFile()));
@@ -104,19 +104,19 @@ public class InfinitelTest {
 	
 	private Pair<Collection<TestCase>,Collection<TestCase>> checkTests(Infinitel infinitel, MonitoringTestExecutor testExecutor, SourcePosition loopPosition,
 			TestCasesListener listener, int passingTests, int failingTests) {
-		LoopUnroller unroller = new LoopUnroller(testExecutor);
-		Collection<TestCase> passingTestsUsingLoop = unroller.testsUsingLoop(loopPosition, listener.successfulTests());
+		Collection<FixableLoop> fixableLoops = infinitel.fixableInfiniteLoops(testExecutor, asList(loopPosition), listener);
+		assertEquals(1, fixableLoops.size());
+		FixableLoop fixableLoop  = (FixableLoop) fixableLoops.toArray()[0];
+		Collection<TestCase> passingTestsUsingLoop = fixableLoop.passingTests();
+		Collection<TestCase> failingTestsUsingLoop = fixableLoop.failingTests();
 		assertEquals(passingTests, passingTestsUsingLoop.size());
-		Collection<TestCase> failingTestsUsingLoop = unroller.testsUsingLoop(loopPosition, listener.failedTests());
 		assertEquals(failingTests, failingTestsUsingLoop.size());
-		Collection<TestCase> allTestsUsingLoop = unroller.testsUsingLoop(loopPosition, listener.allTests());
-		assertEquals(failingTests + passingTests, allTestsUsingLoop.size());
 		return new Pair<>(passingTestsUsingLoop, failingTestsUsingLoop);
 	}
 	
 	private Map<TestCase, Integer> checkThresholds(Infinitel infinitel, MonitoringTestExecutor testExecutor, SourcePosition loopPosition, 
 			Collection<TestCase> passedTests, Collection<TestCase> failedTests, Map<String, Integer> expected) {
-		Map<TestCase, Integer> actual = infinitel.testsAndThresholds(loopPosition, testExecutor, passedTests, failedTests);
+		Map<TestCase, Integer> actual = infinitel.testsAndThresholds(loopPosition, testExecutor, failedTests, passedTests);
 		Map<String, Integer> thresholdsByName = MapLibrary.toStringMap(actual);
 		assertEquals(expected, thresholdsByName);
 		return actual;

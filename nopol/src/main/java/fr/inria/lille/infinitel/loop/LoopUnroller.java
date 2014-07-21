@@ -3,7 +3,6 @@ package fr.inria.lille.infinitel.loop;
 import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
 import static fr.inria.lille.commons.classes.LoggerLibrary.newLoggerFor;
 import static java.lang.String.format;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -14,7 +13,6 @@ import org.junit.runner.Result;
 import org.slf4j.Logger;
 
 import spoon.reflect.cu.SourcePosition;
-import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.suite.TestCase;
 
@@ -24,38 +22,32 @@ public class LoopUnroller {
 		this.testExecutor = testExecutor;
 	}
 
-	public Map<TestCase, Integer> correctIterationsByTestIn(SourcePosition loopPosition, Collection<TestCase> successfulTests, Collection<TestCase> failedTests) {
+	public Map<TestCase, Integer> correctIterationsByTestIn(SourcePosition loopPosition, Collection<TestCase> failedTests, Collection<TestCase> successfulTests) {
 		Map<TestCase, Integer> thresholdMap = MapLibrary.newHashMap();
-		Collection<TestCase> successfulTestsUsingLoop = testsUsingLoop(loopPosition, successfulTests);
-		Collection<TestCase> failedTestsUsingLoop = testsUsingLoop(loopPosition, failedTests);
-		findTracedThresholds(successfulTestsUsingLoop, loopPosition, thresholdMap);
-		findThresholdsInSteps(failedTestsUsingLoop, loopPosition, thresholdMap);
+		findThresholdsInSteps(failedTests, loopPosition, thresholdMap);
+		findTracedThresholds(successfulTests, loopPosition, thresholdMap);
 		return thresholdMap;
 	}
 	
-	public Collection<TestCase> testsUsingLoop(SourcePosition loopPosition, Collection<TestCase> testCases) {
-		Collection<TestCase> testsUsingLoop = ListLibrary.newLinkedList();
-		for (TestCase testCase : testCases) {
-			if (testUsesLoop(loopPosition, testCase)) {
-				testsUsingLoop.add(testCase);
+	protected void findThresholdsInSteps(Collection<TestCase> tests, SourcePosition loopPosition, Map<TestCase, Integer> thresholdMap) {
+		for (TestCase testCase : tests) {
+			logDebug(logger, format("[Finding iteration threshold of %s in %s]", testCase.toString(), loopPosition.toString()));
+			findThreshold(testCase, loopPosition, thresholdMap);
+		}
+	}
+
+	protected void findThreshold(TestCase testCase, SourcePosition loopPosition, Map<TestCase, Integer> iterationsNeeded) {
+		for (int iterations = 0; iterations < monitor().threshold(); iterations += 1) {
+			Result result = testExecutor().execute(testCase, loopPosition, iterations);
+			if (result.wasSuccessful()) {
+				iterationsNeeded.put(testCase, iterations);
+				return;
 			}
 		}
-		return testsUsingLoop;
+		fail("Did not find threshold for " + testCase);
 	}
 	
-	public boolean testUsesLoop(SourcePosition loopPosition, TestCase testCase) {
-		logDebug(logger, format("[Running %s to see if it uses loop (%s)]", testCase.toString(), loopPosition.toString()));
-		testExecutor().execute(testCase, loopPosition, 0);
-		Integer lastRecord = monitor().lastRecordIn(loopPosition);
-		if (lastRecord != null) {
-			String message = format("Unable to fix infinite loop (%s), it is invoked more than once", loopPosition.toString());
-			assertFalse(message, monitor().numberOfRecords(loopPosition) > 1);
-			return true;
-		}
-		return false;
-	}
-	
-	private void findTracedThresholds(Collection<TestCase> tests, SourcePosition loopPosition, Map<TestCase, Integer> thresholdMap) {
+	protected void findTracedThresholds(Collection<TestCase> tests, SourcePosition loopPosition, Map<TestCase, Integer> thresholdMap) {
 		Integer threshold = monitor().threshold();
 		for (TestCase testCase : tests) {
 			logDebug(logger, format("[Executing %s to get iteration threshold from run in %s]", testCase.toString(), loopPosition.toString()));
@@ -70,24 +62,6 @@ public class LoopUnroller {
 				}
 			}
 		}
-	}
-
-	private void findThresholdsInSteps(Collection<TestCase> tests, SourcePosition loopPosition, Map<TestCase, Integer> thresholdMap) {
-		for (TestCase testCase : tests) {
-			logDebug(logger, format("[Finding iteration threshold of %s in %s]", testCase.toString(), loopPosition.toString()));
-			findThreshold(testCase, loopPosition, thresholdMap);
-		}
-	}
-
-	private void findThreshold(TestCase testCase, SourcePosition loopPosition, Map<TestCase, Integer> iterationsNeeded) {
-		for (int iterations = 0; iterations < monitor().threshold(); iterations += 1) {
-			Result result = testExecutor().execute(testCase, loopPosition, iterations);
-			if (result.wasSuccessful()) {
-				iterationsNeeded.put(testCase, iterations);
-				return;
-			}
-		}
-		fail("Did not find threshold for " + testCase);
 	}
 
 	private CentralLoopMonitor monitor() {

@@ -21,6 +21,8 @@ import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.infinitel.loop.CentralLoopMonitor;
+import fr.inria.lille.infinitel.loop.FixableLoop;
+import fr.inria.lille.infinitel.loop.FixableLoopSelection;
 import fr.inria.lille.infinitel.loop.LoopSpecificationCollector;
 import fr.inria.lille.infinitel.loop.LoopUnroller;
 import fr.inria.lille.infinitel.loop.MonitoringTestExecutor;
@@ -47,11 +49,10 @@ public class Infinitel {
 	}
 	
 	public void repair() {
-		TestCasesListener listener = new TestCasesListener();
 		MonitoringTestExecutor testExecutor = newTestExecutor();
-		Collection<SourcePosition> infiniteLoops = infiniteLoopsRunningTests(testExecutor, listener);
-		for (SourcePosition loopPosition : infiniteLoops) {
-			findRepairIn(loopPosition, testExecutor, listener.successfulTests(), listener.failedTests());
+		Collection<FixableLoop> infiniteLoops = fixableLoops(testExecutor);
+		for (FixableLoop loop : infiniteLoops) {
+			findRepairIn(loop, testExecutor);
 		}
 	}
 	
@@ -70,26 +71,36 @@ public class Infinitel {
 		return loader;
 	}
 
-	protected Collection<SourcePosition> infiniteLoopsRunningTests(MonitoringTestExecutor testExecutor, TestCasesListener listener) {
-		logDebug(logger, "# Running test cases to find infinite loops");
+	protected Collection<FixableLoop> fixableLoops(MonitoringTestExecutor testExecutor) {
+		TestCasesListener listener = new TestCasesListener();
+		Collection<SourcePosition> loopsAboveThreshold = infiniteLoops(testExecutor, listener);
+		Collection<FixableLoop> fixableLoops = fixableInfiniteLoops(testExecutor, loopsAboveThreshold, listener);
+		return fixableLoops;
+	}
+	
+	protected Collection<SourcePosition> infiniteLoops(MonitoringTestExecutor testExecutor, TestCasesListener listener) {
 		String[] testClasses = project().testClasses();
+		logDebug(logger, "# Running test cases to find infinite loops");
 		Collection<SourcePosition> loopsAboveThreshold = testExecutor.loopsAboveThresholdFor(testClasses, listener);
 		logDebug(logger, "# Number of infinite loops: " + loopsAboveThreshold.size());
 		return loopsAboveThreshold;
 	}
 	
-	protected void findRepairIn(SourcePosition loopPosition, MonitoringTestExecutor testExecutor, Collection<TestCase> passedTests, Collection<TestCase> failedTests) {
-		Map<TestCase, Integer> testsAndThresholds = testsAndThresholds(loopPosition, testExecutor, passedTests, failedTests);
-		Collection<Specification<Boolean>> testSpecifications = testSpecifications(testsAndThresholds, testExecutor, loopPosition);
+	protected Collection<FixableLoop> fixableInfiniteLoops(MonitoringTestExecutor testExecutor, Collection<SourcePosition> loopsAboveThreshold, TestCasesListener listener) {
+		return FixableLoopSelection.selection(testExecutor, loopsAboveThreshold, listener.failedTests(), listener.successfulTests());
+	}
+	
+	private void findRepairIn(FixableLoop loop, MonitoringTestExecutor testExecutor) {
+		Map<TestCase, Integer> testsAndThresholds = testsAndThresholds(loop.position(), testExecutor, loop.failingTests(), loop.passingTests());
+		Collection<Specification<Boolean>> testSpecifications = testSpecifications(testsAndThresholds, testExecutor, loop.position());
 		synthesiseCodeFor(testSpecifications);
 	}
 	
-	protected Map<TestCase, Integer> testsAndThresholds(SourcePosition loopPosition, MonitoringTestExecutor testExecutor, 
-			Collection<TestCase> passedTests, Collection<TestCase> failedTests) {
+	protected Map<TestCase, Integer> testsAndThresholds(SourcePosition loop, MonitoringTestExecutor executor, Collection<TestCase> failed, Collection<TestCase> passed) {
 		logDebug(logger, "# Finding iteration thresholds for each test");
-		LoopUnroller unroller = new LoopUnroller(testExecutor);
-		Map<TestCase, Integer> thresholds = unroller.correctIterationsByTestIn(loopPosition, passedTests, failedTests);
-		logDebug(logger, format("# Found thresholds for %d tests which use the loop (%s) only once", thresholds.size(), loopPosition));
+		LoopUnroller unroller = new LoopUnroller(executor);
+		Map<TestCase, Integer> thresholds = unroller.correctIterationsByTestIn(loop, failed, passed);
+		logDebug(logger, format("# Found thresholds for %d tests which use the loop (%s) only once", thresholds.size(), loop));
 		return thresholds;
 	}
 	

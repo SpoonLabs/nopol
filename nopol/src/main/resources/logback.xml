@@ -92,6 +92,10 @@
 	<logger name="fr.inria.lille.infinitel.loop.LoopSpecificationCollector" level="debug" additivity="true">
 		<appender-ref ref="STDOUT" />
 	</logger>
+	
+	<logger name="fr.inria.lille.infinitel.loop.FixableLoopSelection" level="debug" additivity="true">
+		<appender-ref ref="STDOUT" />
+	</logger>
 	<!--.-->
 
 
