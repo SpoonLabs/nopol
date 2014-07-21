@@ -1,8 +1,15 @@
 package nopol_examples.nopol_example_5;
 
-
 public class NopolExample {
 
+	public static class InnerStaticClass {
+		public void method(String stringParameter) {
+			if (! stringParameter.isEmpty()) {
+				System.out.println(stringParameter);
+			}
+		}
+	}
+	
 	/*
 	 * Return -a if a isn't negative number, otherwise return a if it's already negative number
 	 */
@@ -14,4 +21,5 @@ public class NopolExample {
 		return r*a;		
 	}
 	
+	private int unreachableFromInnterStaticClass;
 }

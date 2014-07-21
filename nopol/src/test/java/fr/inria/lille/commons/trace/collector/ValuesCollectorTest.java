@@ -185,7 +185,7 @@ public class ValuesCollectorTest {
 	
 	@Test
 	public void reachedVariablesInExample5() {
-		testReachedVariableNames(5, "r = -1", "r", "a");
+		testReachedVariableNames(5, "r = -1", "r", "a", "NopolExample.this.unreachableFromInnterStaticClass");
 	}
 	
 	@Test
@@ -215,6 +215,12 @@ public class ValuesCollectorTest {
 		testReachedVariableNames(3, "(!aBoolean) && (uninitializedReachableVariable < 2)", "aBoolean", "uninitializedReachableVariable");
 	}
 	
+	@Test
+	public void unreachedVariableInInnerStaticClass() {
+		existsCodeSnippet(5, "private int unreachableFromInnterStaticClass;");
+		testReachedVariableNames(5, "!(stringParameter.isEmpty())", "stringParameter");	
+	}
+	
 	private void testReachedVariableNames(int exampleNumber, String codeSnippet, String... expectedReachedVariables) {
 		CtElement firstElement = existsCodeSnippet(exampleNumber, codeSnippet);
 		assertTrue(CtCodeElement.class.isInstance(firstElement));
@@ -224,6 +230,7 @@ public class ValuesCollectorTest {
 		assertTrue(reachedVariables.containsAll(Arrays.asList(expectedReachedVariables)));
 	}
 	
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	private CtElement existsCodeSnippet(int exampleNumber, String codeSnippet) {
 		File sourceFile = NopolTest.example(exampleNumber).sourceFile();
 		Factory model = SpoonLibrary.modelFor(sourceFile);

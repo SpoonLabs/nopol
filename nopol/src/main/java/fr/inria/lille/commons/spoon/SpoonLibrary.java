@@ -173,7 +173,7 @@ public class SpoonLibrary {
 		if (allowsModifiers(element)) {
 			return hasStaticModifier(element);
 		}
-		return hasStaticModifier(element.getParent(CtModifiable.class));
+		return hasStaticModifier(element.getParent(CtModifiable.class)) || hasStaticModifier(element.getParent(CtSimpleType.class));
 	}
 	
 	public static boolean isLastStatementOfMethod(CtStatement statement) {
