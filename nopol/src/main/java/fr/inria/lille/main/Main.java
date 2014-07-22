@@ -40,6 +40,7 @@ public class Main {
     		showUsage();
     		e.printStackTrace();
     	}
+    	System.exit(0);
     }
     
 	private Main(String repairMethod, File sourceFile, URL[] classpath) {
