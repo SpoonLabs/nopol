@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -517,5 +519,43 @@ public class CollectionsTest {
 		keys = MapLibrary.keysWithValuesIn(asList("v", "w", "x", "y", "z"), map);
 		assertEquals(3, keys.size());
 		assertEquals(map.keySet(), keys);
+	}
+	
+	@Test
+	public void arrayListConstructorWithEnumeration() {
+		Enumeration<String> enumeration = Collections.enumeration(asList("a", "b", "b", "c"));
+		List<String> arrayList = ListLibrary.newArrayList(enumeration);
+		assertEquals(4, arrayList.size());
+		assertEquals("a", arrayList.get(0));
+		assertEquals("b", arrayList.get(1));
+		assertEquals("b", arrayList.get(2));
+		assertEquals("c", arrayList.get(3));
+	}
+	
+	@Test
+	public void linkedListConstructorWithEnumeration() {
+		Enumeration<String> enumeration = Collections.enumeration(asList("a", "b", "b", "c"));
+		List<String> linkedList = ListLibrary.newLinkedList(enumeration);
+		assertEquals(4, linkedList.size());
+		assertEquals("a", linkedList.get(0));
+		assertEquals("b", linkedList.get(1));
+		assertEquals("b", linkedList.get(2));
+		assertEquals("c", linkedList.get(3));
+	}
+	
+	@Test
+	public void hashSetConstructorWithEnumeration() {
+		Enumeration<String> enumeration = Collections.enumeration(asList("a", "b", "b", "c"));
+		Set<String> hashSet = SetLibrary.newHashSet(enumeration);
+		assertEquals(3, hashSet.size());
+		assertTrue(hashSet.containsAll(asList("a", "b", "c")));
+	}
+	
+	@Test
+	public void lilnkedHashSetConstructorWithEnumeration() {
+		Enumeration<String> enumeration = Collections.enumeration(asList("a", "b", "b", "c"));
+		Set<String> linkedSet = SetLibrary.newLinkedHashSet(enumeration);
+		assertEquals(3, linkedSet.size());
+		assertTrue(linkedSet.containsAll(asList("a", "b", "c")));
 	}
 }

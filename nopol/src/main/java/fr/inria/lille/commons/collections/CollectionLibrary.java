@@ -2,12 +2,20 @@ package fr.inria.lille.commons.collections;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.Enumeration;
 
 public class CollectionLibrary {
 	
 	protected static <T> Collection<T> addAll(Collection<T> destination, T... elements) {
 		for (T element : elements) {
 			destination.add(element);
+		}
+		return destination;
+	}
+	
+	protected static <T> Collection<T> addEnumeration(Collection<T> destination, Enumeration<T> elements) {
+		while (elements.hasMoreElements()) {
+			destination.add(elements.nextElement());
 		}
 		return destination;
 	}

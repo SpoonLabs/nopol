@@ -2,6 +2,7 @@ package fr.inria.lille.commons.collections;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,6 +20,10 @@ public class ListLibrary {
 		return (List) newArrayList(collection.toArray());
 	}
 	
+	public static <T> List<T> newArrayList(Enumeration<T> enumeration) {
+		return (List) CollectionLibrary.addEnumeration((List) newArrayList(), enumeration);
+	}
+	
 	public static <T> List<T> flatArrayList(Collection<? extends T>... collections) {
 		return (List) CollectionLibrary.addAllFlat((List) newArrayList(), collections);
 	}
@@ -33,6 +38,10 @@ public class ListLibrary {
 	
 	public static <T> List<T> newLinkedList(Collection<? extends T> collection) {
 		return (List) newLinkedList(collection.toArray());
+	}
+	
+	public static <T> List<T> newLinkedList(Enumeration<T> enumeration) {
+		return (List) CollectionLibrary.addEnumeration((List) newLinkedList(), enumeration);
 	}
 	
 	public static <T> List<T> flatLinkedList(Collection<? extends T>... collections) {
