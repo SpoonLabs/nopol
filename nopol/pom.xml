@@ -29,6 +29,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+		</dependency>
+		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
 			<version>0.9.9-RC1</version>
@@ -60,11 +65,6 @@
 			<systemPath>${project.build.sourceDirectory}/../../../lib/com.gzoltar-0.0.3-jar-with-dependencies.jar</systemPath>
 		</dependency>
 		<dependency>
-			<groupId>org.smtlib</groupId>
-			<artifactId>smtlib</artifactId>
-			<version>0.9.7.1</version>
-		</dependency>
-		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>1.0.13</version>
@@ -81,6 +81,11 @@
 			<version>3.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>org.smtlib</groupId>
+			<artifactId>smtlib</artifactId>
+			<version>0.9.7.1</version>
+		</dependency>
+		<dependency>
 			<groupId>sacha</groupId>
 			<artifactId>infra</artifactId>
 			<version>0.1</version>
@@ -95,11 +100,6 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.11</version>
-			</dependency>
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
