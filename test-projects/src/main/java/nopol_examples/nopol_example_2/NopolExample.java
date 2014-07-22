@@ -1,5 +1,7 @@
 package nopol_examples.nopol_example_2;
 
+import java.util.concurrent.Callable;
+
 public class NopolExample {
 
 	/*
@@ -24,6 +26,19 @@ public class NopolExample {
 		}
 		
 		private int fieldOfInnerClass;
+	}
+	
+	public Callable<Boolean> newCallable() {
+		return new Callable<Boolean>() {
+			private int limit = 114;
+			public Boolean call() throws Exception {
+				if (fieldOfOuterClass > limit) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		};
 	}
 	
 	private int fieldOfOuterClass;

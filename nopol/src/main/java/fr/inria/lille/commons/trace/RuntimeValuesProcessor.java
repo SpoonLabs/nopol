@@ -100,7 +100,12 @@ public class RuntimeValuesProcessor<T extends CtCodeElement> extends AbstractPro
 			if (SpoonLibrary.hasStaticModifier(variable)) {
 				simpleName = declaringClass + "." + simpleName;
 			} else {
-				simpleName = declaringClass + ".this." + simpleName;
+				if (declaringClass.isEmpty()) {
+					/* only when 'variable' is a field of an Anonymous Class */
+					simpleName = "this." + simpleName;
+				} else {
+					simpleName = declaringClass + ".this." + simpleName;
+				}
 			}
 		}
 		return simpleName;

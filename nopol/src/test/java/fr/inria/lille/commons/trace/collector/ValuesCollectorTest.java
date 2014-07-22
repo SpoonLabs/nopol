@@ -221,6 +221,11 @@ public class ValuesCollectorTest {
 		testReachedVariableNames(5, "!(stringParameter.isEmpty())", "stringParameter");	
 	}
 	
+	@Test
+	public void fieldOfAnonymousClass() {
+		testReachedVariableNames(2, "(fieldOfOuterClass) > (limit)", "this.limit");
+	}
+	
 	private void testReachedVariableNames(int exampleNumber, String codeSnippet, String... expectedReachedVariables) {
 		CtElement firstElement = existsCodeSnippet(exampleNumber, codeSnippet);
 		assertTrue(CtCodeElement.class.isInstance(firstElement));

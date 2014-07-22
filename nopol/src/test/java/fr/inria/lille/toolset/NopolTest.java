@@ -91,7 +91,7 @@ public class NopolTest {
 	@Test
 	public void example2Fix() {
 		Collection<String> failedTests = SetLibrary.newHashSet("test1", "test2", "test4", "test5", "test6", "test7");
-		Patch patch = test(2, 9, BugKind.CONDITIONAL, failedTests);
+		Patch patch = test(2, 11, BugKind.CONDITIONAL, failedTests);
 		fixComparison(patch, "(a)<=(b)");
 	}
 	
