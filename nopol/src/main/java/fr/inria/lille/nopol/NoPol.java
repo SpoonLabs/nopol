@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.inria.lille.commons.classes.TestClassesFinder;
+import fr.inria.lille.commons.compiler.DynamicCompilationException;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.patch.TestPatch;
 import fr.inria.lille.nopol.sps.SuspiciousStatement;
@@ -81,12 +82,13 @@ public final class NoPol {
 	
 	private Patch buildPatch(final String[] testClasses, final SuspiciousStatement statement) {
 		try {
-			return synthetizerFactory.getFor(statement.getSourceLocation()).buildPatch(classpath,
-					testClasses);
+			return synthetizerFactory.getFor(statement.getSourceLocation()).buildPatch(classpath, testClasses);
 		} catch (IllegalArgumentException e) {
 			logger.info(e.getMessage());
-			return NO_PATCH;
+		} catch (DynamicCompilationException dce) {
+			logger.info(dce.getMessage());
 		}
+		return NO_PATCH;
 	}
 
 	private boolean isOk(final Patch newRepair, final String[] testClasses) {

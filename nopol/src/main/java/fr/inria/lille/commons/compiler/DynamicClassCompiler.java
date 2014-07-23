@@ -66,6 +66,7 @@ public class DynamicClassCompiler {
 			for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics().getDiagnostics()) {
 				System.err.println(diagnostic);
 			}
+			throw new DynamicCompilationException("Aborting: dynamic compilation failed");
 		}
 		return success;
 	}
