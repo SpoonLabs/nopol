@@ -62,6 +62,16 @@ public class ListLibrary {
 		return null;
 	}
 	
+	public static <T> List<T> firstElements(int numberOfElements, List<T> list) {
+		return list.subList(0, Math.min(list.size(), numberOfElements));
+	}
+	
+	public static <T> List<T> lastElements(int numberOfElements, List<T> list) {
+		int length = list.size();
+		return list.subList(Math.max(0, length - numberOfElements), length);
+		
+	}
+	
 	public static <T> boolean isPartitionOf(List<T> queriedList, List<? extends T>... partition) {
 		boolean sameSize = queriedList.size() == CollectionLibrary.combinedSize(partition);
 		if (sameSize) {

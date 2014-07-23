@@ -552,10 +552,32 @@ public class CollectionsTest {
 	}
 	
 	@Test
-	public void lilnkedHashSetConstructorWithEnumeration() {
+	public void linkedHashSetConstructorWithEnumeration() {
 		Enumeration<String> enumeration = Collections.enumeration(asList("a", "b", "b", "c"));
 		Set<String> linkedSet = SetLibrary.newLinkedHashSet(enumeration);
 		assertEquals(3, linkedSet.size());
 		assertTrue(linkedSet.containsAll(asList("a", "b", "c")));
+	}
+	
+	@Test
+	public void firstElementsOfAList() {
+		assertEquals(asList(), ListLibrary.firstElements(0, asList()));
+		assertEquals(asList(), ListLibrary.firstElements(1, asList()));
+		List<String> list = asList("a", "b", "c", "d");
+		assertEquals(asList(), ListLibrary.firstElements(0, list));
+		assertEquals(asList("a"), ListLibrary.firstElements(1, list));
+		assertEquals(list, ListLibrary.firstElements(4, list));
+		assertEquals(list, ListLibrary.firstElements(5, list));
+	}
+	
+	@Test
+	public void lastElementsOfAList() {
+		assertEquals(asList(), ListLibrary.lastElements(0, asList()));
+		assertEquals(asList(), ListLibrary.lastElements(1, asList()));
+		List<String> list = asList("a", "b", "c", "d");
+		assertEquals(asList(), ListLibrary.lastElements(0, list));
+		assertEquals(asList("d"), ListLibrary.lastElements(1, list));
+		assertEquals(list, ListLibrary.lastElements(4, list));
+		assertEquals(list, ListLibrary.lastElements(5, list));
 	}
 }
