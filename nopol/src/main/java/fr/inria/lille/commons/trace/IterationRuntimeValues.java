@@ -5,7 +5,7 @@ import static java.lang.String.format;
 import java.util.Map;
 
 import fr.inria.lille.commons.classes.GlobalToggle;
-import fr.inria.lille.commons.collections.MapLibrary;
+import fr.inria.lille.commons.collections.Table;
 import fr.inria.lille.commons.trace.collector.ValueCollector;
 
 public class IterationRuntimeValues extends GlobalToggle {
@@ -19,7 +19,7 @@ public class IterationRuntimeValues extends GlobalToggle {
 	
 	@Override
 	public void reset() {
-		iterationInputsCache().clear();
+		valueTable().clear();
 	}
 	
 	@Override
@@ -36,23 +36,22 @@ public class IterationRuntimeValues extends GlobalToggle {
 	}
 	
 	public int inputsSize() {
-		return iterationInputsCache().size();
+		return valueTable().numberOfRows();
 	}
 	
 	public Map<String, Object> inputsFor(int iterationNumber) {
-		Map<String, Object> newMap = MapLibrary.newHashMap();
-		return MapLibrary.getPutIfAbsent(iterationInputsCache(), iterationNumber, newMap);
+		return valueTable().rowCreateIfAbsent(iterationNumber);
 	}
 	
-	private Map<Integer, Map<String, Object>> iterationInputsCache() {
-		if (iterationInputsCache == null) {
-			iterationInputsCache = MapLibrary.newHashMap();
+	private Table<Integer, String, Object> valueTable() {
+		if (valueTable == null) {
+			valueTable = Table.newTable();
 		}
-		return iterationInputsCache;
+		return valueTable;
 	}
 	
 	private IterationRuntimeValues() {}
 	
 	private static IterationRuntimeValues instance;
-	private Map<Integer, Map<String, Object>> iterationInputsCache;
+	private Table<Integer, String, Object> valueTable;
 }

@@ -2,6 +2,7 @@ package fr.inria.lille.infinitel.loop;
 
 import static fr.inria.lille.commons.suite.TestSuiteExecution.runCasesIn;
 import static fr.inria.lille.commons.suite.TestSuiteExecution.runTestCase;
+import static java.util.Arrays.asList;
 
 import java.util.Collection;
 import java.util.Map;
@@ -10,7 +11,7 @@ import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 
 import spoon.reflect.cu.SourcePosition;
-import fr.inria.lille.commons.collections.MapLibrary;
+import fr.inria.lille.commons.collections.Table;
 import fr.inria.lille.commons.suite.NullRunListener;
 import fr.inria.lille.commons.suite.TestCase;
 
@@ -36,18 +37,28 @@ public class MonitoringTestExecutor {
 	}
 	
 	public Map<TestCase, Integer> invocationsPerTest(SourcePosition loopPosition, Collection<TestCase> testCases) {
-		Map<TestCase, Integer> invocations = MapLibrary.newHashMap();
+		return invocationsPerTest(asList(loopPosition), testCases).row(loopPosition);
+	}
+	
+	public Table<SourcePosition, TestCase, Integer> invocationsPerTest(Collection<SourcePosition> loops, Collection<TestCase> testCases) {
+		Table<SourcePosition, TestCase, Integer> invocationsPerTest = Table.newTable(loops);
 		for (TestCase testCase : testCases) {
-			execute(testCase, loopPosition);
-			invocations.put(testCase, monitor().numberOfRecords(loopPosition));
+			execute(testCase, loops);
+			for (SourcePosition loop : loops) {
+				invocationsPerTest.put(loop, testCase, monitor().numberOfRecords(loop));
+			}
 		}
-		return invocations;
+		return invocationsPerTest;
 	}
 	
 	public Result execute(TestCase testCase, SourcePosition loopPosition, Number threshold) {
 		return execute(testCase, loopPosition, threshold, nullRunListener());
 	}
 
+	public Result execute(TestCase testCase, Collection<SourcePosition> loops) {
+		return execute(testCase, loops, nullRunListener());
+	}
+	
 	public Result execute(TestCase testCase, SourcePosition loopPosition) {
 		return execute(testCase, loopPosition, nullRunListener());
 	}
@@ -67,6 +78,13 @@ public class MonitoringTestExecutor {
 		monitor().enable(loopPosition);
 		Result result = runTestCase(testCase, classLoader(), listener);
 		monitor().disable(loopPosition);
+		return result;
+	}
+	
+	public Result execute(TestCase testCase, Collection<SourcePosition> loops, RunListener listener) {
+		monitor().enable(loops);
+		Result result = runTestCase(testCase, classLoader(), listener);
+		monitor().disable(loops);
 		return result;
 	}
 	

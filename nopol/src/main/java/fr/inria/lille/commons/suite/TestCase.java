@@ -7,6 +7,14 @@ import fr.inria.lille.commons.collections.SetLibrary;
 
 public class TestCase {
 
+	public static Collection<String> testClasses(Collection<TestCase> testCases) {
+		Collection<String> testClasses = SetLibrary.newHashSet();
+		for (TestCase testCase : testCases) {
+			testClasses.add(testCase.className());
+		}
+		return testClasses;
+	}
+	
 	public static Collection<String> testNames(Collection<TestCase> testCases) {
     	Collection<String> testNames = SetLibrary.newHashSet();
     	for (TestCase testCase : testCases) {
@@ -15,13 +23,13 @@ public class TestCase {
     	return testNames;
 	}
 	
-	public TestCase(String className, String testName) {
-		this.className = className;
+	public TestCase(String qualifiedClassName, String testName) {
+		this.qualifiedClassName = qualifiedClassName;
 		this.testName = testName;
 	}
 	
 	public String className() {
-		return className;
+		return qualifiedClassName;
 	}
 	
 	public String testName() {
@@ -36,7 +44,7 @@ public class TestCase {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = prime + ((className == null) ? 0 : className.hashCode());
+		int result = prime + ((qualifiedClassName == null) ? 0 : qualifiedClassName.hashCode());
 		result = prime * result + ((testName == null) ? 0 : testName.hashCode());
 		return result;
 	}
@@ -50,10 +58,10 @@ public class TestCase {
 		if (getClass() != obj.getClass())
 			return false;
 		TestCase other = (TestCase) obj;
-		if (className == null) {
-			if (other.className != null)
+		if (qualifiedClassName == null) {
+			if (other.qualifiedClassName != null)
 				return false;
-		} else if (!className.equals(other.className))
+		} else if (!qualifiedClassName.equals(other.qualifiedClassName))
 			return false;
 		if (testName == null) {
 			if (other.testName != null)
@@ -63,6 +71,6 @@ public class TestCase {
 		return true;
 	}
 
-	private String className;
+	private String qualifiedClassName;
 	private String testName;
 }

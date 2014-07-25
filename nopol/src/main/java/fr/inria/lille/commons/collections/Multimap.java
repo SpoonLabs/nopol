@@ -1,5 +1,9 @@
 package fr.inria.lille.commons.collections;
 
+import static fr.inria.lille.commons.collections.MapLibrary.getPutIfAbsent;
+import static fr.inria.lille.commons.collections.MapLibrary.newHashMap;
+import static fr.inria.lille.commons.collections.MapLibrary.newIdentityHashMap;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -11,30 +15,30 @@ import java.util.Set;
 public class Multimap<K, V> implements Map<K, Collection<V>> {
 
 	public static <K, V> Multimap<K, V> newListMultimap() {
-		return new Multimap(MapLibrary.newHashMap(), LinkedList.class);
+		return new Multimap(newHashMap(), LinkedList.class);
 	}
 	
 	public static <K, V> Multimap<K, V> newSetMultimap() {
-		return new Multimap(MapLibrary.newHashMap(), HashSet.class);
+		return new Multimap(newHashMap(), HashSet.class);
 	}
 	
 	public static <K, V> Multimap<K, V> newLinkedHashSetMultimap() {
-		return new Multimap(MapLibrary.newHashMap(), LinkedHashSet.class);
+		return new Multimap(newHashMap(), LinkedHashSet.class);
 	}
 	
 	public static <K, V> Multimap<K, V> newIdentityHashListMultimap(int keyCapacity) {
-		return new Multimap(MapLibrary.newIdentityHashMap(keyCapacity), LinkedList.class);
+		return new Multimap(newIdentityHashMap(keyCapacity), LinkedList.class);
 	}
 	
 	public static <K, V> Multimap<K, V> newIdentityHashSetMultimap(int keyCapacity) {
-		return new Multimap(MapLibrary.newIdentityHashMap(keyCapacity), HashSet.class);
+		return new Multimap(newIdentityHashMap(keyCapacity), HashSet.class);
 	}
 	
 	public static <K, V> Multimap<K, V> newIdentityLinkedHashSetMultimap(int keyCapacity) {
-		return new Multimap(MapLibrary.newIdentityHashMap(keyCapacity), LinkedHashSet.class);
+		return new Multimap(newIdentityHashMap(keyCapacity), LinkedHashSet.class);
 	}
 	
-	public Multimap(Map<K, Collection<V>> realSubject, Class<? extends Collection<V>> containerClass) {
+	private Multimap(Map<K, Collection<V>> realSubject, Class<? extends Collection<V>> containerClass) {
 		this.realSubject = realSubject;
 		this.containerClass = containerClass;
 	}
@@ -50,7 +54,7 @@ public class Multimap<K, V> implements Map<K, Collection<V>> {
 	}
 	
 	public boolean add(K key, V value) {
-		Collection<V> associatedCollection = MapLibrary.getPutIfAbsent(this, key, valuesContainer());
+		Collection<V> associatedCollection = getPutIfAbsent(this, key, valuesContainer());
 		return associatedCollection.add(value);
 	}
 	

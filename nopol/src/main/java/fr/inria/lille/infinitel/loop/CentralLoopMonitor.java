@@ -52,30 +52,6 @@ public class CentralLoopMonitor extends AbstractProcessor<CtWhile> {
 		return counterOf(loopPosition).numberOfRecords();
 	}
 	
-	public void disableAll() {
-		for (SourcePosition position : counters().keySet()) {
-			disable(position);
-		}
-	}
-	
-	public boolean disable(SourcePosition position) {
-		return counterOf(position).disable();
-	}
-	
-	public void enableAll() {
-		for (SourcePosition position : counters().keySet()) {
-			enable(position);
-		}
-	}
-	
-	public boolean enable(SourcePosition position) {
-		return counterOf(position).enable();
-	}
-	
-	public Number setThresholdOf(SourcePosition position, Number newThreshold) {
-		return counterOf(position).setThreshold(newThreshold);
-	}
-	
 	public Collection<SourcePosition> loopsReachingThreshold() {
 		Collection<SourcePosition> positions = SetLibrary.newHashSet();	
 		for (Entry<SourcePosition, LoopEntrancesCounter> entry : counters().entrySet()) {
@@ -85,7 +61,39 @@ public class CentralLoopMonitor extends AbstractProcessor<CtWhile> {
 		}
 		return positions;
 	}
-
+	
+	public Number setThresholdOf(SourcePosition position, Number newThreshold) {
+		return counterOf(position).setThreshold(newThreshold);
+	}
+	
+	public void disableAll() {
+		disable(allLoops());
+	}
+	
+	public void disable(Collection<SourcePosition> loopPositions) {
+		for (SourcePosition position : loopPositions) {
+			disable(position);
+		}
+	}
+	
+	public boolean disable(SourcePosition position) {
+		return counterOf(position).disable();
+	}
+	
+	public void enableAll() {
+		enable(allLoops());
+	}
+	
+	public void enable(Collection<SourcePosition> loopPositions) {
+		for (SourcePosition position : loopPositions) {
+			enable(position);
+		}
+	}
+	
+	public boolean enable(SourcePosition position) {
+		return counterOf(position).enable();
+	}
+	
 	public int threshold() {
 		return threshold;
 	}
