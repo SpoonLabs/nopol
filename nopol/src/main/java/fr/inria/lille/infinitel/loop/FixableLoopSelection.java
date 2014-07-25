@@ -35,11 +35,24 @@ public class FixableLoopSelection {
 	}
 
 	private static boolean isFixable(SourcePosition loop, Map<TestCase, Integer> failingTestInvocations, Map<TestCase, Integer> passingTestInvocations) {
-		Collection<Integer> restrictedValues = asList(0, 1); 
-		boolean isFixable = MapLibrary.valuesAreIn(restrictedValues, failingTestInvocations) && MapLibrary.valuesAreIn(restrictedValues, passingTestInvocations);
-		logDebug(logger, format("Unable to fix infinite loop (%s), it is invoked more than once", loop.toString()));
+		boolean isFixable = atMostOneInvocationEach(failingTestInvocations) && atMostOneInvocationEach(passingTestInvocations);
+		if (! isFixable) {
+			logDebug(logger, format("Unable to fix infinite loop (%s), it is invoked more than once", loop.toString()));
+		}
 		return isFixable;
 	}
 	
+	private static boolean atMostOneInvocationEach(Map<TestCase, Integer> invocationsPerTest) {
+		return MapLibrary.keysWithValuesIn(allowedInvocations(), invocationsPerTest).size() == invocationsPerTest.size();
+	}
+	
+	private static Collection<Integer> allowedInvocations() {
+		if (allowedInvocations == null) {
+			allowedInvocations = asList(0, 1);
+		}
+		return allowedInvocations;
+	}
+	
+	private static Collection<Integer> allowedInvocations;
 	private static Logger logger = newLoggerFor(FixableLoopSelection.class); 
 }

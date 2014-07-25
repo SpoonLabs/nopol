@@ -21,32 +21,35 @@ public class LoopSpecificationCollector {
 		this.testExecutor = testExecutor;
 	}
 	
-	public Collection<Specification<Boolean>> testSpecifications(Map<TestCase, Integer> testsAndThresholds, SourcePosition loopPosition) {
+	public Collection<Specification<Boolean>> testSpecifications(Map<TestCase, Integer> thresholdsByTest, SourcePosition loopPosition) {
 		Collection<Specification<Boolean>> specifications = SetLibrary.newHashSet();
-		for (TestCase testCase : testsAndThresholds.keySet()) {
-			Integer threshold = testsAndThresholds.get(testCase);
-			executeCollectingRuntimeValues(testCase, loopPosition, threshold);
-			addTestSpecifications(specifications, threshold);
+		for (TestCase testCase : thresholdsByTest.keySet()) {
+			Integer testThreshold = thresholdsByTest.get(testCase);
+			executeCollectingRuntimeValues(testCase, loopPosition, testThreshold);
+			addTestSpecifications(specifications, testThreshold);
 		}
 		return specifications;
 	}
 
-	protected void executeCollectingRuntimeValues(TestCase testCase, SourcePosition loopPosition, Integer threshold) {
+	protected void executeCollectingRuntimeValues(TestCase testCase, SourcePosition loopPosition, Integer testThreshold) {
 		logDebug(logger, format("[Executing %s to collect runtime values in %s]", testCase.toString(), loopPosition.toString()));
 		runtimeValues().enable();
-		testExecutor().execute(testCase, loopPosition, threshold);
+		testExecutor().execute(testCase, loopPosition, testThreshold);
 		runtimeValues().disable();
 	}
 	
-	protected void addTestSpecifications(Collection<Specification<Boolean>> specifications, Integer threshold) {
-		for (int iteration = 0; iteration < threshold; iteration += 1) {
+	protected void addTestSpecifications(Collection<Specification<Boolean>> specifications, Integer testThreshold) {
+		int inputsSize = runtimeValues().inputsSize();
+		for (int iteration = 0; iteration < testThreshold; iteration += 1) {
 			addTestSpecification(specifications, iteration, true);
 		}
-		addTestSpecification(specifications, threshold, false);
+		if (inputsSize > testThreshold) {
+			addTestSpecification(specifications, testThreshold, false);
+		}
 	}
 
 	protected void addTestSpecification(Collection<Specification<Boolean>> specifications, int iterationNumber, boolean expectedOutput) {
-		Map<String, Object> values = runtimeValues().valuesCacheFor(iterationNumber);
+		Map<String, Object> values = runtimeValues().inputsFor(iterationNumber);
 		specifications.add(new Specification<>(values, expectedOutput));
 	}
 	

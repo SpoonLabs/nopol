@@ -2,7 +2,6 @@ package fr.inria.lille.commons.suite;
 
 import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
 import static fr.inria.lille.commons.classes.LoggerLibrary.newLoggerFor;
-import static fr.inria.lille.commons.string.StringLibrary.javaNewline;
 import static java.lang.String.format;
 
 import java.util.Collection;
@@ -13,6 +12,7 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.slf4j.Logger;
 
+import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.SetLibrary;
 
 
@@ -107,23 +107,22 @@ public class TestCasesListener extends RunListener {
 	}
 	
 	private static void logTestRunFinished(Result result) {
-		StringBuilder builder = new StringBuilder();
-		String endl = javaNewline();
-		builder.append("Tests run finished" + endl);
-		builder.append("~ Total tests run: " + result.getRunCount() + endl);
-		builder.append("~ Ignored tests: " + result.getIgnoreCount() + endl);
-		builder.append("~ Failed tests: " + result.getFailureCount() + endl);
+		Collection<String> lines = ListLibrary.newArrayList();
+		lines.add("Tests run finished");
+		lines.add("~ Total tests run: " + result.getRunCount());
+		lines.add("~ Ignored tests: " + result.getIgnoreCount());
+		lines.add("~ Failed tests: " + result.getFailureCount());
 		for (Failure failure : result.getFailures()) {
-			builder.append("~ " + failure.getTestHeader() + endl);
-			builder.append("[" + failure.getMessage() + "]" + endl);
+			lines.add("~ " + failure.getTestHeader());
+			lines.add("[" + failure.getMessage() + "]");
 			Throwable exception = failure.getException();
-			builder.append(exception.toString() + endl);
+			lines.add(exception.toString());
 			for (int i = 0; i <= 5; i += 1) {
 				StackTraceElement element = exception.getStackTrace()[i];
-				builder.append("    at " + element.toString() + endl);
+				lines.add("    at " + element.toString());
 			}
 		}
-		logDebug(logger, builder.toString());
+		logDebug(logger, lines);
 	}
 
     private Collection<TestCase> testCases;

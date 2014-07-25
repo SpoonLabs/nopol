@@ -22,19 +22,23 @@ public class MonitoringTestExecutor {
 		monitor().disableAll();
 	}
 	
-	public Collection<SourcePosition> loopsAboveThresholdFor(String[] testClasses) {
-		return loopsAboveThresholdFor(testClasses, nullRunListener());
+	public Collection<SourcePosition> allLoops() {
+		return monitor().allLoops();
 	}
 	
-	public Collection<SourcePosition> loopsAboveThresholdFor(String[] testClasses, RunListener listener) {
+	public Collection<SourcePosition> loopsReachingThresholdFor(String[] testClasses) {
+		return loopsReachingThresholdFor(testClasses, nullRunListener());
+	}
+	
+	public Collection<SourcePosition> loopsReachingThresholdFor(String[] testClasses, RunListener listener) {
 		execute(testClasses, listener);
-		return monitor().loopsAboveThreshold();
+		return monitor().loopsReachingThreshold();
 	}
 	
 	public Map<TestCase, Integer> invocationsPerTest(SourcePosition loopPosition, Collection<TestCase> testCases) {
 		Map<TestCase, Integer> invocations = MapLibrary.newHashMap();
 		for (TestCase testCase : testCases) {
-			execute(testCase, loopPosition, 0);
+			execute(testCase, loopPosition);
 			invocations.put(testCase, monitor().numberOfRecords(loopPosition));
 		}
 		return invocations;
@@ -73,21 +77,21 @@ public class MonitoringTestExecutor {
 		return result;
 	}
 	
-	public boolean execute(Map<TestCase, Integer> testsWithThresholds, SourcePosition loopPosition, RunListener listener) {
+	public boolean execute(Map<TestCase, Integer> iterationsByTest, SourcePosition loopPosition, RunListener listener) {
 		boolean success = true;
-		for (TestCase testCase : testsWithThresholds.keySet()) {
-			Result result = execute(testCase, loopPosition, testsWithThresholds.get(testCase), listener);
+		for (TestCase testCase : iterationsByTest.keySet()) {
+			Result result = execute(testCase, loopPosition, iterationsByTest.get(testCase), listener);
 			success = success && result.wasSuccessful();
 		}
 		return success; 
 	}
+
+	public CentralLoopMonitor monitor() {
+		return monitor;
+	}
 	
 	protected ClassLoader classLoader() {
 		return classLoader;
-	}
-	
-	protected CentralLoopMonitor monitor() {
-		return monitor;
 	}
 	
 	private RunListener nullRunListener() {

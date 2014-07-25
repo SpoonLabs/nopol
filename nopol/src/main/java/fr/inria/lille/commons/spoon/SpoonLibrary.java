@@ -63,6 +63,12 @@ public class SpoonLibrary {
 		return newLiteral;
 	}
 	
+	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, String classSimpleName, String variableName, String initializationSnippet) {
+		CtTypeReference<T> type = factory.Core().createTypeReference();
+		type.setSimpleName(classSimpleName);
+		return factory.Code().createLocalVariable(type, variableName, newExpressionFromSnippet(factory, initializationSnippet, type.getActualClass()));
+	}
+	
 	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, String classSimpleName, String variableName, T defaultValue) {
 		CtTypeReference<T> type = factory.Core().createTypeReference();
 		type.setSimpleName(classSimpleName);

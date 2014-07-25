@@ -477,10 +477,10 @@ public class CollectionsTest {
 		Map<String, String> map = MapLibrary.newHashMap(asList("a", "b", "c"), asList("z", "z", "z"));
 		assertTrue(MapLibrary.onlyValueIs("z", map));
 		assertFalse(MapLibrary.onlyValueIs("y", map));
-		assertFalse(MapLibrary.onlyValueIs("z", MapLibrary.newHashMap()));
 		map.put("x", "x");
 		assertFalse(MapLibrary.onlyValueIs("x", map));
 		assertFalse(MapLibrary.onlyValueIs("z", map));
+		assertFalse(MapLibrary.onlyValueIs("z", MapLibrary.newHashMap()));
 	}
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})
@@ -492,9 +492,9 @@ public class CollectionsTest {
 		assertFalse(MapLibrary.valuesAreIn(asList("w", "y", "z"), map));
 		assertFalse(MapLibrary.valuesAreIn(asList("y", "z"), map));
 		assertFalse(MapLibrary.valuesAreIn((List) asList(), map));
-		assertFalse(MapLibrary.valuesAreIn((List) asList(), MapLibrary.newHashMap()));
 		map.put("w", "w");
 		assertFalse(MapLibrary.valuesAreIn(asList("x", "y", "z"), map));
+		assertFalse(MapLibrary.valuesAreIn((List) asList(), MapLibrary.newHashMap()));
 	}
 	
 	@Test
@@ -510,7 +510,7 @@ public class CollectionsTest {
 	}
 	
 	@Test
-	public void mapKeysWithByValues() {
+	public void mapKeysByValues() {
 		Map<String, String> map = MapLibrary.newHashMap(asList("a", "b", "c"), asList("x", "y", "z"));
 		Collection<String> keys = MapLibrary.keysWithValuesIn(asList("x", "y"), map);
 		assertEquals(2, keys.size());

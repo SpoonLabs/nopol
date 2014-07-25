@@ -46,6 +46,18 @@ public class InfinitelTest {
 		assertFalse(monitor.isToBeProcessed(loops.get("otherUnfixableInfiniteLoop")));
 	}
 	
+	@Test
+	public void nonFixableNestedLoopInExample3() {
+		Infinitel infinitel = loopFixerForExample(3);
+		InfinitelDiagnostician diagnostician = new InfinitelDiagnostician(infinitel.project());
+		MonitoringTestExecutor testExecutor = diagnostician.newTestExecutor();
+		assertEquals(2, testExecutor.allLoops().size());
+		Collection<FixableLoop> loopsInvokedOnlyOnce = diagnostician.loopsInvokedOnlyOnce(testExecutor);
+		assertEquals(1, loopsInvokedOnlyOnce.size());
+		FixableLoop loop = CollectionLibrary.any(loopsInvokedOnlyOnce);
+		assertEquals(7, loop.position().getLine());
+	}
+	
 	private Map<String, CtWhile> loopsByMethodIn(File sourceFile, int numberOfLoops) {
 		Factory model = SpoonLibrary.modelFor(sourceFile);
 		TypeFilter<CtWhile> filter = new TypeFilter<>(CtWhile.class);
@@ -61,17 +73,23 @@ public class InfinitelTest {
 	
 	@Test
 	public void infinitelExample1() {
-		Map<String, Integer> expected = expectedThresholdsMap(1, asList("test1", "test2", "test3", "test4", "testNegative"), asList(0, 1, 2, 3, 4));
+		Map<String, Integer> expected = expectedIterationsMap(1, asList("test1", "test2", "test3", "test4", "testNegative"), asList(0, 1, 2, 3, 4));
 		checkInfinitel(1, 8, 4, 1, expected);
 	}
 	
 	@Test
 	public void infinitelExample2() {
-		Map<String, Integer> expected = expectedThresholdsMap(2, asList("infiniteLoop", "oneIteration"), asList(1, 1));
+		Map<String, Integer> expected = expectedIterationsMap(2, asList("infiniteLoop", "oneIteration"), asList(1, 1));
 		checkInfinitel(2, 7, 1, 1, expected);
 	}
 	
-	public void checkInfinitel(int infinitelExample, int infiniteLoopLine, int passingTests, int failingTests, Map<String, Integer> thresholdsMap) {
+	@Test
+	public void infinitelExample3() {
+		Map<String, Integer> expected = expectedIterationsMap(3, asList("reachesZeroInOneIteration", "reachesZeroInTenIterations", "doesNotReachZeroReturnCopy"), asList(1, 1, 0));
+		checkInfinitel(3, 7, 3, 0, expected);
+	}
+	
+	public void checkInfinitel(int infinitelExample, int infiniteLoopLine, int passingTests, int failingTests, Map<String, Integer> thresholdsByTest) {
 		Infinitel infinitel = loopFixerForExample(infinitelExample);
 		MonitoringTestExecutor testExecutor = infinitel.newTestExecutor();
 		Pair<SourcePosition, TestCasesListener> pair = checkInfiniteLoop(infinitel, testExecutor, infiniteLoopLine);
@@ -80,8 +98,8 @@ public class InfinitelTest {
 		Pair<Collection<TestCase>, Collection<TestCase>> checkedTests = checkTests(infinitel, testExecutor, loopPosition, listener, passingTests, failingTests);
 		Collection<TestCase> passedTests = checkedTests.first();
 		Collection<TestCase> failedTests = checkedTests.second();
-		Map<TestCase, Integer> testsAndThresholds = checkThresholds(infinitel, testExecutor, loopPosition, passedTests, failedTests, thresholdsMap);
-		checkSynthesisedFix(infinitel, testExecutor, testsAndThresholds, loopPosition);
+		Map<TestCase, Integer> actualThresholdsByTest = checkIterations(infinitel, testExecutor, loopPosition, passedTests, failedTests, thresholdsByTest);
+		checkSynthesisedFix(infinitelExample, infinitel, testExecutor, actualThresholdsByTest, loopPosition);
 	}
 	
 	private Infinitel loopFixerForExample(int exampleNumber) {
@@ -104,7 +122,7 @@ public class InfinitelTest {
 	
 	private Pair<Collection<TestCase>,Collection<TestCase>> checkTests(Infinitel infinitel, MonitoringTestExecutor testExecutor, SourcePosition loopPosition,
 			TestCasesListener listener, int passingTests, int failingTests) {
-		Collection<FixableLoop> fixableLoops = infinitel.fixableInfiniteLoops(testExecutor, asList(loopPosition), listener);
+		Collection<FixableLoop> fixableLoops = infinitel.fixableLoops(testExecutor, asList(loopPosition), listener);
 		assertEquals(1, fixableLoops.size());
 		FixableLoop fixableLoop  = (FixableLoop) fixableLoops.toArray()[0];
 		Collection<TestCase> passingTestsUsingLoop = fixableLoop.passingTests();
@@ -114,26 +132,27 @@ public class InfinitelTest {
 		return new Pair<>(passingTestsUsingLoop, failingTestsUsingLoop);
 	}
 	
-	private Map<TestCase, Integer> checkThresholds(Infinitel infinitel, MonitoringTestExecutor testExecutor, SourcePosition loopPosition, 
+	private Map<TestCase, Integer> checkIterations(Infinitel infinitel, MonitoringTestExecutor testExecutor, SourcePosition loopPosition, 
 			Collection<TestCase> passedTests, Collection<TestCase> failedTests, Map<String, Integer> expected) {
-		Map<TestCase, Integer> actual = infinitel.testsAndThresholds(loopPosition, testExecutor, failedTests, passedTests);
-		Map<String, Integer> thresholdsByName = MapLibrary.toStringMap(actual);
-		assertEquals(expected, thresholdsByName);
-		return actual;
+		Map<TestCase, Integer> thresholdsByTest = infinitel.thresholdsByTest(loopPosition, testExecutor, failedTests, passedTests);
+		Map<String, Integer> thresholdByTestName = MapLibrary.toStringMap(thresholdsByTest);
+		assertEquals(expected, thresholdByTestName);
+		return thresholdsByTest;
 	}
 	
-	private void checkSynthesisedFix(Infinitel infinitel, MonitoringTestExecutor testExecutor, Map<TestCase, Integer> testsAndThresholds, SourcePosition loopPosition) {
-		Collection<Specification<Boolean>> specifications = infinitel.testSpecifications(testsAndThresholds, testExecutor, loopPosition);
+	private void checkSynthesisedFix(int test, Infinitel infinitel, MonitoringTestExecutor testExecutor, Map<TestCase, Integer> thresholdsByTest, SourcePosition loopPosition) {
+		Collection<Specification<Boolean>> specifications = infinitel.testSpecifications(thresholdsByTest, testExecutor, loopPosition);
 		CodeGenesis genesis = infinitel.synthesiseCodeFor(specifications);
 		assertTrue(genesis.isSuccessful());
+		System.out.println(String.format("Patch for infinitel example %d: %s", test, genesis.returnStatement()));
 	}
 	
-	private Map<String, Integer> expectedThresholdsMap(int exampleNumber, List<String> testNames, List<Integer> thresholds) {
+	private Map<String, Integer> expectedIterationsMap(int exampleNumber, List<String> testNames, List<Integer> iterations) {
 		String qualifiedName = format("infinitel_examples.infinitel_example_%d.InfinitelExampleTest#", exampleNumber);
 		Map<String, Integer> expectedMap = MapLibrary.newHashMap();
-		assertEquals(testNames.size(), thresholds.size());
+		assertEquals(testNames.size(), iterations.size());
 		for (int i = 0; i < testNames.size(); i += 1) {
-			expectedMap.put(qualifiedName + testNames.get(i), thresholds.get(i));
+			expectedMap.put(qualifiedName + testNames.get(i), iterations.get(i));
 		}
 		return expectedMap;
 	}

@@ -31,13 +31,21 @@ public class CentralLoopMonitor extends AbstractProcessor<CtWhile> {
 	@Override
 	public void process(CtWhile loopStatement) {
 		SourcePosition position = loopStatement.getPosition();
-		LoopIterationCounter auditor = LoopIterationCounter.newInstance(threshold());
+		LoopEntrancesCounter auditor = LoopEntrancesCounter.newInstance(threshold());
 		LoopInstrumenter.instrument(loopStatement, auditor);
 		counters().put(position, auditor);
 	}
 	
+	public Collection<SourcePosition> allLoops() {
+		return counters().keySet();
+	}
+	
 	public Integer lastRecordIn(SourcePosition loopPosition) {
 		return counterOf(loopPosition).lastRecordedValue();
+	}
+	
+	public int topRecordIn(SourcePosition loopPosition) {
+		return counterOf(loopPosition).topRecord();
 	}
 	
 	public int numberOfRecords(SourcePosition loopPosition) {
@@ -68,28 +76,28 @@ public class CentralLoopMonitor extends AbstractProcessor<CtWhile> {
 		return counterOf(position).setThreshold(newThreshold);
 	}
 	
-	public Collection<SourcePosition> loopsAboveThreshold() {
+	public Collection<SourcePosition> loopsReachingThreshold() {
 		Collection<SourcePosition> positions = SetLibrary.newHashSet();	
-		for (Entry<SourcePosition, LoopIterationCounter> entry : counters().entrySet()) {
+		for (Entry<SourcePosition, LoopEntrancesCounter> entry : counters().entrySet()) {
 			if (entry.getValue().thresholdWasReached()) {
 				positions.add(entry.getKey());
 			}
 		}
 		return positions;
 	}
-	
+
 	public int threshold() {
 		return threshold;
 	}
 	
-	private LoopIterationCounter counterOf(SourcePosition position) {
+	private LoopEntrancesCounter counterOf(SourcePosition position) {
 		return counters().get(position);
 	}
 	
-	private Map<SourcePosition, LoopIterationCounter> counters() {
+	private Map<SourcePosition, LoopEntrancesCounter> counters() {
 		return counters;
 	}
 	
 	private int threshold;
-	private Map<SourcePosition, LoopIterationCounter> counters;
+	private Map<SourcePosition, LoopEntrancesCounter> counters;
 }

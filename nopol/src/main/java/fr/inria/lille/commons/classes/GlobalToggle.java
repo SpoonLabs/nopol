@@ -1,11 +1,21 @@
 package fr.inria.lille.commons.classes;
 
-public abstract class Toggle {
+public abstract class GlobalToggle {
 
 	public abstract void reset();
 	
-	public Toggle() {
+	protected abstract String instanceName();
+	
+	public GlobalToggle() {
 		disable();
+	}
+	
+	public String isEnabledInquiry() {
+		return globallyAccessibleName() + ".isEnabled()";
+	}
+	
+	public String globallyAccessibleName() {
+		return getClass().getName() + "." + instanceName();
 	}
 	
 	public boolean isEnabled() {

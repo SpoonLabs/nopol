@@ -1,12 +1,14 @@
 package fr.inria.lille.commons.trace;
 
+import static java.lang.String.format;
+
 import java.util.Map;
 
-import fr.inria.lille.commons.classes.Toggle;
+import fr.inria.lille.commons.classes.GlobalToggle;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.trace.collector.ValueCollector;
 
-public class IterationRuntimeValues extends Toggle {
+public class IterationRuntimeValues extends GlobalToggle {
 
 	public static IterationRuntimeValues instance() {
 		if (instance == null) {
@@ -17,44 +19,40 @@ public class IterationRuntimeValues extends Toggle {
 	
 	@Override
 	public void reset() {
-		iterationValuesCache().clear();
+		iterationInputsCache().clear();
+	}
+	
+	@Override
+	public String instanceName() {
+		return "instance()";
 	}
 	
 	public String collectValueInvocation(String counterName, String variableName) {
-		String methodInvocation = String.format(".collectValue(%s, \"%s\", %s)", counterName, variableName, variableName);
-		return qualifiedInstanceName() + methodInvocation;
-	}
-	
-	public String isEnabledCondition() {
-		return qualifiedInstanceName() + ".isEnabled()";
-	}
-	
-	public String qualifiedInstanceName() {
-		return getClass().getName() + ".instance()";
+		return globallyAccessibleName() + format(".collectValue(%s, \"%s\", %s)", counterName, variableName, variableName);
 	}
 	
 	public void collectValue(int iterationNumber, String variableName, Object value) {
-		ValueCollector.collectFrom(variableName, value, valuesCacheFor(iterationNumber));
+		ValueCollector.collectFrom(variableName, value, inputsFor(iterationNumber));
 	}
 	
-	public int numberOfIterations() {
-		return iterationValuesCache().size();
+	public int inputsSize() {
+		return iterationInputsCache().size();
 	}
 	
-	public Map<String, Object> valuesCacheFor(int iterationNumber) {
+	public Map<String, Object> inputsFor(int iterationNumber) {
 		Map<String, Object> newMap = MapLibrary.newHashMap();
-		return MapLibrary.getPutIfAbsent(iterationValuesCache(), iterationNumber, newMap);
+		return MapLibrary.getPutIfAbsent(iterationInputsCache(), iterationNumber, newMap);
 	}
 	
-	private Map<Integer, Map<String, Object>> iterationValuesCache() {
-		if (iterationValuesCache == null) {
-			iterationValuesCache = MapLibrary.newHashMap();
+	private Map<Integer, Map<String, Object>> iterationInputsCache() {
+		if (iterationInputsCache == null) {
+			iterationInputsCache = MapLibrary.newHashMap();
 		}
-		return iterationValuesCache;
+		return iterationInputsCache;
 	}
 	
 	private IterationRuntimeValues() {}
 	
 	private static IterationRuntimeValues instance;
-	private Map<Integer, Map<String, Object>> iterationValuesCache;
+	private Map<Integer, Map<String, Object>> iterationInputsCache;
 }
