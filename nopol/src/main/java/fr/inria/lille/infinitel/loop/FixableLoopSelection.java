@@ -42,7 +42,7 @@ public class FixableLoopSelection {
 	private static boolean isFixable(SourcePosition loop, Map<TestCase, Integer> failingTestInvocations, Map<TestCase, Integer> passingTestInvocations) {
 		boolean isFixable = atMostOneInvocationEach(failingTestInvocations) && atMostOneInvocationEach(passingTestInvocations);
 		if (! isFixable) {
-			logDebug(logger, format("Unable to fix infinite loop (%s), it is invoked more than once", loop.toString()));
+			logDebug(logger, format("Unable to fix loop (%s), it is invoked more than once", loop.toString()));
 		}
 		return isFixable;
 	}

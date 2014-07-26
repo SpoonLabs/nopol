@@ -1,11 +1,11 @@
 package fr.inria.lille.infinitel;
 
 import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
+import static java.lang.String.format;
 
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import spoon.reflect.cu.SourcePosition;
@@ -23,6 +23,7 @@ public class InfinitelDiagnostician extends Infinitel {
 		File sourceFile = FileHandler.openFrom(args[0]);
 		URL[] classpath = FileHandler.classpathFrom(args[1]);
 		new InfinitelDiagnostician(sourceFile, classpath).diagnose();
+		System.exit(0);
 	}
 	
 	public InfinitelDiagnostician(File sourceFile, URL[] classpath) {
@@ -42,7 +43,7 @@ public class InfinitelDiagnostician extends Infinitel {
 		MonitoringTestExecutor testExecutor = newTestExecutor();
 		Collection<FixableLoop> loopsInvokedOnce = loopsInvokedOnlyOnce(testExecutor);
 		logLoopPositions(loopsInvokedOnce);
-		logLoopStatistics(testExecutor.monitor());
+		logLoopStatistics(testExecutor);
 	}
 	
 	protected Collection<FixableLoop> loopsInvokedOnlyOnce(MonitoringTestExecutor testExecutor) {
@@ -60,16 +61,14 @@ public class InfinitelDiagnostician extends Infinitel {
 		logDebug(logger, lines);
 	}
 	
-	private void logLoopStatistics(CentralLoopMonitor monitor) {
-		Collection<String> lines = ListLibrary.newArrayList();
+	private void logLoopStatistics(MonitoringTestExecutor testExecutor) {
+		testExecutor.execute(project().testClasses());
 		List<Integer> records = ListLibrary.newArrayList();
+		CentralLoopMonitor monitor = testExecutor.monitor();
 		for (SourcePosition loop : monitor.allLoops()) {
 			records.add(monitor.topRecordIn(loop));
 		}
-		Collections.sort(records);
-		lines.add("Lowest 3 records: " + ListLibrary.firstElements(3, records));
-		lines.add("Highest 3 records: " + ListLibrary.lastElements(3, records));
-		logDebug(logger, lines);
+		logDebug(logger, format("Top records in %d loops", records.size()), records.toString());
 	}
 	
 }
