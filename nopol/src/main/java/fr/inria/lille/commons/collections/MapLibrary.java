@@ -188,4 +188,13 @@ public class MapLibrary {
 		}
 		return keys;
 	}
+	
+	public static <K> Map<K, Integer> frequencies(Collection<K> collection) {
+		Map<K, Integer> frequencies = newHashMap();
+		for (K element : collection) {
+			int count = getPutIfAbsent(frequencies, element, 0);
+			frequencies.put(element, count + 1);
+		}
+		return frequencies;
+	}
 }

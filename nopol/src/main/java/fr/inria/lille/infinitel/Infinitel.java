@@ -19,12 +19,12 @@ import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.trace.Specification;
-import fr.inria.lille.infinitel.loop.CentralLoopMonitor;
 import fr.inria.lille.infinitel.loop.FixableLoop;
 import fr.inria.lille.infinitel.loop.FixableLoopSelection;
 import fr.inria.lille.infinitel.loop.LoopSpecificationCollector;
 import fr.inria.lille.infinitel.loop.LoopTestThresholdFinder;
 import fr.inria.lille.infinitel.loop.MonitoringTestExecutor;
+import fr.inria.lille.infinitel.loop.counters.CentralLoopMonitor;
 
 /** Infinite Loops Repair */
 
@@ -56,14 +56,10 @@ public class Infinitel {
 	}
 	
 	protected MonitoringTestExecutor newTestExecutor() {
-		CentralLoopMonitor monitor = new CentralLoopMonitor(iterationsThreshold());
+		CentralLoopMonitor monitor = new CentralLoopMonitor(configuration().iterationsThreshold(), configuration().counterFactory());
 		ClassLoader classLoader = loaderWithInstrumentedClasses(monitor);
 		MonitoringTestExecutor testExecutor = new MonitoringTestExecutor(classLoader, monitor);
 		return testExecutor;
-	}
-	
-	protected Number iterationsThreshold() {
-		return InfinitelConfiguration.iterationsThreshold();
 	}
 	
 	protected ClassLoader loaderWithInstrumentedClasses(CentralLoopMonitor monitor) {
@@ -125,6 +121,10 @@ public class Infinitel {
 			logDebug(logger, "# Code synthesis failed");
 		}
 		return synthesisedCode;
+	}
+
+	protected InfinitelConfiguration configuration() {
+		return InfinitelConfiguration.instance();
 	}
 	
 	private ProjectReference project;

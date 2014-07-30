@@ -48,10 +48,10 @@ public class BytecodeClassLoaderBuilder {
 	}
 	
 	private static Map<String, byte[]> bytecodes(Map<String, String> qualifiedNameAndContent) {
-		logDebug(logger, format("[Compiling %d classes]", qualifiedNameAndContent.size()));
+		logDebug(logger, format("[Compiling %d source files]", qualifiedNameAndContent.size()));
 		DynamicClassCompiler compiler = new DynamicClassCompiler();
 		Map<String, byte[]> bytecodes = compiler.javaBytecodeFor(qualifiedNameAndContent);
-		logDebug(logger, "[Compilation finished successfully]");
+		logDebug(logger, format("[Compilation finished successfully (%d classes)]", bytecodes.size()));
 		return bytecodes;
 	}
 	

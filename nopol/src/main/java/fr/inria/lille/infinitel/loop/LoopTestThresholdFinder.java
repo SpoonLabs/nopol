@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import spoon.reflect.cu.SourcePosition;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.suite.TestCase;
+import fr.inria.lille.infinitel.loop.counters.CentralLoopMonitor;
 
 public class LoopTestThresholdFinder {
 	

@@ -19,6 +19,7 @@ import fr.inria.lille.commons.collections.SetLibrary;
 public class TestCasesListener extends RunListener {
 
 	public TestCasesListener() {
+		numberOfTests = 0;
 		testCases = SetLibrary.newHashSet();
 		failedTests = SetLibrary.newHashSet();
 	}
@@ -30,6 +31,7 @@ public class TestCasesListener extends RunListener {
 	
 	@Override
     public void testStarted(Description description) throws Exception {
+		incrementNumberOfTests();
 		TestCase testCase = addTestCaseTo(allTests(), description);
 		logDebug(logger, format("[#%d. %s started...]", numberOfTests(), testCase.toString()));
 	}
@@ -75,7 +77,7 @@ public class TestCasesListener extends RunListener {
     }
     
     public int numberOfTests() {
-    	return allTests().size();
+    	return numberOfTests;
     }
 
     public int numberOfFailedTests() {
@@ -106,6 +108,12 @@ public class TestCasesListener extends RunListener {
 		return testCase;
 	}
 	
+	private void incrementNumberOfTests() {
+		synchronized (this) {
+			numberOfTests += 1;
+		}
+	}
+	
 	private static void logTestRunFinished(Result result) {
 		Collection<String> lines = ListLibrary.newArrayList();
 		lines.add("Tests run finished");
@@ -125,6 +133,7 @@ public class TestCasesListener extends RunListener {
 		logDebug(logger, lines);
 	}
 
+	private int numberOfTests;
     private Collection<TestCase> testCases;
     private Collection<TestCase> failedTests;
     private static Logger logger = newLoggerFor(TestCasesListener.class);

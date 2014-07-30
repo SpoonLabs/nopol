@@ -1,4 +1,4 @@
-package fr.inria.lille.infinitel.loop;
+package fr.inria.lille.infinitel.loop.counters;
 
 import static java.lang.String.format;
 
@@ -9,7 +9,7 @@ import fr.inria.lille.commons.collections.ListLibrary;
 
 public class LoopEntrancesCounter extends GlobalToggle {
 
-	public static LoopEntrancesCounter newInstance(Number threshold) {
+	protected static LoopEntrancesCounter newInstance(Number threshold) {
 		int instanceNumber = allInstances().size();
 		LoopEntrancesCounter newInstance = new LoopEntrancesCounter(threshold, instanceNumber);
 		allInstances().add(newInstance);
@@ -21,7 +21,7 @@ public class LoopEntrancesCounter extends GlobalToggle {
 	}
 	
 	@Override
-	public void reset() {
+	protected void reset() {
 		setTopRecord(0);
 		setNumberOfRecords(0);
 		setLastRecordedValue(null);
@@ -43,7 +43,7 @@ public class LoopEntrancesCounter extends GlobalToggle {
 	public int counterInitialization() {
 		if (isEnabled()) {
 			setNumberOfRecords(numberOfRecords() + 1);
-			setLastRecordedValue(0);
+			recordEntrance(0);
 		}
 		return 0;
 	}
@@ -60,28 +60,28 @@ public class LoopEntrancesCounter extends GlobalToggle {
 		return canEnterLoop;
 	}
 	
-	private void recordEntrance(int loopEntrances) {
+	protected void recordEntrance(int loopEntrances) {
 		setLastRecordedValue(loopEntrances);
 		if (loopEntrances > topRecord()) {
 			setTopRecord(loopEntrances);
 		}
 	}
 	
-	public boolean thresholdWasReached() {
+	protected boolean thresholdWasReached() {
 		return topRecord() == threshold();
 	}
 
-	private LoopEntrancesCounter(Number threshold, int instanceNumber) {
+	protected LoopEntrancesCounter(Number threshold, int instanceNumber) {
 		super();
 		setThreshold(threshold);
 		instanceID = instanceNumber;
 	}
 	
-	public Integer lastRecordedValue() {
+	protected Integer lastRecordedValue() {
 		return lastRecordedValue;
 	}
 	
-	public int threshold() {
+	protected int threshold() {
 		return threshold;
 	}
 	
@@ -89,7 +89,7 @@ public class LoopEntrancesCounter extends GlobalToggle {
 		return topRecord;
 	}
 	
-	public int numberOfRecords() {
+	protected int numberOfRecords() {
 		return numberOfRecords;
 	}
 	

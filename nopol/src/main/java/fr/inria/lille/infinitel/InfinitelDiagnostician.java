@@ -1,21 +1,24 @@
 package fr.inria.lille.infinitel;
 
 import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
-import static java.lang.String.format;
 
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import spoon.reflect.cu.SourcePosition;
 import fr.inria.lille.commons.collections.ListLibrary;
+import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.io.FileHandler;
 import fr.inria.lille.commons.io.ProjectReference;
 import fr.inria.lille.commons.suite.TestCasesListener;
-import fr.inria.lille.infinitel.loop.CentralLoopMonitor;
 import fr.inria.lille.infinitel.loop.FixableLoop;
 import fr.inria.lille.infinitel.loop.MonitoringTestExecutor;
+import fr.inria.lille.infinitel.loop.counters.CentralLoopMonitor;
+import fr.inria.lille.infinitel.loop.counters.LoopBookkeepingCounter;
 
 public class InfinitelDiagnostician extends Infinitel {
 
@@ -35,15 +38,22 @@ public class InfinitelDiagnostician extends Infinitel {
 	}
 
 	@Override
-	protected Number iterationsThreshold() {
-		return InfinitelConfiguration.diagnosticsIterationsThreshold();
+	protected InfinitelConfiguration configuration() {
+		return InfinitelDiagnosticianConfiguration.instance();
 	}
 	
 	public void diagnose() {
 		MonitoringTestExecutor testExecutor = newTestExecutor();
-		Collection<FixableLoop> loopsInvokedOnce = loopsInvokedOnlyOnce(testExecutor);
-		logLoopPositions(loopsInvokedOnce);
-		logLoopStatistics(testExecutor);
+		Collection<String> toBeLogged = ListLibrary.newLinkedList();
+		toBeLogged.addAll(logLoopsInvokedOnlyOnce(testExecutor));
+		toBeLogged.addAll(logLoopStatistics(testExecutor));
+		logDebug(logger, toBeLogged);
+	}
+	
+	protected Collection<String> logLoopsInvokedOnlyOnce(MonitoringTestExecutor testExecutor) {
+		List<String> logLoopPositions = logLoopPositions(loopsInvokedOnlyOnce(testExecutor));
+		logLoopPositions.add(0, "Loops invoked only once during test suite run:");
+		return logLoopPositions;
 	}
 	
 	protected Collection<FixableLoop> loopsInvokedOnlyOnce(MonitoringTestExecutor testExecutor) {
@@ -52,23 +62,38 @@ public class InfinitelDiagnostician extends Infinitel {
 		return fixableLoops(testExecutor, testExecutor.allLoops(), listener);
 	}
 	
-	private void logLoopPositions(Collection<FixableLoop> loopsInvokedOnce) {
-		Collection<String> lines = ListLibrary.newArrayList();
-		lines.add("Loops invoked only once during tests run:");
+	private List<String> logLoopPositions(Collection<FixableLoop> loopsInvokedOnce) {
+		List<String> lines = ListLibrary.newLinkedList();
 		for (FixableLoop loop : loopsInvokedOnce) {
 			lines.add("[" + loop.position() + "]");
 		}
-		logDebug(logger, lines);
+		return lines;
 	}
 	
-	private void logLoopStatistics(MonitoringTestExecutor testExecutor) {
+	private Collection<String> logLoopStatistics(MonitoringTestExecutor testExecutor) {
 		testExecutor.execute(project().testClasses());
-		List<Integer> records = ListLibrary.newArrayList();
-		CentralLoopMonitor monitor = testExecutor.monitor();
-		for (SourcePosition loop : monitor.allLoops()) {
-			records.add(monitor.topRecordIn(loop));
+		return logRecordFrequencies(invocationFrequencies(testExecutor.allLoops(), testExecutor.monitor()));
+	}
+
+	private Map<Integer, Integer> invocationFrequencies(Collection<SourcePosition> loops, CentralLoopMonitor monitor) {
+		Map<Integer, Integer> frequencies = MapLibrary.newHashMap();
+		for (SourcePosition loop : loops) {
+			LoopBookkeepingCounter counter = (LoopBookkeepingCounter) monitor.counterOf(loop);
+			for (Integer record : counter.recordFrequencies().keySet()) {
+				int count = MapLibrary.getPutIfAbsent(frequencies, record, 0);
+				frequencies.put(record, count + counter.recordFrequencies().get(record));
+			}
 		}
-		logDebug(logger, format("Top records in %d loops", records.size()), records.toString());
+		return frequencies;
 	}
 	
+	private Collection<String> logRecordFrequencies(Map<Integer, Integer> frequencies) {
+		Collection<String> records = ListLibrary.newLinkedList();
+		List<Integer> frequencyKeys = ListLibrary.newArrayList(frequencies.keySet());
+		Collections.sort(frequencyKeys);
+		for (Integer record : frequencyKeys) {
+			records.add(record.toString() + ": " + frequencies.get(record).toString());
+		}
+		return ListLibrary.newLinkedList("Records in loops", records.toString());
+	}
 }

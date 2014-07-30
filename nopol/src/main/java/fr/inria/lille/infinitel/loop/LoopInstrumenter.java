@@ -19,6 +19,7 @@ import spoon.reflect.factory.Factory;
 import fr.inria.lille.commons.trace.IterationRuntimeValues;
 import fr.inria.lille.commons.trace.IterationRuntimeValuesProcessor;
 import fr.inria.lille.commons.trace.RuntimeValuesProcessor;
+import fr.inria.lille.infinitel.loop.counters.LoopEntrancesCounter;
 
 public class LoopInstrumenter {
 	

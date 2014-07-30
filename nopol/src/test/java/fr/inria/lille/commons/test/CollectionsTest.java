@@ -610,4 +610,12 @@ public class CollectionsTest {
 		assertTrue(table.existsRow(2));
 		assertTrue(table.existsRow(3));
 	}
+	
+	@Test
+	public void frequenciesInList() {
+		List<String> withRepetitions = asList("a", "b", "c", "a", "a", "b");
+		Map<String, Integer> frequencies = MapLibrary.frequencies(withRepetitions);
+		Map<String, Integer> actualFrequencies = MapLibrary.newHashMap(asList("a", "b", "c"), asList(3, 2, 1));
+		assertEquals(actualFrequencies, frequencies);
+	}
 }

@@ -2,7 +2,7 @@ package fr.inria.lille.commons.classes;
 
 public abstract class GlobalToggle {
 
-	public abstract void reset();
+	protected abstract void reset();
 	
 	protected abstract String instanceName();
 	

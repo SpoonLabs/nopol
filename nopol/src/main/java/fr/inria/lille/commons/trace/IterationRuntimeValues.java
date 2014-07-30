@@ -18,7 +18,7 @@ public class IterationRuntimeValues extends GlobalToggle {
 	}
 	
 	@Override
-	public void reset() {
+	protected void reset() {
 		valueTable().clear();
 	}
 	

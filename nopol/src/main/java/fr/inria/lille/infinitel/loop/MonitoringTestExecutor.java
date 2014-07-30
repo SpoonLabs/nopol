@@ -14,6 +14,7 @@ import spoon.reflect.cu.SourcePosition;
 import fr.inria.lille.commons.collections.Table;
 import fr.inria.lille.commons.suite.NullRunListener;
 import fr.inria.lille.commons.suite.TestCase;
+import fr.inria.lille.infinitel.loop.counters.CentralLoopMonitor;
 
 public class MonitoringTestExecutor {
 	

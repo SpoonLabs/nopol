@@ -20,6 +20,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Query;
 import spoon.reflect.visitor.filter.TypeFilter;
 import fr.inria.lille.commons.collections.CollectionLibrary;
+import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.collections.Pair;
 import fr.inria.lille.commons.io.FileHandler;
@@ -29,15 +30,17 @@ import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.trace.Specification;
-import fr.inria.lille.infinitel.loop.CentralLoopMonitor;
 import fr.inria.lille.infinitel.loop.FixableLoop;
 import fr.inria.lille.infinitel.loop.MonitoringTestExecutor;
+import fr.inria.lille.infinitel.loop.counters.CentralLoopMonitor;
+import fr.inria.lille.infinitel.loop.counters.LoopBookkeepingCounter;
+import fr.inria.lille.infinitel.loop.counters.LoopEntrancesCounterFactory;
 
 public class InfinitelTest {
 	
 	@Test
 	public void loopNotProcessedInNonVoidReturningMethodLastStatement() {
-		CentralLoopMonitor monitor = new CentralLoopMonitor(0);
+		CentralLoopMonitor monitor = new CentralLoopMonitor(0, LoopEntrancesCounterFactory.instance());
 		Infinitel infinitel = loopFixerForExample(1);
 		Map<String, CtWhile> loops = loopsByMethodIn(infinitel.project().sourceFile(), 4);
 		assertTrue(monitor.isToBeProcessed(loops.get("loopResult")));
@@ -56,6 +59,24 @@ public class InfinitelTest {
 		assertEquals(1, loopsInvokedOnlyOnce.size());
 		FixableLoop loop = CollectionLibrary.any(loopsInvokedOnlyOnce);
 		assertEquals(7, loop.position().getLine());
+	}
+	
+	@Test
+	public void bookkeepingInLoopsOfExample3() {
+		Infinitel infinitel = loopFixerForExample(3);
+		ProjectReference project = infinitel.project();
+		InfinitelDiagnostician diagnostician = new InfinitelDiagnostician(project);
+		MonitoringTestExecutor testExecutor = diagnostician.newTestExecutor();
+		testExecutor.execute(project.testClasses());
+		Collection<Map<Integer, Integer>> records = ListLibrary.newArrayList();
+		int threshold = diagnostician.configuration().iterationsThreshold().intValue();
+		records.add(MapLibrary.newHashMap(asList(1, threshold), asList(2, 1)));
+		records.add(MapLibrary.newHashMap(asList(0, 1, 10), asList(threshold, 1, 1)));
+		assertEquals(2, testExecutor.allLoops().size());
+		for (SourcePosition loop : testExecutor.allLoops()) {
+			LoopBookkeepingCounter counter = (LoopBookkeepingCounter) testExecutor.monitor().counterOf(loop);
+			assertTrue(records.contains(counter.recordFrequencies()));
+		}
 	}
 	
 	private Map<String, CtWhile> loopsByMethodIn(File sourceFile, int numberOfLoops) {
