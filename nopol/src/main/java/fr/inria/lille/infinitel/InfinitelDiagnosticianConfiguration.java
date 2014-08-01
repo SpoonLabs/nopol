@@ -1,8 +1,5 @@
 package fr.inria.lille.infinitel;
 
-import fr.inria.lille.infinitel.loop.counters.LoopBookkeepingCounterFactory;
-import fr.inria.lille.infinitel.loop.counters.LoopCounterFactory;
-
 public class InfinitelDiagnosticianConfiguration extends InfinitelConfiguration {
 
 	public static InfinitelConfiguration instance() {
@@ -13,13 +10,8 @@ public class InfinitelDiagnosticianConfiguration extends InfinitelConfiguration 
 	}
 	
 	@Override
-	public Number iterationsThreshold() {
-		return 1E7;
-	}
-	
-	@Override
-	public LoopCounterFactory counterFactory() {
-		return LoopBookkeepingCounterFactory.instance();
+	public int iterationsThreshold() {
+		return (int) 1E7;
 	}
 	
 	protected InfinitelDiagnosticianConfiguration() {}

@@ -1,4 +1,4 @@
-package fr.inria.lille.infinitel.loop;
+package fr.inria.lille.infinitel.mining;
 
 import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
 import static fr.inria.lille.commons.classes.LoggerLibrary.newLoggerFor;
@@ -12,10 +12,10 @@ import java.util.Map;
 import org.junit.runner.Result;
 import org.slf4j.Logger;
 
-import spoon.reflect.cu.SourcePosition;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.suite.TestCase;
-import fr.inria.lille.infinitel.loop.counters.CentralLoopMonitor;
+import fr.inria.lille.infinitel.instrumenting.CompoundLoopMonitor;
+import fr.inria.lille.infinitel.loop.While;
 
 public class LoopTestThresholdFinder {
 	
@@ -23,38 +23,38 @@ public class LoopTestThresholdFinder {
 		this.testExecutor = testExecutor;
 	}
 
-	public Map<TestCase, Integer> thresholdsByTest(SourcePosition loopPosition, Collection<TestCase> failedTests, Collection<TestCase> successfulTests) {
+	public Map<TestCase, Integer> thresholdsByTest(While loop, Collection<TestCase> failedTests, Collection<TestCase> successfulTests) {
 		Map<TestCase, Integer> thresholdMap = MapLibrary.newHashMap();
 		int threshold = monitor().threshold();
-		findThresholdsFromExecution(successfulTests, loopPosition, thresholdMap, threshold);
-		findThresholdsProbing(failedTests, loopPosition, thresholdMap, threshold);
+		findThresholdsFromExecution(successfulTests, loop, thresholdMap, threshold);
+		findThresholdsProbing(failedTests, loop, thresholdMap, threshold);
 		return thresholdMap;
 	}
 	
-	protected void findThresholdsFromExecution(Collection<TestCase> tests, SourcePosition loopPosition, Map<TestCase, Integer> thresholdMap, Integer threshold) {
+	protected void findThresholdsFromExecution(Collection<TestCase> tests, While loop, Map<TestCase, Integer> thresholdMap, Integer threshold) {
 		for (TestCase testCase : tests) {
-			logDebug(logger, format("[Executing %s to get test threshold in %s]", testCase.toString(), loopPosition.toString()));
-			Result result = testExecutor().execute(testCase, loopPosition);
+			logDebug(logger, format("[Executing %s to get test threshold in %s]", testCase.toString(), loop.toString()));
+			Result result = testExecutor().execute(testCase, loop);
 			assertTrue(format("Could not find threshold for %s, it is a faling test", testCase), result.wasSuccessful());
-			Integer lastRecord = monitor().lastRecordIn(loopPosition);
+			Integer lastRecord = monitor().lastRecordIn(loop);
 			if (lastRecord.equals(threshold)) {
-				probeTestThreshold(testCase, loopPosition, thresholdMap, threshold);
+				probeTestThreshold(testCase, loop, thresholdMap, threshold);
 			} else {
 				thresholdMap.put(testCase, lastRecord);
 			}
 		}
 	}
 	
-	protected void findThresholdsProbing(Collection<TestCase> tests, SourcePosition loopPosition, Map<TestCase, Integer> thresholdMap, Integer threshold) {
+	protected void findThresholdsProbing(Collection<TestCase> tests, While loop, Map<TestCase, Integer> thresholdMap, Integer threshold) {
 		for (TestCase testCase : tests) {
-			logDebug(logger, format("[Finding test threshold of %s in %s]", testCase.toString(), loopPosition.toString()));
-			probeTestThreshold(testCase, loopPosition, thresholdMap, threshold);
+			logDebug(logger, format("[Finding test threshold of %s in %s]", testCase.toString(), loop.toString()));
+			probeTestThreshold(testCase, loop, thresholdMap, threshold);
 		}
 	}
 
-	protected void probeTestThreshold(TestCase testCase, SourcePosition loopPosition, Map<TestCase, Integer> thresholdMap, Integer threshold) {
+	protected void probeTestThreshold(TestCase testCase, While loop, Map<TestCase, Integer> thresholdMap, Integer threshold) {
 		for (int testThreshold = 0; testThreshold <= threshold; testThreshold += 1) {
-			Result result = testExecutor().execute(testCase, loopPosition, testThreshold);
+			Result result = testExecutor().execute(testCase, loop, testThreshold);
 			if (result.wasSuccessful()) {
 				thresholdMap.put(testCase, testThreshold);
 				return;
@@ -63,7 +63,7 @@ public class LoopTestThresholdFinder {
 		fail("Could not find test threshold for " + testCase);
 	}
 	
-	private CentralLoopMonitor monitor() {
+	private CompoundLoopMonitor monitor() {
 		return testExecutor().monitor();
 	}
 	

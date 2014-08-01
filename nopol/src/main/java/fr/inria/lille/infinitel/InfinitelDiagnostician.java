@@ -9,16 +9,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import spoon.reflect.cu.SourcePosition;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.io.FileHandler;
 import fr.inria.lille.commons.io.ProjectReference;
 import fr.inria.lille.commons.suite.TestCasesListener;
+import fr.inria.lille.infinitel.instrumenting.CompoundLoopMonitor;
 import fr.inria.lille.infinitel.loop.FixableLoop;
-import fr.inria.lille.infinitel.loop.MonitoringTestExecutor;
-import fr.inria.lille.infinitel.loop.counters.CentralLoopMonitor;
-import fr.inria.lille.infinitel.loop.counters.LoopBookkeepingCounter;
+import fr.inria.lille.infinitel.loop.While;
+import fr.inria.lille.infinitel.mining.MonitoringTestExecutor;
 
 public class InfinitelDiagnostician extends Infinitel {
 
@@ -36,12 +35,12 @@ public class InfinitelDiagnostician extends Infinitel {
 	public InfinitelDiagnostician(ProjectReference project) {
 		super(project);
 	}
-
+	
 	@Override
 	protected InfinitelConfiguration configuration() {
 		return InfinitelDiagnosticianConfiguration.instance();
 	}
-	
+
 	public void diagnose() {
 		MonitoringTestExecutor testExecutor = newTestExecutor();
 		Collection<String> toBeLogged = ListLibrary.newLinkedList();
@@ -75,13 +74,13 @@ public class InfinitelDiagnostician extends Infinitel {
 		return logRecordFrequencies(invocationFrequencies(testExecutor.allLoops(), testExecutor.monitor()));
 	}
 
-	private Map<Integer, Integer> invocationFrequencies(Collection<SourcePosition> loops, CentralLoopMonitor monitor) {
+	private Map<Integer, Integer> invocationFrequencies(Collection<While> loops, CompoundLoopMonitor monitor) {
 		Map<Integer, Integer> frequencies = MapLibrary.newHashMap();
-		for (SourcePosition loop : loops) {
-			LoopBookkeepingCounter counter = (LoopBookkeepingCounter) monitor.counterOf(loop);
-			for (Integer record : counter.recordFrequencies().keySet()) {
+		for (While loop : loops) {
+			Map<Integer, Integer> recordFrequencies = monitor.recordFrequenciesOf(loop);
+			for (Integer record : recordFrequencies.keySet()) {
 				int count = MapLibrary.getPutIfAbsent(frequencies, record, 0);
-				frequencies.put(record, count + counter.recordFrequencies().get(record));
+				frequencies.put(record, count + recordFrequencies.get(record));
 			}
 		}
 		return frequencies;

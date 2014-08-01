@@ -11,20 +11,19 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
-import spoon.reflect.cu.SourcePosition;
 import fr.inria.lille.commons.io.ProjectReference;
-import fr.inria.lille.commons.spoon.SpoonClassLoaderFactory;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.infinitel.loop.FixableLoop;
-import fr.inria.lille.infinitel.loop.FixableLoopSelection;
-import fr.inria.lille.infinitel.loop.LoopSpecificationCollector;
-import fr.inria.lille.infinitel.loop.LoopTestThresholdFinder;
-import fr.inria.lille.infinitel.loop.MonitoringTestExecutor;
-import fr.inria.lille.infinitel.loop.counters.CentralLoopMonitor;
+import fr.inria.lille.infinitel.loop.FixableLoopBuilder;
+import fr.inria.lille.infinitel.loop.While;
+import fr.inria.lille.infinitel.mining.LoopTestThresholdFinder;
+import fr.inria.lille.infinitel.mining.MonitoringTestExecutor;
+import fr.inria.lille.infinitel.mining.MonitoringTestExecutorBuilder;
+import fr.inria.lille.infinitel.synthesis.LoopSpecificationCollector;
 
 /** Infinite Loops Repair */
 
@@ -56,46 +55,35 @@ public class Infinitel {
 	}
 	
 	protected MonitoringTestExecutor newTestExecutor() {
-		CentralLoopMonitor monitor = new CentralLoopMonitor(configuration().iterationsThreshold(), configuration().counterFactory());
-		ClassLoader classLoader = loaderWithInstrumentedClasses(monitor);
-		MonitoringTestExecutor testExecutor = new MonitoringTestExecutor(classLoader, monitor);
-		return testExecutor;
+		return MonitoringTestExecutorBuilder.buildFor(project(), configuration());
 	}
 	
-	protected ClassLoader loaderWithInstrumentedClasses(CentralLoopMonitor monitor) {
-		logDebug(logger, "# Instrumenting project classes");
-		SpoonClassLoaderFactory spooner = new SpoonClassLoaderFactory(project().sourceFile(), monitor);
-		ClassLoader loader = spooner.classLoaderProcessing(spooner.modelledClasses(), project().classpath());
-		logDebug(logger, "# Classes were instrumented and compiled successfully");
-		return loader;
-	}
-
 	protected Collection<FixableLoop> fixableInfiniteLoops(MonitoringTestExecutor testExecutor) {
 		TestCasesListener listener = new TestCasesListener();
-		Collection<SourcePosition> infiniteLoops = infiniteLoops(testExecutor, listener);
+		Collection<While> infiniteLoops = infiniteLoops(testExecutor, listener);
 		Collection<FixableLoop> fixableLoops = fixableLoops(testExecutor, infiniteLoops, listener);
 		return fixableLoops;
 	}
 	
-	protected Collection<SourcePosition> infiniteLoops(MonitoringTestExecutor testExecutor, TestCasesListener listener) {
+	protected Collection<While> infiniteLoops(MonitoringTestExecutor testExecutor, TestCasesListener listener) {
 		String[] testClasses = project().testClasses();
 		logDebug(logger, "# Running test cases to find infinite loops");
-		Collection<SourcePosition> loopsReachingThreshold = testExecutor.loopsReachingThresholdFor(testClasses, listener);
+		Collection<While> loopsReachingThreshold = testExecutor.loopsReachingThresholdFor(testClasses, listener);
 		logDebug(logger, "# Number of infinite loops: " + loopsReachingThreshold.size());
 		return loopsReachingThreshold;
 	}
 	
-	protected Collection<FixableLoop> fixableLoops(MonitoringTestExecutor testExecutor, Collection<SourcePosition> loops, TestCasesListener listener) {
-		return FixableLoopSelection.selection(testExecutor, loops, listener.failedTests(), listener.successfulTests());
+	protected Collection<FixableLoop> fixableLoops(MonitoringTestExecutor testExecutor, Collection<While> loops, TestCasesListener listener) {
+		return FixableLoopBuilder.buildFrom(loops, listener.failedTests(), listener.successfulTests(), testExecutor);
 	}
 	
 	private void findRepairIn(FixableLoop loop, MonitoringTestExecutor testExecutor) {
-		Map<TestCase, Integer> thresholdsByTest = thresholdsByTest(loop.position(), testExecutor, loop.failingTests(), loop.passingTests());
-		Collection<Specification<Boolean>> testSpecifications = testSpecifications(thresholdsByTest, testExecutor, loop.position());
+		Map<TestCase, Integer> thresholdsByTest = thresholdsByTest(loop, testExecutor, loop.failingTests(), loop.passingTests());
+		Collection<Specification<Boolean>> testSpecifications = testSpecifications(thresholdsByTest, testExecutor, loop);
 		synthesiseCodeFor(testSpecifications);
 	}
 	
-	protected Map<TestCase, Integer> thresholdsByTest(SourcePosition loop, MonitoringTestExecutor executor, Collection<TestCase> failed, Collection<TestCase> passed) {
+	protected Map<TestCase, Integer> thresholdsByTest(While loop, MonitoringTestExecutor executor, Collection<TestCase> failed, Collection<TestCase> passed) {
 		logDebug(logger, "# Finding test thresholds");
 		LoopTestThresholdFinder thresholdFinder = new LoopTestThresholdFinder(executor);
 		Map<TestCase, Integer> thresholdsByTest = thresholdFinder.thresholdsByTest(loop, failed, passed);
@@ -103,10 +91,10 @@ public class Infinitel {
 		return thresholdsByTest;
 	}
 	
-	protected Collection<Specification<Boolean>> testSpecifications(Map<TestCase, Integer> thresholdsByTest, MonitoringTestExecutor executor, SourcePosition loopPosition) {
+	protected Collection<Specification<Boolean>> testSpecifications(Map<TestCase, Integer> thresholdsByTest, MonitoringTestExecutor executor, While loop) {
 		logDebug(logger, "# Running each test individually to colllect runtime values");
 		LoopSpecificationCollector collector = new LoopSpecificationCollector(executor);
-		Collection<Specification<Boolean>> testSpecifications = collector.testSpecifications(thresholdsByTest, loopPosition);
+		Collection<Specification<Boolean>> testSpecifications = collector.testSpecifications(thresholdsByTest, loop);
 		logDebug(logger, "# Finished runtime value collection");
 		return testSpecifications;
 	}

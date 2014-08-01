@@ -23,7 +23,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.Query;
 import fr.inria.lille.commons.spoon.CodeSnippetFilter;
 import fr.inria.lille.commons.spoon.SpoonLibrary;
 import fr.inria.lille.commons.trace.RuntimeValues;
@@ -240,7 +239,7 @@ public class ValuesCollectorTest {
 		File sourceFile = NopolTest.example(exampleNumber).sourceFile();
 		Factory model = SpoonLibrary.modelFor(sourceFile);
 		Filter filter = new CodeSnippetFilter(sourceFile, codeSnippet);
-		List<CtElement> elements = Query.getElements(model, filter);
+		List<CtElement> elements = SpoonLibrary.filteredElements(model, filter);
 		assertEquals(1, elements.size());
 		return elements.get(0);
 	}

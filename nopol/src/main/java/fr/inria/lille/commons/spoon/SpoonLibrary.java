@@ -4,6 +4,7 @@ import static fr.inria.lille.commons.classes.ClassLibrary.castTo;
 import static fr.inria.lille.commons.classes.ClassLibrary.isInstanceOf;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
 import spoon.Launcher;
@@ -20,6 +21,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -32,10 +34,14 @@ import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.reflect.visitor.Filter;
+import spoon.reflect.visitor.Query;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.lille.commons.collections.ListLibrary;
+import fr.inria.lille.commons.collections.SetLibrary;
 
 public class SpoonLibrary {
 	
@@ -53,6 +59,13 @@ public class SpoonLibrary {
 		return factory;
 	}
 	
+	public static CtBlock<?> asBlock(CtStatement statement) {
+		if (isBlock(statement)) {
+			return (CtBlock<?>) statement;
+		}
+		return newBlock(statement.getFactory(), statement);
+	}
+	
 	public static CtBreak newBreak(Factory factory) {
 		return factory.Core().createBreak();
 	}
@@ -63,32 +76,46 @@ public class SpoonLibrary {
 		return newLiteral;
 	}
 	
-	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, String classSimpleName, String variableName, String initializationSnippet) {
-		CtTypeReference<T> type = factory.Core().createTypeReference();
-		type.setSimpleName(classSimpleName);
-		return factory.Code().createLocalVariable(type, variableName, newExpressionFromSnippet(factory, initializationSnippet, type.getActualClass()));
+	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, String classSimpleName, String variableName, T defaultValue, CtElement parent) {
+		CtLocalVariable<T> localVariable = newLocalVariableDeclaration(factory, classSimpleName, variableName, defaultValue);
+		setParent(parent, localVariable);
+		return localVariable;
 	}
 	
 	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, String classSimpleName, String variableName, T defaultValue) {
 		CtTypeReference<T> type = factory.Core().createTypeReference();
 		type.setSimpleName(classSimpleName);
-		CtLiteral<T> defaultExpression = factory.Core().createLiteral();
-		defaultExpression.setValue(defaultValue);
+		CtLiteral<T> defaultExpression = newLiteral(factory, defaultValue);
 		return factory.Code().createLocalVariable(type, variableName, defaultExpression);
+	}
+
+	public static <T> CtExpression<T> newExpressionFromSnippet(Factory factory, String codeSnippet, Class<T> expressionClass, CtElement parent) {
+		CtExpression<T> expression = newExpressionFromSnippet(factory, codeSnippet, expressionClass);
+		setParent(parent, expression);
+		return expression;
 	}
 	
 	public static <T> CtExpression<T> newExpressionFromSnippet(Factory factory, String codeSnippet, Class<T> expressionClass) {
 		return factory.Code().createCodeSnippetExpression(codeSnippet);
 	}
 	
+	public static CtStatement newStatementFromSnippet(Factory factory, String codeSnippet, CtElement parent) {
+		CtStatement statement = newStatementFromSnippet(factory, codeSnippet);
+		setParent(parent, statement);
+		return statement;
+	}
+	
 	public static CtStatement newStatementFromSnippet(Factory factory, String codeSnippet) {
 		return factory.Code().createCodeSnippetStatement(codeSnippet);
 	}
-	
+
 	public static CtBlock<CtStatement> newBlock(Factory factory, CtStatement... statements) {
+		return newBlock(factory, ListLibrary.newArrayList(statements));
+	}
+	
+	public static CtBlock<CtStatement> newBlock(Factory factory, List<CtStatement> blockStatements) {
 		CtBlock<CtStatement> newBlock = factory.Core().createBlock();
-		setParent(newBlock, statements);
-		List<CtStatement> blockStatements = ListLibrary.newArrayList(statements);
+		setParent(newBlock, blockStatements);
 		newBlock.setStatements(blockStatements);
 		return newBlock;
 	}
@@ -105,6 +132,7 @@ public class SpoonLibrary {
 	
 	public static CtIf newIf(Factory factory, CtExpression<Boolean> condition, CtStatement thenBranch) {
 		CtIf newIf = factory.Core().createIf();
+		thenBranch = asBlock(thenBranch);
 		setParent(newIf, condition, thenBranch);
 		newIf.setCondition(condition);
 		newIf.setThenStatement(thenBranch);
@@ -113,15 +141,50 @@ public class SpoonLibrary {
 	
 	public static CtIf newIf(Factory factory, CtExpression<Boolean> condition, CtStatement thenBranch, CtStatement elseBranch) {
 		CtIf newIf = newIf(factory, condition, thenBranch);
+		elseBranch = asBlock(elseBranch);
 		setParent(newIf, elseBranch);
 		newIf.setElseStatement(elseBranch);
 		return newIf;
+	}
+	
+	public static void setParent(CtElement parent, Collection<? extends CtElement> children) {
+		setParent(parent, children.toArray(new CtElement[children.size()]));
 	}
 	
 	public static void setParent(CtElement parent, CtElement... children) {
 		for (CtElement child : children) {
 			child.setParent(parent);
 		}
+	}
+	
+	public static void setLoopBody(CtWhile loop, CtStatement loopBody) {
+		loopBody = asBlock(loopBody);
+		setParent(loop, loopBody);
+		loop.setBody(loopBody);
+	}
+	
+	public static void setLoopingCondition(CtWhile loop, CtExpression<Boolean> loopingCondition) {
+		setParent(loop, loopingCondition);
+		loop.setLoopingExpression(loopingCondition);
+	}
+	
+	public static <T extends CtElement> List<T> filteredElements(Factory factory, Filter<T> filter) {
+		return Query.getElements(factory, filter);
+	}
+	
+	public static <T extends CtElement> Collection<T> childrenWithParent(CtElement rootElement, Class<T> childrenClasses) {
+		Collection<T> childrenWithParent = SetLibrary.newHashSet();
+		Collection<T> allChildren = allChildrenOf(rootElement, childrenClasses);
+		for (T child : allChildren) {
+			if (child.getParent(rootElement.getClass()) == rootElement) {
+				childrenWithParent.add(child);
+			}
+		}
+		return childrenWithParent;
+	}
+	
+	public static <T extends CtElement> Collection<T> allChildrenOf(CtElement rootElement, Class<T> childrenClasses) {
+		return (Collection) Query.getElements(rootElement, new TypeFilter<>(childrenClasses));
 	}
 	
 	public static boolean isBlock(CtElement element) {

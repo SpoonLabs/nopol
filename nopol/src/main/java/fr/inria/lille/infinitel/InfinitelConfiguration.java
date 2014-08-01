@@ -1,8 +1,5 @@
 package fr.inria.lille.infinitel;
 
-import fr.inria.lille.infinitel.loop.counters.LoopCounterFactory;
-import fr.inria.lille.infinitel.loop.counters.LoopEntrancesCounterFactory;
-
 public class InfinitelConfiguration {
 
 	public static InfinitelConfiguration instance() {
@@ -12,15 +9,16 @@ public class InfinitelConfiguration {
 		return instance;
 	}
 	
-	public Number iterationsThreshold() {
-		return 1E6;
+	public int iterationsThreshold() {
+		return (int) 1E6;
 	}
 
-	public LoopCounterFactory counterFactory() {
-		return LoopEntrancesCounterFactory.instance();
+	public int diagnosticsIterationsThreshold() {
+		return (int) 1E7;
 	}
-	
+
 	protected InfinitelConfiguration() {}
 	
 	private static InfinitelConfiguration instance;
+
 }

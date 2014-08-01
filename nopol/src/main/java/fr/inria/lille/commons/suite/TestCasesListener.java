@@ -109,9 +109,7 @@ public class TestCasesListener extends RunListener {
 	}
 	
 	private void incrementNumberOfTests() {
-		synchronized (this) {
-			numberOfTests += 1;
-		}
+		numberOfTests += 1;
 	}
 	
 	private static void logTestRunFinished(Result result) {

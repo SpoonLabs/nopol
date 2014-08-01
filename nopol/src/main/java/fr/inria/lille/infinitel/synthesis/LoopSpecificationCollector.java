@@ -1,4 +1,4 @@
-package fr.inria.lille.infinitel.loop;
+package fr.inria.lille.infinitel.synthesis;
 
 import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
 import static fr.inria.lille.commons.classes.LoggerLibrary.newLoggerFor;
@@ -9,11 +9,12 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
-import spoon.reflect.cu.SourcePosition;
 import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.trace.IterationRuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
+import fr.inria.lille.infinitel.loop.While;
+import fr.inria.lille.infinitel.mining.MonitoringTestExecutor;
 
 public class LoopSpecificationCollector {
 
@@ -21,30 +22,29 @@ public class LoopSpecificationCollector {
 		this.testExecutor = testExecutor;
 	}
 	
-	public Collection<Specification<Boolean>> testSpecifications(Map<TestCase, Integer> thresholdsByTest, SourcePosition loopPosition) {
+	public Collection<Specification<Boolean>> testSpecifications(Map<TestCase, Integer> thresholdsByTest, While loop) {
 		Collection<Specification<Boolean>> specifications = SetLibrary.newHashSet();
 		for (TestCase testCase : thresholdsByTest.keySet()) {
 			Integer testThreshold = thresholdsByTest.get(testCase);
-			executeCollectingRuntimeValues(testCase, loopPosition, testThreshold);
+			executeCollectingRuntimeValues(testCase, loop, testThreshold);
 			addTestSpecifications(specifications, testThreshold);
 		}
 		return specifications;
 	}
 
-	protected void executeCollectingRuntimeValues(TestCase testCase, SourcePosition loopPosition, Integer testThreshold) {
-		logDebug(logger, format("[Executing %s to collect runtime values in %s]", testCase.toString(), loopPosition.toString()));
+	protected void executeCollectingRuntimeValues(TestCase testCase, While loop, Integer testThreshold) {
+		logDebug(logger, format("[Executing %s to collect runtime values in %s]", testCase.toString(), loop.toString()));
 		runtimeValues().enable();
-		testExecutor().execute(testCase, loopPosition, testThreshold);
+		testExecutor().execute(testCase, loop, testThreshold);
 		runtimeValues().disable();
 	}
 	
-	protected void addTestSpecifications(Collection<Specification<Boolean>> specifications, Integer testThreshold) {
-		int inputsSize = runtimeValues().inputsSize();
-		for (int iteration = 0; iteration < testThreshold; iteration += 1) {
+	protected void addTestSpecifications(Collection<Specification<Boolean>> specifications, Integer loopEntrances) {
+		for (int iteration = 0; iteration < loopEntrances; iteration += 1) {
 			addTestSpecification(specifications, iteration, true);
 		}
-		if (inputsSize > testThreshold) {
-			addTestSpecification(specifications, testThreshold, false);
+		if (runtimeValues().inputsSize() > loopEntrances) {
+			addTestSpecification(specifications, loopEntrances, false);
 		}
 	}
 
