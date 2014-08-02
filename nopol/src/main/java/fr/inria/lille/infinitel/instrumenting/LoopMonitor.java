@@ -3,11 +3,10 @@ package fr.inria.lille.infinitel.instrumenting;
 import static java.lang.String.format;
 
 import java.util.List;
-import java.util.Map;
 
 import fr.inria.lille.commons.classes.GlobalToggle;
+import fr.inria.lille.commons.collections.Bag;
 import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.infinitel.loop.While;
 
 public class LoopMonitor extends GlobalToggle {
@@ -26,31 +25,30 @@ public class LoopMonitor extends GlobalToggle {
 	@Override
 	protected void reset() {
 		setTopRecord(0);
-		setBreakExits(0);
-		setReturnExits(0);
-		setNumberOfRecords(0);
 		setLastRecordedValue(null);
-		recordFrequencies().clear();
+		exitRecords().clear();
+		breakRecords().clear();
+		returnRecords().clear();
 	}
 	
 	@Override
-	protected String instanceName() {
-		return format("instance(%d)", instanceID());
+	protected String globallyAccessibleName() {
+		return format("%s.instance(%d)", getClass().getName(), instanceID());
 	}
 
 	public String invocationOnLoopConditionEvaluation(String counterName) {
 		return  globallyAccessibleName() + format(".canEnterLoop(%s)", counterName);
 	}
 	
-	public String invocationOnLoopBreak() {
-		return globallyAccessibleName() + ".recordBreakExit()";
+	public String invocationOnLoopBreak(String counterName) {
+		return globallyAccessibleName() + format(".recordBreakExit(%s)", counterName);
 	}
 	
-	public String invocationOnLoopReturn() {
-		return globallyAccessibleName() + ".recordReturnExit()";
+	public String invocationOnLoopReturn(String counterName) {
+		return globallyAccessibleName() + format(".recordReturnExit(%s)", counterName);
 	}
 	
-	public String invocationOnLoopExit(String counterName) {
+	public String invocationOnFirstStatementAfterLoop(String counterName) {
 		return globallyAccessibleName() + format(".recordEntrancesToExit(%s)", counterName);
 	}
 
@@ -64,20 +62,20 @@ public class LoopMonitor extends GlobalToggle {
 				setTopRecord(loopEntrances);
 			}
 			setLastRecordedValue(loopEntrances);
-			setNumberOfRecords(numberOfRecords() + 1);
-			recordFrequencies().put(loopEntrances, MapLibrary.getPutIfAbsent(recordFrequencies(), loopEntrances, 0) + 1);
+			exitRecords().add(loopEntrances);
 		}
 	}
 	
-	public void recordBreakExit() {
+	public void recordBreakExit(int loopEntrances) {
 		synchronized (this) {
-			setBreakExits(breakExits() + 1);
+			breakRecords().add(loopEntrances);
 		}
 	}
 	
-	public void recordReturnExit() {
+	public void recordReturnExit(int loopEntrances) {
 		synchronized (this) {
-			setReturnExits(returnExits() + 1);
+			returnRecords().add(loopEntrances);
+			recordEntrancesToExit(loopEntrances);
 		}
 	}
 	
@@ -90,7 +88,9 @@ public class LoopMonitor extends GlobalToggle {
 		setThreshold(threshold);
 		this.loop = loop;
 		this.instanceID = instanceID;
-		recordFrequencies = MapLibrary.newHashMap();
+		exitRecords = Bag.newHashBag();
+		breakRecords = Bag.newHashBag();
+		returnRecords = Bag.newHashBag();
 		LoopInstrumenter.instrument(this);
 	}
 	
@@ -110,24 +110,32 @@ public class LoopMonitor extends GlobalToggle {
 		return instanceID;
 	}
 	
-	protected int breakExits() {
-		return breakExits;
-	}
-	
-	protected int returnExits() {
-		return returnExits;
-	}
-	
 	protected int numberOfRecords() {
-		return numberOfRecords;
+		return exitRecords().size();
+	}
+	
+	protected int numberOfBreakExits() {
+		return breakRecords().size();
+	}
+	
+	protected int numberOfReturnExits() {
+		return returnRecords().size();
 	}
 	
 	protected Integer lastRecordedValue() {
 		return lastRecordedValue;
 	}
 	
-	protected Map<Integer, Integer> recordFrequencies() {
-		return recordFrequencies;
+	protected Bag<Integer> exitRecords() {
+		return exitRecords;
+	}
+	
+	protected Bag<Integer> breakRecords() {
+		return breakRecords;
+	}
+	
+	protected Bag<Integer> returnRecords() {
+		return returnRecords;
 	}
 	
 	protected Number setThreshold(Number number) {
@@ -138,18 +146,6 @@ public class LoopMonitor extends GlobalToggle {
 
 	private void setTopRecord(int number) {
 		topRecord = number;
-	}
-	
-	private void setNumberOfRecords(int number) {
-		numberOfRecords = number;
-	}
-	
-	private void setBreakExits(int number) {
-		breakExits = number;
-	}
-	
-	private void setReturnExits(int number) {
-		returnExits = number;
 	}
 	
 	private void setLastRecordedValue(Integer record) {
@@ -172,11 +168,10 @@ public class LoopMonitor extends GlobalToggle {
 	private int instanceID;
 	private int threshold;
 	private int topRecord;
-	private int breakExits;
-	private int returnExits;
-	private int numberOfRecords;
 	private Integer lastRecordedValue;
-	private Map<Integer, Integer> recordFrequencies;
+	private Bag<Integer> exitRecords;
+	private Bag<Integer> breakRecords;
+	private Bag<Integer> returnRecords;
 	
 	/** XXX This causes memory leaks **/
 	private static List<LoopMonitor> allInstances;

@@ -1,15 +1,19 @@
 package fr.inria.lille.infinitel.instrumenting;
 
-import static fr.inria.lille.commons.spoon.SpoonLibrary.newBlock;
-import static fr.inria.lille.commons.spoon.SpoonLibrary.newBreak;
-import static fr.inria.lille.commons.spoon.SpoonLibrary.newConjunctionExpression;
-import static fr.inria.lille.commons.spoon.SpoonLibrary.newExpressionFromSnippet;
-import static fr.inria.lille.commons.spoon.SpoonLibrary.newIf;
-import static fr.inria.lille.commons.spoon.SpoonLibrary.newLiteral;
-import static fr.inria.lille.commons.spoon.SpoonLibrary.newLocalVariableDeclaration;
-import static fr.inria.lille.commons.spoon.SpoonLibrary.newStatementFromSnippet;
-import static fr.inria.lille.commons.spoon.SpoonLibrary.setLoopBody;
-import static fr.inria.lille.commons.spoon.SpoonLibrary.setLoopingCondition;
+
+import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newBlock;
+import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newBreak;
+import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newConjunctionExpression;
+import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newExpressionFromSnippet;
+import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newIf;
+import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newLiteral;
+import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newLocalVariableDeclaration;
+import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newStatementFromSnippet;
+import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.setLoopBody;
+import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.setLoopingCondition;
+import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.insertAfterUnderSameParent;
+import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.insertBefore;
+import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.insertBeforeUnderSameParent;
 import static java.lang.String.format;
 
 import java.util.List;
@@ -22,6 +26,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.factory.Factory;
+import fr.inria.lille.commons.classes.Singleton;
 import fr.inria.lille.commons.trace.IterationRuntimeValues;
 import fr.inria.lille.commons.trace.IterationRuntimeValuesProcessor;
 import fr.inria.lille.commons.trace.RuntimeValuesProcessor;
@@ -55,43 +60,43 @@ public class LoopInstrumenter {
 
 	private static void appendMonitoredExit(Factory factory, LoopMonitor loopMonitor, String counterName) {
 		CtWhile astLoop = loopMonitor.loop().astLoop();
-		CtStatement monitoredExit = newStatementFromSnippet(astLoop.getFactory(), loopMonitor.invocationOnLoopExit(counterName));
-		astLoop.insertAfter(monitoredExit);
-		appendMonitoredReturnExit(factory, loopMonitor, monitoredExit);
-		appendMonitoredBreakExit(factory, loopMonitor);
+		CtStatement monitoredExit = newStatementFromSnippet(astLoop.getFactory(), loopMonitor.invocationOnFirstStatementAfterLoop(counterName));
+		insertAfterUnderSameParent(monitoredExit, astLoop);
+		appendMonitoredReturnExit(factory, loopMonitor, counterName);
+		appendMonitoredBreakExit(factory, loopMonitor, counterName);
 	}
 	
-	private static void appendMonitoredReturnExit(Factory factory, LoopMonitor loopMonitor, CtStatement monitoredExit) {
-		CtStatement invocationOnLoopReturn = newStatementFromSnippet(factory, loopMonitor.invocationOnLoopReturn());
+	private static void appendMonitoredReturnExit(Factory factory, LoopMonitor loopMonitor, String counterName) {
 		for (CtReturn<?> returnStatement : loopMonitor.loop().returnStatements()) {
-			returnStatement.insertBefore(monitoredExit);
-			returnStatement.insertBefore(invocationOnLoopReturn);
+			CtStatement invocationOnLoopReturn = newStatementFromSnippet(factory, loopMonitor.invocationOnLoopReturn(counterName));
+			insertBeforeUnderSameParent(invocationOnLoopReturn, returnStatement);
 		}
 	}
 
-	private static void appendMonitoredBreakExit(Factory factory, LoopMonitor loopMonitor) {
-		CtStatement invocationOnLoopBreak = newStatementFromSnippet(factory, loopMonitor.invocationOnLoopBreak());
+	private static void appendMonitoredBreakExit(Factory factory, LoopMonitor loopMonitor, String counterName) {
 		for (CtBreak breakStatement : loopMonitor.loop().breakStatements()) {
-			breakStatement.insertBefore(invocationOnLoopBreak);
+			CtStatement invocationOnLoopBreak = newStatementFromSnippet(factory, loopMonitor.invocationOnLoopBreak(counterName));
+			insertBeforeUnderSameParent(invocationOnLoopBreak, breakStatement);
 		}
 	}
 
 	private static void declareEntrancesCounter(Factory factory, CtWhile loop, LoopMonitor loopMonitor, String counterName) {
 		CtLocalVariable<Integer> counterCreation = newLocalVariableDeclaration(factory, "int", counterName, 0, loop.getParent());
-		loop.insertBefore(counterCreation);
+		insertBeforeUnderSameParent(counterCreation, loop);
 	}
 	
 	private static void traceReachableVariables(Factory factory, CtIf newIf, LoopMonitor loopMonitor, String counterName) {
 		RuntimeValuesProcessor<CtStatement> valuesProcessor = new IterationRuntimeValuesProcessor<CtStatement>(counterName);
 		List<CtStatement> collectionStatements = valuesProcessor.valueCollectionStatements(newIf);
 		CtExpression<Boolean> counterIsEnabled = newExpressionFromSnippet(factory, loopMonitor.isEnabledInquiry(), Boolean.class);
-		CtExpression<Boolean> collectorIsEnabled = newExpressionFromSnippet(factory, IterationRuntimeValues.instance().isEnabledInquiry(), Boolean.class);
+		CtExpression<Boolean> collectorIsEnabled = newExpressionFromSnippet(factory, Singleton.of(IterationRuntimeValues.class).isEnabledInquiry(), Boolean.class);
 		CtIf tracingIf = newIf(factory, newConjunctionExpression(factory, collectorIsEnabled, counterIsEnabled), newBlock(factory, collectionStatements));
-		newIf.insertBefore(tracingIf);
+		insertBeforeUnderSameParent(tracingIf, newIf);
 	}
 	
 	private static void appendCounterIncrementation(CtIf newIf, LoopMonitor loopMonitor, String counterName) {
 		CtStatement increment = newStatementFromSnippet(newIf.getFactory(), format("%s += 1", counterName));
-		newIf.getThenStatement().insertBefore(increment);
+		CtStatement then = newIf.getThenStatement();
+		insertBefore(increment, then, then);
 	}
 }

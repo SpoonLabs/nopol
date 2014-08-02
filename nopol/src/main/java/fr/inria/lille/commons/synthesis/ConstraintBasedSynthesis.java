@@ -36,7 +36,7 @@ public class ConstraintBasedSynthesis {
 	
 	protected <T> Expression<T> outputExpressionFor(Class<? extends T> outputClass) {
 		Class<T> smtLibCompatibleClass = smtLibCompatibleClassFor(outputClass);
-		return new Expression<>(smtLibCompatibleClass, "result");
+		return new Expression<T>(smtLibCompatibleClass, "result");
 	}
 	
 	public <T> CodeGenesis codesSynthesisedFrom(Class<T> outputClass, Collection<Specification<T>> specifications) {
@@ -71,7 +71,7 @@ public class ConstraintBasedSynthesis {
 		Map<String, Object> values = CollectionLibrary.any(collectedValues);
 		Collection<Expression<?>> expressions = ListLibrary.newLinkedList();
 		for (String value : values.keySet()) {
-			expressions.add(new Expression<>((Class) smtLibCompatibleClassFor(values.get(value)), value));
+			expressions.add(new Expression((Class<?>) smtLibCompatibleClassFor(values.get(value)), value));
 		}
 		expressions.remove(outputExpression);
 		return expressions;

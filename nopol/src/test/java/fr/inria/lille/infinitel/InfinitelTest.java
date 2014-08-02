@@ -17,13 +17,14 @@ import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.factory.Factory;
+import fr.inria.lille.commons.collections.Bag;
 import fr.inria.lille.commons.collections.CollectionLibrary;
-import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.collections.Pair;
 import fr.inria.lille.commons.io.FileHandler;
 import fr.inria.lille.commons.io.ProjectReference;
-import fr.inria.lille.commons.spoon.SpoonLibrary;
+import fr.inria.lille.commons.spoon.util.SpoonElementLibrary;
+import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
@@ -59,27 +60,81 @@ public class InfinitelTest {
 	}
 	
 	@Test
+	public void numberOfReturnsInExample1() {
+		Infinitel infinitel = loopFixerForExample(1);
+		MonitoringTestExecutor executor = infinitel.newTestExecutor();
+		Map<Integer, Integer> numberOfReturns = MapLibrary.newHashMap(asList(8, 16), asList(0, 2));
+		Collection<While> allLoops = executor.allLoops();
+		assertEquals(numberOfReturns.size(), allLoops.size());
+		assertEquals(1, executor.monitor().loopsWithReturn().size());
+		for (While loop : allLoops) {
+			assertEquals(numberOfReturns.get(loop.position().getLine()).intValue(), loop.returnStatements().size());
+		}
+	}
+	
+	@Test
+	public void theBreakMustBeForTheWhile() {
+		Infinitel infinitel = loopFixerForExample(2);
+		MonitoringTestExecutor executor = infinitel.newTestExecutor();
+		Map<Integer, Integer> numberOfBreaks = MapLibrary.newHashMap(asList(7, 14, 38, 50), asList(0, 1, 0, 0));
+		Collection<While> allLoops = executor.allLoops();
+		assertEquals(numberOfBreaks.size(), allLoops.size());
+		assertEquals(1, executor.monitor().loopsWithBreak().size());
+		for (While loop : allLoops) {
+			assertEquals(numberOfBreaks.get(loop.position().getLine()).intValue(), loop.breakStatements().size());
+		}
+	}
+	
+	@Test
+	public void theReturnMustBeForTheWhile() {
+		Infinitel infinitel = loopFixerForExample(2);
+		MonitoringTestExecutor executor = infinitel.newTestExecutor();
+		Map<Integer, Integer> numberOfReturns = MapLibrary.newHashMap(asList(7, 14, 38, 50), asList(0, 2, 0, 0));
+		Collection<While> allLoops = executor.allLoops();
+		assertEquals(numberOfReturns.size(), allLoops.size());
+		assertEquals(1, executor.monitor().loopsWithReturn().size());
+		for (While loop : allLoops) {
+			assertEquals(numberOfReturns.get(loop.position().getLine()).intValue(), loop.returnStatements().size());
+		}
+	}
+	
+	@Test
+	public void numberOfBreaksInExample3() {
+		Infinitel infinitel = loopFixerForExample(3);
+		MonitoringTestExecutor executor = infinitel.newTestExecutor();
+		Map<Integer, Integer> numberOfBreaks = MapLibrary.newHashMap(asList(7, 8), asList(1, 0));
+		Collection<While> allLoops = executor.allLoops();
+		assertEquals(numberOfBreaks.size(), allLoops.size());
+		assertEquals(1, executor.monitor().loopsWithBreak().size());
+		for (While loop : allLoops) {
+			assertEquals(numberOfBreaks.get(loop.position().getLine()).intValue(), loop.breakStatements().size());
+		}
+	}
+	
+	@Test
 	public void bookkeepingInLoopsOfExample3() {
 		Infinitel infinitel = loopFixerForExample(3);
 		ProjectReference project = infinitel.project();
 		InfinitelDiagnostician diagnostician = new InfinitelDiagnostician(project);
 		MonitoringTestExecutor testExecutor = diagnostician.newTestExecutor();
 		testExecutor.execute(project.testClasses());
-		Collection<Map<Integer, Integer>> records = ListLibrary.newArrayList();
 		int threshold = diagnostician.configuration().iterationsThreshold();
-		records.add(MapLibrary.newHashMap(asList(1, threshold), asList(2, 1)));
-		records.add(MapLibrary.newHashMap(asList(0, 1, 10), asList(threshold, 1, 1)));
+		Map<Integer, Bag<Integer>> records = MapLibrary.newHashMap();
+		Bag<Integer> topLoopRecords = Bag.newHashBag(asList(1,threshold), asList(2, 1));
+		Bag<Integer> nestedLoopRecords = Bag.newHashBag(asList(0, 1, 10), asList(threshold, 1, 1));
+		records.put(7, topLoopRecords);
+		records.put(8, nestedLoopRecords);
 		assertEquals(2, testExecutor.allLoops().size());
 		for (While loop : testExecutor.allLoops()) {
-			assertTrue(records.contains(testExecutor.monitor().recordFrequenciesOf(loop)));
+			assertEquals(records.get(loop.position().getLine()), testExecutor.monitor().exitRecordsOf(loop));
 		}
 	}
 	
 	private Map<String, CtWhile> loopsByMethodIn(File sourceFile, int numberOfLoops) {
-		Factory model = SpoonLibrary.modelFor(sourceFile);
+		Factory model = SpoonModelLibrary.modelFor(sourceFile);
 		Collection<CtPackage> allRoots = model.Package().getAllRoots();
 		assertEquals(1, allRoots.size());
-		Collection<CtWhile> elements = SpoonLibrary.allChildrenOf(CollectionLibrary.any(allRoots), CtWhile.class);
+		Collection<CtWhile> elements = SpoonElementLibrary.allChildrenOf(CollectionLibrary.any(allRoots), CtWhile.class);
 		assertEquals(numberOfLoops, elements.size());
 		Map<String, CtWhile> byMethod = MapLibrary.newHashMap();
 		for (CtWhile loop : elements) {
@@ -87,6 +142,29 @@ public class InfinitelTest {
 			byMethod.put(methodName, loop);
 		}
 		return byMethod;
+	}
+	
+	@Test
+	public void infinitelExample4() {
+		Infinitel infinitel = loopFixerForExample(4);
+		MonitoringTestExecutor testExecutor = infinitel.newTestExecutor();
+		assertEquals(1, testExecutor.allLoops().size());
+		While loop = CollectionLibrary.any(testExecutor.allLoops());
+		assertEquals(1, testExecutor.monitor().loopsWithBreak().size());
+		assertEquals(1, testExecutor.monitor().loopsWithReturn().size());
+		assertEquals(1, testExecutor.monitor().loopsWithBreakAndReturn().size());
+		assertEquals(0, testExecutor.monitor().loopsWithoutBodyExit().size());
+		TestCasesListener listener = new TestCasesListener();
+		testExecutor.execute(infinitel.project().testClasses(), listener);
+		assertEquals(2, testExecutor.monitor().numberOfReturnExitsIn(loop));
+		assertEquals(Bag.newHashBag(1, 4), testExecutor.monitor().returnRecordsOf(loop));
+		assertEquals(2, testExecutor.monitor().numberOfBreakExitsIn(loop));
+		assertEquals(Bag.newHashBag(1, 3), testExecutor.monitor().breakRecordsOf(loop));
+		assertEquals(6, testExecutor.monitor().numberOfRecordsIn(loop));
+		assertEquals(Bag.newHashBag(0,1,1,3,4,6), testExecutor.monitor().exitRecordsOf(loop));
+		List<String> testNames = asList("returnExitIn1", "returnExitIn4", "breakExitIn1", "breakExitIn3", "normalExitIn0", "normalExitIn6");
+		Map<String, Integer> expected = expectedIterationsMap(4, testNames, asList(1, 4, 1, 3, 0, 6));
+		checkIterations(infinitel, testExecutor, loop, listener.successfulTests(), listener.failedTests(), expected);
 	}
 	
 	@Test

@@ -19,12 +19,13 @@ import org.junit.runner.notification.RunListener;
 import org.slf4j.Logger;
 
 import fr.inria.lille.commons.classes.CustomContextClassLoaderThreadFactory;
+import fr.inria.lille.commons.classes.Singleton;
 import fr.inria.lille.commons.collections.ListLibrary;
 
 public class TestSuiteExecution {
 	
 	public static Result runCasesIn(String[] testClasses, ClassLoader classLoaderForTestThread) {
-		return runCasesIn(testClasses, classLoaderForTestThread, NullRunListener.instance());
+		return runCasesIn(testClasses, classLoaderForTestThread, nullRunListener());
 	}
 	
 	public static Result runCasesIn(String[] testClasses, ClassLoader classLoaderForTestThread, RunListener listener) {
@@ -32,7 +33,7 @@ public class TestSuiteExecution {
 	}
 	
 	public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread) {
-		return runTestCase(testCase, classLoaderForTestThread, NullRunListener.instance());
+		return runTestCase(testCase, classLoaderForTestThread, nullRunListener());
 	}
 	
 	public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread, RunListener listener) {
@@ -65,6 +66,10 @@ public class TestSuiteExecution {
 	
 	protected static long secondsForTimeout() {
 		return secondsForTimeout;
+	}
+	
+	private static RunListener nullRunListener() {
+		return Singleton.of(NullRunListener.class);
 	}
 	
 	private static long secondsForTimeout = MINUTES.toSeconds(60L);

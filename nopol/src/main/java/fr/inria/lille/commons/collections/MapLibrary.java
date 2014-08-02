@@ -91,6 +91,13 @@ public class MapLibrary {
 		return map.get(key);
 	}
 	
+	public static <K, V> V getIfAbsent(Map<K, V> map, K key, V valueIfAbsent) {
+		if (map.containsKey(key)) {
+			return map.get(key);
+		}
+		return valueIfAbsent;
+	}
+	
 	public static <K, V> void putMany(Map<K, V> sourceMap, V value, Collection<K> keys) {
 		for (K key : keys) {
 			sourceMap.put(key, value);

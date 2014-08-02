@@ -9,7 +9,7 @@ import java.util.Map;
 public class Table<R, C, V> {
 
 	public static <R, C, V> Table<R, C, V> newTable() {
-		return new Table<>();
+		return new Table<R, C, V>();
 	}
 	
 	public static <R, C, V> Table<R, C, V> newTable(Collection<R> rows) {

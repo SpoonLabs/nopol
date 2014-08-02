@@ -1,4 +1,4 @@
-package fr.inria.lille.commons.spoon;
+package fr.inria.lille.commons.spoon.filter;
 
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;

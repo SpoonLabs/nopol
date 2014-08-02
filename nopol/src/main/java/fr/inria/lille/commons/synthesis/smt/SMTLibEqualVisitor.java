@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.Collection;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smtlib.IAccept;
 import org.smtlib.ICommand;
 import org.smtlib.ICommand.IScript;
@@ -50,6 +49,7 @@ import org.smtlib.ISort.IParameter;
 import org.smtlib.ITheory;
 import org.smtlib.IVisitor;
 
+import fr.inria.lille.commons.classes.LoggerLibrary;
 import fr.inria.lille.commons.collections.SetLibrary;
 
 public class SMTLibEqualVisitor implements IVisitor<Boolean>{
@@ -584,5 +584,5 @@ public class SMTLibEqualVisitor implements IVisitor<Boolean>{
 	}
 
 	private Object expected;
-	private Logger logger = LoggerFactory.getLogger(SMTLibEqualVisitor.class.getName());
+	private Logger logger = LoggerLibrary.newLoggerFor(SMTLibEqualVisitor.class);
 }

@@ -23,8 +23,10 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
-import fr.inria.lille.commons.spoon.CodeSnippetFilter;
-import fr.inria.lille.commons.spoon.SpoonLibrary;
+import fr.inria.lille.commons.spoon.filter.CodeSnippetFilter;
+import fr.inria.lille.commons.spoon.util.SpoonElementLibrary;
+import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
+import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.RuntimeValuesProcessor;
 import fr.inria.lille.toolset.NopolTest;
@@ -228,7 +230,7 @@ public class ValuesCollectorTest {
 	private void testReachedVariableNames(int exampleNumber, String codeSnippet, String... expectedReachedVariables) {
 		CtElement firstElement = existsCodeSnippet(exampleNumber, codeSnippet);
 		assertTrue(CtCodeElement.class.isInstance(firstElement));
-		CtStatement statement = SpoonLibrary.statementOf((CtCodeElement) firstElement);
+		CtStatement statement = SpoonStatementLibrary.statementOf((CtCodeElement) firstElement);
 		Collection<String> reachedVariables = new RuntimeValuesProcessor<>().reachableVariableNames(statement);
 		assertEquals(expectedReachedVariables.length, reachedVariables.size());
 		assertTrue(reachedVariables.containsAll(Arrays.asList(expectedReachedVariables)));
@@ -237,9 +239,9 @@ public class ValuesCollectorTest {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private CtElement existsCodeSnippet(int exampleNumber, String codeSnippet) {
 		File sourceFile = NopolTest.example(exampleNumber).sourceFile();
-		Factory model = SpoonLibrary.modelFor(sourceFile);
+		Factory model = SpoonModelLibrary.modelFor(sourceFile);
 		Filter filter = new CodeSnippetFilter(sourceFile, codeSnippet);
-		List<CtElement> elements = SpoonLibrary.filteredElements(model, filter);
+		List<CtElement> elements = SpoonElementLibrary.filteredElements(model, filter);
 		assertEquals(1, elements.size());
 		return elements.get(0);
 	}

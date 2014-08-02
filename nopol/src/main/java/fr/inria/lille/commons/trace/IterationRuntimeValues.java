@@ -5,17 +5,22 @@ import static java.lang.String.format;
 import java.util.Map;
 
 import fr.inria.lille.commons.classes.GlobalToggle;
+import fr.inria.lille.commons.classes.Singleton;
 import fr.inria.lille.commons.collections.Table;
 import fr.inria.lille.commons.trace.collector.ValueCollector;
 
 public class IterationRuntimeValues extends GlobalToggle {
 
-	public static IterationRuntimeValues instance() {
-		if (instance == null) {
-			instance = new IterationRuntimeValues();
-		}
-		return instance;
+	public static IterationRuntimeValues firstInstance() {
+		/* Refer to: Singleton#createSingleton() */
+		return new IterationRuntimeValues();
 	}
+	
+	public static IterationRuntimeValues instance() {
+		return Singleton.of(IterationRuntimeValues.class);
+	}
+	
+	protected IterationRuntimeValues() {}
 	
 	@Override
 	protected void reset() {
@@ -23,8 +28,8 @@ public class IterationRuntimeValues extends GlobalToggle {
 	}
 	
 	@Override
-	public String instanceName() {
-		return "instance()";
+	public String globallyAccessibleName() {
+		return format("%s.instance()", getClass().getName());
 	}
 	
 	public String collectValueInvocation(String counterName, String variableName) {
@@ -50,8 +55,5 @@ public class IterationRuntimeValues extends GlobalToggle {
 		return valueTable;
 	}
 	
-	private IterationRuntimeValues() {}
-	
-	private static IterationRuntimeValues instance;
 	private Table<Integer, String, Object> valueTable;
 }

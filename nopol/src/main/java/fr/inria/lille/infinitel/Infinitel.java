@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
+import fr.inria.lille.commons.classes.Singleton;
 import fr.inria.lille.commons.io.ProjectReference;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
@@ -112,7 +113,7 @@ public class Infinitel {
 	}
 
 	protected InfinitelConfiguration configuration() {
-		return InfinitelConfiguration.instance();
+		return Singleton.of(InfinitelConfiguration.class);
 	}
 	
 	private ProjectReference project;

@@ -7,12 +7,12 @@ import org.junit.runner.notification.RunListener;
 
 public class NullRunListener extends RunListener {
 
-	public static NullRunListener instance() {
-		if (instance == null) {
-			instance = new NullRunListener();
-		}
-		return instance;
+	public static NullRunListener firstInstance() {
+		/* Refer to: Singleton#createSingleton() */
+		return new NullRunListener();
 	}
+	
+	protected NullRunListener() {}
 	
     @Override
     public void testRunStarted(Description description) throws Exception {}
@@ -34,6 +34,4 @@ public class NullRunListener extends RunListener {
     
     @Override
     public void testRunFinished(Result result) throws Exception {}
-    
-    private static NullRunListener instance;
 }

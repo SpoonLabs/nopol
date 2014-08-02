@@ -1,7 +1,6 @@
-package fr.inria.lille.commons.spoon;
+package fr.inria.lille.commons.spoon.util;
 
-import static fr.inria.lille.commons.classes.ClassLibrary.castTo;
-import static fr.inria.lille.commons.classes.ClassLibrary.isInstanceOf;
+import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.asBlock;
 
 import java.io.File;
 import java.util.Collection;
@@ -14,37 +13,24 @@ import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
-import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
-import spoon.reflect.declaration.CtAnonymousExecutable;
-import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtModifiable;
-import spoon.reflect.declaration.CtSimpleType;
-import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.Filter;
-import spoon.reflect.visitor.Query;
-import spoon.reflect.visitor.filter.TypeFilter;
 
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.collections.SetLibrary;
 
-public class SpoonLibrary {
-	
+public class SpoonModelLibrary {
+
 	public static Factory modelFor(File sourceFile) {
 		Factory factory = newFactory();
 		factory.getEnvironment().setDebug(true);
@@ -57,13 +43,6 @@ public class SpoonLibrary {
 			e.printStackTrace();
 		}
 		return factory;
-	}
-	
-	public static CtBlock<?> asBlock(CtStatement statement) {
-		if (isBlock(statement)) {
-			return (CtBlock<?>) statement;
-		}
-		return newBlock(statement.getFactory(), statement);
 	}
 	
 	public static CtBreak newBreak(Factory factory) {
@@ -124,6 +103,10 @@ public class SpoonLibrary {
 		return newComposedExpression(factory, leftExpression, rightExpression, BinaryOperatorKind.AND);
 	}
 	
+	public static CtExpression<Boolean> newDisjunctionExpression(Factory factory, CtExpression<Boolean> leftExpression, CtExpression<Boolean> rightExpression) {
+		return newComposedExpression(factory, leftExpression, rightExpression, BinaryOperatorKind.OR);
+	}
+	
 	public static <T> CtExpression<T> newComposedExpression(Factory factory, CtExpression<T> leftExpression, CtExpression<T> rightExpression, BinaryOperatorKind operator) {
 		CtBinaryOperator<T> composedExpression = factory.Code().createBinaryOperator(leftExpression, rightExpression, operator);
 		setParent(composedExpression, leftExpression, rightExpression);
@@ -166,114 +149,6 @@ public class SpoonLibrary {
 	public static void setLoopingCondition(CtWhile loop, CtExpression<Boolean> loopingCondition) {
 		setParent(loop, loopingCondition);
 		loop.setLoopingExpression(loopingCondition);
-	}
-	
-	public static <T extends CtElement> List<T> filteredElements(Factory factory, Filter<T> filter) {
-		return Query.getElements(factory, filter);
-	}
-	
-	public static <T extends CtElement> Collection<T> childrenWithParent(CtElement rootElement, Class<T> childrenClasses) {
-		Collection<T> childrenWithParent = SetLibrary.newHashSet();
-		Collection<T> allChildren = allChildrenOf(rootElement, childrenClasses);
-		for (T child : allChildren) {
-			if (child.getParent(rootElement.getClass()) == rootElement) {
-				childrenWithParent.add(child);
-			}
-		}
-		return childrenWithParent;
-	}
-	
-	public static <T extends CtElement> Collection<T> allChildrenOf(CtElement rootElement, Class<T> childrenClasses) {
-		return (Collection) Query.getElements(rootElement, new TypeFilter<>(childrenClasses));
-	}
-	
-	public static boolean isBlock(CtElement element) {
-		return isInstanceOf(CtBlock.class, element);
-	}
-	
-	public static boolean isMethod(CtElement element) {
-		return isInstanceOf(CtMethod.class, element);
-	}
-	
-	public static boolean isLocalVariable(CtElement element) {
-		return isInstanceOf(CtLocalVariable.class, element);
-	}
-	
-	public static boolean isAnonymousClass(CtElement element) {
-		return isInstanceOf(CtNewClass.class, element);
-	}
-	
-	public static boolean isConstructor(CtElement element) {
-		return isInstanceOf(CtConstructor.class, element);
-	}
-	
-	public static boolean isInitializationBlock(CtElement element) {
-		return isInstanceOf(CtAnonymousExecutable.class, element);
-	}
-	
-	public static boolean isAType(CtElement element) {
-		return isInstanceOf(CtSimpleType.class, element);
-	}
-	
-	public static boolean isField(CtElement element) {
-		return isInstanceOf(CtField.class, element);
-	}
-	
-	public static boolean isStatement(CtElement element) {
-		return isInstanceOf(CtStatement.class, element);
-	}
-	
-	public static boolean isVoidType(CtTypeReference<?> type) {
-		return type.getSimpleName().equalsIgnoreCase("void");
-	}
-	
-	public static boolean allowsModifiers(CtElement element) {
-		return isInstanceOf(CtModifiable.class, element);
-	}
-	
-	public static boolean hasStaticModifier(CtElement element) {
-		if (allowsModifiers(element)) {
-			return castTo(CtModifiable.class, element).getModifiers().contains(ModifierKind.STATIC);
-		}
-		return false;
-	}
-	
-	public static boolean inStaticCode(CtElement element) {
-		if (allowsModifiers(element)) {
-			return hasStaticModifier(element);
-		}
-		return hasStaticModifier(element.getParent(CtModifiable.class)) || hasStaticModifier(element.getParent(CtSimpleType.class));
-	}
-	
-	public static boolean isLastStatementOfMethod(CtStatement statement) {
-		CtElement statementParent = statement.getParent();
-		if (! isBlock(statementParent)) {
-			return isLastStatementOfMethod((CtStatement) statementParent);
-		}
-		CtBlock<?> block = (CtBlock<?>) statementParent;
-		if (isLastStatementOf(block, statement)) {
-			CtElement blockParent = block.getParent();
-			if (isStatement(blockParent)) {
-				return isLastStatementOfMethod((CtStatement) blockParent);
-			} else {
-				return isMethod(blockParent);
-			}
-		}
-		return false;
-	}
-	
-	public static boolean isLastStatementOf(CtBlock<?> block, CtStatement statement) {
-		List<CtStatement> statements = block.getStatements();
-		CtStatement lastStatement = ListLibrary.last(statements);
-		return lastStatement == statement;
-	}
-	
-	public static CtStatement statementOf(CtCodeElement codeElement) {
-		Class<CtStatement> statementClass = CtStatement.class;
-		if (isInstanceOf(statementClass, codeElement)) {
-			return castTo(statementClass, codeElement);
-		}
-		return codeElement.getParent(statementClass);
 	}
 	
 	public static CoreFactory coreFactoryOf(CtElement element) {

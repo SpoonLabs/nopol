@@ -6,7 +6,8 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtMethod;
 import fr.inria.lille.commons.collections.MapLibrary;
-import fr.inria.lille.commons.spoon.SpoonLibrary;
+import fr.inria.lille.commons.spoon.util.SpoonReferenceLibrary;
+import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
 import fr.inria.lille.infinitel.loop.While;
 
 public class CompoundLoopMonitorBuilder extends AbstractProcessor<CtWhile> {
@@ -19,8 +20,8 @@ public class CompoundLoopMonitorBuilder extends AbstractProcessor<CtWhile> {
 	@Override
 	public boolean isToBeProcessed(CtWhile loopStatement) {
 		CtMethod<?> correspondingMethod = loopStatement.getParent(CtMethod.class);
-		if (SpoonLibrary.isLastStatementOfMethod(loopStatement)) {
-			return SpoonLibrary.isVoidType(correspondingMethod.getType());
+		if (SpoonStatementLibrary.isLastStatementOfMethod(loopStatement)) {
+			return SpoonReferenceLibrary.isVoidType(correspondingMethod.getType());
 		}
 		return true;
 	}

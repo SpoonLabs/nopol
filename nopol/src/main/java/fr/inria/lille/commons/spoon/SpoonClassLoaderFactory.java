@@ -24,6 +24,7 @@ import spoon.support.RuntimeProcessingManager;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.compiler.BytecodeClassLoaderBuilder;
 import fr.inria.lille.commons.compiler.DynamicClassCompiler;
+import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 
 public class SpoonClassLoaderFactory {
 
@@ -39,7 +40,7 @@ public class SpoonClassLoaderFactory {
 	public SpoonClassLoaderFactory(File sourceFile) {
 		compiler = new DynamicClassCompiler();
 		logDebug(logger, format("[Building Spoon model from %s]", sourceFile.getPath()));
-		factory = SpoonLibrary.modelFor(sourceFile);
+		factory = SpoonModelLibrary.modelFor(sourceFile);
 		manager = new RuntimeProcessingManager(spoonFactory());
 	} 
 	

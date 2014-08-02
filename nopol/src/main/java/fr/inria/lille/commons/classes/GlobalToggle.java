@@ -4,7 +4,7 @@ public abstract class GlobalToggle {
 
 	protected abstract void reset();
 	
-	protected abstract String instanceName();
+	protected abstract String globallyAccessibleName();
 	
 	public GlobalToggle() {
 		disable();
@@ -12,10 +12,6 @@ public abstract class GlobalToggle {
 	
 	public String isEnabledInquiry() {
 		return globallyAccessibleName() + ".isEnabled()";
-	}
-	
-	public String globallyAccessibleName() {
-		return getClass().getName() + "." + instanceName();
 	}
 	
 	public boolean isEnabled() {

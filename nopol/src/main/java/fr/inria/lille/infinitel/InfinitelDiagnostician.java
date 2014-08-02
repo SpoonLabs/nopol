@@ -1,16 +1,17 @@
 package fr.inria.lille.infinitel;
 
 import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
+import static java.lang.String.format;
 
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
+import fr.inria.lille.commons.classes.Singleton;
+import fr.inria.lille.commons.collections.Bag;
 import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.io.FileHandler;
 import fr.inria.lille.commons.io.ProjectReference;
 import fr.inria.lille.commons.suite.TestCasesListener;
@@ -38,20 +39,22 @@ public class InfinitelDiagnostician extends Infinitel {
 	
 	@Override
 	protected InfinitelConfiguration configuration() {
-		return InfinitelDiagnosticianConfiguration.instance();
+		return Singleton.of(InfinitelDiagnosticianConfiguration.class);
 	}
 
 	public void diagnose() {
 		MonitoringTestExecutor testExecutor = newTestExecutor();
 		Collection<String> toBeLogged = ListLibrary.newLinkedList();
 		toBeLogged.addAll(logLoopsInvokedOnlyOnce(testExecutor));
+		toBeLogged.add("");
 		toBeLogged.addAll(logLoopStatistics(testExecutor));
 		logDebug(logger, toBeLogged);
 	}
-	
+
 	protected Collection<String> logLoopsInvokedOnlyOnce(MonitoringTestExecutor testExecutor) {
-		List<String> logLoopPositions = logLoopPositions(loopsInvokedOnlyOnce(testExecutor));
-		logLoopPositions.add(0, "Loops invoked only once during test suite run:");
+		Collection<FixableLoop> loopsInvokedOnlyOnce = loopsInvokedOnlyOnce(testExecutor);
+		List<String> logLoopPositions = logLoopPositions(loopsInvokedOnlyOnce);
+		logLoopPositions.add(0, format("loops invoked only once during test suite run (%d)", loopsInvokedOnlyOnce.size()));
 		return logLoopPositions;
 	}
 	
@@ -71,28 +74,86 @@ public class InfinitelDiagnostician extends Infinitel {
 	
 	private Collection<String> logLoopStatistics(MonitoringTestExecutor testExecutor) {
 		testExecutor.execute(project().testClasses());
-		return logRecordFrequencies(invocationFrequencies(testExecutor.allLoops(), testExecutor.monitor()));
+		List<String> loopStatisticsLog = ListLibrary.newLinkedList();
+		CompoundLoopMonitor monitor = testExecutor.monitor();
+		logIndividualStatistics(loopStatisticsLog, monitor);
+		logAggregatedStatistics(loopStatisticsLog, monitor);
+		return loopStatisticsLog;
 	}
 
-	private Map<Integer, Integer> invocationFrequencies(Collection<While> loops, CompoundLoopMonitor monitor) {
-		Map<Integer, Integer> frequencies = MapLibrary.newHashMap();
-		for (While loop : loops) {
-			Map<Integer, Integer> recordFrequencies = monitor.recordFrequenciesOf(loop);
-			for (Integer record : recordFrequencies.keySet()) {
-				int count = MapLibrary.getPutIfAbsent(frequencies, record, 0);
-				frequencies.put(record, count + recordFrequencies.get(record));
-			}
+	private void logIndividualStatistics(List<String> loopStatisticsLog, CompoundLoopMonitor monitor) {
+		loopStatisticsLog.add("individual loop statistics");
+		for (While loop : monitor.allLoops()) {
+			loopStatisticsLog.add(loop.toString());
+			logIndividualStatisticsFor(loopStatisticsLog, loop, monitor);
+			loopStatisticsLog.add("");
 		}
-		return frequencies;
+	}
+
+	private void logIndividualStatisticsFor(List<String> loopStatisticsLog, While loop, CompoundLoopMonitor monitor) {
+		loopStatisticsLog.add(format("%d break statements", loop.numberOfBreaks()));
+		loopStatisticsLog.add(format("%d return statements", loop.numberOfReturns()));
+		logBag(loopStatisticsLog, "invocations", monitor.exitRecordsOf(loop));
+		logBag(loopStatisticsLog, "break exits", monitor.breakRecordsOf(loop));
+		logBag(loopStatisticsLog, "return exits", monitor.returnRecordsOf(loop));
 	}
 	
-	private Collection<String> logRecordFrequencies(Map<Integer, Integer> frequencies) {
-		Collection<String> records = ListLibrary.newLinkedList();
-		List<Integer> frequencyKeys = ListLibrary.newArrayList(frequencies.keySet());
-		Collections.sort(frequencyKeys);
-		for (Integer record : frequencyKeys) {
-			records.add(record.toString() + ": " + frequencies.get(record).toString());
+	private void logAggregatedStatistics(List<String> loopStatisticsLog, CompoundLoopMonitor monitor) {
+		loopStatisticsLog.add("aggregated loop statistics");
+		logAggregatedStatisticsFor(loopStatisticsLog, "all loops", monitor.allLoops(), monitor);
+		logAggregatedStatisticsFor(loopStatisticsLog, "loops with break", monitor.loopsWithBreak(), monitor);
+		logAggregatedStatisticsFor(loopStatisticsLog, "loops with return", monitor.loopsWithReturn(), monitor);
+		logAggregatedStatisticsFor(loopStatisticsLog, "loops with both", monitor.loopsWithBreakAndReturn(), monitor);
+		logAggregatedStatisticsFor(loopStatisticsLog, "loops without any", monitor.loopsWithoutBodyExit(), monitor);
+	}
+	
+	private void logAggregatedStatisticsFor(List<String> loopStatisticsLog, String description, Collection<While> loops, CompoundLoopMonitor monitor) {
+		loopStatisticsLog.add(format("%s (%d)", description, loops.size()));
+		loopStatisticsLog.add("individual invocations: " + invocations(loops, monitor).toString());
+		logBag(loopStatisticsLog, "invocations", aggregatedExitBags(loops, monitor));
+		logBag(loopStatisticsLog, "break exits", aggregatedBreakBags(loops, monitor));
+		logBag(loopStatisticsLog, "return exits", aggregatedReturnBags(loops, monitor));
+		loopStatisticsLog.add("");
+	}
+	
+	private List<Integer> invocations(Collection<While> loops, CompoundLoopMonitor monitor) {
+		List<Integer> invocations = ListLibrary.newArrayList();
+		for (While loop : loops) {
+			invocations.add(monitor.numberOfRecordsIn(loop));
 		}
-		return ListLibrary.newLinkedList("Records in loops", records.toString());
+		Collections.sort(invocations);
+		return invocations;
+	}
+
+	private Bag<Integer> aggregatedExitBags(Collection<While> loops, CompoundLoopMonitor monitor) {
+		Bag<Integer> aggregatedExitBag = Bag.newHashBag();
+		for (While loop : loops) {
+			aggregatedExitBag.addAll(monitor.exitRecordsOf(loop));
+		}
+		return aggregatedExitBag;
+	}
+	
+	private Bag<Integer> aggregatedBreakBags(Collection<While> loops, CompoundLoopMonitor monitor) {
+		Bag<Integer> aggregatedExitBag = Bag.newHashBag();
+		for (While loop : loops) {
+			aggregatedExitBag.addAll(monitor.breakRecordsOf(loop));
+		}
+		return aggregatedExitBag;
+	}
+	
+	private Bag<Integer> aggregatedReturnBags(Collection<While> loops, CompoundLoopMonitor monitor) {
+		Bag<Integer> aggregatedExitBag = Bag.newHashBag();
+		for (While loop : loops) {
+			aggregatedExitBag.addAll(monitor.returnRecordsOf(loop));
+		}
+		return aggregatedExitBag;
+	}
+
+	private void logBag(List<String> loopStatisticsLog, String description, Bag<Integer> bag) {
+		int size = bag.size();
+		loopStatisticsLog.add(size + " " + description);
+		if (size > 0) {
+			loopStatisticsLog.add(bag.toString());
+		}
 	}
 }

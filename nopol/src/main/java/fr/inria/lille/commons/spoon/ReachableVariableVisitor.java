@@ -1,5 +1,13 @@
 package fr.inria.lille.commons.spoon;
 
+import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.hasStaticModifier;
+import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.inStaticCode;
+import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isAType;
+import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isAnonymousClass;
+import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isBlock;
+import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isConstructor;
+import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isInitializationBlock;
+
 import java.util.Collection;
 
 import spoon.reflect.code.CtBlock;
@@ -13,13 +21,14 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import fr.inria.lille.commons.collections.SetLibrary;
+import fr.inria.lille.commons.spoon.filter.BeforeLocationFilter;
 
 public class ReachableVariableVisitor extends CtAbstractVisitor {
 
 	public ReachableVariableVisitor(CtElement startingNode) {
 		this.startingNode = startingNode;
 		this.beforeFilter = new BeforeLocationFilter(CtVariable.class, startingNode().getPosition());
-		excludesInstanceFields = SpoonLibrary.inStaticCode(startingNode());
+		excludesInstanceFields = inStaticCode(startingNode());
 	}
 	
 	public CtElement startingNode() {
@@ -94,33 +103,9 @@ public class ReachableVariableVisitor extends CtAbstractVisitor {
 			super.scan(element);
 		}
 	}
-	
-	private boolean isAnonymousClass(CtElement element) {
-		return SpoonLibrary.isAnonymousClass(element);
-	}
 
-	private boolean isInitializationBlock(CtElement element) {
-		return SpoonLibrary.isInitializationBlock(element);
-	}
-	
-	private boolean isAType(CtElement element) {
-		return SpoonLibrary.isAType(element);
-	}
-	
-	private boolean isConstructor(CtElement element) {
-		return SpoonLibrary.isConstructor(element);
-	}
-	
-	private boolean isBlock(CtElement element) {
-		return SpoonLibrary.isBlock(element);
-	}
-	
 	private boolean isReachable(CtVariable<?> variable) {
 		return beforeFilter().matches(variable);
-	}
-	
-	private boolean hasStaticModifier(CtElement element) {
-		return SpoonLibrary.hasStaticModifier(element);
 	}
 
 	private boolean excludesInstanceFields() {

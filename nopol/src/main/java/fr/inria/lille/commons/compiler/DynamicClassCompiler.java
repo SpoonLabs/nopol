@@ -25,7 +25,7 @@ public class DynamicClassCompiler {
 	public DynamicClassCompiler() {
 		options = asList("-nowarn");
 		compiler = ToolProvider.getSystemJavaCompiler();
-		diagnostics = new DiagnosticCollector<>();
+		diagnostics = new DiagnosticCollector<JavaFileObject>();
 		StandardJavaFileManager standardFileManager = compiler().getStandardFileManager(diagnostics(), null, null);
 		fileManager = new VirtualFileObjectManager(standardFileManager);
 	}

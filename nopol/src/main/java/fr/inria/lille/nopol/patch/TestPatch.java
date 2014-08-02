@@ -29,7 +29,7 @@ import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.spoon.SpoonClassLoaderFactory;
-import fr.inria.lille.commons.spoon.SpoonLibrary;
+import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.nopol.synth.BugKind;
 import fr.inria.lille.nopol.synth.DelegatingProcessor;
@@ -58,7 +58,7 @@ public final class TestPatch {
 		logger.info("Applying patch: {}", patch);
 		Collection<Processor<?>> processors = ListLibrary.newArrayList();
 		processors.add(createProcessor(patch, patch.getFile(sourceFolder)));
-		processors.add(new JavaOutputProcessor(new File(sourceFolder, SPOON_DIRECTORY), new DefaultJavaPrettyPrinter(SpoonLibrary.newEnvironment())));
+		processors.add(new JavaOutputProcessor(new File(sourceFolder, SPOON_DIRECTORY), new DefaultJavaPrettyPrinter(SpoonModelLibrary.newEnvironment())));
 		return wasSuccessful(patch.getRootClassName(), processors, testClasses);
 	}
 

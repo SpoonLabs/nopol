@@ -1,13 +1,17 @@
 package fr.inria.lille.infinitel.instrumenting;
 
+import static java.lang.String.format;
+
 import java.util.Collection;
 import java.util.Map;
 
+import fr.inria.lille.commons.collections.Bag;
+import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.infinitel.loop.While;
 
 public class CompoundLoopMonitor {
-
+	
 	public CompoundLoopMonitor(Number threshold, Map<While, LoopMonitor> submonitors) {
 		this.threshold = threshold.intValue();
 		this.submonitors = submonitors;
@@ -15,6 +19,46 @@ public class CompoundLoopMonitor {
 
 	public Collection<While> allLoops() {
 		return submonitors().keySet();
+	}
+	
+	public Collection<While> loopsWithBreak() {
+		Collection<While> loops = ListLibrary.newArrayList();
+		for (While loop : allLoops()) {
+			if (loop.hasBreaks()) {
+				loops.add(loop);
+			}
+		}
+		return loops;
+	}
+	
+	public Collection<While> loopsWithReturn() {
+		Collection<While> loops = ListLibrary.newArrayList();
+		for (While loop : allLoops()) {
+			if (loop.hasReturns()) {
+				loops.add(loop);
+			}
+		}
+		return loops;
+	}
+	
+	public Collection<While> loopsWithBreakAndReturn() {
+		Collection<While> loops = ListLibrary.newArrayList();
+		for (While loop : loopsWithReturn()) {
+			if (loop.hasBreaks()) {
+				loops.add(loop);
+			}
+		}
+		return loops;
+	}
+	
+	public Collection<While> loopsWithoutBodyExit() {
+		Collection<While> loops = ListLibrary.newArrayList();
+		for (While loop : allLoops()) {
+			if (! (loop.hasBodyExit())) {
+				loops.add(loop);
+			}
+		}
+		return loops;
 	}
 	
 	public Collection<While> loopsReachingThreshold() {
@@ -31,8 +75,28 @@ public class CompoundLoopMonitor {
 		return monitorOf(loop).lastRecordedValue();
 	}
 	
-	public int numberOfRecords(While loop) {
+	public int numberOfRecordsIn(While loop) {
 		return monitorOf(loop).numberOfRecords();
+	}
+	
+	public int numberOfBreakExitsIn(While loop) {
+		return monitorOf(loop).numberOfBreakExits();
+	}
+	
+	public int numberOfReturnExitsIn(While loop) {
+		return monitorOf(loop).numberOfReturnExits();
+	}
+	
+	public Bag<Integer> exitRecordsOf(While loop) {
+		return monitorOf(loop).exitRecords();
+	}
+	
+	public Bag<Integer> breakRecordsOf(While loop) {
+		return monitorOf(loop).breakRecords();
+	}
+	
+	public Bag<Integer> returnRecordsOf(While loop) {
+		return monitorOf(loop).returnRecords();
 	}
 	
 	public int topRecordIn(While loop) {
@@ -41,10 +105,6 @@ public class CompoundLoopMonitor {
 	
 	public Number thresholdOf(While loop) {
 		return monitorOf(loop).threshold();
-	}
-	
-	public Map<Integer, Integer> recordFrequenciesOf(While loop) {
-		return monitorOf(loop).recordFrequencies();
 	}
 	
 	public Number setThresholdOf(While loop, Number newThreshold) {
@@ -89,6 +149,11 @@ public class CompoundLoopMonitor {
 	
 	private Map<While, LoopMonitor> submonitors() {
 		return submonitors;
+	}
+	
+	@Override
+	public String toString() {
+		return format("CompoundLoopMonitor[threshold=%d][%d loops]", threshold(), submonitors().size());
 	}
 	
 	private int threshold;

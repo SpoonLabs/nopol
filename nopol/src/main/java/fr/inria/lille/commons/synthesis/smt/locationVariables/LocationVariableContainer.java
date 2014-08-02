@@ -20,7 +20,7 @@ public class LocationVariableContainer {
 		addOperators(operators);
 		allParameters().addAll(parameterLocationVariablesFrom(operators()));
 		int lastLine = numberOfInputs() + numberOfOperators();
-		outputVariable = new IndexedLocationVariable<>(outputExpression, "out", lastLine);
+		outputVariable = new IndexedLocationVariable(outputExpression, "out", lastLine);
 	}
 	
 	private void addInputs(Collection<Expression<?>> inputs) {
@@ -31,7 +31,7 @@ public class LocationVariableContainer {
 	
 	private void addInput(Expression<?> input) {
 		int inputIndex = numberOfInputs();
-		inputs().add(new IndexedLocationVariable<>(input, format("in<%d>", inputIndex), inputIndex));
+		inputs().add(new IndexedLocationVariable(input, format("in<%d>", inputIndex), inputIndex));
 	}
 		
 	private void addOperators(Collection<Operator<?>> operators) {
@@ -41,7 +41,7 @@ public class LocationVariableContainer {
 	}
 	
 	private void addOperator(Operator<?> operator) {
-		operators().add(new OperatorLocationVariable<>(operator, format("op<%d>", numberOfOperators())));
+		operators().add(new OperatorLocationVariable(operator, format("op<%d>", numberOfOperators())));
 	}
 	
 	private List<ParameterLocationVariable<?>> parameterLocationVariablesFrom(Collection<OperatorLocationVariable<?>> operators) {

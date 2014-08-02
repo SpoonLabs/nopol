@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
+import fr.inria.lille.commons.classes.Singleton;
 import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.trace.IterationRuntimeValues;
@@ -50,11 +51,11 @@ public class LoopSpecificationCollector {
 
 	protected void addTestSpecification(Collection<Specification<Boolean>> specifications, int iterationNumber, boolean expectedOutput) {
 		Map<String, Object> values = runtimeValues().inputsFor(iterationNumber);
-		specifications.add(new Specification<>(values, expectedOutput));
+		specifications.add(new Specification<Boolean>(values, expectedOutput));
 	}
 	
 	private IterationRuntimeValues runtimeValues() {
-		return IterationRuntimeValues.instance();
+		return Singleton.of(IterationRuntimeValues.class);
 	}
 	
 	private MonitoringTestExecutor testExecutor() {

@@ -1,4 +1,4 @@
-package fr.inria.lille.commons.spoon;
+package fr.inria.lille.commons.spoon.filter;
 
 import java.util.Collection;
 

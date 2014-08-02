@@ -1,6 +1,7 @@
 package fr.inria.lille.commons.trace;
 
 import spoon.reflect.code.CtCodeElement;
+import fr.inria.lille.commons.classes.Singleton;
 
 public class IterationRuntimeValuesProcessor<T extends CtCodeElement> extends RuntimeValuesProcessor<T> {
 
@@ -11,7 +12,7 @@ public class IterationRuntimeValuesProcessor<T extends CtCodeElement> extends Ru
 
 	@Override
 	protected String valueCollectingSnippet(String variableName) {
-		return IterationRuntimeValues.instance().collectValueInvocation(iterationVariableName(), variableName);
+		return Singleton.of(IterationRuntimeValues.class).collectValueInvocation(iterationVariableName(), variableName);
 	}
 	
 	private String iterationVariableName() {

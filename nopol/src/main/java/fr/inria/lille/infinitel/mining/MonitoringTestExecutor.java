@@ -10,6 +10,7 @@ import java.util.Map;
 import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 
+import fr.inria.lille.commons.classes.Singleton;
 import fr.inria.lille.commons.collections.Table;
 import fr.inria.lille.commons.suite.NullRunListener;
 import fr.inria.lille.commons.suite.TestCase;
@@ -46,7 +47,7 @@ public class MonitoringTestExecutor {
 		for (TestCase testCase : testCases) {
 			execute(testCase, loops);
 			for (While loop : loops) {
-				invocationsPerTest.put(loop, testCase, monitor().numberOfRecords(loop));
+				invocationsPerTest.put(loop, testCase, monitor().numberOfRecordsIn(loop));
 			}
 		}
 		return invocationsPerTest;
@@ -114,7 +115,7 @@ public class MonitoringTestExecutor {
 	}
 	
 	private RunListener nullRunListener() {
-		return NullRunListener.instance();
+		return Singleton.of(NullRunListener.class);
 	}
 	
 	private ClassLoader classLoader;

@@ -18,7 +18,7 @@ public class OperatorLocationVariable<T> extends LocationVariable<T> {
 		List<ParameterLocationVariable<?>> variables = ListLibrary.newArrayList();
 		int parameterIndex = 0;
 		for (Parameter<?> parameter : operator.parameters()) {
-			variables.add(new ParameterLocationVariable<>(parameter, subexpression() + "<" + parameterIndex + ">" , this));
+			variables.add(new ParameterLocationVariable(parameter, subexpression() + "<" + parameterIndex + ">" , this));
 			parameterIndex += 1;
 		}
 		return variables;

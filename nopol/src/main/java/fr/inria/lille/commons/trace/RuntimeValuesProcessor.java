@@ -32,16 +32,18 @@ import spoon.reflect.visitor.filter.CompositeFilter;
 import spoon.reflect.visitor.filter.FilteringOperator;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.SetLibrary;
-import fr.inria.lille.commons.spoon.BeforeLocationFilter;
-import fr.inria.lille.commons.spoon.InBlockFilter;
 import fr.inria.lille.commons.spoon.ReachableVariableVisitor;
-import fr.inria.lille.commons.spoon.SpoonLibrary;
-import fr.inria.lille.commons.spoon.VariableAssignmentFilter;
+import fr.inria.lille.commons.spoon.filter.BeforeLocationFilter;
+import fr.inria.lille.commons.spoon.filter.InBlockFilter;
+import fr.inria.lille.commons.spoon.filter.VariableAssignmentFilter;
+import fr.inria.lille.commons.spoon.util.SpoonElementLibrary;
+import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
+import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
 
 public class RuntimeValuesProcessor<T extends CtCodeElement> extends AbstractProcessor<T> {
 	
 	protected CtStatement statementOf(T codeElement) {
-		return SpoonLibrary.statementOf(codeElement);
+		return SpoonStatementLibrary.statementOf(codeElement);
 	}
 	
 	@Override
@@ -82,9 +84,9 @@ public class RuntimeValuesProcessor<T extends CtCodeElement> extends AbstractPro
 	
 	private String nameFor(CtVariable<?> variable) {
 		String simpleName = variable.getSimpleName();
-		if (SpoonLibrary.isField(variable)) {
+		if (SpoonElementLibrary.isField(variable)) {
 			String declaringClass = ((CtField<?>) variable).getDeclaringType().getSimpleName();
-			if (SpoonLibrary.hasStaticModifier(variable)) {
+			if (SpoonElementLibrary.hasStaticModifier(variable)) {
 				simpleName = declaringClass + "." + simpleName;
 			} else {
 				if (declaringClass.isEmpty()) {
@@ -102,7 +104,7 @@ public class RuntimeValuesProcessor<T extends CtCodeElement> extends AbstractPro
 		List<CtStatement> newStatements = ListLibrary.newLinkedList();
 		for (String variableName : variableNames) {
 			String invocation = valueCollectingSnippet(variableName);
-			CtStatement newStatement = SpoonLibrary.newStatementFromSnippet(statement.getFactory(), invocation, statement.getParent());
+			CtStatement newStatement = SpoonModelLibrary.newStatementFromSnippet(statement.getFactory(), invocation, statement.getParent());
 			newStatements.add(newStatement);
 		}
 		return newStatements;
@@ -115,7 +117,7 @@ public class RuntimeValuesProcessor<T extends CtCodeElement> extends AbstractPro
 	private Collection<CtVariable<?>> variablesInitializedBefore(CtStatement statement, Collection<CtVariable<?>> reachedVariables) {
 		Collection<CtVariable<?>> initializedVariables = SetLibrary.newHashSet();
 		for (CtVariable<?> variable : reachedVariables) {
-			if (! SpoonLibrary.isLocalVariable(variable) || wasInitializedBefore(statement, variable)) {
+			if (! SpoonElementLibrary.isLocalVariable(variable) || wasInitializedBefore(statement, variable)) {
 				initializedVariables.add(variable);
 			}
 		}

@@ -8,12 +8,12 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.SourcePosition;
-import fr.inria.lille.commons.spoon.SpoonLibrary;
+import fr.inria.lille.commons.spoon.util.SpoonLoopLibrary;
 
 public class While {
 
 	public While(CtWhile astLoop) {
-		this(astLoop, SpoonLibrary.childrenWithParent(astLoop, CtBreak.class), (Collection) SpoonLibrary.childrenWithParent(astLoop, CtReturn.class));
+		this(astLoop, SpoonLoopLibrary.breakStatementsIn(astLoop), SpoonLoopLibrary.returnStatementsIn(astLoop));
 	}
 	
 	public While(CtWhile astLoop, Collection<CtBreak> breakStatements, Collection<CtReturn<?>> returnStatements) {
@@ -41,9 +41,25 @@ public class While {
 	public CtStatement loopBody() {
 		return astLoop().getBody();
 	}
+	
+	public boolean hasBreaks() {
+		return numberOfBreaks() > 0;
+	}
 
+	public int numberOfBreaks() {
+		return breakStatements().size();
+	}
+	
 	public Collection<CtBreak> breakStatements() {
 		return breakStatements;
+	}
+	
+	public boolean hasReturns() {
+		return numberOfReturns() > 0;
+	}
+	
+	public int numberOfReturns() {
+		return returnStatements().size();
 	}
 	
 	public Collection<CtReturn<?>> returnStatements() {
@@ -72,7 +88,7 @@ public class While {
 	
 	@Override
 	public String toString() {
-		return position().toString();
+		return "While(" + position().toString() + ")";
 	}
 
 	private CtWhile astLoop;

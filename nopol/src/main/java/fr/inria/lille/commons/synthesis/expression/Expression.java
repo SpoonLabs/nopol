@@ -9,7 +9,7 @@ import fr.inria.lille.commons.collections.ListLibrary;
 public class Expression<T> extends ObjectTemplate<T> {
 	
 	public static Expression<?> from(String expression, Object value) {
-		return new Expression<>(value.getClass(), expression);
+		return new Expression(value.getClass(), expression);
 	}
 	
 	public static List<String> expressionsOf(Collection<? extends Expression<?>> expressions) {
