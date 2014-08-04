@@ -1,4 +1,4 @@
-package fr.inria.lille.commons.classes;
+package fr.inria.lille.commons.utils;
 
 public abstract class GlobalToggle {
 

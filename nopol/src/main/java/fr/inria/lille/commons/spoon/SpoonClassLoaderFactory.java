@@ -1,8 +1,8 @@
 package fr.inria.lille.commons.spoon;
 
-import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
-import static fr.inria.lille.commons.classes.LoggerLibrary.newLoggerFor;
 import static fr.inria.lille.commons.string.StringLibrary.javaNewline;
+import static fr.inria.lille.commons.utils.LoggerLibrary.logDebug;
+import static fr.inria.lille.commons.utils.LoggerLibrary.newLoggerFor;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 

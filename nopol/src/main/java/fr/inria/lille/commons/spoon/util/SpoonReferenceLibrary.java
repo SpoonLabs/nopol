@@ -1,6 +1,6 @@
 package fr.inria.lille.commons.spoon.util;
 
-import static fr.inria.lille.commons.classes.ClassLibrary.isInstanceOf;
+import static fr.inria.lille.commons.utils.ClassLibrary.isInstanceOf;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 

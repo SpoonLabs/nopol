@@ -1,4 +1,4 @@
-package fr.inria.lille.commons.classes;
+package fr.inria.lille.commons.utils;
 
 import java.lang.reflect.Modifier;
 
@@ -24,4 +24,18 @@ public class ClassLibrary {
 		return Modifier.isAbstract(aClass.getModifiers());
 	}
 	
+	public static <T> boolean isGreaterThan(T comparedOne, T comparingOne) {
+		return comparison(comparingOne, comparedOne) > 0;
+	}
+	
+	public static <T> boolean isLessThan(T comparedOne, T comparingOne) {
+		return comparison(comparingOne, comparedOne) < 0;
+	}
+	
+	public static <T> int comparison(T one, T other) {
+		if (isInstanceOf(Comparable.class, one)) {
+			return ((Comparable<T>) one).compareTo(other);
+		}
+		return 0;
+	}
 }

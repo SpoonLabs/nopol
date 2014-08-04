@@ -13,8 +13,8 @@ import java.util.Map;
 import org.smtlib.IExpr;
 import org.smtlib.ISort;
 
-import fr.inria.lille.commons.classes.ClassLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
+import fr.inria.lille.commons.utils.ClassLibrary;
 
 public class ObjectToExpr {
 

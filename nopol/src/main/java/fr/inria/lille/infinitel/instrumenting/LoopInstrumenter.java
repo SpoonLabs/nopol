@@ -26,10 +26,10 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.factory.Factory;
-import fr.inria.lille.commons.classes.Singleton;
 import fr.inria.lille.commons.trace.IterationRuntimeValues;
 import fr.inria.lille.commons.trace.IterationRuntimeValuesProcessor;
 import fr.inria.lille.commons.trace.RuntimeValuesProcessor;
+import fr.inria.lille.commons.utils.Singleton;
 
 public class LoopInstrumenter {
 	

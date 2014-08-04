@@ -9,6 +9,7 @@ import static fr.inria.lille.commons.collections.ListLibrary.last;
 import static fr.inria.lille.commons.collections.ListLibrary.lastElements;
 import static fr.inria.lille.commons.collections.ListLibrary.newArrayList;
 import static fr.inria.lille.commons.collections.ListLibrary.newLinkedList;
+import static fr.inria.lille.commons.collections.ListLibrary.toStringList;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -132,5 +133,13 @@ public class ListLibraryTest {
 		assertEquals(asList("d"), lastElements(1, list));
 		assertEquals(list, lastElements(4, list));
 		assertEquals(list, lastElements(5, list));
+	}
+	
+	@SuppressWarnings({"unchecked"})
+	@Test
+	public void listOfStringsFromList() {
+		List<?> newList = newLinkedList('a', "B", 1, 2.0);
+		List<String> toStringList = toStringList(newList);
+		assertEquals("[a, B, 1, 2.0]", toStringList.toString());
 	}
 }

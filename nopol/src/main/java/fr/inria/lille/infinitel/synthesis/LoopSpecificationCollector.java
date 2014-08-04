@@ -1,7 +1,7 @@
 package fr.inria.lille.infinitel.synthesis;
 
-import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
-import static fr.inria.lille.commons.classes.LoggerLibrary.newLoggerFor;
+import static fr.inria.lille.commons.utils.LoggerLibrary.logDebug;
+import static fr.inria.lille.commons.utils.LoggerLibrary.newLoggerFor;
 import static java.lang.String.format;
 
 import java.util.Collection;
@@ -9,11 +9,11 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
-import fr.inria.lille.commons.classes.Singleton;
 import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.trace.IterationRuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
+import fr.inria.lille.commons.utils.Singleton;
 import fr.inria.lille.infinitel.loop.While;
 import fr.inria.lille.infinitel.mining.MonitoringTestExecutor;
 

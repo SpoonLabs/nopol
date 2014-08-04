@@ -1,12 +1,12 @@
 package fr.inria.lille.commons.spoon.util;
 
-import static fr.inria.lille.commons.classes.ClassLibrary.castTo;
-import static fr.inria.lille.commons.classes.ClassLibrary.isInstanceOf;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isBlock;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isMethod;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isStatement;
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newBlock;
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.setParent;
+import static fr.inria.lille.commons.utils.ClassLibrary.castTo;
+import static fr.inria.lille.commons.utils.ClassLibrary.isInstanceOf;
 
 import java.util.List;
 

@@ -3,7 +3,7 @@ package fr.inria.lille.commons.io;
 import java.io.File;
 import java.net.URL;
 
-import fr.inria.lille.commons.classes.TestClassesFinder;
+import fr.inria.lille.commons.utils.TestClassesFinder;
 
 public class ProjectReference {
 

@@ -1,4 +1,4 @@
-package fr.inria.lille.commons.classes;
+package fr.inria.lille.commons.utils;
 
 import static fr.inria.lille.commons.string.StringLibrary.javaNewline;
 import static fr.inria.lille.commons.string.StringLibrary.join;

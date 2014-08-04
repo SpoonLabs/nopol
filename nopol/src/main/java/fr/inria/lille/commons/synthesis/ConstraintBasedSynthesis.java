@@ -10,7 +10,6 @@ import java.util.Map;
 import org.smtlib.ICommand.IScript;
 import org.smtlib.IExpr.ISymbol;
 
-import fr.inria.lille.commons.classes.ClassLibrary;
 import fr.inria.lille.commons.collections.CollectionLibrary;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
@@ -21,6 +20,7 @@ import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;
 import fr.inria.lille.commons.synthesis.theory.OperatorTheory;
 import fr.inria.lille.commons.trace.Specification;
+import fr.inria.lille.commons.utils.ClassLibrary;
 
 public class ConstraintBasedSynthesis {
 

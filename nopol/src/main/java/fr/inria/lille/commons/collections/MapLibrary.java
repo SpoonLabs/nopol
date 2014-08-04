@@ -11,8 +11,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MapLibrary {
+import fr.inria.lille.commons.utils.Factory;
 
+public class MapLibrary {
+	
+	public static <K, V> Factory<Map<K, V>> hashMapFactory() {
+		return new Factory<Map<K, V>>() {
+			@Override
+			public Map<K, V> newInstance() {
+				return newHashMap();
+			}
+		};
+	}
+	
+	public static <K, V> Factory<Map<K, V>> linkedHashMapFactory() {
+		return new Factory<Map<K, V>>() {
+			@Override
+			public Map<K, V> newInstance() {
+				return newLinkedHashMap();
+			}
+		};
+	}
+	
 	public static <K, V> Map<K, V> newIdentityHashMap(int keyCapacity) {
 		return new IdentityHashMap<K, V>(keyCapacity);
 	}

@@ -1,7 +1,7 @@
 package fr.inria.lille.infinitel.mining;
 
-import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
-import static fr.inria.lille.commons.classes.LoggerLibrary.newLoggerFor;
+import static fr.inria.lille.commons.utils.LoggerLibrary.logDebug;
+import static fr.inria.lille.commons.utils.LoggerLibrary.newLoggerFor;
 
 import org.slf4j.Logger;
 

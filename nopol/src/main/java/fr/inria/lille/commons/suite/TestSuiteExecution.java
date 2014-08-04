@@ -1,7 +1,7 @@
 package fr.inria.lille.commons.suite;
 
-import static fr.inria.lille.commons.classes.LoggerLibrary.logDebug;
-import static fr.inria.lille.commons.classes.LoggerLibrary.newLoggerFor;
+import static fr.inria.lille.commons.utils.LoggerLibrary.logDebug;
+import static fr.inria.lille.commons.utils.LoggerLibrary.newLoggerFor;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 import java.util.List;
@@ -18,9 +18,9 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.slf4j.Logger;
 
-import fr.inria.lille.commons.classes.CustomContextClassLoaderThreadFactory;
-import fr.inria.lille.commons.classes.Singleton;
 import fr.inria.lille.commons.collections.ListLibrary;
+import fr.inria.lille.commons.utils.CustomContextClassLoaderThreadFactory;
+import fr.inria.lille.commons.utils.Singleton;
 
 public class TestSuiteExecution {
 	

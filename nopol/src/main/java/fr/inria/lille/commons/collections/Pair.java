@@ -1,12 +1,21 @@
 package fr.inria.lille.commons.collections;
 
 import static java.lang.String.format;
+import fr.inria.lille.commons.utils.ClassLibrary;
 
-public class Pair<U, V> {
+public class Pair<U, V> implements Comparable<Pair<U, V>> {
 
-	public Pair(U first, V second) {
+	public static <U, V> Pair<U, V> from(U first, V second) {
+		return new Pair<U, V>(first, second);
+	}
+	
+	protected Pair(U first, V second) {
 		this.first = first;
 		this.second = second;
+	}
+	
+	public Pair<U, V> copy() {
+		return Pair.from(first(), second());
 	}
 	
 	public U first() {
@@ -16,7 +25,7 @@ public class Pair<U, V> {
 	public V second() {
 		return second;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -51,6 +60,18 @@ public class Pair<U, V> {
 	@Override
 	public String toString() {
 		return format("<%s, %s>", first().toString(), second().toString());
+	}
+	
+	@Override
+	public int compareTo(Pair<U, V> otherPair) {
+		Object[] components = new Object[] {first(), second(), otherPair.first(), otherPair.second()};
+		for (int i = 0; i < 2; i += 1) {
+			int comparison = ClassLibrary.comparison(components[i], components[i + 2]);
+			if (comparison != 0) {
+				return comparison;
+			}
+		}
+		return 0;
 	}
 
 	private U first;

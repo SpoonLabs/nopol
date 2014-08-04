@@ -213,7 +213,7 @@ public class InfinitelTest {
 		While loop = CollectionLibrary.any(infiniteLoops);
 		assertTrue(FileHandler.isSameFile(infinitel.project().sourceFile(), loop.position().getFile()));
 		assertEquals(line, loop.position().getLine());
-		return new Pair<>(loop, listener);
+		return Pair.from(loop, listener);
 	}
 	
 	private Pair<Collection<TestCase>,Collection<TestCase>> checkTests(Infinitel infinitel, MonitoringTestExecutor testExecutor, While loop,
@@ -225,7 +225,7 @@ public class InfinitelTest {
 		Collection<TestCase> failingTestsUsingLoop = fixableLoop.failingTests();
 		assertEquals(passingTests, passingTestsUsingLoop.size());
 		assertEquals(failingTests, failingTestsUsingLoop.size());
-		return new Pair<>(passingTestsUsingLoop, failingTestsUsingLoop);
+		return Pair.from(passingTestsUsingLoop, failingTestsUsingLoop);
 	}
 	
 	private Map<TestCase, Integer> checkIterations(Infinitel infinitel, MonitoringTestExecutor testExecutor, While loop, 

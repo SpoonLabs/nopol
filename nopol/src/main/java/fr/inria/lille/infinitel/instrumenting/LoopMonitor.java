@@ -4,9 +4,9 @@ import static java.lang.String.format;
 
 import java.util.List;
 
-import fr.inria.lille.commons.classes.GlobalToggle;
 import fr.inria.lille.commons.collections.Bag;
 import fr.inria.lille.commons.collections.ListLibrary;
+import fr.inria.lille.commons.utils.GlobalToggle;
 import fr.inria.lille.infinitel.loop.While;
 
 public class LoopMonitor extends GlobalToggle {

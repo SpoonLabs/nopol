@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -205,5 +206,23 @@ public class MapLibraryTest {
 		assertEquals("B", getIfAbsent(adHocMap, "b", "B"));
 		assertFalse(adHocMap.containsKey("b"));
 		assertEquals(1, adHocMap.size());
+	}
+	
+	@Test
+	public void linkedHashMapPreservesOrder() {
+		Map<String, String> linkedHashMap = MapLibrary.newLinkedHashMap();
+		linkedHashMap.put("a", "A");
+		linkedHashMap.put("0", "10");
+		linkedHashMap.put("-", "+");
+		linkedHashMap.put(".", ":");
+		linkedHashMap.put("B", "a");
+		linkedHashMap.put("A", "a");
+		List<String> linkedHashMapKeys = new LinkedList<String>(linkedHashMap.keySet());
+		assertEquals(linkedHashMapKeys.get(0), "a");
+		assertEquals(linkedHashMapKeys.get(1), "0");
+		assertEquals(linkedHashMapKeys.get(2), "-");
+		assertEquals(linkedHashMapKeys.get(3), ".");
+		assertEquals(linkedHashMapKeys.get(4), "B");
+		assertEquals(linkedHashMapKeys.get(5), "A");
 	}
 }

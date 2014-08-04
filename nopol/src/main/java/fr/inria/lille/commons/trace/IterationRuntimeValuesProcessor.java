@@ -1,7 +1,7 @@
 package fr.inria.lille.commons.trace;
 
 import spoon.reflect.code.CtCodeElement;
-import fr.inria.lille.commons.classes.Singleton;
+import fr.inria.lille.commons.utils.Singleton;
 
 public class IterationRuntimeValuesProcessor<T extends CtCodeElement> extends RuntimeValuesProcessor<T> {
 

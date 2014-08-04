@@ -1,4 +1,4 @@
-package fr.inria.lille.commons.classes;
+package fr.inria.lille.commons.utils;
 
 import java.util.concurrent.ThreadFactory;
 

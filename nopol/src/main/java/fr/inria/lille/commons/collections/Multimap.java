@@ -3,6 +3,7 @@ package fr.inria.lille.commons.collections;
 import static fr.inria.lille.commons.collections.MapLibrary.getPutIfAbsent;
 import static fr.inria.lille.commons.collections.MapLibrary.newHashMap;
 import static fr.inria.lille.commons.collections.MapLibrary.newIdentityHashMap;
+import static fr.inria.lille.commons.collections.MapLibrary.newLinkedHashMap;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,6 +25,18 @@ public class Multimap<K, V> implements Map<K, Collection<V>> {
 	
 	public static <K, V> Multimap<K, V> newLinkedHashSetMultimap() {
 		return new Multimap(newHashMap(), LinkedHashSet.class);
+	}
+	
+	public static <K, V> Multimap<K, V> newListOrderedMultimap() {
+		return new Multimap(newLinkedHashMap(), LinkedList.class);
+	}
+	
+	public static <K, V> Multimap<K, V> newSetOrderedMultimap() {
+		return new Multimap(newLinkedHashMap(), HashSet.class);
+	}
+	
+	public static <K, V> Multimap<K, V> newLinkedHashSetOrderedMultimap() {
+		return new Multimap(newLinkedHashMap(), LinkedHashSet.class);
 	}
 	
 	public static <K, V> Multimap<K, V> newIdentityHashListMultimap(int keyCapacity) {

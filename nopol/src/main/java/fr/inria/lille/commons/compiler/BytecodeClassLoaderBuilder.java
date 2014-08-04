@@ -1,6 +1,6 @@
 package fr.inria.lille.commons.compiler;
 
-import static fr.inria.lille.commons.classes.LoggerLibrary.*;
+import static fr.inria.lille.commons.utils.LoggerLibrary.*;
 import static java.lang.String.format;
 
 import java.net.URL;

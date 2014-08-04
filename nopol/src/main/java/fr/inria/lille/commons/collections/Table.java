@@ -1,15 +1,20 @@
 package fr.inria.lille.commons.collections;
 
 import static fr.inria.lille.commons.collections.MapLibrary.getPutIfAbsent;
-import static fr.inria.lille.commons.collections.MapLibrary.newHashMap;
+import static fr.inria.lille.commons.collections.MapLibrary.linkedHashMapFactory;
+import static fr.inria.lille.commons.collections.MapLibrary.newLinkedHashMap;
 
 import java.util.Collection;
 import java.util.Map;
 
+import fr.inria.lille.commons.utils.Factory;
+
 public class Table<R, C, V> {
 
 	public static <R, C, V> Table<R, C, V> newTable() {
-		return new Table<R, C, V>();
+		Map<R, Map<C, V>> emptyMap = newLinkedHashMap();
+		Factory<Map<C, V>> mapFactory = linkedHashMapFactory();
+		return new Table<R, C, V>(emptyMap, mapFactory);
 	}
 	
 	public static <R, C, V> Table<R, C, V> newTable(Collection<R> rows) {
@@ -20,8 +25,9 @@ public class Table<R, C, V> {
 		return newTable;
 	}
 	
-	private Table() {
-		table = newHashMap();
+	private Table(Map<R, Map<C, V>> emptyMap, Factory<Map<C, V>> rowMapFactory) {
+		table = emptyMap;
+		this.rowMapFactory = rowMapFactory;
 	}
 	
 	public V put(R row, C column, V value) {
@@ -56,12 +62,17 @@ public class Table<R, C, V> {
 	}
 	
 	public Map<C, V> rowCreateIfAbsent(R row) {
-		return getPutIfAbsent(table(), row, (Map<C, V>) newHashMap());
+		return getPutIfAbsent(table(), row, rowMapFactory().newInstance());
 	}
 	
 	private Map<R, Map<C, V>> table() {
 		return table;
 	}
 	
+	private Factory<Map<C, V>> rowMapFactory() {
+		return rowMapFactory;
+	}
+	
 	private Map<R, Map<C, V>> table;
+	private Factory<Map<C, V>> rowMapFactory;
 }

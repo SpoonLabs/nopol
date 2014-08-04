@@ -72,6 +72,14 @@ public class ListLibrary {
 		
 	}
 	
+	public static <T> List<String> toStringList(Collection<T> list) {
+		List<String> toStringList = newLinkedList();
+		for (T element : list) {
+			toStringList.add(element.toString());
+		}
+		return toStringList;
+	}
+	
 	public static <T> boolean isPartitionOf(List<T> queriedList, List<? extends T>... partition) {
 		boolean sameSize = queriedList.size() == CollectionLibrary.combinedSize(partition);
 		if (sameSize) {

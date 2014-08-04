@@ -10,10 +10,10 @@ import java.util.Map;
 import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 
-import fr.inria.lille.commons.classes.Singleton;
 import fr.inria.lille.commons.collections.Table;
 import fr.inria.lille.commons.suite.NullRunListener;
 import fr.inria.lille.commons.suite.TestCase;
+import fr.inria.lille.commons.utils.Singleton;
 import fr.inria.lille.infinitel.instrumenting.CompoundLoopMonitor;
 import fr.inria.lille.infinitel.loop.While;
 

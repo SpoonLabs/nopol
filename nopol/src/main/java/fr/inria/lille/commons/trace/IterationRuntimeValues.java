@@ -4,10 +4,10 @@ import static java.lang.String.format;
 
 import java.util.Map;
 
-import fr.inria.lille.commons.classes.GlobalToggle;
-import fr.inria.lille.commons.classes.Singleton;
 import fr.inria.lille.commons.collections.Table;
 import fr.inria.lille.commons.trace.collector.ValueCollector;
+import fr.inria.lille.commons.utils.GlobalToggle;
+import fr.inria.lille.commons.utils.Singleton;
 
 public class IterationRuntimeValues extends GlobalToggle {
 
