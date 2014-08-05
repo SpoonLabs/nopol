@@ -218,7 +218,7 @@ public class ValuesCollectorTest {
 	
 	@Test
 	public void unreachedVariableInInnerStaticClass() {
-		existsCodeSnippet(5, "private int unreachableFromInnterStaticClass;");
+		existsCodeSnippet(5, "private java.lang.Integer unreachableFromInnterStaticClass;");
 		testReachedVariableNames(5, "!(stringParameter.isEmpty())", "stringParameter");	
 	}
 	

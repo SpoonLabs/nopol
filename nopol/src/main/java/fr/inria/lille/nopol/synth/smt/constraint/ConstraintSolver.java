@@ -39,7 +39,7 @@ import org.smtlib.ISolver;
 import org.smtlib.SMT;
 import org.smtlib.SMT.Configuration;
 
-import fr.inria.lille.commons.synthesis.smt.SolverFactory;
+import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.synth.RepairCandidate;
 import fr.inria.lille.nopol.synth.SMTExecutionResult;
@@ -97,7 +97,7 @@ public final class ConstraintSolver {
 	
 	public RepairCandidate solve(final InputModel model) {
 		Configuration smtConfig = new SMT().smtConfig;
-		ISolver solver = SolverFactory.newSolver(smtConfig);
+		ISolver solver = SolverFactory.defaultSolver(smtConfig);
 		solver.start();
 		Synthesis synthesis = new Synthesis(smtConfig, model);
 		IScript script = smtConfig.commandFactory.script((IStringLiteral) null, synthesis.createScript());

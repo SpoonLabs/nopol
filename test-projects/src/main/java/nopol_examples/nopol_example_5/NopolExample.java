@@ -21,5 +21,5 @@ public class NopolExample {
 		return r*a;		
 	}
 	
-	private int unreachableFromInnterStaticClass;
+	private Integer unreachableFromInnterStaticClass;
 }

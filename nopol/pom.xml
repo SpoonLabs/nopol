@@ -62,7 +62,7 @@
 			<artifactId>gzoltar</artifactId>
 			<version>0.0.3</version>
 			<scope>system</scope>
-			<systemPath>${project.build.sourceDirectory}/../../../lib/com.gzoltar-0.0.3-jar-with-dependencies.jar</systemPath>
+			<systemPath>${basedir}/lib/gzoltar/com.gzoltar-0.0.3-jar-with-dependencies.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -119,6 +119,11 @@
 	</dependencyManagement>
 
 	<build>
+	   	<resources>
+     		<resource>
+       			<directory>${basedir}/lib</directory>
+     		</resource>
+   		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

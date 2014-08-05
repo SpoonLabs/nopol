@@ -79,7 +79,7 @@ public class CodeSynthesisTest {
 		Specification secondSpecification = new Specification<>(secondValues, 20);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Number.class, (List) asList(firstSpecification, secondSpecification));
 		assertTrue(genesis.isSuccessful());
-		assertEquals("(iterations)+(array.length)", genesis.returnStatement());
+		assertTrue(asList("(iterations)+(array.length)", "(array.length)+(iterations)").contains(genesis.returnStatement()));
 	}
 	
 	@Test
@@ -107,7 +107,7 @@ public class CodeSynthesisTest {
 		Specification secondSpecification = new Specification<>(secondValues, 10);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Number.class, (List) asList(firstSpecification, secondSpecification));
 		assertTrue(genesis.isSuccessful());
-		assertEquals("((isEmpty)?(iterations):(array.length))-(1)", genesis.returnStatement());
+		assertTrue(asList("(array.length)-((isEmpty)?((1)+(1)):(1))", "((isEmpty)?(iterations):(array.length))-(1)").contains(genesis.returnStatement()));
 	}
 	
 	@Test

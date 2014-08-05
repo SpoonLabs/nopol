@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import spoon.reflect.code.CtWhile;
@@ -166,7 +167,8 @@ public class InfinitelTest {
 		Map<String, Integer> expected = expectedIterationsMap(4, testNames, asList(1, 4, 1, 3, 0, 6));
 		checkIterations(infinitel, testExecutor, loop, listener.successfulTests(), listener.failedTests(), expected);
 	}
-	
+
+	@Ignore("reactivate when using Z3 as defaultSolver")
 	@Test
 	public void infinitelExample1() {
 		Map<String, Integer> expected = expectedIterationsMap(1, asList("test1", "test2", "test3", "test4", "testNegative"), asList(0, 1, 2, 3, 4));

@@ -8,28 +8,23 @@ public class NopolExampleTest {
 
 	@Test
 	public void test1(){
-		NopolExample ex = new NopolExample();
-		assertEquals(-2, ex.negate(2));
+		assertEquals(-2, new NopolExample().negate(2));
 	}
 	@Test
 	public void test2(){
-		NopolExample ex = new NopolExample();
-		assertEquals(-10, ex.negate(10));
+		assertEquals(-10, new NopolExample().negate(10));
 	}
 	@Test
 	public void test3(){
-		NopolExample ex = new NopolExample();
-		assertEquals(0, ex.negate(0));
+		assertEquals(0, new NopolExample().negate(0));
 	}
 	@Test
 	public void test4(){
-		NopolExample ex = new NopolExample();
-		assertEquals(-2, ex.negate(-2));
+		assertEquals(-2, new NopolExample().negate(-2));
 	}
 	@Test
 	public void test5(){
-		NopolExample ex = new NopolExample();
-		assertEquals(-5, ex.negate(-5));
+		assertEquals(-5, new NopolExample().negate(-5));
 	}
 
 }

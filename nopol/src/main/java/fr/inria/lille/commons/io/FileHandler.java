@@ -18,6 +18,10 @@ public class FileHandler {
 		return System.getProperty("java.class.path");
 	}
 
+	public static String currentAbsolutePath() {
+		return openFrom(".").getAbsolutePath();
+	}
+	
 	public static boolean ensurePathIsValid(String path) {
 		return openFrom(path).exists();
 	}
@@ -46,7 +50,7 @@ public class FileHandler {
 	public static File fileFrom(String path) {
 		File file = openFrom(path);
 		if (! file.isFile()) {
-			throw new RuntimeException("This is not a file: '" + path + "'");
+			throw new IllegalArgumentException("This is not a file: '" + path + "'");
 		}
 		return file;
 	}
@@ -54,7 +58,7 @@ public class FileHandler {
 	public static File directoryFrom(String path) {
 		File file = openFrom(path);
 		if (! file.isDirectory()) {
-			throw new RuntimeException("This is not a directory: '" + path + "'");
+			throw new IllegalArgumentException("This is not a directory: '" + path + "'");
 		}
 		return file;
 	}
@@ -102,7 +106,7 @@ public class FileHandler {
 		try {
 			url = openFrom(path).toURI().toURL();
 		} catch (MalformedURLException e) {
-			throw new RuntimeException("Illegal name for '" + path + "' while converting to URL");
+			throw new IllegalArgumentException("Illegal name for '" + path + "' while converting to URL");
 		}
 		return url;
 	}
@@ -122,6 +126,19 @@ public class FileHandler {
 		return folders;
 	}
 	
+	public static URL resource(String path) {
+		/* How method "AnyClass.getResource(filePath)" works:
+		 * Suppose the fully qualified name of class "AnyClass" is "any.package.AnyClass".
+		 * 	- If "filePath" starts with '/', then the path is relative to the CLASSPATH. That is "any/../"
+		 * 	- Otherwise, the path is relative to the location of "AnyClass". That is "any/package/"
+		 */
+		URL resource = FileHandler.class.getResource(path);
+		if (resource == null) {
+			throw new IllegalArgumentException("Cannot find resource: '" + path + "'");
+		}
+		return resource;
+	}
+
 	private static void log(String message) {
 		System.err.println(message);
 	}

@@ -41,6 +41,7 @@ import org.smtlib.sexpr.Parser;
 
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
+import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 
 public class SMTLib {
 
@@ -298,7 +299,7 @@ public class SMTLib {
 	}
 	
 	public IScript scriptFrom(ISymbol solverLogic, Collection<ICommand> commands, Collection<ICommand> assertions) {
-		List<ICommand> allCommands = ListLibrary.newLinkedList(setLogicCommand(solverLogic), produceModelOption());
+		List<ICommand> allCommands = ListLibrary.newLinkedList(produceModelOption(), setLogicCommand(solverLogic));
 		allCommands.addAll(commands);
 		allCommands.addAll(assertions);
 		return commandFactory().script(null, allCommands);
@@ -364,7 +365,7 @@ public class SMTLib {
 	
 	private ISolver solver() {
 		if (solver == null) {
-			solver = SolverFactory.newSolver();
+			solver = SolverFactory.defaultSolver();
 		}
 		return solver;
 	}
