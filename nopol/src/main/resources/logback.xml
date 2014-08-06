@@ -59,14 +59,49 @@
 
 	<logger name="org.apache" level="OFF" />
 
-	<logger name="spoon.SpoonClassLoader" level="OFF" additivity="true">
+	<logger name="fr.inria.lille.nopol.NoPol" level="debug" additivity="true">
+		<appender-ref ref="STDERR" />
+	</logger>
+	
+	
+	<!--.-->
+	<logger name="fr.inria.lille.commons.compiler.DynamicClassCompiler" level="debug" additivity="true">
+		<appender-ref ref="STDERR" />
+	</logger>
+	
+	<logger name="fr.inria.lille.commons.spoon.SpoonClassLoaderFactory" level="debug" additivity="true">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<logger name="fr.inria.lille.commons.suite.TestCasesListener" level="debug" additivity="true">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<logger name="fr.inria.lille.commons.suite.TestSuiteExecution" level="debug" additivity="true">
 		<appender-ref ref="STDERR" />
 	</logger>
 
-	<logger name="fr.inria.lille.nopol.NoPol" level="debug"
-		additivity="true">
+	<logger name="fr.inria.lille.infinitel.Infinitel" level="debug" additivity="true">
 		<appender-ref ref="STDERR" />
 	</logger>
+	
+	<logger name="fr.inria.lille.infinitel.loop.FixableLoopBuilder" level="debug" additivity="true">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<logger name="fr.inria.lille.infinitel.mining.LoopTestThresholdFinder" level="debug" additivity="true">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<logger name="fr.inria.lille.infinitel.mining.MonitoringTestExecutorBuilder" level="debug" additivity="true">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	
+	<logger name="fr.inria.lille.infinitel.synthesis.LoopSpecificationCollector" level="debug" additivity="true">
+		<appender-ref ref="STDOUT" />
+	</logger>
+	<!--.-->
+
 
 	<logger name="patch" level="trace" additivity="false">
 		<appender-ref ref="PATCHES" />

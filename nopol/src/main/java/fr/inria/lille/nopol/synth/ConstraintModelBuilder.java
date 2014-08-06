@@ -15,35 +15,20 @@
  */
 package fr.inria.lille.nopol.synth;
 
-import static com.google.common.collect.ImmutableSet.copyOf;
-import static com.google.common.collect.Lists.transform;
-import static com.google.common.collect.Sets.intersection;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 import java.io.File;
 import java.net.URL;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeoutException;
+import java.util.Collection;
 
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
-import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
-import fr.inria.lille.nopol.MyClassLoader;
+import fr.inria.lille.commons.spoon.SpoonClassLoaderBuilder;
+import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.nopol.NoPol;
 import fr.inria.lille.nopol.SourceLocation;
-import fr.inria.lille.nopol.SpoonClassLoader;
-import fr.inria.lille.nopol.test.junit.JUnitRunner;
-import fr.inria.lille.nopol.threads.ProvidedClassLoaderThreadFactory;
 
 /**
  * @author Favio D. DeMarco
@@ -51,48 +36,29 @@ import fr.inria.lille.nopol.threads.ProvidedClassLoaderThreadFactory;
  */
 public final class ConstraintModelBuilder {
 
-	/**
-	 * XXX FIXME TODO should be a parameter
-	 */
-	private static final long TIMEOUT_IN_SECONDS = MINUTES.toSeconds(5L);
-
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private final SpoonClassLoader spooner;
+	private final SpoonClassLoaderBuilder spooner;
 	private boolean viablePatch;
 	private final SourceLocation sourceLocation;
 	private final BugKind type;
 	private final int mapID;
 	
+	private Processor<?> processor;
+	
 	public ConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation,
-			final Processor<?> processor, SpoonClassLoader scl, final BugKind type) {
+			final Processor<?> processor, SpoonClassLoaderBuilder spooner, final BugKind type) {
 		this.sourceLocation = sourceLocation;
-		
-		if ( !NoPol.isOneBuild() )
-			scl = new SpoonClassLoader();
-		
-		
-		ProcessingManager processingManager = scl.getProcessingManager();
-		processingManager.addProcessor(processor);
+		this.type = type;
+		this.processor = processor;
 		mapID = ConditionalValueHolder.ID_Conditional;
 		
-		
-		if ( !NoPol.isOneBuild() ){
-			SpoonCompiler builder;
-			try {
-				builder = new Launcher().createCompiler(scl.getFactory());
-				builder.addInputSource(sourceFolder);
-				builder.build();
-				scl.loadClass(sourceLocation.getRootClassName());
-			} catch (Exception e) {
-				throw new IllegalStateException(e);
-			}
-		}else{
-			processingManager.process();
+		if ( NoPol.isOneBuild() ){
 			ConditionalValueHolder.ID_Conditional++;
+		} else {
+			spooner = new SpoonClassLoaderBuilder(sourceFolder);
 		}
-		this.type = type;
-		this.spooner = scl;
 		
+		this.spooner = spooner;
 	}
 
 	/**
@@ -100,53 +66,36 @@ public final class ConstraintModelBuilder {
 	 */
 	public InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
 		if (NoPol.isOneBuild()) {
-			try {
-				spooner.loadClass(sourceLocation.getRootClassName());
-			} catch (ClassNotFoundException e) {
-				throw new RuntimeException(e);
-			}
+			ConditionalValueHolder.ID_Conditional = mapID;
 			if (type == BugKind.CONDITIONAL || type == BugKind.PRECONDITION) {
 				ConditionalValueHolder.enableNextCondition();
 			}
 		}
+		ClassLoader loader = spooner.buildSpooning(sourceLocation.getRootClassName(), classpath, processor);
+		
 		InputOutputValues model = new InputOutputValues();
-		ClassLoader cl = new MyClassLoader(classpath, spooner.getClasscache());		
-		ExecutorService executor = Executors.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(cl));
-		try {
-			Result firstResult = executor.submit(
-					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model,
-							ConditionalValueHolder.booleanValue, mapID))).get(TIMEOUT_IN_SECONDS, SECONDS);
-			ConditionalValueHolder.flip();
-			Result secondResult = executor.submit(
-					new JUnitRunner(testClasses, new ResultMatrixBuilderListener(model,
-							ConditionalValueHolder.booleanValue, mapID))).get(TIMEOUT_IN_SECONDS, SECONDS);
-			if ( firstResult.getFailureCount()==0 || secondResult.getFailureCount() == 0){
-				/*
-				 * Return empty model because we don't want "true" or "false" as a solution
-				 */
-				return new InputOutputValues();
-			}
-			determineViability(firstResult, secondResult);
-		} catch (InterruptedException  e) {
-			throw new RuntimeException(e);
-		} catch (ExecutionException e) {
-			throw new RuntimeException(e);
-		} catch (TimeoutException e) {
-			logger.warn("Timeout after {} seconds. Infinite loop?", TIMEOUT_IN_SECONDS);
-			viablePatch = false;
-		} finally {
-			executor.shutdownNow();
+		Result firstResult = TestSuiteExecution.runCasesIn(testClasses, loader, new ResultMatrixBuilderListener(model,
+				ConditionalValueHolder.booleanValue, mapID));
+		ConditionalValueHolder.flip();
+		Result secondResult = TestSuiteExecution.runCasesIn(testClasses, loader, new ResultMatrixBuilderListener(model,
+				ConditionalValueHolder.booleanValue, mapID));
+		if ( firstResult.getFailureCount()==0 || secondResult.getFailureCount() == 0){
+			/*
+			 * Return empty model because we don't want "true" or "false" as a solution
+			 */
+			return new InputOutputValues();
 		}
+		determineViability(firstResult, secondResult);
 		return model;
 	}
 
 	private void determineViability(final Result firstResult, final Result secondResult) {
-		Set<Description> firstFailures = copyOf(transform(firstResult.getFailures(), FailureToDescription.INSTANCE));
-		Set<Description> secondFailures = copyOf(transform(secondResult.getFailures(), FailureToDescription.INSTANCE));
-		Set<Description> failingTests = intersection(firstFailures, secondFailures);
-		viablePatch = failingTests.isEmpty();
+		Collection<Description> firstFailures = TestSuiteExecution.collectDescription(firstResult.getFailures());
+		Collection<Description> secondFailures = TestSuiteExecution.collectDescription(secondResult.getFailures());
+		firstFailures.retainAll(secondFailures);
+		viablePatch = firstFailures.isEmpty();
 		if (!viablePatch) {
-			logger.debug("Failing test(s): {}", failingTests);
+			logger.debug("Failing test(s): {}", firstFailures);
 			Logger testsOutput = LoggerFactory.getLogger("tests.output");
 			testsOutput.debug("First set: \n{}", firstResult.getFailures());
 			testsOutput.debug("Second set: \n{}", secondResult.getFailures());

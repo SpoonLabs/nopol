@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import spoon.processing.AbstractProcessor;
+import spoon.processing.Processor;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
@@ -49,7 +50,7 @@ public final class DelegatingProcessor extends AbstractProcessor<CtStatement> {
 		this.predicate = instance;
 	}
 
-	public DelegatingProcessor addProcessor(final Processor processor) {
+	public DelegatingProcessor addProcessor(final Processor<CtElement> processor) {
 		this.processors.add(processor);
 		return this;
 	}
@@ -97,7 +98,7 @@ public final class DelegatingProcessor extends AbstractProcessor<CtStatement> {
 	@Override
 	public void process(final CtStatement element) {
 		for (Processor processor : this.processors) {
-			processor.process(this.getFactory(), element);
+			processor.process(element);
 		}
 		this.process = false;
 	}

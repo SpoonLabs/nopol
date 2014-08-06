@@ -22,16 +22,9 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spoon.Launcher;
-import spoon.compiler.Environment;
-import spoon.compiler.SpoonCompiler;
-import spoon.processing.ProcessingManager;
-import spoon.reflect.factory.Factory;
-import spoon.support.QueueProcessingManager;
-import spoon.support.StandardEnvironment;
-import fr.inria.lille.nopol.NoPol;
+import fr.inria.lille.commons.spoon.SpoonClassLoaderBuilder;
+import fr.inria.lille.commons.trace.RuntimeValuesProcessor;
 import fr.inria.lille.nopol.SourceLocation;
-import fr.inria.lille.nopol.SpoonClassLoader;
 import fr.inria.lille.nopol.synth.conditional.ConditionalReplacer;
 import fr.inria.lille.nopol.synth.conditional.SpoonConditionalPredicate;
 import fr.inria.lille.nopol.synth.precondition.ConditionalAdder;
@@ -45,16 +38,15 @@ public final class SynthesizerFactory {
 
 	private final File sourceFolder;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private final boolean debug = logger.isDebugEnabled();
-	private final SpoonClassLoader scl;
+	private final SpoonClassLoaderBuilder spooner;
 	private static int nbStatementsAnalysed = 0;
 
 	/**
 	 * 
 	 */
-	public SynthesizerFactory(final File sourceFolder, final SpoonClassLoader scl) {
+	public SynthesizerFactory(final File sourceFolder, final SpoonClassLoaderBuilder spooner) {
 		this.sourceFolder = sourceFolder;
-		this.scl = scl;
+		this.spooner = spooner;
 	}
 
 	public Synthesizer getFor(final SourceLocation statement) {
@@ -64,14 +56,14 @@ public final class SynthesizerFactory {
 		case CONDITIONAL:
 			processor = new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
-			processor.addProcessor(new ConditionalLoggingInstrumenter());
+			processor.addProcessor(new RuntimeValuesProcessor());
 			processor.addProcessor(new ConditionalReplacer(ConditionalValueHolder.VARIABLE_NAME));
 
 			break;
 		case PRECONDITION:
 			processor = new DelegatingProcessor(SpoonStatementPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
-			processor.addProcessor(new ConditionalLoggingInstrumenter());
+			processor.addProcessor(new RuntimeValuesProcessor());
 			processor.addProcessor(new ConditionalAdder(ConditionalValueHolder.VARIABLE_NAME)); 
 			logger.debug("No synthetizer found for {}, trying a precondition.", statement);
 			break;
@@ -80,43 +72,13 @@ public final class SynthesizerFactory {
 			return NO_OP_SYNTHESIZER;
 		}
 		nbStatementsAnalysed++;
-		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, statement, processor, scl, type);
+		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, statement, processor, spooner, type);
 		return new DefaultSynthesizer(constraintModelBuilder, statement, type, sourceFolder);
 	}
 
 	private BugKind getType(final SourceLocation rc) {
-		Factory factory;
-		Launcher l = null;
-		if (!NoPol.isOneBuild()) {
-			try {
-				l = new Launcher();
-			} catch (Exception e) {
-				throw new IllegalStateException(e);
-			}
-			Environment env = new StandardEnvironment();
-			env.setDebug(debug);
-			factory = l.createFactory(env);
-		} else {
-			factory = scl.getFactory();
-		}
-		
-		ProcessingManager processing = new QueueProcessingManager(factory);
 		BugKindDetector detector = new BugKindDetector(rc.getSourceFile(sourceFolder), rc.getLineNumber());
-		processing.addProcessor(detector);
-	
-		if (!NoPol.isOneBuild()) {
-			SpoonCompiler builder;
-			try {
-				builder = l.createCompiler(factory);
-				builder.addInputSource(sourceFolder);
-				builder.addTemplateSource(sourceFolder);
-				builder.build();
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-		
-		processing.process();
+		spooner.processClass(rc.getRootClassName(), detector);
 		return detector.getType();
 	}
 	

@@ -24,7 +24,7 @@ import java.util.Set;
 
 import org.slf4j.LoggerFactory;
 
-import spoon.reflect.code.CtArrayAccess;
+import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeSnippetStatement;
@@ -49,8 +49,6 @@ import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.declaration.ModifierKind;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import spoon.reflect.visitor.Filter;
@@ -63,7 +61,7 @@ import fr.inria.lille.nopol.synth.collector.ValuesCollector;
  * complex semantics of "static" and "final" (w.r.t. init, anonymous classes, etc.)
  * 
  */
-final class ConditionalLoggingInstrumenter implements Processor {
+final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtElement> {
 
 	private static final class VariablesInLocalScopeVisitor extends CtAbstractVisitor {
 		private final Set<CtElement> stoppers;
@@ -190,7 +188,7 @@ final class ConditionalLoggingInstrumenter implements Processor {
 	 * Adds monitoring code for both if expressions (CtIf and all statements for missing preconditions).
 	 * That's why we consider CtElement and not only CtIf
 	 */
-	public void process(final Factory factory, final CtElement statement) {
+	public void process(CtElement statement) {
 		boolean inStaticCode = hasStaticParent(statement);
 		StringBuilder snippet = new StringBuilder();
 		for (CtVariable<?> var : getVariablesInScope(statement)) {
@@ -246,7 +244,7 @@ final class ConditionalLoggingInstrumenter implements Processor {
 		
 		if (snippet.length() > 0) {
 			CtStatement target = getStatement(statement);
-			CtCodeSnippetStatement insert = factory.Code().createCodeSnippetStatement(snippet.toString());
+			CtCodeSnippetStatement insert = statement.getFactory().Code().createCodeSnippetStatement(snippet.toString());
 			target.insertBefore(insert);
 			LoggerFactory.getLogger(this.getClass()).debug("Instrumenting [{}] in\n{}", target, target.getParent());
 		}

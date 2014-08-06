@@ -20,23 +20,22 @@ import static fr.inria.lille.nopol.patch.Patch.NO_PATCH;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
+import fr.inria.lille.commons.compiler.DynamicCompilationException;
+import fr.inria.lille.commons.spoon.SpoonClassLoaderBuilder;
+import fr.inria.lille.commons.utils.TestClassesFinder;
 import fr.inria.lille.nopol.patch.Patch;
+import fr.inria.lille.nopol.patch.TestPatch;
 import fr.inria.lille.nopol.sps.SuspiciousStatement;
 import fr.inria.lille.nopol.sps.gzoltar.GZoltarSuspiciousProgramStatements;
 import fr.inria.lille.nopol.synth.ConditionalValueHolder;
 import fr.inria.lille.nopol.synth.Synthesizer;
 import fr.inria.lille.nopol.synth.SynthesizerFactory;
-import fr.inria.lille.nopol.test.junit.TestClassesFinder;
-import fr.inria.lille.nopol.test.junit.TestPatch;
 
 /**
  * @author Favio D. DeMarco
@@ -52,7 +51,7 @@ public class NoPol {
 	private final Logger patchLogger = LoggerFactory.getLogger("patch");
 	private static List<Patch> patchList = new ArrayList<>();
 	private static boolean oneBuild = true;
-	private final SpoonClassLoader scl;
+	private final SpoonClassLoaderBuilder spooner;
 	private final File sourceFolder;
 	private static boolean singlePatch = true;
 
@@ -62,29 +61,32 @@ public class NoPol {
 	 * @param classpath
 	 */
 	public NoPol(final File sourceFolder, final URL[] classpath) {
-		scl = new SpoonClassLoader();
+		spooner = new SpoonClassLoaderBuilder(sourceFolder);
 		this.classpath = classpath;
 		gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath, sourceFolder);
-		synthetizerFactory = new SynthesizerFactory(sourceFolder, scl);
+		synthetizerFactory = new SynthesizerFactory(sourceFolder, spooner);
 		testPatch = new TestPatch(sourceFolder, classpath);
 		this.sourceFolder = sourceFolder;
 	}
 
 	public List<Patch> build() {
-		String[] testClasses = new TestClassesFinder().findIn(classpath, false);			
-		if (testClasses.length == 0) {
-			System.out.printf("No test classes found in classpath: %s%n", Arrays.toString(classpath));
-			return null;
-		}
+		String[] testClasses = new TestClassesFinder().findIn(classpath, false);
+		return build(testClasses);
+	}
+	
+	public List<Patch> build(String[] testClasses) {
 		Collection<SuspiciousStatement> statements = gZoltar.sortBySuspiciousness(testClasses);
 		if (statements.isEmpty()) {
 			System.out.println("No suspicious statements found.");
 		}
+		List<Patch> patches;
 		if ( oneBuild ){
-			return solveWithOneBuild(statements, testClasses);
+			patches = solveWithOneBuild(statements, testClasses);
 		}else{
-			return solveWithMultipleBuild(statements, testClasses);
+			patches = solveWithMultipleBuild(statements, testClasses);
 		}
+		getPatchList().addAll(patches);
+		return patches;
 	}
 	
 	/*
@@ -94,18 +96,6 @@ public class NoPol {
 	 * try to find all patches
 	 */
 	private List<Patch> solveWithOneBuild(Collection<SuspiciousStatement> statements, String[] testClasses){
-		/*
-		 * Build the model
-		 */
-		try {
-			SpoonCompiler builder;
-			builder = new Launcher().createCompiler(scl.getFactory());
-			builder.addInputSource(sourceFolder);
-			builder.build();
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
-		
 		List<Synthesizer> generatedSynthesizer = createSynthesizers(statements);
 		/*
 		 * Create the static array
@@ -130,19 +120,20 @@ public class NoPol {
 	}
 	
 	private List<Patch> findPatches(List<Synthesizer> synthList, String[] testClasses){
-		/*
-		 * Try to synthesis patch
-		 */
+		List<Patch> patches = new ArrayList<Patch>();
 		for ( Synthesizer synth : synthList ){
-			Patch newRepair = synth.buildPatch(classpath, testClasses);
-			if (isOk(newRepair, testClasses)) {
-				patchList.add(newRepair);
-				if ( isSinglePatch() ){
-					return patchList;
+			try {
+				Patch newRepair = synth.buildPatch(classpath, testClasses);
+				if (isOk(newRepair, testClasses)) {
+					patches.add(newRepair);
+					if ( isSinglePatch() ){
+						break;
+					}
 				}
 			}
+			catch (DynamicCompilationException dce) {}
 		}
-		return patchList;
+		return patches;
 	}
 	
 	
@@ -154,24 +145,25 @@ public class NoPol {
 	 * try to find patch
 	 */
 	private List<Patch> solveWithMultipleBuild(Collection<SuspiciousStatement> statements, String[] testClasses){
-		
+		List<Patch> patches = new ArrayList<Patch>();
 		for (SuspiciousStatement statement : statements) {
-			if ( !statement.getSourceLocation().getContainingClassName().contains("Test")){ // Avoid modification on test cases
-				logger.debug("Analysing {}", statement);
-				Synthesizer synth = new SynthesizerFactory(sourceFolder, scl).getFor(statement.getSourceLocation());
-				Patch patch = synth.buildPatch(classpath, testClasses);
-				if (isOk(patch, testClasses)) {
-					patchList.add(patch);
-					if ( isSinglePatch() ){
-						return patchList;
-					}
-				}	
+			try {
+				if ( !statement.getSourceLocation().getContainingClassName().contains("Test")){ // Avoid modification on test cases
+					logger.debug("Analysing {}", statement);
+					Synthesizer synth = new SynthesizerFactory(sourceFolder, spooner).getFor(statement.getSourceLocation());
+					Patch patch = synth.buildPatch(classpath, testClasses);
+					if (isOk(patch, testClasses)) {
+						patches.add(patch);
+						if ( isSinglePatch() ){
+							break;
+						}
+					}	
+				}
 			}
+			catch (DynamicCompilationException dce) {}
 		}
-		return patchList;
+		return patches;
 	}
-	
-	
 
 	private boolean isOk(final Patch newRepair, final String[] testClasses) {
 		if (newRepair == NO_PATCH) {

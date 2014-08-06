@@ -112,7 +112,7 @@ public final class SolverFactory {
 
 	}
 	
-	private static Solver solver = Solver.Z3;
+	private static Solver solver = Solver.CVC4;
 	private final Configuration smtConfig;
 
 	public SolverFactory(final Configuration smtConfig) {

@@ -1,35 +1,28 @@
 package fr.inria.lille.ifmetric;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Arrays.asList;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import spoon.Launcher;
-import spoon.compiler.SpoonCompiler;
-import spoon.processing.ProcessingManager;
-import spoon.support.QueueProcessingManager;
-import fr.inria.lille.nopol.Main;
-import fr.inria.lille.nopol.SpoonClassLoader;
-import fr.inria.lille.nopol.test.junit.JUnitRunner;
-import fr.inria.lille.nopol.test.junit.TestClassesFinder;
-import fr.inria.lille.nopol.threads.ProvidedClassLoaderThreadFactory;
+import fr.inria.lille.commons.spoon.SpoonClassLoaderBuilder;
+import fr.inria.lille.commons.suite.TestSuiteExecution;
+import fr.inria.lille.commons.utils.TestClassesFinder;
+import fr.inria.lille.nopol.NopolMain;
 
 public class IfMetric {
 
-	private final String[] classpath;
+	private final URL[] classpath;
 	private static Set<IfPosition> thenStatementsExecuted = new HashSet<>();
 	private static Set<IfPosition> elseStatementsExecuted = new HashSet<>();
 	
@@ -46,7 +39,6 @@ public class IfMetric {
 	private File output2;
 	
 	private static FileWriter writer;
-	private List<URL> urls;
 
 	static final String THEN_EXECUTED_CALL = IfMetric.class.getName()
 			+ ".thenStatementExecuted(";
@@ -59,7 +51,7 @@ public class IfMetric {
 
 	public IfMetric(File sourceFolder, String[] paths) {
 		this.sourceFolder = sourceFolder;
-		this.classpath = paths;
+		this.classpath = createUrls(paths);
 		output1 = new File(sourceFolder.getAbsolutePath() + File.separatorChar+".."+File.separatorChar+"IfMetricPurAndImpur");
 		output2 = new File(sourceFolder.getAbsolutePath() + File.separatorChar+".."+File.separatorChar+"IfMetricExecutionDuringTest");
 		FileWriter writer = null;
@@ -70,6 +62,20 @@ public class IfMetric {
 			throw new RuntimeException(e);
 		}
 		IfMetric.writer = writer;
+	}
+
+	private URL[] createUrls(String[] paths) {
+		int size = paths.length;
+		URL[] urls = new URL[size];
+		for (int i = 0; i < size; i += 1) {
+			try {
+				urls[i] = new File(paths[i]).toURI().toURL();
+			} catch (MalformedURLException e) {
+				printUsage();
+				throw new RuntimeException(e);
+			}
+		}
+		return urls;
 	}
 
 	public static void main(String[] args) {
@@ -96,22 +102,8 @@ public class IfMetric {
 	}
 
 	private void run() {
-
-		urls = new ArrayList<URL>();
-		for (String path : this.classpath) {
-			try {
-				urls.add(new File(path).toURI().toURL());
-			} catch (MalformedURLException e) {
-				printUsage();
-				throw new RuntimeException(e);
-			}
-		}
-
-		String[] testClasses = new TestClassesFinder().findIn(
-				urls.toArray(new URL[urls.size()]), false);
-
+		String[] testClasses = new TestClassesFinder().findIn(classpath, false);
 		compute(testClasses);
-
 	}
 
 	
@@ -129,38 +121,16 @@ public class IfMetric {
 	}
 
 	private void compute(String[] testClasses) {
-		SpoonClassLoader scl = new SpoonClassLoader();
-		ProcessingManager processing = new QueueProcessingManager(
-				scl.getFactory());
-		processing.addProcessor(new IfCollectorProcessor());
-		processing.addProcessor(new IfCountingInstrumentingProcessor(this, scl.getFactory()));
-		scl.setSourcePath(sourceFolder);
-		SpoonCompiler builder;
-		try {
-			builder = new Launcher().createCompiler(scl.getFactory());
-			builder.addInputSource(sourceFolder);
-			builder.build();
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		}
-		processing.process();
-
+		IfCollectorProcessor collectorProcessor = new IfCollectorProcessor();
+		IfCountingInstrumentingProcessor instrumentingProcessor = new IfCountingInstrumentingProcessor(this);
+		SpoonClassLoaderBuilder builder = new SpoonClassLoaderBuilder(sourceFolder);
+		ClassLoader loader = builder.buildSpooning(modifyClass, classpath, asList(collectorProcessor, instrumentingProcessor));
 		
 		writeOutPut("ClassName.TestCaseName\t\t\tNbInpurIf\tNbPurIf");
-		try {
-			for ( String modify : modifyClass ){
-				scl.loadClass(modify);
-			}
-			ExecutorService executor = Executors
-					.newSingleThreadExecutor(new ProvidedClassLoaderThreadFactory(
-							scl));
-			executor.submit(new JUnitRunner(testClasses)).get();
-			executor.shutdown();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		System.out.println("First metric has been compute in : "+output1.getAbsoluteFile());
 		
+		TestSuiteExecution.runCasesIn(testClasses, loader);
+		
+		System.out.println("First metric has been compute in : "+output1.getAbsoluteFile());
 		
 		try {
 			writer = new FileWriter(output2);
@@ -174,7 +144,7 @@ public class IfMetric {
 	}
 
 	private static void printUsage() {
-		Main.printUsage();
+		NopolMain.printUsage();
 	}
 
 	public static void thenStatementExecuted(String className, int ifLine) {

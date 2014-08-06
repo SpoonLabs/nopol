@@ -4,7 +4,7 @@ import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
-import fr.inria.lille.nopol.synth.collector.ValuesCollector;
+import fr.inria.lille.commons.trace.RuntimeValues;
 
 final class ResultMatrixBuilderListener extends RunListener {
 
@@ -29,15 +29,15 @@ final class ResultMatrixBuilderListener extends RunListener {
 	}
 
 	private void cleanUp() {
-		ValuesCollector.clear();
+		RuntimeValues.discardCollectedValues();
 	}
 
 	/**
 	 *
 	 */
 	private void processSuccessfulRun() {
-		if (!ValuesCollector.isEmpty()) {
-			this.matrix.addValues(ValuesCollector.getValues(), this.value);
+		if (! RuntimeValues.isEmpty()) {
+			this.matrix.addValues(RuntimeValues.collectedValues(), this.value);
 		}
 	}
 

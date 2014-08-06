@@ -10,7 +10,6 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
 import spoon.support.reflect.code.CtStatementListImpl;
 /*
@@ -34,10 +33,6 @@ public class IfCountingInstrumentingProcessor extends
 		this.ifMetric = ifMetric;
 	}
 	
-	public IfCountingInstrumentingProcessor(IfMetric ifMetric, Factory factory) {
-		this.ifMetric = ifMetric;
-	}
-
 	private void instrumentIfInsideMethod(CtIf elem) {
 		
 		String className = elem.getPosition().getCompilationUnit().getMainType().getSimpleName();
@@ -112,7 +107,7 @@ public class IfCountingInstrumentingProcessor extends
 			CtStatement call_reset = getFactory().Code()
 					.createCodeSnippetStatement(snippet_reset.toString());
 
-			CtStatementList<CtStatement> list_call = new CtStatementListImpl<>();
+			CtStatementList list_call = new CtStatementListImpl<>();
 			list_call.addStatement(call_compute);
 			list_call.addStatement(call_reset);
 			/*

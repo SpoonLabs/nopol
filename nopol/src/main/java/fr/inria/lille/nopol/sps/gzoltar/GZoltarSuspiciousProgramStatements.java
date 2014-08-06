@@ -82,7 +82,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 			}
 		}
 		
-		gzoltar.setClassPaths(new ArrayList<String>(classpaths));
+		gzoltar.setClassPaths(new HashSet<String>(classpaths));
 		
 		
 		try {
@@ -94,7 +94,6 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 			if ( packageName == null ){
 				throw new RuntimeException("Could not find package to instrument.");
 			}
-			System.out.println("Package : "+packageName);
 			gzoltar.addPackageToInstrument(packageName);
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(e);
