@@ -5,6 +5,7 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
 import fr.inria.lille.commons.trace.RuntimeValues;
+import fr.inria.lille.nopol.synth.collector.ValuesCollector;
 
 final class ResultMatrixBuilderListener extends RunListener {
 
@@ -30,6 +31,7 @@ final class ResultMatrixBuilderListener extends RunListener {
 
 	private void cleanUp() {
 		RuntimeValues.discardCollectedValues();
+		ValuesCollector.clear();
 	}
 
 	/**
@@ -38,6 +40,9 @@ final class ResultMatrixBuilderListener extends RunListener {
 	private void processSuccessfulRun() {
 		if (! RuntimeValues.isEmpty()) {
 			this.matrix.addValues(RuntimeValues.collectedValues(), this.value);
+		}
+		if (! ValuesCollector.isEmpty()) {
+			this.matrix.addValues(ValuesCollector.getValues(), this.value);
 		}
 	}
 

@@ -11,9 +11,8 @@ public class JavaLibrary {
 	
 	public static String extendClasspathWith(URL[] classpaths) {
 		String newClasspath = systemClasspath();
-		String pathSepartor = pathSeparator();
 		for (URL classpath : classpaths) {
-			newClasspath += pathSepartor + classpath.getPath();
+			newClasspath += classpathSeparator() + classpath.getPath();
 		}
 		setClasspath(newClasspath);
 		return newClasspath;
@@ -23,11 +22,18 @@ public class JavaLibrary {
 		setProperty("java.class.path", newClasspath);
 	}
 	
-	public static String pathSeparator() {
+	public static Character classpathSeparator() {
 		if (javaPathSeparator == null) {
-			javaPathSeparator = Character.toString(File.pathSeparatorChar);
+			javaPathSeparator = File.pathSeparatorChar;
 		}
 		return javaPathSeparator;
+	}
+	
+	public static Character folderPathSeparator() {
+		if (javaFolderSeparator == null) {
+			javaFolderSeparator = File.separatorChar;
+		}
+		return javaFolderSeparator;
 	}
 	
 	public static String lineSeparator() {
@@ -46,5 +52,6 @@ public class JavaLibrary {
 	}
 	
 	private static String javaLineSeparator;
-	private static String javaPathSeparator; 
+	private static Character javaPathSeparator;
+	private static Character javaFolderSeparator;
 }

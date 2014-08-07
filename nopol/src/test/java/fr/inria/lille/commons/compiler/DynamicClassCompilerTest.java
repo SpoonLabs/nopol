@@ -16,6 +16,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.tools.JavaFileObject.Kind;
+
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
@@ -299,6 +301,45 @@ public class DynamicClassCompilerTest {
 		ExecutorService executorSuceeds = Executors.newSingleThreadExecutor(factoryWithClassLoader);
 		result = executorSuceeds.submit(callable).get(10L, TimeUnit.MINUTES);
 		assertEquals("NoException", result);
+	}
+	
+	@Test
+	public void virtualDependencyAddedToFileManagerBeforeCompilation() throws Exception {
+		DynamicClassCompiler dependencyCompiler = new DynamicClassCompiler();
+		String dependencyQualifiedName ="test.dynamic.compiler.dependency.Echo";
+		String dependencyCode =
+				"package test.dynamic.compiler.dependency;" +
+				"public class Echo {" +
+				"	public static String echo(String message) {" +
+				"		return \"ECHO \" + message;" +
+				"	}" +
+				"}";
+		
+		DynamicClassCompiler clientCompiler = new DynamicClassCompiler();
+		String clientQualifiedName = "test.dynamic.compiler.client.Client";
+		String clientCode =
+				"package test.dynamic.compiler.client;" +
+				"import static test.dynamic.compiler.dependency.Echo.*;" +
+				"public class Client {" +
+				"	@Override" + 
+				"	public String toString() {" +
+				"		return echo(\"response\");" +
+				"	}" +
+				"}";
+		
+		/** Compile Dependency; Create Class File and write bytes; Add it to the Client File Manager */	
+		byte[] dependencyCompilation = dependencyCompiler.javaBytecodeFor(dependencyQualifiedName, dependencyCode);
+		VirtualClassFileObject dependencyClassFile = new VirtualClassFileObject(dependencyQualifiedName, Kind.CLASS);
+		dependencyClassFile.openOutputStream().write(dependencyCompilation);
+		clientCompiler.fileManager().classFiles().put(dependencyQualifiedName, dependencyClassFile);
+		
+		/** Compilation of Client using Dependency works, because the Client File Manager finds the Dependency */
+		Map<String, String> sourceToCompile = MapLibrary.newHashMap(clientQualifiedName, clientCode);
+		Map<String, byte[]> clientCompilation = clientCompiler.javaBytecodeFor(sourceToCompile);
+		BytecodeClassLoader loader = BytecodeClassLoaderBuilder.loaderWith(clientCompilation);
+		Class<?> clientClass = loader.loadClass(clientQualifiedName);
+		Object clientInstance = clientClass.newInstance();
+		assertEquals("ECHO response", clientInstance.toString());
 	}
 	
 }

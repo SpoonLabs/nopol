@@ -65,7 +65,7 @@ public final class SourceLocation {
 			return sourceFolder; 
 		}
 		String pathToJavaFile = getRootClassName().replace('.', File.separatorChar);
-		return FileHandler.fileFrom(sourceFolder.getAbsolutePath() + pathToJavaFile + ".java");
+		return FileHandler.fileFrom(sourceFolder.getAbsolutePath() + '/' +  pathToJavaFile + ".java");
 	}
 
 	/**

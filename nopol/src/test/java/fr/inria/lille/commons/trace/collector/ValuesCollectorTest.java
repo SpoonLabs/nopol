@@ -227,18 +227,23 @@ public class ValuesCollectorTest {
 		testReachedVariableNames(2, "(fieldOfOuterClass) > (limit)", "this.limit");
 	}
 	
+	@Test
+	public void collectSubexpressionValues() {
+		testReachedVariableNames(8, "(a * b) < 100", "a", "b", "(a * b) < 100", "a * b", "100");
+	}
+	
 	private void testReachedVariableNames(int exampleNumber, String codeSnippet, String... expectedReachedVariables) {
 		CtElement firstElement = existsCodeSnippet(exampleNumber, codeSnippet);
 		assertTrue(CtCodeElement.class.isInstance(firstElement));
 		CtStatement statement = SpoonStatementLibrary.statementOf((CtCodeElement) firstElement);
-		Collection<String> reachedVariables = new RuntimeValuesProcessor<>().reachableVariableNames(statement);
+		Collection<String> reachedVariables = new RuntimeValuesProcessor<CtStatement>().reachableVariableNames(statement);
 		assertEquals(expectedReachedVariables.length, reachedVariables.size());
 		assertTrue(reachedVariables.containsAll(Arrays.asList(expectedReachedVariables)));
 	}
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private CtElement existsCodeSnippet(int exampleNumber, String codeSnippet) {
-		File sourceFile = NopolTest.example(exampleNumber).sourceFile();
+		File sourceFile = NopolTest.projectForExample(exampleNumber).sourceFile();
 		Factory model = SpoonModelLibrary.modelFor(sourceFile);
 		Filter filter = new CodeSnippetFilter(sourceFile, codeSnippet);
 		List<CtElement> elements = SpoonElementLibrary.filteredElements(model, filter);

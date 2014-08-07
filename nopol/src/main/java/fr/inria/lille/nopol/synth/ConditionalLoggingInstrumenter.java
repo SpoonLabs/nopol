@@ -61,7 +61,7 @@ import fr.inria.lille.nopol.synth.collector.ValuesCollector;
  * complex semantics of "static" and "final" (w.r.t. init, anonymous classes, etc.)
  * 
  */
-final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtElement> {
+public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtElement> {
 
 	private static final class VariablesInLocalScopeVisitor extends CtAbstractVisitor {
 		private final Set<CtElement> stoppers;

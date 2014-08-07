@@ -19,6 +19,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Collection;
 
+import fr.inria.lille.commons.collections.ArrayLibrary;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.io.FileHandler;
 import fr.inria.lille.commons.io.JavaLibrary;
@@ -52,7 +53,7 @@ public class Main {
 	}
 	
 	private void executeNopol(String[] args) {
-		NopolMain.main(args);
+		NopolMain.main(ArrayLibrary.subarray(args, 1, args.length));
 	}
 
     private void executeInfinitel(File sourceFile, URL[] classpath) {

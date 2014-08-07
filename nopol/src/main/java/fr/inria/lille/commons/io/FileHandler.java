@@ -112,7 +112,7 @@ public class FileHandler {
 	}
 	
 	public static URL[] classpathFrom(String classpath) {
-		List<String> folderNames = StringLibrary.split(classpath, JavaLibrary.pathSeparator());
+		List<String> folderNames = StringLibrary.split(classpath, "" + JavaLibrary.classpathSeparator());
 		URL[] folders = new URL[folderNames.size()];
 		int index = 0;
 		for (String folderName : folderNames) {
