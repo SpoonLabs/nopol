@@ -4,15 +4,18 @@ import org.smtlib.ISolver;
 import org.smtlib.SMT.Configuration;
 import org.smtlib.solvers.Solver_cvc4;
 
-import fr.inria.lille.commons.io.FileHandler;
-
 public class CVC4SolverFactory extends SolverFactory {
 
-	@Override
-	public ISolver newSolver(Configuration smtConfig) {
-		FileHandler.ensurePathIsValid(solverPath);
-		return new Solver_cvc4(smtConfig, solverPath);
+	public CVC4SolverFactory() {
+		this("lib/cvc4-1.4.1/cvc4_for_mac");
 	}
 	
-	public static final String solverPath = "lib/cvc4-1.4.1/cvc4_for_mac";
+	public CVC4SolverFactory(String solverPath) {
+		super(solverPath);
+	}
+	
+	@Override
+	protected ISolver newSolver(Configuration smtConfig) {
+		return new Solver_cvc4(smtConfig, solverPath());
+	}
 }

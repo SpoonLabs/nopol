@@ -24,6 +24,7 @@ import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.io.FileHandler;
 import fr.inria.lille.commons.io.JavaLibrary;
 import fr.inria.lille.commons.string.StringLibrary;
+import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.infinitel.Infinitel;
 import fr.inria.lille.nopol.NopolMain;
 
@@ -34,11 +35,11 @@ public class Main {
     		String repairMethod = args[0];
     		File sourceFile = FileHandler.openFrom(args[1]);
     		URL[] classpath = FileHandler.classpathFrom(args[2]);
+    		SolverFactory.setSolver(args[3], args[4]);
     		new Main(args, repairMethod, sourceFile, classpath);
     	}
     	catch (Exception e) {
     		showUsage();
-    		e.printStackTrace();
     	}
     	System.exit(0);
     }
@@ -62,10 +63,12 @@ public class Main {
 	
 	private static void showUsage() {
 		Collection<String> lines = ListLibrary.newLinkedList();
-		lines.add("$ java " + Main.class.getName() + " <repair method> <source path> <class path>");
+		lines.add("$ java " + Main.class.getName() + " <repair method> <source path> <class path> z3|cvc4 <solver-path>");
 		lines.add("<repair metod>  'nopol' or 'infinitel'");
 		lines.add("<source path>   path to file/folder containing source code to be fixed");
 		lines.add("<class path>    path(s) to folder(s) with class files (separated by colon ':')");
+		lines.add("z3|cvc4         either one of these solvers");
+		lines.add("<solver-path>   path to chosen solver binary");
 		String usage = StringLibrary.join(lines, JavaLibrary.lineSeparator());
 		System.out.println(usage);
 	}

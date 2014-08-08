@@ -365,7 +365,7 @@ public class SMTLib {
 	
 	private ISolver solver() {
 		if (solver == null) {
-			solver = SolverFactory.defaultSolver();
+			solver = SolverFactory.newDefaultSolver();
 		}
 		return solver;
 	}

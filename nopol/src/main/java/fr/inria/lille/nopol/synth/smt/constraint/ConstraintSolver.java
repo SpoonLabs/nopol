@@ -98,7 +98,7 @@ public final class ConstraintSolver {
 	
 	public RepairCandidate solve(final InputModel model) {
 		Configuration smtConfig = new SMT().smtConfig;
-		ISolver solver = SolverFactory.defaultSolver(smtConfig);
+		ISolver solver = SolverFactory.newDefaultSolver(smtConfig);
 		solver.start();
 		Synthesis synthesis = new Synthesis(smtConfig, model);
 		IScript script = smtConfig.commandFactory.script((IStringLiteral) null, synthesis.createScript());
