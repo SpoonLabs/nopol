@@ -8,12 +8,14 @@ import java.util.Map;
 import fr.inria.lille.commons.collections.Bag;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.SetLibrary;
+import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.infinitel.loop.While;
 
 public class CompoundLoopMonitor {
 	
-	public CompoundLoopMonitor(Number threshold, Map<While, LoopMonitor> submonitors) {
+	public CompoundLoopMonitor(Number threshold, Map<While, LoopMonitor> submonitors, Map<While, RuntimeValues> runtimeValues) {
 		this.threshold = threshold.intValue();
+		this.runtimeValues = runtimeValues;
 		this.submonitors = submonitors;
 	}
 
@@ -139,6 +141,18 @@ public class CompoundLoopMonitor {
 		return monitorOf(loop).enable();
 	}
 	
+	public boolean enableTracing(While loop) {
+		return runtimeValuesOf(loop).enable();
+	}
+	
+	public boolean disableTracing(While loop) {
+		return runtimeValuesOf(loop).disable();
+	}
+	
+	public RuntimeValues runtimeValuesOf(While loop) {
+		return runtimeValues().get(loop);
+	}
+	
 	public int threshold() {
 		return threshold;
 	}
@@ -151,6 +165,10 @@ public class CompoundLoopMonitor {
 		return submonitors;
 	}
 	
+	private Map<While, RuntimeValues> runtimeValues() {
+		return runtimeValues;
+	}
+	
 	@Override
 	public String toString() {
 		return format("CompoundLoopMonitor[threshold=%d][%d loops]", threshold(), submonitors().size());
@@ -158,4 +176,5 @@ public class CompoundLoopMonitor {
 	
 	private int threshold;
 	private Map<While, LoopMonitor> submonitors;
+	private Map<While, RuntimeValues> runtimeValues;
 }

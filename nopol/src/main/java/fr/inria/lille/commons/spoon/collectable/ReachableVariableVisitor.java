@@ -1,4 +1,4 @@
-package fr.inria.lille.commons.spoon;
+package fr.inria.lille.commons.spoon.collectable;
 
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.hasStaticModifier;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.inStaticCode;
@@ -116,8 +116,8 @@ public class ReachableVariableVisitor extends CtAbstractVisitor {
 		return beforeFilter;
 	}
 	
-	private BeforeLocationFilter<CtVariable<?>> beforeFilter;
 	private CtElement startingNode;
 	private boolean excludesInstanceFields;
 	private Collection<CtVariable<?>> reachedVariables;
+	private BeforeLocationFilter<CtVariable<?>> beforeFilter;
 }

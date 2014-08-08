@@ -13,65 +13,65 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.commons.trace;
+package fr.inria.lille.commons.spoon.collectable;
 
 import static java.util.Arrays.asList;
 
 import java.util.Collection;
-import java.util.List;
 
-import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCodeElement;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.CompositeFilter;
 import spoon.reflect.visitor.filter.FilteringOperator;
-import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.SetLibrary;
-import fr.inria.lille.commons.spoon.ReachableVariableVisitor;
 import fr.inria.lille.commons.spoon.filter.BeforeLocationFilter;
 import fr.inria.lille.commons.spoon.filter.InBlockFilter;
 import fr.inria.lille.commons.spoon.filter.VariableAssignmentFilter;
 import fr.inria.lille.commons.spoon.util.SpoonElementLibrary;
-import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
-import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
 
-public class RuntimeValuesProcessor<T extends CtCodeElement> extends AbstractProcessor<T> {
+public class CollectableValueFinder {
 	
-	protected CtStatement statementOf(T codeElement) {
-		return SpoonStatementLibrary.statementOf(codeElement);
+	public static CollectableValueFinder firstInstance() {
+		/* Refer to Singleton.createSingleton() */
+		return new CollectableValueFinder();
 	}
 	
-	@Override
-	public void process(T codeElement) {
-		CtStatement statement = statementOf(codeElement);
-		Collection<CtStatement> collectionStatements = valueCollectionStatements(statement);
-		insertNewStatements(statement, collectionStatements);
+	protected CollectableValueFinder() {}
+	
+	public Collection<String> findFromStatement(CtStatement statement) {
+		Collection<String> collectables = SetLibrary.newHashSet();
+		addCollectableVariables(collectables, statement);
+		return collectables;
 	}
 	
-	public void insertNewStatements(CtStatement statement, Collection<? extends CtStatement> newStatements) {
-		for (CtStatement newStatement : newStatements) {
-			statement.insertBefore(newStatement);
-		}
+	public Collection<String> findFromIf(CtIf ifStatement) {
+		Collection<String> collectables = findFromStatement(ifStatement);
+		addCollectableSubconditions(collectables, ifStatement.getCondition());
+		return collectables;
 	}
 	
-	public List<CtStatement> valueCollectionStatements(CtStatement statement) {
-		Collection<String> variableNames = reachableVariableNames(statement);
-		return asCollectionStatements(variableNames, statement);
-	}
-	public Collection<String> reachableVariableNames(CtStatement statement) {
-		Collection<CtVariable<?>> reachableVariables = reachableVariables(statement);
-		return variableNames(reachableVariables);
+	public Collection<String> findFromWhile(CtWhile loop) {
+		Collection<String> collectables = findFromStatement(loop);
+		addCollectableSubconditions(collectables, loop.getLoopingExpression());
+		return collectables;
 	}
 	
-	private Collection<CtVariable<?>> reachableVariables(CtStatement statement) {
+	private void addCollectableVariables(Collection<String> collectables, CtStatement statement) {
 		ReachableVariableVisitor variableVisitor = new ReachableVariableVisitor(statement);
-		Collection<CtVariable<?>> reachedVariables = variableVisitor.reachedVariables();
-		return variablesInitializedBefore(statement, reachedVariables);
+		Collection<CtVariable<?>> reachedVariables = variablesInitializedBefore(statement, variableVisitor.reachedVariables());
+		collectables.addAll(variableNames(reachedVariables));
+	}
+	
+	private void addCollectableSubconditions(Collection<String> collectables, CtExpression<Boolean> condition) {
+		SubconditionVisitor extractor = new SubconditionVisitor(condition);
+		collectables.addAll(extractor.subexpressions());
 	}
 	
 	protected Collection<String> variableNames(Collection<CtVariable<?>> reachedVariables) {
@@ -100,20 +100,6 @@ public class RuntimeValuesProcessor<T extends CtCodeElement> extends AbstractPro
 		return simpleName;
 	}
 	
-	protected List<CtStatement> asCollectionStatements(Collection<String> variableNames, CtStatement statement) {
-		List<CtStatement> newStatements = ListLibrary.newLinkedList();
-		for (String variableName : variableNames) {
-			String invocation = valueCollectingSnippet(variableName);
-			CtStatement newStatement = SpoonModelLibrary.newStatementFromSnippet(statement.getFactory(), invocation, statement.getParent());
-			newStatements.add(newStatement);
-		}
-		return newStatements;
-	}
-	
-	protected String valueCollectingSnippet(String variableName) {
-		return RuntimeValues.collectValueInvocation(variableName);
-	}
-
 	private Collection<CtVariable<?>> variablesInitializedBefore(CtStatement statement, Collection<CtVariable<?>> reachedVariables) {
 		Collection<CtVariable<?>> initializedVariables = SetLibrary.newHashSet();
 		for (CtVariable<?> variable : reachedVariables) {
@@ -141,5 +127,4 @@ public class RuntimeValuesProcessor<T extends CtCodeElement> extends AbstractPro
 		Filter<CtAssignment<?,?>> inBlockFilter = new CompositeFilter(FilteringOperator.UNION, inStatementBlock, inVariableDeclarationBlock);
 		return new CompositeFilter(FilteringOperator.INTERSECTION, variableAssignment, beforeLocation, inBlockFilter);
 	}
-	
 }

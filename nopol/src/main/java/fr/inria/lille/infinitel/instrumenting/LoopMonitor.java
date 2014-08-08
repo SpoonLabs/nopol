@@ -12,7 +12,7 @@ import fr.inria.lille.infinitel.loop.While;
 public class LoopMonitor extends GlobalToggle {
 
 	protected static LoopMonitor newInstance(While loop, Number threshold) {
-		int instanceNumber = allInstances().size();
+		int instanceNumber = numberOfInstances();
 		LoopMonitor newInstance = new LoopMonitor(loop, threshold, instanceNumber);
 		allInstances().add(newInstance);
 		return newInstance;
@@ -91,7 +91,6 @@ public class LoopMonitor extends GlobalToggle {
 		exitRecords = Bag.newHashBag();
 		breakRecords = Bag.newHashBag();
 		returnRecords = Bag.newHashBag();
-		LoopInstrumenter.instrument(this);
 	}
 	
 	protected While loop() {
@@ -106,7 +105,7 @@ public class LoopMonitor extends GlobalToggle {
 		return topRecord;
 	}
 	
-	protected int instanceID() {
+	protected Integer instanceID() {
 		return instanceID;
 	}
 	
@@ -157,6 +156,14 @@ public class LoopMonitor extends GlobalToggle {
 			allInstances = ListLibrary.newArrayList();
 		}
 		return allInstances;
+	}
+	
+	private static int numberOfInstances() {
+		int numberOfInstances;
+		synchronized (LoopMonitor.class) {
+			numberOfInstances = allInstances().size();
+		}
+		return numberOfInstances;
 	}
 
 	@Override

@@ -22,8 +22,9 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spoon.processing.Processor;
 import fr.inria.lille.commons.spoon.SpoonClassLoaderBuilder;
-import fr.inria.lille.commons.trace.RuntimeValuesProcessor;
+import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.synth.conditional.ConditionalReplacer;
 import fr.inria.lille.nopol.synth.conditional.SpoonConditionalPredicate;
@@ -40,7 +41,7 @@ public final class SynthesizerFactory {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final SpoonClassLoaderBuilder spooner;
 	private static int nbStatementsAnalysed = 0;
-
+	public static RuntimeValues runtimeValues = RuntimeValues.newInstance();
 	/**
 	 * 
 	 */
@@ -56,14 +57,14 @@ public final class SynthesizerFactory {
 		case CONDITIONAL:
 			processor = new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
-			processor.addProcessor(new RuntimeValuesProcessor());
+			processor.addProcessor((Processor) new ConditionalLoggingInstrumenter(runtimeValues));
 			processor.addProcessor(new ConditionalReplacer(ConditionalValueHolder.VARIABLE_NAME));
 
 			break;
 		case PRECONDITION:
 			processor = new DelegatingProcessor(SpoonStatementPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
-			processor.addProcessor(new RuntimeValuesProcessor());
+			processor.addProcessor((Processor) new ConditionalLoggingInstrumenter(runtimeValues));
 			processor.addProcessor(new ConditionalAdder(ConditionalValueHolder.VARIABLE_NAME)); 
 			logger.debug("No synthetizer found for {}, trying a precondition.", statement);
 			break;

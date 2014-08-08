@@ -10,8 +10,20 @@ public abstract class GlobalToggle {
 		disable();
 	}
 	
+	public String enableInvocation() {
+		return globallyAccessibleName() + ".enable()";
+	}
+	
+	public String disableInvocation() {
+		return globallyAccessibleName() + ".disable()";
+	}
+	
 	public String isEnabledInquiry() {
 		return globallyAccessibleName() + ".isEnabled()";
+	}
+	
+	public String isDisabledInquiry() {
+		return globallyAccessibleName() + ".isDisabled()";
 	}
 	
 	public boolean isEnabled() {

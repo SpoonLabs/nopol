@@ -11,9 +11,8 @@ import org.slf4j.Logger;
 
 import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.suite.TestCase;
-import fr.inria.lille.commons.trace.IterationRuntimeValues;
+import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
-import fr.inria.lille.commons.utils.Singleton;
 import fr.inria.lille.infinitel.loop.While;
 import fr.inria.lille.infinitel.mining.MonitoringTestExecutor;
 
@@ -28,34 +27,29 @@ public class LoopSpecificationCollector {
 		for (TestCase testCase : thresholdsByTest.keySet()) {
 			Integer testThreshold = thresholdsByTest.get(testCase);
 			executeCollectingRuntimeValues(testCase, loop, testThreshold);
-			addTestSpecifications(specifications, testThreshold);
+			RuntimeValues runtimeValues = testExecutor().monitor().runtimeValuesOf(loop);
+			addTestSpecifications(specifications, runtimeValues, testThreshold);
 		}
 		return specifications;
 	}
 
 	protected void executeCollectingRuntimeValues(TestCase testCase, While loop, Integer testThreshold) {
 		logDebug(logger, format("[Executing %s to collect runtime values in %s]", testCase.toString(), loop.toString()));
-		runtimeValues().enable();
-		testExecutor().execute(testCase, loop, testThreshold);
-		runtimeValues().disable();
+		testExecutor().executeTracing(testCase, loop, testThreshold);
 	}
 	
-	protected void addTestSpecifications(Collection<Specification<Boolean>> specifications, Integer loopEntrances) {
+	protected void addTestSpecifications(Collection<Specification<Boolean>> specifications, RuntimeValues runtimeValues, Integer loopEntrances) {
 		for (int iteration = 0; iteration < loopEntrances; iteration += 1) {
-			addTestSpecification(specifications, iteration, true);
+			addTestSpecification(specifications, runtimeValues, iteration, true);
 		}
-		if (runtimeValues().inputsSize() > loopEntrances) {
-			addTestSpecification(specifications, loopEntrances, false);
+		if (runtimeValues.numberOfTraces() > loopEntrances) {
+			addTestSpecification(specifications, runtimeValues, loopEntrances, false);
 		}
 	}
 
-	protected void addTestSpecification(Collection<Specification<Boolean>> specifications, int iterationNumber, boolean expectedOutput) {
-		Map<String, Object> values = runtimeValues().inputsFor(iterationNumber);
+	protected void addTestSpecification(Collection<Specification<Boolean>> specifications, RuntimeValues runtimeValues, int iterationNumber, boolean expectedOutput) {
+		Map<String, Object> values = runtimeValues.valuesFor(iterationNumber);
 		specifications.add(new Specification<Boolean>(values, expectedOutput));
-	}
-	
-	private IterationRuntimeValues runtimeValues() {
-		return Singleton.of(IterationRuntimeValues.class);
 	}
 	
 	private MonitoringTestExecutor testExecutor() {

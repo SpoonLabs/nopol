@@ -8,6 +8,7 @@ import spoon.reflect.declaration.CtMethod;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonReferenceLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
+import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.infinitel.loop.While;
 
 public class CompoundLoopMonitorBuilder extends AbstractProcessor<CtWhile> {
@@ -15,6 +16,7 @@ public class CompoundLoopMonitorBuilder extends AbstractProcessor<CtWhile> {
 	public CompoundLoopMonitorBuilder(int threshold) {
 		this.threshold = threshold;
 		submonitors = MapLibrary.newHashMap();
+		runtimeValues = MapLibrary.newHashMap();
 	}
 	
 	@Override
@@ -30,11 +32,17 @@ public class CompoundLoopMonitorBuilder extends AbstractProcessor<CtWhile> {
 	public void process(CtWhile loopStatement) {
 		While loop = new While(loopStatement);
 		LoopMonitor loopMonitor = LoopMonitor.newInstance(loop, threshold());
+		RuntimeValues newRuntimeValues = RuntimeValues.newInstance();
 		submonitors().put(loop, loopMonitor);
+		runtimeValues().put(loop, newRuntimeValues);
+		LoopInstrumenter.instrument(loopMonitor, newRuntimeValues);
 	}
 	
 	public CompoundLoopMonitor result() {
-		return new CompoundLoopMonitor(threshold(), submonitors());
+		if (newMonitor == null) {
+			newMonitor = new CompoundLoopMonitor(threshold(), submonitors(), runtimeValues());
+		}
+		return newMonitor;
 	}
 	
 	private int threshold() {
@@ -45,6 +53,12 @@ public class CompoundLoopMonitorBuilder extends AbstractProcessor<CtWhile> {
 		return submonitors;
 	}
 	
+	private Map<While, RuntimeValues> runtimeValues() {
+		return runtimeValues;
+	}
+	
 	private int threshold;
+	private CompoundLoopMonitor newMonitor;
 	private Map<While, LoopMonitor> submonitors;
+	private Map<While, RuntimeValues> runtimeValues;
 }

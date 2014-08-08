@@ -1,4 +1,4 @@
-package fr.inria.lille.commons.spoon;
+package fr.inria.lille.commons.spoon.collectable;
 
 import static java.util.Arrays.asList;
 
