@@ -35,7 +35,7 @@ public class NopolTest {
 	public void example2Fix() {
 		Collection<String> failedTests = asList("test1", "test2", "test4", "test5", "test6", "test7");
 		Patch patch = test(2, 11, BugKind.CONDITIONAL, failedTests);
-		fixComparison(patch, "(a)<=(b)", "(a)<(b)");
+		fixComparison(patch, "(a)<=(b)", "(a)<(b)", "(1)<=((b - a))", "(0)<=((b - a))");
 	}
 	
 	@Test
@@ -73,12 +73,11 @@ public class NopolTest {
 		fixComparison(patch, "((intermediaire)==(0))&&((a)!=(2))");
 	}
 	
-	@Ignore
 	@Test
 	public void example8Fix() {
 		Collection<String> failedTests = asList("test_2");
 		Patch patch = test(8, 12, BugKind.CONDITIONAL, failedTests);
-		fixComparison(patch, "(a * b)<=(100)");
+		fixComparison(patch, "((a * b))<=(100)");
 	}
 
 	private Patch test(int projectNumber, int linePosition, BugKind type, Collection<String> expectedFailedTests) {
