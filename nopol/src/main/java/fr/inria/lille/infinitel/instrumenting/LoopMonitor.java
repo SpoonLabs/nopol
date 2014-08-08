@@ -159,11 +159,7 @@ public class LoopMonitor extends GlobalToggle {
 	}
 	
 	private static int numberOfInstances() {
-		int numberOfInstances;
-		synchronized (LoopMonitor.class) {
-			numberOfInstances = allInstances().size();
-		}
-		return numberOfInstances;
+		return allInstances().size();
 	}
 
 	@Override

@@ -16,13 +16,13 @@
 package fr.inria.lille.nopol.synth;
 
 import java.util.Collection;
-import java.util.List;
 
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import fr.inria.lille.commons.spoon.collectable.CollectableValueFinder;
 import fr.inria.lille.commons.trace.RuntimeValues;
+import fr.inria.lille.commons.trace.RuntimeValuesInstrumenter;
 import fr.inria.lille.commons.utils.Singleton;
 
 /**
@@ -41,10 +41,7 @@ public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtSt
 	@Override
 	public void process(CtStatement element) {
 		Collection<String> collectables = collectablesOf(element);
-		List<CtStatement> statements = runtimeValues().asCollectionStatements(collectables, element.getParent());
-		for (CtStatement statement : statements) {
-			element.insertBefore(statement);
-		}
+		RuntimeValuesInstrumenter.runtimeCollectionBefore(element, collectables, runtimeValues());
 	}
 	
 	private Collection<String> collectablesOf(CtStatement element) {

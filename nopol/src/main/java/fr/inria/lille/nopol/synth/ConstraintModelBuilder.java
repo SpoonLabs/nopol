@@ -74,11 +74,9 @@ public final class ConstraintModelBuilder {
 		ClassLoader loader = spooner.buildSpooning(sourceLocation.getRootClassName(), classpath, processor);
 		
 		InputOutputValues model = new InputOutputValues();
-		Result firstResult = TestSuiteExecution.runCasesIn(testClasses, loader, new ResultMatrixBuilderListener(model,
-				ConditionalValueHolder.booleanValue, mapID));
+		Result firstResult = TestSuiteExecution.runCasesIn(testClasses, loader, new ResultMatrixBuilderListener(model, ConditionalValueHolder.booleanValue, mapID));
 		ConditionalValueHolder.flip();
-		Result secondResult = TestSuiteExecution.runCasesIn(testClasses, loader, new ResultMatrixBuilderListener(model,
-				ConditionalValueHolder.booleanValue, mapID));
+		Result secondResult = TestSuiteExecution.runCasesIn(testClasses, loader, new ResultMatrixBuilderListener(model, ConditionalValueHolder.booleanValue, mapID));
 		if ( firstResult.getFailureCount()==0 || secondResult.getFailureCount() == 0){
 			/*
 			 * Return empty model because we don't want "true" or "false" as a solution

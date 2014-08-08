@@ -1,14 +1,13 @@
 package fr.inria.lille.nopol.synth;
 
-import java.util.Collection;
-import java.util.Map.Entry;
+import java.util.Map;
 
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
-import fr.inria.lille.commons.collections.SetLibrary;
+import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.trace.RuntimeValues;
 
 final class ResultMatrixBuilderListener extends RunListener {
@@ -52,11 +51,10 @@ final class ResultMatrixBuilderListener extends RunListener {
 	 */
 	private void processSuccessfulRun() {
 		if (! runtimeValues().isEmpty()) {
-			Collection<Entry<String, Object>> collected = SetLibrary.newHashSet();
 			for (int i = 0 ; i < runtimeValues().numberOfTraces(); i += 1) {
-				collected.addAll(runtimeValues().valuesFor(i).entrySet());
+				Map<String, Object> copy = MapLibrary.copyOf(runtimeValues().valuesFor(i));
+				this.matrix.addValues(copy.entrySet(), this.value);
 			}
-			this.matrix.addValues(collected, this.value);
 		}
 	}
 

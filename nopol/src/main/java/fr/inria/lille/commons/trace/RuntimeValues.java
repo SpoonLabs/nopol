@@ -2,16 +2,10 @@ package fr.inria.lille.commons.trace;
 
 import static java.lang.String.format;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
-import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtElement;
-import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.collections.Table;
-import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 import fr.inria.lille.commons.trace.collector.ValueCollector;
 import fr.inria.lille.commons.utils.GlobalToggle;
 
@@ -39,28 +33,20 @@ public class RuntimeValues extends GlobalToggle {
 		return format("%s.instance(%d)", getClass().getName(), instanceID());
 	}
 	
-	public List<CtStatement> asCollectionStatements(Collection<String> variableNames, CtElement parent) {
-		List<CtStatement> newStatements = ListLibrary.newLinkedList();
-		for (String variableName : variableNames) {
-			CtStatement newStatement = statementFromSnippet(parent, format(".collectValue(\"%s\", %s)", variableName, variableName));
-			newStatements.add(newStatement);
-		}
-		newStatements.add(statementFromSnippet(parent, ".advanceRow()"));
-		return newStatements;
-	}
-
-	protected CtStatement statementFromSnippet(CtElement parent, String codeSnippet) {
-		return SpoonModelLibrary.newStatementFromSnippet(parent.getFactory(), globallyAccessibleName() + codeSnippet, parent);
+	public String invocationOnCollectionOf(String variableName) {
+		return globallyAccessibleName() + format(".collectValue(\"%s\", %s)", variableName, variableName);
 	}
 	
-	public void advanceRow() {
-		setCurrentRow(currentRow() + 1);
+	public String invocationOnCollectionEnd() {
+		return globallyAccessibleName() + ".collectionEnds()";
 	}
 	
 	public void collectValue(String variableName, Object value) {
-		if (isEnabled()) {
-			ValueCollector.collectFrom(variableName, value, valueTable().rowCreateIfAbsent(currentRow()));
-		}
+		ValueCollector.collectFrom(variableName, value, valueTable().rowCreateIfAbsent(currentRow()));
+	}
+	
+	public void collectionEnds() {
+		setCurrentRow(currentRow() + 1);
 	}
 	
 	public int numberOfTraces() {
@@ -76,15 +62,12 @@ public class RuntimeValues extends GlobalToggle {
 	}
 	
 	private Table<Integer, String, Object> valueTable() {
-		if (valueTable == null) {
-			valueTable = Table.newTable();
-		}
 		return valueTable;
 	}
 	
 	protected RuntimeValues(int instanceID) {
 		this.instanceID = instanceID;
-		allInstances().put(instanceID, this);
+		valueTable = Table.newTable();
 	}
 	
 	private Integer instanceID() {
@@ -100,11 +83,7 @@ public class RuntimeValues extends GlobalToggle {
 	}
 	
 	private static int numberOfInstances() {
-		int numberOfInstances;
-		synchronized (RuntimeValues.class) {
-			numberOfInstances = allInstances().size();
-		}
-		return numberOfInstances;
+		return allInstances().size();
 	}
 	
 	private static Map<Integer, RuntimeValues> allInstances() {

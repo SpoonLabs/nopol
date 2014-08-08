@@ -1,7 +1,6 @@
 package fr.inria.lille.infinitel.instrumenting;
 
 
-import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newBlock;
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newBreak;
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newConjunctionExpression;
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newExpressionFromSnippet;
@@ -17,9 +16,7 @@ import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.insertBefo
 import static java.lang.String.format;
 
 import java.util.Collection;
-import java.util.List;
 
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
@@ -30,6 +27,7 @@ import spoon.reflect.code.CtWhile;
 import spoon.reflect.factory.Factory;
 import fr.inria.lille.commons.spoon.collectable.CollectableValueFinder;
 import fr.inria.lille.commons.trace.RuntimeValues;
+import fr.inria.lille.commons.trace.RuntimeValuesInstrumenter;
 import fr.inria.lille.commons.utils.Singleton;
 
 public class LoopInstrumenter {
@@ -42,9 +40,9 @@ public class LoopInstrumenter {
 		CtIf newIf = loopBodyWrapper(factory, astLoop);
 		appendMonitoredEvaluation(factory, newIf, loopMonitor, counterName);
 		appendMonitoredExit(factory, loopMonitor, counterName);
-		traceReachableValues(factory, collectables, runtimeValues, newIf);
 		declareEntrancesCounter(factory, astLoop, loopMonitor, counterName);
 		appendCounterIncrementation(newIf, loopMonitor, counterName);
+		traceReachableValues(collectables, runtimeValues, newIf);
 	}
 
 	private static CtIf loopBodyWrapper(Factory factory, CtWhile loop) {
@@ -82,15 +80,6 @@ public class LoopInstrumenter {
 		}
 	}
 
-	private static void traceReachableValues(Factory factory, Collection<String> collectables, RuntimeValues runtimeValues, CtIf newIf) {
-		CtBlock<?> tracingStatements = newBlock(factory);
-		CtExpression<Boolean> collectorIsEnabled = newExpressionFromSnippet(factory, runtimeValues.isEnabledInquiry(), Boolean.class);
-		CtIf tracingIf = newIf(factory, collectorIsEnabled, tracingStatements);
-		List<CtStatement> statements = runtimeValues.asCollectionStatements(collectables, tracingStatements);
-		tracingStatements.setStatements(statements);
-		insertBeforeUnderSameParent(tracingIf, newIf);
-	}
-
 	private static void declareEntrancesCounter(Factory factory, CtWhile loop, LoopMonitor loopMonitor, String counterName) {
 		CtLocalVariable<Integer> counterCreation = newLocalVariableDeclaration(factory, "int", counterName, 0, loop.getParent());
 		insertBeforeUnderSameParent(counterCreation, loop);
@@ -100,6 +89,10 @@ public class LoopInstrumenter {
 		CtStatement increment = newStatementFromSnippet(newIf.getFactory(), format("%s += 1", counterName));
 		CtStatement then = newIf.getThenStatement();
 		insertBefore(increment, then, then);
+	}
+	
+	private static void traceReachableValues(Collection<String> collectables, RuntimeValues runtimeValues, CtIf newIf) {
+		RuntimeValuesInstrumenter.runtimeCollectionBefore(newIf, collectables, runtimeValues);
 	}
 	
 	private static CollectableValueFinder collectableFinder() {
