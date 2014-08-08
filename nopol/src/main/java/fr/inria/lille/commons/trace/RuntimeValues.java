@@ -23,7 +23,7 @@ public class RuntimeValues extends GlobalToggle {
 	}
 	
 	@Override
-	protected void reset() {
+	public void reset() {
 		valueTable().clear();
 		setCurrentRow(0);
 	}

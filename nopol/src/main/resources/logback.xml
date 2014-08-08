@@ -96,10 +96,6 @@
 	<logger name="fr.inria.lille.infinitel.mining.MonitoringTestExecutorBuilder" level="debug" additivity="true">
 		<appender-ref ref="STDOUT" />
 	</logger>
-	
-	<logger name="fr.inria.lille.infinitel.synthesis.LoopSpecificationCollector" level="debug" additivity="true">
-		<appender-ref ref="STDOUT" />
-	</logger>
 	<!--.-->
 
 

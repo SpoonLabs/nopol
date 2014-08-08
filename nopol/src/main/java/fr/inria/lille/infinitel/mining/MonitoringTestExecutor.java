@@ -69,13 +69,6 @@ public class MonitoringTestExecutor {
 		return execute(testClasses, nullRunListener());
 	}
 	
-	public Result executeTracing(TestCase testCase, While loop, Number threshold) {
-		monitor().enableTracing(loop);
-		Result result = execute(testCase, loop, threshold);
-		monitor().disableTracing(loop);
-		return result;
-	}
-	
 	public Result execute(TestCase testCase, While loop, Number threshold, RunListener listener) {
 		Number oldThreshold = monitor().setThresholdOf(loop, threshold);
 		Result result = execute(testCase, loop, listener);

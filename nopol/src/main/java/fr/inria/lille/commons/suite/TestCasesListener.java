@@ -52,6 +52,7 @@ public class TestCasesListener extends RunListener {
 			logDebug(logger, format("[#%d. SUCCESS]", numberOfTests()));
 			processSuccessfulRun(testCase);
 		}
+		processTestFinished(testCase);
     }
     
     @Override
@@ -69,6 +70,10 @@ public class TestCasesListener extends RunListener {
 	}
 	
     protected void processFailedRun(TestCase testCase) {
+    	/* subclassResponsibility */
+	}
+    
+    protected void processTestFinished(TestCase testCase) {
     	/* subclassResponsibility */
 	}
     
@@ -134,5 +139,5 @@ public class TestCasesListener extends RunListener {
 	private int numberOfTests;
     private Collection<TestCase> testCases;
     private Collection<TestCase> failedTests;
-    private static Logger logger = newLoggerFor(TestCasesListener.class);
+    protected static Logger logger = newLoggerFor(TestCasesListener.class);
 }

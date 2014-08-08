@@ -1,18 +1,18 @@
 package fr.inria.lille.infinitel.synthesis;
 
-import static fr.inria.lille.commons.utils.LoggerLibrary.logDebug;
-import static fr.inria.lille.commons.utils.LoggerLibrary.newLoggerFor;
-import static java.lang.String.format;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.Map;
 
-import org.slf4j.Logger;
+import org.junit.runner.Result;
 
 import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
+import fr.inria.lille.commons.trace.SpecificationTestCasesListener;
+import fr.inria.lille.commons.utils.Function;
 import fr.inria.lille.infinitel.loop.While;
 import fr.inria.lille.infinitel.mining.MonitoringTestExecutor;
 
@@ -26,30 +26,26 @@ public class LoopSpecificationCollector {
 		Collection<Specification<Boolean>> specifications = SetLibrary.newHashSet();
 		for (TestCase testCase : thresholdsByTest.keySet()) {
 			Integer testThreshold = thresholdsByTest.get(testCase);
-			executeCollectingRuntimeValues(testCase, loop, testThreshold);
-			RuntimeValues runtimeValues = testExecutor().monitor().runtimeValuesOf(loop);
-			addTestSpecifications(specifications, runtimeValues, testThreshold);
+			addSpecificationsAfterExecution(specifications, testCase, loop, testThreshold);
 		}
 		return specifications;
 	}
 
-	protected void executeCollectingRuntimeValues(TestCase testCase, While loop, Integer testThreshold) {
-		logDebug(logger, format("[Executing %s to collect runtime values in %s]", testCase.toString(), loop.toString()));
-		testExecutor().executeTracing(testCase, loop, testThreshold);
+	protected void addSpecificationsAfterExecution(Collection<Specification<Boolean>> specifications, TestCase testCase, While loop, int testThreshold) {
+		RuntimeValues runtimeValues = testExecutor().monitor().runtimeValuesOf(loop);
+		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<Boolean>(runtimeValues, outputForEachTrace(testThreshold));
+		Result result = testExecutor().execute(testCase, loop, testThreshold, listener);
+		assertTrue("Test failure during runtime collection", result.wasSuccessful());
+		specifications.addAll(listener.specifications());
 	}
 	
-	protected void addTestSpecifications(Collection<Specification<Boolean>> specifications, RuntimeValues runtimeValues, Integer loopEntrances) {
-		for (int iteration = 0; iteration < loopEntrances; iteration += 1) {
-			addTestSpecification(specifications, runtimeValues, iteration, true);
-		}
-		if (runtimeValues.numberOfTraces() > loopEntrances) {
-			addTestSpecification(specifications, runtimeValues, loopEntrances, false);
-		}
-	}
-
-	protected void addTestSpecification(Collection<Specification<Boolean>> specifications, RuntimeValues runtimeValues, int iterationNumber, boolean expectedOutput) {
-		Map<String, Object> values = runtimeValues.valuesFor(iterationNumber);
-		specifications.add(new Specification<Boolean>(values, expectedOutput));
+	protected Function<Integer, Boolean> outputForEachTrace(final int loopEntrances) {
+		return new Function<Integer, Boolean>() {
+			@Override
+			public Boolean outputFor(Integer trace) {
+				return trace < loopEntrances;
+			}
+		};
 	}
 	
 	private MonitoringTestExecutor testExecutor() {
@@ -57,5 +53,4 @@ public class LoopSpecificationCollector {
 	}
 	
 	private MonitoringTestExecutor testExecutor;
-	private static Logger logger = newLoggerFor(LoopSpecificationCollector.class);
 }
