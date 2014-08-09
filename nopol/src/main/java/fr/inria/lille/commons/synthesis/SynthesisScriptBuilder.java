@@ -30,14 +30,10 @@ public class SynthesisScriptBuilder {
 		return smtlib;
 	}
 	
-	public ISymbol smtLogic() {
-		return SMTLib.logicAuflira();
-	}
-	
-	public IScript scriptFrom(LocationVariableContainer container, Collection<Map<String,Object>> collectedValues) {
+	public IScript scriptFrom(ISymbol logic, LocationVariableContainer container, Collection<Map<String,Object>> collectedValues) {
 		Collection<ICommand> commands = commandsFrom(container);
 		Collection<ICommand> assertions = assertionsFor(container, collectedValues);
-		return smtlib().scriptFrom(smtLogic(), commands, assertions);
+		return smtlib().scriptFrom(logic, commands, assertions);
 	}
 	
 	public Collection<ICommand> commandsFrom(LocationVariableContainer container) {

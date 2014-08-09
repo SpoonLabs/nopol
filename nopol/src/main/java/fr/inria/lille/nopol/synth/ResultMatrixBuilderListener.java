@@ -81,6 +81,6 @@ final class ResultMatrixBuilderListener extends RunListener {
 	}
 	
 	private RuntimeValues runtimeValues() {
-		return SynthesizerFactory.runtimeValues;
+		return null;
 	}
 }

@@ -1,5 +1,6 @@
 package fr.inria.lille.commons.synthesis.smt.solver;
 
+import org.smtlib.IExpr.ISymbol;
 import org.smtlib.ISolver;
 import org.smtlib.SMT;
 import org.smtlib.SMT.Configuration;
@@ -8,21 +9,18 @@ import fr.inria.lille.commons.io.FileHandler;
 
 public abstract class SolverFactory {
 
-	protected abstract ISolver newSolver(Configuration smtConfig);
+	public abstract ISymbol logic();
 
-	public SolverFactory(String solverPath) {
-		FileHandler.ensurePathIsValid(solverPath);
-		this.solverPath = solverPath;
+	public abstract ISolver newSolver(Configuration smtConfig);
+	
+	public static SolverFactory instance() {
+		return solverFactory();
 	}
 	
-	public static ISolver newDefaultSolver() {
-		return newDefaultSolver(new SMT().smtConfig);
+	public static ISymbol solverLogic() {
+		return solverFactory().logic();
 	}
-	
-	public static ISolver newDefaultSolver(Configuration smtConfig) {
-		return solverFactory().newSolver(smtConfig);
-	}
-	
+
 	public static void setSolver(String solverName, String pathToSolver) {
 		if (solverName.equalsIgnoreCase("z3")) {
 			solverFactory = new Z3SolverFactory(pathToSolver);
@@ -30,6 +28,15 @@ public abstract class SolverFactory {
 			solverFactory = new CVC4SolverFactory(pathToSolver);
 		}
 		throw new RuntimeException("Invalid solver name: " + solverName);
+	}
+	
+	public SolverFactory(String solverPath) {
+		FileHandler.ensurePathIsValid(solverPath);
+		this.solverPath = solverPath;
+	}
+	
+	public ISolver newSolver() {
+		return newSolver(new SMT().smtConfig);
 	}
 	
 	private static SolverFactory solverFactory() {

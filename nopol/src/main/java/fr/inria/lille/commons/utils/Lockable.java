@@ -1,5 +1,7 @@
 package fr.inria.lille.commons.utils;
 
+import static java.lang.String.format;
+
 public class Lockable<T> {
 
 	public Lockable(T object) {
@@ -38,6 +40,11 @@ public class Lockable<T> {
 	
 	private void setLocked(boolean value) {
 		locked = value;
+	}
+	
+	@Override
+	public String toString() {
+		return format("Lock[%s]", object().toString());
 	}
 	
 	private T object;

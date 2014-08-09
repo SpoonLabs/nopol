@@ -19,17 +19,16 @@ import static fr.inria.lille.nopol.patch.Patch.NO_PATCH;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Collection;
 
 import org.slf4j.LoggerFactory;
 
+import fr.inria.lille.commons.synthesis.CodeGenesis;
+import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
+import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.patch.StringPatch;
-import fr.inria.lille.nopol.synth.smt.SolverFactory;
-import fr.inria.lille.nopol.synth.smt.constraint.ConstraintSolver;
-import fr.inria.lille.nopol.synth.smt.model.InputModel;
-import fr.inria.lille.nopol.synth.smt.model.InputModelBuilder;
-import fr.inria.lille.nopol.synth.smt.model.Level;
 
 /**
  * @author Favio D. DeMarco
@@ -58,11 +57,11 @@ public final class DefaultSynthesizer implements Synthesizer {
 	 */
 	@Override
 	public Patch buildPatch(final URL[] classpath, final String[] testClasses) {
-		InputOutputValues data = constraintModelBuilder.buildFor(classpath, testClasses);
+		Collection<Specification<Boolean>> data = constraintModelBuilder.buildFor(classpath, testClasses);
 
 		// XXX FIXME TODO move this
 		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
-		int dataSize = data.getOutputValues().size();
+		int dataSize = data.size();
 		if (dataSize < 2) {
 			LoggerFactory.getLogger(this.getClass()).info("{} input values set(s). There are not enough tests for {} otherwise the patch would be \"true\" or \"false\"",
 					dataSize, sourceLocation);
@@ -71,27 +70,16 @@ public final class DefaultSynthesizer implements Synthesizer {
 
 		// and it should be a viable patch, ie. fix the bug
 		if (!constraintModelBuilder.isAViablePatch()) {
-			LoggerFactory.getLogger(this.getClass()).info("Changing only this statement does not solve the bug. {}",
-					sourceLocation);
+			LoggerFactory.getLogger(this.getClass()).info("Changing only this statement does not solve the bug. {}", sourceLocation);
 			return NO_PATCH;
 		}
 		nbStatementsWithAngelicValue++;
-		InputModelBuilder modelBuilder = new InputModelBuilder(data);
-		Level level = Level.CONSTANTS;
-		InputModel model = modelBuilder.buildFor(level);
-		ConstraintSolver constraintSolver = new ConstraintSolver(outputFolder, sourceLocation);
-		LoggerFactory.getLogger(this.getClass()).info("Trying "+level+"...");
-		RepairCandidate newRepair = constraintSolver.solve(model);
-		while (null == newRepair && level != SolverFactory.getCurrentSolver().getMaxLevel()) {
-			level = level.next();
-			model = modelBuilder.buildFor(level);
-			LoggerFactory.getLogger(this.getClass()).info("Trying "+level+"...");
-			newRepair = constraintSolver.solve(model);
-		}
-		if (null == newRepair) {
+		ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis();
+		CodeGenesis genesis = synthesis.codesSynthesisedFrom(Boolean.class, data);
+		if (! genesis.isSuccessful()) {
 			return NO_PATCH;
 		}
-		return new StringPatch(newRepair.toString(), sourceLocation, type);
+		return new StringPatch(genesis.returnStatement(), sourceLocation, type);
 	}
 	
 	public static int getNbStatementsWithAngelicValue(){

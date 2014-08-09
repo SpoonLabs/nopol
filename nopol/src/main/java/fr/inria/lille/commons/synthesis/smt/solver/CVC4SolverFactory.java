@@ -1,8 +1,11 @@
 package fr.inria.lille.commons.synthesis.smt.solver;
 
+import org.smtlib.IExpr.ISymbol;
 import org.smtlib.ISolver;
 import org.smtlib.SMT.Configuration;
 import org.smtlib.solvers.Solver_cvc4;
+
+import fr.inria.lille.commons.synthesis.smt.SMTLib;
 
 public class CVC4SolverFactory extends SolverFactory {
 
@@ -15,7 +18,12 @@ public class CVC4SolverFactory extends SolverFactory {
 	}
 	
 	@Override
-	protected ISolver newSolver(Configuration smtConfig) {
+	public ISolver newSolver(Configuration smtConfig) {
 		return new Solver_cvc4(smtConfig, solverPath());
+	}
+
+	@Override
+	public ISymbol logic() {
+		return SMTLib.logicAuflira();
 	}
 }

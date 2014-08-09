@@ -55,7 +55,7 @@ public class NopolTest {
 	public void example5Fix() {
 		Collection<String> failedTests = asList("test4", "test5");
 		Patch patch = test(5, 20, BugKind.PRECONDITION, failedTests);
-		fixComparison(patch, "(-1)<=(a)", "(1)<=(a)", "(r)<=(a)", "(-1)<(a)");
+		fixComparison(patch, "(-1)<=(a)", "(1)<=(a)", "(r)<=(a)", "(-1)<(a)", "(0)<=(a)");
 	}
 	
 	@Test
@@ -70,7 +70,7 @@ public class NopolTest {
 	public void example7Fix() {
 		Collection<String> failedTests = asList("test1");
 		Patch patch = test(7, 21, BugKind.CONDITIONAL, failedTests);
-		fixComparison(patch, "((intermediaire)==(0))&&((a)!=(2))");
+		fixComparison(patch, "((intermediaire)==(0))&&((a)!=((1)+(1)))");
 	}
 	
 	@Test

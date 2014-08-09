@@ -41,7 +41,6 @@ public final class SynthesizerFactory {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final SpoonClassLoaderBuilder spooner;
 	private static int nbStatementsAnalysed = 0;
-	public static RuntimeValues runtimeValues = RuntimeValues.newInstance();
 	/**
 	 * 
 	 */
@@ -53,8 +52,10 @@ public final class SynthesizerFactory {
 	public Synthesizer getFor(final SourceLocation statement) {
 		DelegatingProcessor processor;
 		BugKind type = getType(statement);
+		RuntimeValues runtimeValues;
 		switch (type) {
 		case CONDITIONAL:
+			runtimeValues = RuntimeValues.newInstance();
 			processor = new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
 			processor.addProcessor((Processor) new ConditionalLoggingInstrumenter(runtimeValues));
@@ -62,6 +63,7 @@ public final class SynthesizerFactory {
 
 			break;
 		case PRECONDITION:
+			runtimeValues = RuntimeValues.newInstance();
 			processor = new DelegatingProcessor(SpoonStatementPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
 			processor.addProcessor((Processor) new ConditionalLoggingInstrumenter(runtimeValues));
@@ -73,7 +75,7 @@ public final class SynthesizerFactory {
 			return NO_OP_SYNTHESIZER;
 		}
 		nbStatementsAnalysed++;
-		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, statement, processor, spooner, type);
+		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, runtimeValues, statement, processor, spooner, type);
 		return new DefaultSynthesizer(constraintModelBuilder, statement, type, sourceFolder);
 	}
 

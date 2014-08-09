@@ -45,6 +45,11 @@ public class SpoonModelLibrary {
 		return factory;
 	}
 	
+	public static <T extends CtElement> T clone(T toBeCloned) {
+		Factory factory = toBeCloned.getFactory();
+		return factory.Core().clone(toBeCloned);
+	}
+	
 	public static CtBreak newBreak(Factory factory) {
 		return factory.Core().createBreak();
 	}

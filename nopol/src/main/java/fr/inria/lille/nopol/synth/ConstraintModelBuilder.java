@@ -25,8 +25,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.processing.Processor;
+import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.spoon.SpoonClassLoaderBuilder;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
+import fr.inria.lille.commons.trace.RuntimeValues;
+import fr.inria.lille.commons.trace.Specification;
+import fr.inria.lille.commons.trace.SpecificationTestCasesListener;
+import fr.inria.lille.commons.utils.Function;
 import fr.inria.lille.nopol.NoPol;
 import fr.inria.lille.nopol.SourceLocation;
 
@@ -44,8 +49,9 @@ public final class ConstraintModelBuilder {
 	private final int mapID;
 	
 	private Processor<?> processor;
+	private RuntimeValues runtimeValues;
 	
-	public ConstraintModelBuilder(final File sourceFolder, final SourceLocation sourceLocation,
+	public ConstraintModelBuilder(final File sourceFolder, RuntimeValues runtimeValues, final SourceLocation sourceLocation,
 			final Processor<?> processor, SpoonClassLoaderBuilder spooner, final BugKind type) {
 		this.sourceLocation = sourceLocation;
 		this.type = type;
@@ -57,14 +63,15 @@ public final class ConstraintModelBuilder {
 		} else {
 			spooner = new SpoonClassLoaderBuilder(sourceFolder);
 		}
-		
+		this.runtimeValues = runtimeValues;
 		this.spooner = spooner;
 	}
 
 	/**
 	 * @see fr.inria.lille.nopol.synth.ConstraintModelBuilder#buildFor(java.net.URL[], java.lang.String[])
 	 */
-	public InputOutputValues buildFor(final URL[] classpath, final String[] testClasses) {
+	public Collection<Specification<Boolean>> buildFor(final URL[] classpath, final String[] testClasses) {
+		Collection<Specification<Boolean>> specifications = SetLibrary.newHashSet();
 		if (NoPol.isOneBuild()) {
 			ConditionalValueHolder.ID_Conditional = mapID;
 			if (type == BugKind.CONDITIONAL || type == BugKind.PRECONDITION) {
@@ -72,21 +79,26 @@ public final class ConstraintModelBuilder {
 			}
 		}
 		ClassLoader loader = spooner.buildSpooning(sourceLocation.getRootClassName(), classpath, processor);
-		
-		InputOutputValues model = new InputOutputValues();
-		Result firstResult = TestSuiteExecution.runCasesIn(testClasses, loader, new ResultMatrixBuilderListener(model, ConditionalValueHolder.booleanValue, mapID));
+		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<Boolean>(runtimeValues, outputForEachTrace());
+		Result firstResult = TestSuiteExecution.runCasesIn(testClasses, loader, listener);
 		ConditionalValueHolder.flip();
-		Result secondResult = TestSuiteExecution.runCasesIn(testClasses, loader, new ResultMatrixBuilderListener(model, ConditionalValueHolder.booleanValue, mapID));
+		Result secondResult = TestSuiteExecution.runCasesIn(testClasses, loader, listener);
 		if ( firstResult.getFailureCount()==0 || secondResult.getFailureCount() == 0){
-			/*
-			 * Return empty model because we don't want "true" or "false" as a solution
-			 */
-			return new InputOutputValues();
+			return specifications;
 		}
 		determineViability(firstResult, secondResult);
-		return model;
+		return listener.specifications();
 	}
 
+	private Function<Integer, Boolean> outputForEachTrace() {
+		return new Function<Integer, Boolean>() {
+			@Override
+			public Boolean outputFor(Integer trace) {
+				return ConditionalValueHolder.booleanValue;
+			}
+		};
+	}
+	
 	private void determineViability(final Result firstResult, final Result secondResult) {
 		Collection<Description> firstFailures = TestSuiteExecution.collectDescription(firstResult.getFailures());
 		Collection<Description> secondFailures = TestSuiteExecution.collectDescription(secondResult.getFailures());

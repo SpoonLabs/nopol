@@ -26,6 +26,8 @@ public class TestCasesListener extends RunListener {
 
 	@Override
     public void testRunStarted(Description description) throws Exception {
+		allTests().clear();
+		failedTests().clear();
 		processBeforeRun();
 	}
 	

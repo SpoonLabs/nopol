@@ -5,13 +5,28 @@ import static fr.inria.lille.commons.string.StringLibrary.join;
 import static java.util.Arrays.asList;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.inria.lille.commons.collections.ListLibrary;
+
 
 public class LoggerLibrary {
 
+	public static void logCollection(Logger logger, Collection<? extends Object> elements) {
+		logCollection(logger, "", elements);
+	}
+	
+	public static void logCollection(Logger logger, String title, Collection<? extends Object> elements) {
+		List<String> stringList = ListLibrary.toStringList(elements);
+		if (title.length() > 0) {
+			stringList.add(0, title);
+		}
+		logDebug(logger, stringList);
+	}
+	
 	public static void logDebug(Logger logger, Collection<String> lines) {
 		logDebug(logger, lines.toArray(new String[lines.size()]));
 	}

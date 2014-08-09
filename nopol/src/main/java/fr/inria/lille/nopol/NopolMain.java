@@ -362,19 +362,12 @@ public class NopolMain {
 
 	private final File sourceFolder;
 
-	/**
-	 * 
-	 */
 	private NopolMain(final File sourceFolder, final String[] classpath) {
 		this.sourceFolder = checkNotNull(sourceFolder);
 		this.classpath = checkNotNull(classpath);
-		
-		
-		
 	}
 
 	void run() {
-
 		List<URL> urls = new ArrayList<URL>();
 		for (String path : this.classpath) {
 			try {
@@ -384,8 +377,6 @@ public class NopolMain {
 				throw new RuntimeException(e);
 			}
 		}
-
-
 		new NoPol(this.sourceFolder, urls.toArray(new URL[urls.size()])).build();
 	}
 }

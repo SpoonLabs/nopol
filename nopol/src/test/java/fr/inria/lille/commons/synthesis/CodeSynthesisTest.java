@@ -21,6 +21,7 @@ import fr.inria.lille.commons.synthesis.operator.BinaryOperator;
 import fr.inria.lille.commons.synthesis.operator.Operator;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;
+import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.commons.synthesis.theory.EmptyTheory;
 import fr.inria.lille.commons.synthesis.theory.IfThenElseTheory;
 import fr.inria.lille.commons.synthesis.theory.LinearTheory;
@@ -46,8 +47,9 @@ public class CodeSynthesisTest {
 	
 	@Test
 	public void scriptResolutionWithoutComponents() {
+		
 		Collection<OperatorTheory> theories = (List) asList(new EmptyTheory());
-		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis((Map) MapLibrary.newHashMap(), theories);
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MapLibrary.newHashMap(), theories);
 		Map<String, Object> firstValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(10, 15));
 		Map<String, Object> secondValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(10, 7));
 		Specification firstSpecification = new Specification<>(firstValues, 10);
@@ -72,7 +74,7 @@ public class CodeSynthesisTest {
 	@Test
 	public void scriptResolutionWithOneTheory() {
 		Collection<OperatorTheory> theories = (List) asList(new LinearTheory());
-		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis((Map) MapLibrary.newHashMap(), theories);
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MapLibrary.newHashMap(), theories);
 		Map<String, Object> firstValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(10, 10));
 		Map<String, Object> secondValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(15, 5));
 		Specification firstSpecification = new Specification<>(firstValues, 20);
@@ -85,7 +87,7 @@ public class CodeSynthesisTest {
 	@Test
 	public void scriptResolutionWithOneTheoryBooleanOutput() {
 		Collection<OperatorTheory> theories = (List) asList(new NumberComparisonTheory());
-		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis((Map) MapLibrary.newHashMap(), theories);
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MapLibrary.newHashMap(), theories);
 		Map<String, Object> firstValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(4, 15));
 		Map<String, Object> secondValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(16, 5));
 		Map<String, Object> thirdValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(16, 16));
@@ -100,7 +102,7 @@ public class CodeSynthesisTest {
 	@Test
 	public void scriptResolutionWithTwoTheories() {
 		Collection<OperatorTheory> theories = (List) asList(new IfThenElseTheory(), new LinearTheory());
-		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis((Map) MapLibrary.newHashMap(asList("1"), asList(1)), theories);
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MapLibrary.newHashMap(asList("1"), asList(1)), theories);
 		Map<String, Object> firstValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations", "isEmpty"), asList(12, 11, true));
 		Map<String, Object> secondValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations", "isEmpty"), asList(11, 15, false));
 		Specification firstSpecification = new Specification<>(firstValues, 10);
