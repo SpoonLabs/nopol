@@ -9,7 +9,7 @@ import fr.inria.lille.commons.collections.MapLibrary;
 public class Specification<T> {
 
 	public Specification(Map<String, Object> values, T expectedOutput) {
-		this.values = MapLibrary.newHashMap(values);
+		this.values = MapLibrary.copyOf(values);
 		this.expectedOutput = expectedOutput;
 	}
 	

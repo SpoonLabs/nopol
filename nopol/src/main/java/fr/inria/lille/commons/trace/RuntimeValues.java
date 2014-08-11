@@ -2,10 +2,11 @@ package fr.inria.lille.commons.trace;
 
 import static java.lang.String.format;
 
+import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import fr.inria.lille.commons.collections.MapLibrary;
-import fr.inria.lille.commons.collections.Table;
 import fr.inria.lille.commons.trace.collector.ValueCollector;
 import fr.inria.lille.commons.utils.GlobalToggle;
 
@@ -24,8 +25,9 @@ public class RuntimeValues extends GlobalToggle {
 	
 	@Override
 	public void reset() {
-		valueTable().clear();
-		setCurrentRow(0);
+		uniqueTraces().clear();
+		setTraceNumber(0);
+		flushBuffer();
 	}
 
 	@Override
@@ -34,7 +36,8 @@ public class RuntimeValues extends GlobalToggle {
 	}
 	
 	public String invocationOnCollectionOf(String variableName) {
-		return globallyAccessibleName() + format(".collectValue(\"%s\", %s)", variableName, variableName);
+		String quoatationSafeName = variableName.replace("\"", "\\\"");
+		return globallyAccessibleName() + format(".collectValue(\"%s\", %s)", quoatationSafeName, variableName);
 	}
 	
 	public String invocationOnCollectionEnd() {
@@ -42,48 +45,66 @@ public class RuntimeValues extends GlobalToggle {
 	}
 	
 	public void collectValue(String variableName, Object value) {
-		ValueCollector.collectFrom(variableName, value, valueTable().rowCreateIfAbsent(currentRow()));
+		ValueCollector.collectFrom(variableName, value, valueBuffer());
 	}
 	
 	public void collectionEnds() {
-		setCurrentRow(currentRow() + 1);
+		if (! uniqueTraces().containsKey(valueBuffer())) {
+			uniqueTraces().put(valueBuffer(), traceNumber());
+			renewBuffer();
+		}
+		flushBuffer();
+		setTraceNumber(traceNumber() + 1);
 	}
 	
 	public int numberOfTraces() {
-		return valueTable().numberOfRows();
+		return traceNumber();
 	}
 	
 	public boolean isEmpty() {
-		return valueTable().isEmpty();
+		return uniqueTraces().isEmpty();
 	}
 	
-	public Map<String, Object> valuesFor(int traceNumber) {
-		return valueTable().row(traceNumber);
+	public Collection<Entry<Map<String, Object>, Integer>> uniqueTraceSet() {
+		return uniqueTraces().entrySet();
 	}
 	
-	private Table<Integer, String, Object> valueTable() {
-		return valueTable;
+	private Map<Map<String, Object>, Integer> uniqueTraces() {
+		return uniqueTraces;
 	}
 	
 	protected RuntimeValues(int instanceID) {
 		this.instanceID = instanceID;
-		valueTable = Table.newTable();
+		uniqueTraces = MapLibrary.newHashMap();
+		renewBuffer();
 	}
 	
 	private Integer instanceID() {
 		return instanceID;
 	}
 	
-	private int currentRow() {
-		return currentRow;
+	private int traceNumber() {
+		return traceNumber;
 	}
 	
-	private void setCurrentRow(int value) {
-		currentRow = value;
+	private void setTraceNumber(int value) {
+		traceNumber = value;
 	}
 	
 	private static int numberOfInstances() {
 		return allInstances().size();
+	}
+	
+	protected Map<String, Object> valueBuffer() {
+		return valueBuffer;
+	}
+	
+	private void renewBuffer() {
+		valueBuffer = MapLibrary.newHashMap();
+	}
+	
+	private void flushBuffer() {
+		valueBuffer().clear();
 	}
 	
 	private static Map<Integer, RuntimeValues> allInstances() {
@@ -94,7 +115,8 @@ public class RuntimeValues extends GlobalToggle {
 	}
 	
 	private int instanceID;
-	private int currentRow;
-	private Table<Integer, String, Object> valueTable;
+	private int traceNumber;
+	private Map<String, Object> valueBuffer;
+	private Map<Map<String, Object>, Integer> uniqueTraces;
 	private static Map<Integer, RuntimeValues> allInstances;
 }

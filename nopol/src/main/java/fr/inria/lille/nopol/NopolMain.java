@@ -32,6 +32,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.inria.lille.commons.io.JavaLibrary;
 import fr.inria.lille.ifmetric.IfMetric;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.synth.DefaultSynthesizer;
@@ -57,6 +58,23 @@ public class NopolMain {
 	private static final int ERR_DEFAULT = 1;
 	private static final int ERR_NO_ANGELIC_VALUE = 2;
 	private static final int ERR_NO_SYNTHESIS = 3;
+	
+	
+	public static void nopolLaunch(File sourceFile, URL[] classpath, boolean oneBuild, String[] args) {
+		JavaLibrary.extendClasspathWith(classpath);
+		NoPol.setOneBuild(oneBuild);
+		NoPol nopol = new NoPol(sourceFile, classpath);
+		List<Patch> patches;
+		if (args.length > 0) {
+			patches = nopol.build(args);
+		} else {
+			patches = nopol.build();
+		}
+		for (Patch patch : patches) {
+			System.err.println("[PATCH FOUND: " + patch + "]");
+		}
+	}
+	
 	
 	/**
 	 * @param args

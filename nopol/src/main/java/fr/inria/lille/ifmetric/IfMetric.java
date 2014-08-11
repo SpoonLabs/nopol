@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import fr.inria.lille.commons.spoon.SpoonClassLoaderBuilder;
+import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.commons.utils.TestClassesFinder;
 import fr.inria.lille.nopol.NopolMain;
@@ -123,8 +123,8 @@ public class IfMetric {
 	private void compute(String[] testClasses) {
 		IfCollectorProcessor collectorProcessor = new IfCollectorProcessor();
 		IfCountingInstrumentingProcessor instrumentingProcessor = new IfCountingInstrumentingProcessor(this);
-		SpoonClassLoaderBuilder builder = new SpoonClassLoaderBuilder(sourceFolder);
-		ClassLoader loader = builder.buildSpooning(modifyClass, classpath, asList(collectorProcessor, instrumentingProcessor));
+		SpoonedProject project = new SpoonedProject(sourceFolder, classpath);
+		ClassLoader loader = project.processedAndDumpedToClassLoader(modifyClass, asList(collectorProcessor, instrumentingProcessor));
 		
 		writeOutPut("ClassName.TestCaseName\t\t\tNbInpurIf\tNbPurIf");
 		

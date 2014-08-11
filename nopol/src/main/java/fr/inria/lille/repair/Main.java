@@ -17,9 +17,9 @@ package fr.inria.lille.repair;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 
-import fr.inria.lille.commons.collections.ArrayLibrary;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.io.FileHandler;
 import fr.inria.lille.commons.io.JavaLibrary;
@@ -39,6 +39,7 @@ public class Main {
     		new Main(args, repairMethod, sourceFile, classpath);
     	}
     	catch (Exception e) {
+    		e.printStackTrace();
     		showUsage();
     	}
     	System.exit(0);
@@ -46,20 +47,12 @@ public class Main {
     
 	private Main(String[] args, String repairMethod, File sourceFile, URL[] classpaths) {
 		if (repairMethod.equalsIgnoreCase("nopol")) {
-			executeNopol(args);
+			NopolMain.nopolLaunch(sourceFile, classpaths, false, Arrays.copyOfRange(args, 5, args.length));
 		}
 		else if (repairMethod.equalsIgnoreCase("infinitel")) {
-			executeInfinitel(sourceFile, classpaths);
+			Infinitel.run(sourceFile, classpaths);
 		}
 	}
-	
-	private void executeNopol(String[] args) {
-		NopolMain.main(ArrayLibrary.subarray(args, 1, args.length));
-	}
-
-    private void executeInfinitel(File sourceFile, URL[] classpath) {
-    	Infinitel.run(sourceFile, classpath);
-    }
 	
 	private static void showUsage() {
 		Collection<String> lines = ListLibrary.newLinkedList();

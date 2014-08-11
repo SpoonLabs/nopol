@@ -13,7 +13,6 @@ import static fr.inria.lille.commons.collections.MapLibrary.newLinkedHashMap;
 import static fr.inria.lille.commons.collections.MapLibrary.onlyValueIs;
 import static fr.inria.lille.commons.collections.MapLibrary.putMany;
 import static fr.inria.lille.commons.collections.MapLibrary.sameContent;
-import static fr.inria.lille.commons.collections.MapLibrary.toStringMap;
 import static fr.inria.lille.commons.collections.MapLibrary.valuesAreIn;
 import static fr.inria.lille.commons.collections.MapLibrary.valuesParsedAsInteger;
 import static java.util.Arrays.asList;
@@ -33,19 +32,6 @@ import java.util.Map;
 import org.junit.Test;
 
 public class MapLibraryTest {
-
-	@Test
-	public void convertKeysToStringInMap() {
-		Map<Integer, Boolean> map = newHashMap();
-		map.put(0, false);
-		map.put(1, true);
-		Map<String, Boolean> stringMap = toStringMap(map);
-		assertEquals(2, stringMap.keySet().size());
-		assertTrue(stringMap.containsKey("0"));
-		assertEquals(false, stringMap.get("0"));
-		assertTrue(stringMap.containsKey("1"));
-		assertEquals(true, stringMap.get("1"));
-	}
 	
 	@Test
 	public void putValueInManyKeys() {

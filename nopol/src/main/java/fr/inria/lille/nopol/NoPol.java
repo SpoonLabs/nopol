@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.inria.lille.commons.compiler.DynamicCompilationException;
-import fr.inria.lille.commons.spoon.SpoonClassLoaderBuilder;
+import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.utils.TestClassesFinder;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.patch.TestPatch;
@@ -51,7 +51,7 @@ public class NoPol {
 	private final Logger patchLogger = LoggerFactory.getLogger("patch");
 	private static List<Patch> patchList = new ArrayList<>();
 	private static boolean oneBuild = true;
-	private final SpoonClassLoaderBuilder spooner;
+	private final SpoonedProject spooner;
 	private final File sourceFolder;
 	private static boolean singlePatch = true;
 
@@ -61,11 +61,11 @@ public class NoPol {
 	 * @param classpath
 	 */
 	public NoPol(final File sourceFolder, final URL[] classpath) {
-		spooner = new SpoonClassLoaderBuilder(sourceFolder);
+		spooner = new SpoonedProject(sourceFolder, classpath);
 		this.classpath = classpath;
 		gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath, sourceFolder);
 		synthetizerFactory = new SynthesizerFactory(sourceFolder, spooner);
-		testPatch = new TestPatch(sourceFolder, classpath);
+		testPatch = new TestPatch(sourceFolder, spooner);
 		this.sourceFolder = sourceFolder;
 	}
 
@@ -75,10 +75,12 @@ public class NoPol {
 	}
 	
 	public List<Patch> build(String[] testClasses) {
+		
 		Collection<SuspiciousStatement> statements = gZoltar.sortBySuspiciousness(testClasses);
 		if (statements.isEmpty()) {
 			System.out.println("No suspicious statements found.");
 		}
+		
 		List<Patch> patches;
 		if ( oneBuild ){
 			patches = solveWithOneBuild(statements, testClasses);

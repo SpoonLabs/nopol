@@ -6,6 +6,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.string.StringLibrary;
 
 public class DynamicClassCompiler {
-
+	
 	public DynamicClassCompiler() {
 		options = asList("-nowarn");
 		compiler = ToolProvider.getSystemJavaCompiler();
@@ -35,16 +36,25 @@ public class DynamicClassCompiler {
 	}
 
 	public synchronized byte[] javaBytecodeFor(String qualifiedName, String sourceContent) {
+		return javaBytecodeFor(qualifiedName, sourceContent, new HashMap<String, byte[]>());
+	}
+	
+	public synchronized byte[] javaBytecodeFor(String qualifiedName, String sourceContent, Map<String, byte[]> compiledDependencies) {
 		Map<String, String> adHocMap = MapLibrary.newHashMap(qualifiedName, sourceContent);
-		return javaBytecodeFor(adHocMap).get(qualifiedName);
+		return javaBytecodeFor(adHocMap, compiledDependencies).get(qualifiedName);
 	}
 	
 	public synchronized Map<String, byte[]> javaBytecodeFor(Map<String, String> qualifiedNameAndContent) {
+		return javaBytecodeFor(qualifiedNameAndContent, new HashMap<String, byte[]>());
+	}
+	
+	public synchronized Map<String, byte[]> javaBytecodeFor(Map<String, String> qualifiedNameAndContent, Map<String, byte[]> compiledDependencies) {
 		logDebug(logger, format("[Compiling %d source files]", qualifiedNameAndContent.size()));
 		Collection<JavaFileObject> units = addCompilationUnits(qualifiedNameAndContent);
+		fileManager().addCompiledClasses(compiledDependencies);
 		CompilationTask task = compiler().getTask(null, fileManager(), diagnostics(), options(), null, units);
 		runCompilationTask(task);
-		Map<String, byte[]> bytecodes = collectBytecodes(fileManager().classFiles());
+		Map<String, byte[]> bytecodes = collectBytecodes(qualifiedNameAndContent);
 		logDebug(logger, format("[Compilation finished successfully (%d classes)]", bytecodes.size()));
 		return bytecodes;
 	}
@@ -78,13 +88,20 @@ public class DynamicClassCompiler {
 		return success;
 	}
 	
-	private Map<String, byte[]> collectBytecodes(Map<String, VirtualClassFileObject> classFiles) {
-		Map<String, byte[]> allBytecodes = MapLibrary.newHashMap();
+	private Map<String, byte[]> collectBytecodes(Map<String, String> qualifiedNameAndContent) {
+		Map<String, byte[]> bytecodes = MapLibrary.newHashMap();
+		Map<String, VirtualClassFileObject> classFiles = fileManager().classFiles();
 		for (String qualifiedName : classFiles.keySet()) {
-			byte[] bytecodes = classFiles.get(qualifiedName).byteCodes();
-			allBytecodes.put(qualifiedName, bytecodes);
+			String topClassName = topClassName(qualifiedName);
+			if (qualifiedNameAndContent.containsKey(topClassName)) {
+				bytecodes.put(qualifiedName, classFiles.get(qualifiedName).byteCodes());
+			}
 		}
-		return allBytecodes;
+		return bytecodes;
+	}
+	
+	private String topClassName(String qualifiedName) {
+		return qualifiedName.split("[$]")[0];
 	}
 	
 	protected VirtualFileObjectManager fileManager() {

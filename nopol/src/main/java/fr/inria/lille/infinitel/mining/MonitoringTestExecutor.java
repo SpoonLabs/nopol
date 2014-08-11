@@ -43,7 +43,7 @@ public class MonitoringTestExecutor {
 	}
 	
 	public Table<While, TestCase, Integer> invocationsPerTest(Collection<While> loops, Collection<TestCase> testCases) {
-		Table<While, TestCase, Integer> invocationsPerTest = Table.newTable(loops);
+		Table<While, TestCase, Integer> invocationsPerTest = Table.newTable(loops, testCases, 0);
 		for (TestCase testCase : testCases) {
 			execute(testCase, loops);
 			for (While loop : loops) {

@@ -1,5 +1,6 @@
 package fr.inria.lille.commons.collections;
 
+import static fr.inria.lille.commons.collections.ListLibrary.addSameInstanceIfRepeated;
 import static fr.inria.lille.commons.collections.ListLibrary.firstElements;
 import static fr.inria.lille.commons.collections.ListLibrary.flatArrayList;
 import static fr.inria.lille.commons.collections.ListLibrary.flatLinkedList;
@@ -9,7 +10,6 @@ import static fr.inria.lille.commons.collections.ListLibrary.last;
 import static fr.inria.lille.commons.collections.ListLibrary.lastElements;
 import static fr.inria.lille.commons.collections.ListLibrary.newArrayList;
 import static fr.inria.lille.commons.collections.ListLibrary.newLinkedList;
-import static fr.inria.lille.commons.collections.ListLibrary.toStringList;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -135,11 +135,17 @@ public class ListLibraryTest {
 		assertEquals(list, lastElements(5, list));
 	}
 	
-	@SuppressWarnings({"unchecked"})
 	@Test
-	public void listOfStringsFromList() {
-		List<?> newList = newLinkedList('a', "B", 1, 2.0);
-		List<String> toStringList = toStringList(newList);
-		assertEquals("[a, B, 1, 2.0]", toStringList.toString());
+	public void addReusingExistingInstances() {
+		List<String> list = newLinkedList();
+		String first = "aaaa";
+		String second = first + "";
+		assertFalse(first == second);
+		list.add(first);
+		assertTrue(addSameInstanceIfRepeated(list, second));
+		assertEquals(2, list.size());
+		assertTrue(list.contains(second));
+		assertTrue(list.get(0) == first);
+		assertTrue(list.get(1) == first);
 	}
 }

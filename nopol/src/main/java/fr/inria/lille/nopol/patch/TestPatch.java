@@ -18,7 +18,6 @@ package fr.inria.lille.nopol.patch;
 import static java.util.Arrays.asList;
 
 import java.io.File;
-import java.net.URL;
 import java.util.List;
 
 import org.junit.runner.Result;
@@ -29,7 +28,8 @@ import spoon.processing.Processor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
-import fr.inria.lille.commons.spoon.SpoonClassLoaderBuilder;
+import fr.inria.lille.commons.spoon.SpoonedClass;
+import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.nopol.synth.BugKind;
 import fr.inria.lille.nopol.synth.DelegatingProcessor;
@@ -46,13 +46,14 @@ public final class TestPatch {
 
 	private static final String SPOON_DIRECTORY = File.separator + ".." + File.separator + "spooned";
 
-	private final URL[] classpath;
+	private SpoonedProject spoonedProject;
 	private final File sourceFolder;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 	
-	public TestPatch(final File sourceFolder, final URL[] classpath) {
+	public TestPatch(final File sourceFolder, SpoonedProject spoonedProject) {
 		this.sourceFolder = sourceFolder;
-		this.classpath = classpath;
+		this.spoonedProject = spoonedProject;
 	}
 
 	public static String getGeneratedPatchDirectorie(){
@@ -60,13 +61,13 @@ public final class TestPatch {
 	}
 	
 	public boolean passesAllTests(final Patch patch, final String[] testClasses) {
-		SpoonClassLoaderBuilder spooner = new SpoonClassLoaderBuilder(sourceFolder);
 		logger.info("Applying patch: {}", patch);
 		String qualifiedName = patch.getRootClassName();
+		SpoonedClass spoonedClass = spoonedProject.forked(qualifiedName);
 		List<Processor<?>> processors = asList(null, null);
 		processors.set(0, createProcessor(patch, patch.getFile(sourceFolder)));
 		processors.set(1, new JavaOutputProcessor(new File(sourceFolder, SPOON_DIRECTORY), new DefaultJavaPrettyPrinter(new StandardEnvironment())));
-		ClassLoader loader = spooner.buildSpooning(asList(qualifiedName), classpath, processors);
+		ClassLoader loader = spoonedClass.processedAndDumpedToClassLoader(processors);
 		Result result = TestSuiteExecution.runCasesIn(testClasses, loader);
 		return result.wasSuccessful();
 	}

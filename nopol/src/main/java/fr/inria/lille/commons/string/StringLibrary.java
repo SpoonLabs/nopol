@@ -1,15 +1,25 @@
 package fr.inria.lille.commons.string;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import static java.util.Arrays.asList;
 
-import fr.inria.lille.commons.collections.ListLibrary;
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class StringLibrary {
 
 	public static List<String> split(String chainedStrings, String splittingRegex) {
-		return ListLibrary.newArrayList(chainedStrings.split(splittingRegex));
+		return asList(chainedStrings.split(splittingRegex));
+	}
+	
+	public static String join(Collection<String> subStrings, Character connector) {
+		return join(subStrings, "" + connector);
 	}
 	
 	public static String join(Collection<String> subStrings, String connector) {
@@ -52,6 +62,98 @@ public class StringLibrary {
 		StringBuilder builder = new StringBuilder(length);
 		for (int index = length - 1; index >= 0; index -= 1) {
 			builder.append(string.charAt(index));
+		}
+		return builder.toString();
+	}
+	
+	public static List<String> toStringList(Collection<? extends Object> objects) {
+		return toStringList(objects, "null");
+	}
+	
+	public static List<String> toStringList(Collection<? extends Object> objects, String nullString) {
+		List<String> toStringList = new LinkedList<String>();
+		for (Object object : objects) {
+			if (object == null) {
+				toStringList.add(nullString);
+			} else {
+				toStringList.add(object.toString());
+			}
+		}
+		return toStringList;
+	}
+	
+	public static <K, V> Map<String, V> toStringMap(Map<K, V> sourceMap) {
+		Map<String, V> toStringMap = new HashMap<String, V>();
+		for (K key : sourceMap.keySet()) {
+			toStringMap.put(key.toString(), sourceMap.get(key));
+		}
+		return toStringMap;
+	}
+	
+	public static String asClasspath(URL[] urls) {
+		Collection<String> paths = new LinkedList<String>();
+		for (URL url : urls) {
+			paths.add(url.getPath());
+		}
+		return join(paths, File.pathSeparatorChar);
+	}
+	
+	public static int maximumToStringLength(Collection<? extends Object> objects, int lengthOfNullToString) {
+		int length = 0;
+		for (Object object : objects) {
+			int objectLength = lengthOfNullToString;
+			if (object != null) {
+				objectLength = object.toString().length();
+			}
+			length = Math.max(length, objectLength);
+		}
+		return length;
+	}
+	
+	public static String rightFilled(String string, int targetLength, Character filler) {
+		int difference = 0;
+		int length = string.length();
+		if (length < targetLength) {
+			difference = targetLength - length;
+		}
+		return string + repeated(filler, difference);
+	}
+	
+	public static Collection<String> rightFilled(Collection<String> strings, int targetLength, Character filler) {
+		Collection<String> filled = new ArrayList<String>(strings.size());
+		for (String string : strings) {
+			filled.add(rightFilled(string, targetLength, filler));
+		}
+		return filled;
+	}
+	
+	public static String leftFilled(String string, int targetLength, Character filler) {
+		int difference = 0;
+		int length = string.length();
+		if (length < targetLength) {
+			difference = targetLength - length;
+		}
+		return repeated(filler, difference) + string;
+	}
+	
+	public static Collection<String> leftFilled(Collection<String> strings, int targetLength, Character filler) {
+		Collection<String> filled = new ArrayList<String>(strings.size());
+		for (String string : strings) {
+			filled.add(leftFilled(string, targetLength, filler));
+		}
+		return filled;
+	}
+	
+	public static String repeated(Character character, int times) {
+		return repeated("" + character, times);
+	}
+	
+	public static String repeated(String text, int times) {
+		StringBuilder builder = new StringBuilder();
+		if (times > 0) {
+			for (int i = 0; i < times; i += 1) {
+				builder.append(text);
+			}
 		}
 		return builder.toString();
 	}

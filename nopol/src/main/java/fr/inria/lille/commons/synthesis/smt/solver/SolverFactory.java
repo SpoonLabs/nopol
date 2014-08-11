@@ -26,8 +26,9 @@ public abstract class SolverFactory {
 			solverFactory = new Z3SolverFactory(pathToSolver);
 		} else if (solverName.equalsIgnoreCase("cvc4")) {
 			solverFactory = new CVC4SolverFactory(pathToSolver);
+		} else {
+			throw new RuntimeException("Invalid solver name: " + solverName);
 		}
-		throw new RuntimeException("Invalid solver name: " + solverName);
 	}
 	
 	public SolverFactory(String solverPath) {

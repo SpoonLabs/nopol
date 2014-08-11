@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.inria.lille.adam</groupId>
 	<artifactId>nopol</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>No-Pol</name>
 	<description>Java Program Repair via Conditional Expression Replacement</description>
 	<inceptionYear>2013</inceptionYear>
@@ -66,9 +66,7 @@
 		<dependency>
 			<groupId>com.gzoltar</groupId>
 			<artifactId>gzoltar</artifactId>
-			<version>0.0.3</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/gzoltar/com.gzoltar-0.0.3-jar-with-dependencies.jar</systemPath>
+			<version>0.0.4</version>
 		</dependency>
 		<dependency>
 			<groupId>fr.inria.gforge.spoon</groupId>
@@ -114,11 +112,6 @@
 	</dependencyManagement>
 
 	<build>
-	   	<resources>
-     		<resource>
-       			<directory>${basedir}/lib</directory>
-     		</resource>
-   		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -138,7 +131,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>fr.inria.lille.main.Main</mainClass>
+							<mainClass>fr.inria.lille.repair.Main</mainClass>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 						</manifest>
@@ -184,7 +177,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>fr.inria.lille.main.Main</mainClass>
+							<mainClass>fr.inria.lille.repair.Main</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

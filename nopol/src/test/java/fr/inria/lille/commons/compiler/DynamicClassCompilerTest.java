@@ -16,8 +16,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.tools.JavaFileObject.Kind;
-
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
@@ -108,6 +106,60 @@ public class DynamicClassCompilerTest {
 		Object outerClassInstance = outerClass.newInstance();
 		Object newInstance = constructor.newInstance(outerClassInstance);
 		assertEquals("Hello from Inside!", newInstance.toString());
+	}
+	
+
+	@Test
+	public void compileDoubleNestedClass() throws Exception {
+		String qualifiedOuterName = "test.dynamic.compiler.Outer";
+		String code =
+				"package test.dynamic.compiler;" +
+				"public class Outer {" +
+				"	public class Inner {" +
+				"		public class InnerInner {" +
+				"			@Override" +
+				"			public String toString() {" +
+				"				return \"Hello from second inner class!\";" +
+				"			}" +
+				"		}" +
+				"	}" +
+				"}";
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedOuterName, code);
+		Class<?> outerClass = loader.loadClass(qualifiedOuterName);
+		Class<?>[] subClasses = outerClass.getClasses();
+		assertEquals(1, subClasses.length);
+		Class<?> innerClass = subClasses[0];
+		Class<?>[] subsubClasses = innerClass.getClasses();
+		Constructor<?> innerConstructor = innerClass.getDeclaredConstructor(outerClass);
+		Object innerInstance = innerConstructor.newInstance(outerClass.newInstance());
+		assertEquals(1, subsubClasses.length);
+		Class<?> innerInnerClass = subsubClasses[0];
+		Constructor<?> innerInnerConstructor = innerInnerClass.getDeclaredConstructor(innerClass);
+		Object newInstance = innerInnerConstructor.newInstance(innerInstance);
+		assertEquals("Hello from second inner class!", newInstance.toString());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void compileClassReturningInstanceOfAnonymousClass() throws Exception {
+		String qualifiedName = "test.dynamic.compiler.ComparableFactory";
+		String code = 
+				"package test.dynamic.compiler;" +
+				"public class ComparableFactory {" +
+				"	public static Comparable<String> newComparable() {" +
+				"		return new Comparable<String>() {" +
+				"			@Override" +
+				"			public int compareTo(String string) {" +
+				"				return string.length() % 2;" +
+				"			}" +
+				"		};" +
+				"	}" + 
+				"}";
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
+		Class<?> newClass = loader.loadClass(qualifiedName);
+		Comparable<String> newComparable = (Comparable<String>) newClass.getMethod("newComparable").invoke(newClass);
+		assertEquals(1, newComparable.compareTo("a"));
+		assertEquals(0, newComparable.compareTo("aa"));
 	}
 	
 	@Test
@@ -304,7 +356,7 @@ public class DynamicClassCompilerTest {
 	}
 	
 	@Test
-	public void virtualDependencyAddedToFileManagerBeforeCompilation() throws Exception {
+	public void compileFileWithDependencyBytecodes() throws Exception {
 		DynamicClassCompiler dependencyCompiler = new DynamicClassCompiler();
 		String dependencyQualifiedName ="test.dynamic.compiler.dependency.Echo";
 		String dependencyCode =
@@ -327,19 +379,59 @@ public class DynamicClassCompilerTest {
 				"	}" +
 				"}";
 		
-		/** Compile Dependency; Create Class File and write bytes; Add it to the Client File Manager */	
 		byte[] dependencyCompilation = dependencyCompiler.javaBytecodeFor(dependencyQualifiedName, dependencyCode);
-		VirtualClassFileObject dependencyClassFile = new VirtualClassFileObject(dependencyQualifiedName, Kind.CLASS);
-		dependencyClassFile.openOutputStream().write(dependencyCompilation);
-		clientCompiler.fileManager().classFiles().put(dependencyQualifiedName, dependencyClassFile);
+		Map<String, byte[]> compiledDependencies = MapLibrary.newHashMap(dependencyQualifiedName, dependencyCompilation);
 		
-		/** Compilation of Client using Dependency works, because the Client File Manager finds the Dependency */
 		Map<String, String> sourceToCompile = MapLibrary.newHashMap(clientQualifiedName, clientCode);
-		Map<String, byte[]> clientCompilation = clientCompiler.javaBytecodeFor(sourceToCompile);
+		Map<String, byte[]> clientCompilation = clientCompiler.javaBytecodeFor(sourceToCompile, compiledDependencies);
+		assertEquals(1, clientCompilation.size());
+		assertFalse(clientCompilation.containsKey(dependencyQualifiedName));
+
+		clientCompilation.putAll(compiledDependencies);
 		BytecodeClassLoader loader = BytecodeClassLoaderBuilder.loaderWith(clientCompilation);
 		Class<?> clientClass = loader.loadClass(clientQualifiedName);
 		Object clientInstance = clientClass.newInstance();
 		assertEquals("ECHO response", clientInstance.toString());
 	}
 	
+	@Test
+	public void compileModifiyAndRecompile() throws Exception {
+		DynamicClassCompiler compiler = new DynamicClassCompiler();
+		String qualifiedName ="test.dynamic.compiler.Translator";
+		String sourceCode =
+				"package test.dynamic.compiler;" +
+				"public class Translator {" +
+				"	public static String translate(String message) {" +
+				"		if (message.equalsIgnoreCase(\"hola\"))" +
+				"			return \"hello\";" +
+				"		return \"unknown word\";" +
+				"	}" +
+				"}";
+		byte[] compilation = compiler.javaBytecodeFor(qualifiedName, sourceCode);
+		BytecodeClassLoader loader = BytecodeClassLoaderBuilder.loaderWith(qualifiedName, compilation);
+		
+		Class<?> translatorClass = loader.loadClass(qualifiedName);
+		Object translator = translatorClass.newInstance();
+		assertEquals("hello", translatorClass.getMethod("translate", String.class).invoke(translator, "hola"));
+		assertEquals("unknown word", translatorClass.getMethod("translate", String.class).invoke(translator, "saludos"));
+		
+		sourceCode =
+				"package test.dynamic.compiler;" +
+				"public class Translator {" +
+				"	public static String translate(String message) {" +
+				"		if (message.equalsIgnoreCase(\"hola\"))" +
+				"			return \"hello\";" +
+				"		if (message.equalsIgnoreCase(\"saludos\"))" +
+				"			return \"greetings\";" + 
+				"		return \"unknown word\";" +
+				"	}" +
+				"}";
+		compilation = compiler.javaBytecodeFor(qualifiedName, sourceCode);
+		loader = BytecodeClassLoaderBuilder.loaderWith(qualifiedName, compilation);
+		
+		translatorClass = loader.loadClass(qualifiedName);
+		translator = translatorClass.newInstance();
+		assertEquals("hello", translatorClass.getMethod("translate", String.class).invoke(translator, "hola"));
+		assertEquals("greetings", translatorClass.getMethod("translate", String.class).invoke(translator, "saludos"));
+	}
 }

@@ -1,18 +1,7 @@
-<configuration scan="true">
-	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator" />
+<configuration>
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<target>System.out</target>
 		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
-			</pattern>
-		</encoder>
-	</appender>
-
-	<appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
-		<target>System.err</target>
-		<encoder>
-			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
-			</pattern>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n </pattern>
 		</encoder>
 	</appender>
 
@@ -28,50 +17,8 @@
 
 	<logger name="org.apache" level="OFF" />
 
-	<logger name="fr.inria.lille.nopol.NoPol" level="debug" additivity="true">
-		<appender-ref ref="STDERR" />
-	</logger>
-	
-	
-	<!--.-->
-	<logger name="fr.inria.lille.commons.compiler.DynamicClassCompiler" level="debug" additivity="true">
-		<appender-ref ref="STDERR" />
-	</logger>
-	
-	<logger name="fr.inria.lille.commons.spoon.SpoonClassLoaderFactory" level="debug" additivity="true">
-		<appender-ref ref="STDOUT" />
-	</logger>
-	
-	<logger name="fr.inria.lille.commons.suite.TestCasesListener" level="debug" additivity="true">
-		<appender-ref ref="STDOUT" />
-	</logger>
-	
-	<logger name="fr.inria.lille.commons.suite.TestSuiteExecution" level="debug" additivity="true">
-		<appender-ref ref="STDERR" />
-	</logger>
-
-	<logger name="fr.inria.lille.infinitel.Infinitel" level="debug" additivity="true">
-		<appender-ref ref="STDERR" />
-	</logger>
-	
-	<logger name="fr.inria.lille.infinitel.loop.FixableLoopBuilder" level="debug" additivity="true">
-		<appender-ref ref="STDOUT" />
-	</logger>
-	
-	<logger name="fr.inria.lille.infinitel.mining.LoopTestThresholdFinder" level="debug" additivity="true">
-		<appender-ref ref="STDOUT" />
-	</logger>
-	
-	<logger name="fr.inria.lille.infinitel.mining.MonitoringTestExecutorBuilder" level="debug" additivity="true">
-		<appender-ref ref="STDOUT" />
-	</logger>
-	
-	<logger name="fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis" level="debug" additivity="true">
-		<appender-ref ref="STDOUT" />
-	</logger>
-	<!--.-->
-
 	<root level="debug">
+		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</root>
 </configuration>

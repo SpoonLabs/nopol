@@ -21,9 +21,37 @@ import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.nopol.NoPol;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.synth.BugKind;
+import fr.inria.lille.repair.Main;
 
 public class NopolTest {
 
+	@Ignore
+	@Test
+	public void math309() { 
+		String rootFolder = "/Users/virtual/Desktop/data/projects/dataset-nopol/309/";
+		String srcFolder = rootFolder + "src/main/java";
+		String classpath = rootFolder + "target/test-classes/" + ":" + rootFolder + "target/classes/";
+		String solver = "cvc4";
+		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/cvc4-1.4.1/cvc4_for_mac";
+		Main.main(new String[] {"nopol", srcFolder, classpath, solver, solverPath });
+		/* PATCH: CONDITIONAL (mean)<=(0) */
+	}
+	
+	@Ignore
+	@Test
+	public void lang_6ed8e576c4e13ac3ea05a3c5422236ea3affb799() {
+		String rootFolder = "/Users/virtual/Desktop/data/projects/dataset-nopol/lang-6ed8e576c4e13ac3ea05a3c5422236ea3affb799/";
+		String srcFolder = rootFolder + "src/";
+		String binFolder = rootFolder + "bin/";
+		String dependency = rootFolder + "lib/junit-3.8.jar";
+		String classpath = binFolder + ":" + dependency;
+		String solver = "cvc4";
+		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/cvc4-1.4.1/cvc4_for_mac";
+		String testClass = "org.apache.commons.lang.StringUtilsSubstringTest";
+		Main.main(new String[] {"nopol", srcFolder, classpath, solver, solverPath, testClass });
+		/* PATCH: CONDITIONAL (pos > (str.length()))||((len)<=(0)) */
+	}
+	
 	@Test
 	public void example1Fix() {
 		Collection<String> failedTests = asList("test5", "test6");

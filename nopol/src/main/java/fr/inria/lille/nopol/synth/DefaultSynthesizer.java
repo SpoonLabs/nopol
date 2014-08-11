@@ -39,7 +39,6 @@ public final class DefaultSynthesizer implements Synthesizer {
 	private final SourceLocation sourceLocation;
 	private final ConstraintModelBuilder constraintModelBuilder;
 	private final BugKind type;
-	private final File outputFolder;
 	private static int nbStatementsWithAngelicValue = 0;
 
 	public DefaultSynthesizer(final ConstraintModelBuilder constraintModelBuilder, final SourceLocation sourceLocation,
@@ -47,7 +46,6 @@ public final class DefaultSynthesizer implements Synthesizer {
 		this.constraintModelBuilder = constraintModelBuilder;
 		this.sourceLocation = sourceLocation;
 		this.type = type;
-		this.outputFolder = outputFolder;
 	}
 
 	/*

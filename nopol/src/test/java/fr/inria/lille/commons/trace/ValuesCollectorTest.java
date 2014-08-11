@@ -1,4 +1,4 @@
-package fr.inria.lille.commons.trace.collector;
+package fr.inria.lille.commons.trace;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -25,7 +25,6 @@ import fr.inria.lille.commons.spoon.filter.CodeSnippetFilter;
 import fr.inria.lille.commons.spoon.util.SpoonElementLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
-import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.utils.Singleton;
 import fr.inria.lille.toolset.NopolTest;
 
@@ -45,8 +44,7 @@ public class ValuesCollectorTest {
 		
 		// THEN
 		Map<String, ?> expected = MapLibrary.newHashMap(asList(name + "!=null", name + ".size()", name + ".isEmpty()"), asList(true, value.size(), value.isEmpty()));
-		Map<String, Object> collected  =runtimeValues.valuesFor(0);
-		assertEquals(expected, collected);
+		assertEquals(expected, runtimeValues.valueBuffer());
 	}
 
 	@Test
@@ -62,8 +60,7 @@ public class ValuesCollectorTest {
 		
 		// THEN
 		Map<String, ?> expected = MapLibrary.newHashMap(asList(name + "!=null", name + ".size()", name + ".isEmpty()"), asList(true, value.size(), value.isEmpty()));
-		Map<String, Object> collected  =runtimeValues.valuesFor(0);
-		assertEquals(expected, collected);
+		assertEquals(expected, runtimeValues.valueBuffer());
 	}
 
 	@Test
@@ -79,8 +76,7 @@ public class ValuesCollectorTest {
 
 		// THEN
 		Map<String, ?> expected = MapLibrary.newHashMap(asList(name + "!=null", name + ".length()", name + ".length()==0"), asList(true, value.length(), value.isEmpty()));
-		Map<String, Object> collected  =runtimeValues.valuesFor(0);
-		assertEquals(expected, collected);
+		assertEquals(expected, runtimeValues.valueBuffer());
 	}
 
 	@Test
@@ -96,8 +92,7 @@ public class ValuesCollectorTest {
 
 		// THEN
 		Map<String, ?> expected = MapLibrary.newHashMap(asList(name + "!=null", name + ".length"), asList(true, value.length));
-		Map<String, Object> collected  =runtimeValues.valuesFor(0);
-		assertEquals(expected, collected);
+		assertEquals(expected, runtimeValues.valueBuffer());
 	}
 	
 	@Test
@@ -112,8 +107,7 @@ public class ValuesCollectorTest {
 
 		// THEN
 		Map<String, ?> expected = MapLibrary.newHashMap(asList(name + "!=null"), asList(false));
-		Map<String, Object> collected  =runtimeValues.valuesFor(0);
-		assertEquals(expected, collected);
+		assertEquals(expected, runtimeValues.valueBuffer());
 	}
 
 	@Test
@@ -181,11 +175,22 @@ public class ValuesCollectorTest {
 	}
 	
 	@Test
+	public void replaceQuotationMarksToCollectSubconditions() {
+		RuntimeValues runtimeValues = RuntimeValues.newInstance();
+		String invocation = runtimeValues.invocationOnCollectionOf("\"aaaa\".startsWith(\"b\")");
+		String toMatch = "collectValue(\"\\\"aaaa\\\".startsWith(\\\"b\\\")\", \"aaaa\".startsWith(\"b\"))";
+		assertTrue(invocation.endsWith(toMatch));
+	}
+	
+	@Test
 	public void collectSubexpressionValues() {
-		CtStatement statement = testReachedVariableNames(8, "((a * b) < 11) || (productLowerThan100(a, b))", "a", "b");
-		CtIf ifStatement = (CtIf) statement;
-		Collection<String> collectablesFromIf = collectableFinder().findFromIf(ifStatement);
+		CtIf ifStatement = (CtIf) testReachedVariableNames(8, "((a * b) < 11) || (productLowerThan100(a, b))", "a", "b");
 		List<String> expected = asList("a", "b", "((a * b) < 11)", "11", "(a * b)", "(productLowerThan100(a, b))", "((a * b) < 11) || (productLowerThan100(a, b))");
+		checkFoundFromIf(ifStatement, expected);
+	}
+	
+	private void checkFoundFromIf(CtIf ifStatement, Collection<String> expected) {
+		Collection<String> collectablesFromIf = collectableFinder().findFromIf(ifStatement);
 		assertEquals(expected.size(), collectablesFromIf.size());
 		assertTrue(collectablesFromIf.containsAll(expected));
 	}

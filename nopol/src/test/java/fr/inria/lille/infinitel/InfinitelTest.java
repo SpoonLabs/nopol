@@ -26,6 +26,7 @@ import fr.inria.lille.commons.io.FileHandler;
 import fr.inria.lille.commons.io.ProjectReference;
 import fr.inria.lille.commons.spoon.util.SpoonElementLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
+import fr.inria.lille.commons.string.StringLibrary;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
@@ -233,7 +234,7 @@ public class InfinitelTest {
 	private Map<TestCase, Integer> checkIterations(Infinitel infinitel, MonitoringTestExecutor testExecutor, While loop, 
 			Collection<TestCase> passedTests, Collection<TestCase> failedTests, Map<String, Integer> expected) {
 		Map<TestCase, Integer> thresholdsByTest = infinitel.thresholdsByTest(loop, testExecutor, failedTests, passedTests);
-		Map<String, Integer> thresholdByTestName = MapLibrary.toStringMap(thresholdsByTest);
+		Map<String, Integer> thresholdByTestName = StringLibrary.toStringMap(thresholdsByTest);
 		assertEquals(expected, thresholdByTestName);
 		return thresholdsByTest;
 	}

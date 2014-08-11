@@ -82,11 +82,9 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 			}
 		}
 		
-		gzoltar.setClassPaths(new HashSet<String>(classpaths));
-		
+		gzoltar.setClassPaths(new ArrayList<String>(classpaths));
 		
 		try {
-			
 			gzoltar.addPackageNotToInstrument("org.junit");
 			gzoltar.addPackageNotToInstrument("junit.framework");
 			

@@ -23,8 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.processing.Processor;
-import fr.inria.lille.commons.spoon.SpoonClassLoaderBuilder;
+import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
+import fr.inria.lille.nopol.NoPol;
 import fr.inria.lille.nopol.SourceLocation;
 import fr.inria.lille.nopol.synth.conditional.ConditionalReplacer;
 import fr.inria.lille.nopol.synth.conditional.SpoonConditionalPredicate;
@@ -39,12 +40,13 @@ public final class SynthesizerFactory {
 
 	private final File sourceFolder;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private final SpoonClassLoaderBuilder spooner;
+	private final SpoonedProject spooner;
 	private static int nbStatementsAnalysed = 0;
+	private static RuntimeValues runtimeValuesInstance = RuntimeValues.newInstance();
 	/**
 	 * 
 	 */
-	public SynthesizerFactory(final File sourceFolder, final SpoonClassLoaderBuilder spooner) {
+	public SynthesizerFactory(final File sourceFolder, final SpoonedProject spooner) {
 		this.sourceFolder = sourceFolder;
 		this.spooner = spooner;
 	}
@@ -52,10 +54,12 @@ public final class SynthesizerFactory {
 	public Synthesizer getFor(final SourceLocation statement) {
 		DelegatingProcessor processor;
 		BugKind type = getType(statement);
-		RuntimeValues runtimeValues;
+		RuntimeValues runtimeValues = runtimeValuesInstance;
+		if (NoPol.isOneBuild()) {
+			runtimeValues = RuntimeValues.newInstance();
+		}
 		switch (type) {
 		case CONDITIONAL:
-			runtimeValues = RuntimeValues.newInstance();
 			processor = new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
 			processor.addProcessor((Processor) new ConditionalLoggingInstrumenter(runtimeValues));
@@ -63,7 +67,6 @@ public final class SynthesizerFactory {
 
 			break;
 		case PRECONDITION:
-			runtimeValues = RuntimeValues.newInstance();
 			processor = new DelegatingProcessor(SpoonStatementPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
 			processor.addProcessor((Processor) new ConditionalLoggingInstrumenter(runtimeValues));

@@ -32,10 +32,15 @@ import fr.inria.lille.commons.collections.ListLibrary;
 public class SpoonModelLibrary {
 
 	public static Factory modelFor(File sourceFile) {
+		return modelFor(sourceFile, null);
+	}
+	
+	public static Factory modelFor(File sourceFile, String classpath) {
 		Factory factory = newFactory();
 		factory.getEnvironment().setDebug(true);
 		try {
 			SpoonCompiler compiler = launcher().createCompiler(factory);
+			compiler.setSourceClasspath(classpath);
 			compiler.addInputSource(sourceFile);
 			compiler.addTemplateSource(sourceFile);
 			compiler.build();

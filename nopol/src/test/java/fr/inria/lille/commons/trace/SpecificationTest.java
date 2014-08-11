@@ -1,4 +1,4 @@
-package fr.inria.lille.commons.trace.collector;
+package fr.inria.lille.commons.trace;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertFalse;

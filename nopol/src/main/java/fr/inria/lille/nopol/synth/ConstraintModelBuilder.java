@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import spoon.processing.Processor;
 import fr.inria.lille.commons.collections.SetLibrary;
-import fr.inria.lille.commons.spoon.SpoonClassLoaderBuilder;
+import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
@@ -42,29 +42,25 @@ import fr.inria.lille.nopol.SourceLocation;
 public final class ConstraintModelBuilder {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private final SpoonClassLoaderBuilder spooner;
 	private boolean viablePatch;
-	private final SourceLocation sourceLocation;
 	private final BugKind type;
 	private final int mapID;
 	
-	private Processor<?> processor;
+	private final ClassLoader classLoader;
 	private RuntimeValues runtimeValues;
 	
 	public ConstraintModelBuilder(final File sourceFolder, RuntimeValues runtimeValues, final SourceLocation sourceLocation,
-			final Processor<?> processor, SpoonClassLoaderBuilder spooner, final BugKind type) {
-		this.sourceLocation = sourceLocation;
+			final Processor<?> processor, SpoonedProject spooner, final BugKind type) {
 		this.type = type;
-		this.processor = processor;
 		mapID = ConditionalValueHolder.ID_Conditional;
-		
+		String qualifiedName = sourceLocation.getRootClassName();
 		if ( NoPol.isOneBuild() ){
 			ConditionalValueHolder.ID_Conditional++;
+			classLoader = spooner.processedAndDumpedToClassLoader(qualifiedName, processor);
 		} else {
-			spooner = new SpoonClassLoaderBuilder(sourceFolder);
+			classLoader = spooner.forked(qualifiedName).processedAndDumpedToClassLoader(processor);
 		}
 		this.runtimeValues = runtimeValues;
-		this.spooner = spooner;
 	}
 
 	/**
@@ -78,12 +74,14 @@ public final class ConstraintModelBuilder {
 				ConditionalValueHolder.enableNextCondition();
 			}
 		}
-		ClassLoader loader = spooner.buildSpooning(sourceLocation.getRootClassName(), classpath, processor);
 		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<Boolean>(runtimeValues, outputForEachTrace());
-		Result firstResult = TestSuiteExecution.runCasesIn(testClasses, loader, listener);
+		Result firstResult = TestSuiteExecution.runCasesIn(testClasses, classLoader, listener);
+		if (firstResult == null) {
+			return specifications;
+		}
 		ConditionalValueHolder.flip();
-		Result secondResult = TestSuiteExecution.runCasesIn(testClasses, loader, listener);
-		if ( firstResult.getFailureCount()==0 || secondResult.getFailureCount() == 0){
+		Result secondResult = TestSuiteExecution.runCasesIn(testClasses, classLoader, listener);
+		if (secondResult == null || firstResult.getFailureCount()==0 || secondResult.getFailureCount() == 0){
 			return specifications;
 		}
 		determineViability(firstResult, secondResult);

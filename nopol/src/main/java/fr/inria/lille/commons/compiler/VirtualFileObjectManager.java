@@ -72,9 +72,19 @@ public class VirtualFileObjectManager extends ForwardingJavaFileManager<JavaFile
 		return files;
 	}
 
+	protected void addCompiledClasses(Map<String, byte[]> compiledClasses) {
+		for (String qualifiedName : compiledClasses.keySet()) {
+			classFiles().put(qualifiedName, new VirtualClassFileObject(qualifiedName, Kind.CLASS, compiledClasses.get(qualifiedName)));
+		}
+	}
+	
 	public void addSourceFile(Location location, String packageName, String simpleClassName, VirtualSourceFileObject sourceFile) {
 		URI fileURI = uriFor(location, packageName, simpleClassName);
 		sourceFiles().put(fileURI, sourceFile);
+	}
+	
+	public int numberOfSourceFiles() {
+		return sourceFiles().size();
 	}
 	
 	public boolean containsSourceFileFor(URI fileURI) {
@@ -84,7 +94,19 @@ public class VirtualFileObjectManager extends ForwardingJavaFileManager<JavaFile
 	public VirtualSourceFileObject sourceFile(URI fileURI) {
 		return sourceFiles().get(fileURI);
 	}
-
+	
+	public int numberOfClassFiles() {
+		return classFiles().size();
+	}
+	
+	public boolean containsClassFileFor(String qualifiedName) {
+		return classFiles().containsKey(qualifiedName);
+	}
+	
+	public VirtualClassFileObject classFile(String qualifiedName) {
+		return classFiles().get(qualifiedName);
+	}
+	
 	private URI uriFor(Location location, String packageName, String simpleClassName) {
 		String uriScheme = location.getName() + '/' + packageName + '/' + simpleClassName + ".java";
 		return FileHandler.uriFrom(uriScheme);

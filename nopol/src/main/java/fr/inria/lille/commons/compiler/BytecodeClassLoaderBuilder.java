@@ -37,6 +37,22 @@ public class BytecodeClassLoaderBuilder {
 		return loaderWith(bytecodes, parentClassLoader);
 	}
 	
+	public static BytecodeClassLoader loaderWith(String qualifiedName, byte[] bytecodes) {
+		return loaderWith(MapLibrary.newHashMap(qualifiedName, bytecodes));
+	}
+	
+	public static BytecodeClassLoader loaderWith(String qualifiedName, byte[] bytecodes, URL[] classpath) {
+		return loaderWith(MapLibrary.newHashMap(qualifiedName, bytecodes), classpath);
+	}
+	
+	public static BytecodeClassLoader loaderWith(String qualifiedName, byte[] bytecodes, ClassLoader parentClassLoader) {
+		return loaderWith(MapLibrary.newHashMap(qualifiedName, bytecodes), parentClassLoader);
+	}
+	
+	public static BytecodeClassLoader loaderWith(String qualifiedName, byte[] bytecodes, URL[] classpath, ClassLoader parentClassLoader) {
+		return loaderWith(MapLibrary.newHashMap(qualifiedName, bytecodes), classpath, parentClassLoader);
+	}
+	
 	public static BytecodeClassLoader loaderWith(Map<String, byte[]> bytecodes) {
 		return loaderWith(bytecodes, new URL[] {});
 	}

@@ -169,7 +169,7 @@ public class ConstraintTest {
 				"L@op<1><1> L@op<2><0> L@op<2><1> L@op<2><2> L@op<3><0> L@out in<0> in<1> in<2> op<0> op<1> op<2> op<3> op<0><0> " +
 				"op<0><1> op<1><0> op<1><1> op<2><0> op<2><1> op<2><2> op<3><0> out)";
 		String libraryInvocation = "(Library op<0> op<1> op<2> op<3> op<0><0> op<0><1> op<1><0> op<1><1> op<2><0> op<2><1> op<2><2> op<3><0>)";
-		List<String> definitions = Arrays.asList(String.format("(exists (%s) (and %s %s))", StringLibrary.join(existsDeclarations, " "), connectivityInvocation, libraryInvocation));
+		List<String> definitions = Arrays.asList(String.format("(exists (%s) (and %s %s))", StringLibrary.join(existsDeclarations, ' '), connectivityInvocation, libraryInvocation));
 		Collection<IExpr> smtDefinitions = checkDefinitionExpressions(verification, container, definitions);
 		
 		checkDefinition(verification, container, declarations, smtDeclarations, definitions, smtDefinitions, "");
@@ -261,7 +261,7 @@ public class ConstraintTest {
 	private IExpr checkInvocation(Constraint constraint, LocationVariableContainer container, List<String> arguments) throws ParserException {
 		String constraintName = constraint.nameSymbol().value();
 		IExpr actualInvocation = constraint.invocation(container);
-		String invocation = String.format("(%s %s)", constraintName, StringLibrary.join(arguments, " "));
+		String invocation = String.format("(%s %s)", constraintName, StringLibrary.join(arguments, ' '));
 		IExpr smtInvocation = expressionFrom(invocation);
 		assertTrue(areEquals(actualInvocation, smtInvocation));
 		return smtInvocation;
@@ -278,11 +278,11 @@ public class ConstraintTest {
 			Collection<String> expressions, Collection<IExpr> smtExpressions, String connector) {
 		String constraintName = constraint.nameSymbol().value();
 		ICommand actualCommand = constraint.definition(container);
-		String definition = String.format("(%s %s)", connector, StringLibrary.join(expressions, " "));
+		String definition = String.format("(%s %s)", connector, StringLibrary.join(expressions, ' '));
 		if (expressions.size() == 1) {
 			definition = expressions.toArray(new String[1])[0];
 		}
-		String command = String.format("(define-fun %s (%s) Bool %s)", constraintName, StringLibrary.join(declarations, " "), definition);
+		String command = String.format("(define-fun %s (%s) Bool %s)", constraintName, StringLibrary.join(declarations, ' '), definition);
 		ICommand smtCommand = commandFrom(command);
 		assertTrue(areEquals(actualCommand, smtCommand));
 		return smtCommand;
@@ -291,7 +291,7 @@ public class ConstraintTest {
 	private IExpr checkInvocationWithValues(Constraint constraint, LocationVariableContainer container, Map<String, Object> values, List<String> arguments) throws ParserException {
 		String constraintName = constraint.nameSymbol().value();
 		IExpr actualInvocation = constraint.invocationWithValues(container, values);
-		String invocation = format("(%s %s)", constraintName, StringLibrary.join(arguments, " "));
+		String invocation = format("(%s %s)", constraintName, StringLibrary.join(arguments, ' '));
 		IExpr smtInvocation = expressionFrom(invocation);
 		assertTrue(areEquals(actualInvocation, smtInvocation));
 		return smtInvocation;

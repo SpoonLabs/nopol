@@ -10,7 +10,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.inria.lille.commons.collections.ListLibrary;
+import fr.inria.lille.commons.string.StringLibrary;
 
 
 public class LoggerLibrary {
@@ -20,7 +20,7 @@ public class LoggerLibrary {
 	}
 	
 	public static void logCollection(Logger logger, String title, Collection<? extends Object> elements) {
-		List<String> stringList = ListLibrary.toStringList(elements);
+		List<String> stringList = StringLibrary.toStringList(elements);
 		if (title.length() > 0) {
 			stringList.add(0, title);
 		}

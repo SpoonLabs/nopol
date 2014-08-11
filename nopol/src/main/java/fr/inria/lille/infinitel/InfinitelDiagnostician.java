@@ -98,7 +98,7 @@ public class InfinitelDiagnostician extends Infinitel {
 	
 	private void logStatisticsOf(Collection<String> loopStatisticsLog, Collection<While> loops, CompoundLoopMonitor monitor, String title) {
 		loopStatisticsLog.add(format("%s (%d)", title, loops.size()));
-		Table<Integer, String, Object> table = Table.newTable();
+		Table<Integer, String, Object> table = Table.newTable(null);
 		Bag<Integer> allExitBag = aggregatedExitBags(loops, monitor);
 		Bag<Pair<Integer, Integer>> allExitRangesBag = toMappingBag(allExitBag);
 		Bag<Pair<Integer, Integer>> allBreakRangesBag = toMappingBag(aggregatedBreakBags(loops, monitor));
@@ -113,7 +113,7 @@ public class InfinitelDiagnostician extends Infinitel {
 		int number = 0;
 		for (While loop : loops) {
 			number += 1;
-			addRowFrom(table.rowCreateIfAbsent(number), 
+			addRowFrom(table.rowAddIfAbsent(number), 
 					number,
 					loop.numberOfBreaks(),
 					loop.numberOfReturns(),
@@ -146,7 +146,7 @@ public class InfinitelDiagnostician extends Infinitel {
 	private void logAccumulatedStatistics(Collection<While> loops, CompoundLoopMonitor monitor, Table<Integer, String, Object> table, Bag<Integer> allExitBag,
 			Bag<Pair<Integer, Integer>> allExitRangesBag, Bag<Pair<Integer, Integer>> allBreakRangesBag, Bag<Pair<Integer, Integer>> allReturnRangesBag) {
 		int rowNumber = loops.size() + 1;
-		addRowFrom(table.rowCreateIfAbsent(rowNumber),
+		addRowFrom(table.rowAddIfAbsent(rowNumber),
 				rowNumber,
 				totalNumberOfBreaks(loops),
 				totalNumberOfReturns(loops),
@@ -170,11 +170,12 @@ public class InfinitelDiagnostician extends Infinitel {
 	}
 	
 	private void logTable(Collection<String> loopStatisticsLog, Table<Integer, String, Object> table, int numberOfLoops) {
+		/** FIXME TEST PRETTYPRINTED OF TABLE!!! */
 		String columnSeparator = " | ";
 		Collection<String> columnNames = table.row(1).keySet();
 		loopStatisticsLog.add(StringLibrary.join(columnNames, columnSeparator));
 		for (int rowNumber = 1; rowNumber <= numberOfLoops + 1; rowNumber += 1) {
-			List<String> rowString = ListLibrary.toStringList(table.row(rowNumber).values());
+			List<String> rowString = StringLibrary.toStringList(table.row(rowNumber).values());
 			loopStatisticsLog.add(StringLibrary.join(rowString, columnSeparator));
 		}
 	}
