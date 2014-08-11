@@ -369,7 +369,7 @@ public class SMTLibTest {
 	
 	@Test
 	public void positiveExponentialRealConversion() {
-		objectConversion("Real", "2300000000000000000", 2.3E18);
+		objectConversion("Real", "2300000000000000000.0", 2.3E18);
 	}
 	
 	@Test

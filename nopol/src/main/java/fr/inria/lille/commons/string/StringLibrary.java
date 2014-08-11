@@ -3,7 +3,9 @@ package fr.inria.lille.commons.string;
 import static java.util.Arrays.asList;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -156,6 +158,17 @@ public class StringLibrary {
 			}
 		}
 		return builder.toString();
+	}
+
+	public static String plainDecimalRepresentation(Number number) {
+		double doubleValue = number.doubleValue();
+		BigDecimal decimal = BigDecimal.valueOf(doubleValue);
+		if (doubleValue >  1.0 || doubleValue < -1.0) {
+			DecimalFormat decimalFormat = new DecimalFormat("#0.0");
+			return decimalFormat.format(decimal);
+		} else {
+			return decimal.toPlainString();
+		}
 	}
 }
 

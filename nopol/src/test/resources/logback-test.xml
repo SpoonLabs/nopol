@@ -1,13 +1,17 @@
 <configuration>
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <!-- encoders are assigned the type
-         ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
-    <encoder>
-      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-    </encoder>
-  </appender>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
   
-  	<appender name="TESTSLOG" class="ch.qos.logback.core.FileAppender">
+	<appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+  
+	<appender name="TESTSLOG" class="ch.qos.logback.core.FileAppender">
 		<file>tests.log</file>
 		<append>false</append>
 		<encoder>
@@ -15,8 +19,8 @@
 		</encoder>
 	</appender>
   
-  <root level="debug">
-    <appender-ref ref="STDOUT" />
-    <appender-ref ref="TESTSLOG" />
-  </root>
+	<root level="debug">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="TESTSLOG" />
+	</root>
 </configuration>

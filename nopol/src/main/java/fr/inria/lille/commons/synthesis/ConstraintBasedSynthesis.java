@@ -44,84 +44,91 @@ public class ConstraintBasedSynthesis {
 		scriptBuilder = new SynthesisScriptBuilder();
 	}
 	
-	protected <T> Expression<T> outputExpressionFor(Class<? extends T> outputClass) {
-		Class<T> smtLibCompatibleClass = smtLibCompatibleClassFor(outputClass);
-		return new Expression<T>(smtLibCompatibleClass, "result");
-	}
-	
 	public <T> CodeGenesis codesSynthesisedFrom(Class<T> outputClass, Collection<Specification<T>> specifications) {
-		Expression<?> outputExpression = outputExpressionFor(outputClass);
-		Collection<Map<String, Object>> extracted = extractedCollectedValues(specifications, outputExpression);
 		Collection<Operator<?>> operators = ListLibrary.newLinkedList();
-		Collection<Expression<?>> inputs = inputExpressions(extracted, outputExpression); 
+		Expression<?> outputExpression = outputExpressionFor(outputClass);
+		Collection<Map<String, Object>> synthesisInputs = synhtesisInputValues(specifications, outputExpression);
+		Collection<Expression<?>> inputs = inputExpressions(synthesisInputs, outputExpression); 
 		for (OperatorTheory theory : theories()) {
 			operators.addAll(theory.operators());
 			LocationVariableContainer container = variableContainerFor(outputExpression, operators, inputs);
-			Map<String, Integer> toInteger = satisfyingSolution(container, extracted);
+			Map<String, Integer> toInteger = satisfyingSolution(container, synthesisInputs);
 			if (! toInteger.isEmpty()) {
 				return successfulGenesis(container, toInteger);
 			}
 		}
 		return unsuccessfulGenesis();
 	}
-
-	private CodeGenesis successfulGenesis(LocationVariableContainer container, Map<String, Integer> toInteger) {
-		CodeGenesis genesis = new CodeGenesis(container, toInteger);
-		logDebug(logger, "Successful code synthesis:", genesis.returnStatement());
-		return genesis;
-	}
 	
-	private NullCodeGenesis unsuccessfulGenesis() {
-		logDebug(logger, "Failed code synthesis, returning NullCodeGenesis");
-		return new NullCodeGenesis();
+	protected Expression<?> outputExpressionFor(Class<?> outputClass) {
+		Class<?> smtLibCompatibleClass = compatibleClassFor(outputClass);
+		return new Expression(smtLibCompatibleClass, "result");
 	}
 
-	private LocationVariableContainer variableContainerFor(Expression<?> outputExpression, Collection<Operator<?>> operators, Collection<Expression<?>> inputs) {
-		logCollection(logger, "Operators:", operators);
-		return new LocationVariableContainer(inputs, operators, outputExpression);
-	}
-	
-	private <T> Collection<Map<String, Object>> extractedCollectedValues(Collection<Specification<T>> specifications, Expression<?> outputExpression) {
+	private <T> Collection<Map<String, Object>> synhtesisInputValues(Collection<Specification<T>> specifications, Expression<?> outputExpression) {
 		logCollection(logger, "Specifications:", specifications);
-		Collection<Map<String, Object>> extracted = ListLibrary.newLinkedList();
+		Collection<Map<String, Object>> synthesisInputs = ListLibrary.newLinkedList();
 		for (Specification<T> specification : specifications) {
-			Map<String, Object> newMap = MapLibrary.newHashMap(specification.inputs());
+			Map<String, Object> newMap = specification.inputs();
 			newMap.put(outputExpression.expression(), specification.output());
 			newMap.putAll(constants());
-			extracted.add(newMap);
+			synthesisInputs.add(compatibleValuesFrom(newMap));
 		}
-		return extracted;
+		return synthesisInputs;
+	}
+	
+	private <T> Map<String, Object> compatibleValuesFrom(Map<String, Object> map) {
+		Map<String, Object> collectedValues = MapLibrary.newHashMap();
+		for (String key : map.keySet()) {
+			Object compatibleValue = compatibleValueOf(map.get(key));
+			collectedValues.put(key, compatibleValue);
+		}
+		return collectedValues;
+	}
+	
+	private Object compatibleValueOf(Object value) {
+		if (Integer.class.isInstance(value)) {
+			value = Double.valueOf((int) value);
+		}
+		return value;
 	}
 	
 	protected Collection<Expression<?>> inputExpressions(Collection<Map<String, Object>> collectedValues, Expression<?> outputExpression) {
-		// FIXME: what to do when keys of collectedValues do not match
-		Map<String, Object> values = CollectionLibrary.any(collectedValues);
+		// FIXME: what to do when keys of collectedValues do not match; intersection of keys?
 		Collection<Expression<?>> expressions = ListLibrary.newLinkedList();
-		for (String value : values.keySet()) {
-			expressions.add(new Expression((Class<?>) smtLibCompatibleClassFor(values.get(value)), value));
+		Map<String, Object> anyValueMap = CollectionLibrary.any(collectedValues);
+		Collection<String> variableNames = MapLibrary.keySetIntersection(collectedValues);
+		for (String variableName : variableNames) {
+			Class<?> compatibleClass = compatibleClassOf(anyValueMap.get(variableName));
+			expressions.add(new Expression(compatibleClass, variableName));
 		}
 		expressions.remove(outputExpression);
 		return expressions;
 	}
 	
-	private Class<?> smtLibCompatibleClassFor(Object object) {
-		return smtLibCompatibleClassFor(object.getClass());
-	}
-	
-	private <T> Class<T> smtLibCompatibleClassFor(Class<? extends T> queriedClass) {
+	private Class<?> compatibleClassFor(Class<?> queriedClass) {
 		if (ClassLibrary.isSubclassOf(Boolean.class, queriedClass)) {
-			return (Class) Boolean.class;
+			return Boolean.class;
 		} else if (ClassLibrary.isSubclassOf(Number.class, queriedClass)) {
-			return (Class) Number.class;
+			return Number.class;
 		}
 		throw new IllegalStateException(format("SMT can only use Bool or Real types, the requested type is '%s'.", queriedClass.getName()));
 	}
 	
-	protected Map<String, Integer> satisfyingSolution(LocationVariableContainer container, Collection<Map<String, Object>> collectedValues) {
-		IScript smtScript = scriptBuilder().scriptFrom(logic(), container, collectedValues);
+	private Class<?> compatibleClassOf(Object object) {
+		return compatibleClassFor(object.getClass());
+	}
+	
+	private LocationVariableContainer variableContainerFor(Expression<?> outputExpression, Collection<Operator<?>> operators, Collection<Expression<?>> inputs) {
+		logCollection(logger, "Operators:", operators);
+		return new LocationVariableContainer(inputs, operators, outputExpression);
+	}
+	
+	protected Map<String, Integer> satisfyingSolution(LocationVariableContainer container, Collection<Map<String, Object>> synthesisInputs) {
+		IScript smtScript = scriptBuilder().scriptFrom(logic(), container, synthesisInputs);
+		logCollection(logger, "SMTLib Script:", smtScript.commands());
 		Map<String, String> satisfyingValues = scriptSolution(container, smtScript);
 		Map<String, Integer> toInteger = MapLibrary.valuesParsedAsInteger(satisfyingValues);
-		logCollection(logger, "SMTLib Script:", smtScript.commands());
 		return toInteger;
 	}
 
@@ -132,6 +139,17 @@ public class ConstraintBasedSynthesis {
 		List<ISymbol> smtExpressions = newSMTLib.symbolsFor(expressions);
 		Map<String, String> satisfyingValues = newSMTLib.satisfyingValuesFor(smtExpressions, smtScript);
 		return satisfyingValues;
+	}
+	
+	private CodeGenesis successfulGenesis(LocationVariableContainer container, Map<String, Integer> toInteger) {
+		CodeGenesis genesis = new CodeGenesis(container, toInteger);
+		logDebug(logger, "Successful code synthesis: " + genesis.returnStatement());
+		return genesis;
+	}
+	
+	private NullCodeGenesis unsuccessfulGenesis() {
+		logDebug(logger, "Failed code synthesis, returning NullCodeGenesis");
+		return new NullCodeGenesis();
 	}
 	
 	private Collection<OperatorTheory> theories() {

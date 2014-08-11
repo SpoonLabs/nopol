@@ -48,7 +48,6 @@ public class NoPol {
 	private final SynthesizerFactory synthetizerFactory;
 	private final TestPatch testPatch;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private final Logger patchLogger = LoggerFactory.getLogger("patch");
 	private static List<Patch> patchList = new ArrayList<>();
 	private static boolean oneBuild = true;
 	private final SpoonedProject spooner;
@@ -171,7 +170,7 @@ public class NoPol {
 		if (newRepair == NO_PATCH) {
 			return false;
 		}
-		patchLogger.trace("Suggested patch: {}", newRepair);
+		logger.trace("Suggested patch: {}", newRepair);
 		return passesAllTests(newRepair, testClasses);
 	}
 

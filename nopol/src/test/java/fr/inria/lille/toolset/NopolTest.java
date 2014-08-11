@@ -4,7 +4,6 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.List;
@@ -48,7 +47,7 @@ public class NopolTest {
 		String solver = "cvc4";
 		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/cvc4-1.4.1/cvc4_for_mac";
 		String testClass = "org.apache.commons.lang.StringUtilsSubstringTest";
-		Main.main(new String[] {"nopol", srcFolder, classpath, solver, solverPath, testClass });
+		Main.main(new String[] {"nsopol", srcFolder, classpath, solver, solverPath, testClass });
 		/* PATCH: CONDITIONAL (pos > (str.length()))||((len)<=(0)) */
 	}
 	
@@ -93,12 +92,13 @@ public class NopolTest {
 		fixComparison(patch, "(a)<(b)", "(a)<=(b)");
 	}
 	
-	@Ignore
 	@Test
 	public void example7Fix() {
 		Collection<String> failedTests = asList("test1");
 		Patch patch = test(7, 21, BugKind.CONDITIONAL, failedTests);
-		fixComparison(patch, "((intermediaire)==(0))&&((a)!=((1)+(1)))");
+		fixComparison(patch, "(intermediaire == 0)&&((1)<=((-1)+((a)-(1))))", 
+				"(intermediaire == 0)&&((!(((a)+(-1))<=(1)))||((((a)+(-1))-(-1))==(intermediaire)))",
+				"(intermediaire == 0)&&((((1)-((a)+(0)))<(-1))||(((a)+(0))!=((a)+(0))))");
 	}
 	
 	@Test
@@ -107,7 +107,7 @@ public class NopolTest {
 		Patch patch = test(8, 12, BugKind.CONDITIONAL, failedTests);
 		fixComparison(patch, "((a * b))<=(100)");
 	}
-
+	
 	private Patch test(int projectNumber, int linePosition, BugKind type, Collection<String> expectedFailedTests) {
 		ProjectReference project = projectForExample(projectNumber);
 		TestCasesListener listener = new TestCasesListener();
@@ -149,8 +149,6 @@ public class NopolTest {
 	}
 	
 	private void clean(String folderPath) {
-		Collection<File> smtFiles = FileHandler.filesMatchingNameIn(folderPath, "NopolExample:[0-9]+-[0-9]+[.]smt");
-		FileHandler.deleteFiles(smtFiles);
 		String path = folderPath + "/spooned";
 		if (FileHandler.isValidPath(path)) {
 			FileHandler.deleteDirectory(path);

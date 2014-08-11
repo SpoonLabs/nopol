@@ -6,6 +6,7 @@ import static fr.inria.lille.commons.string.StringLibrary.join;
 import static fr.inria.lille.commons.string.StringLibrary.lastAfterSplit;
 import static fr.inria.lille.commons.string.StringLibrary.leftFilled;
 import static fr.inria.lille.commons.string.StringLibrary.maximumToStringLength;
+import static fr.inria.lille.commons.string.StringLibrary.plainDecimalRepresentation;
 import static fr.inria.lille.commons.string.StringLibrary.repeated;
 import static fr.inria.lille.commons.string.StringLibrary.reversed;
 import static fr.inria.lille.commons.string.StringLibrary.rightFilled;
@@ -174,5 +175,29 @@ public class StringLibraryTest {
 		assertEquals(asList("a", "bc"), leftFilled(asList("a", "bc"), 1, '-'));
 		assertEquals(asList("-a", "bc"), leftFilled(asList("a", "bc"), 2, '-'));
 		assertEquals(asList("---a", "--bc"), leftFilled(asList("a", "bc"), 4, '-'));
+	}
+	
+	@Test
+	public void plainDecimalRepresentationOfNumbers() {
+		assertEquals("0.0", plainDecimalRepresentation(0));
+		assertEquals("0.0", plainDecimalRepresentation(-0));
+		assertEquals("0.0", plainDecimalRepresentation(0.0));
+		assertEquals("0.0", plainDecimalRepresentation(-0.0));
+		assertEquals("1.0", plainDecimalRepresentation(1));
+		assertEquals("-1.0", plainDecimalRepresentation(-1));
+		assertEquals("1.0", plainDecimalRepresentation(1.0));
+		assertEquals("-1.0", plainDecimalRepresentation(-1.0));
+		assertEquals("2.0", plainDecimalRepresentation(2));
+		assertEquals("-2.0", plainDecimalRepresentation(-2));
+		assertEquals("2.0", plainDecimalRepresentation(2.0));
+		assertEquals("-2.0", plainDecimalRepresentation(-2.0));
+		assertEquals("0.05", plainDecimalRepresentation(5.0/100));
+		assertTrue(plainDecimalRepresentation(1.0/3).startsWith("0.33"));
+		assertEquals("999999999.0", plainDecimalRepresentation(999999999));
+		assertEquals("-999999999.0", plainDecimalRepresentation(-999999999));
+		assertEquals("413845470000000000.0", plainDecimalRepresentation(4.1384547E17));
+		assertEquals("-413845470000000000.0", plainDecimalRepresentation(-4.1384547E17));
+		assertEquals("0.000000000000000041384547", plainDecimalRepresentation(4.1384547E-17));
+		assertEquals("-0.000000000000000041384547", plainDecimalRepresentation(-4.1384547E-17));
 	}
 }

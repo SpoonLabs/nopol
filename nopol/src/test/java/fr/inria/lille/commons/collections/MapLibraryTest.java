@@ -2,8 +2,10 @@ package fr.inria.lille.commons.collections;
 
 import static fr.inria.lille.commons.collections.MapLibrary.containsKeys;
 import static fr.inria.lille.commons.collections.MapLibrary.copyOf;
+import static fr.inria.lille.commons.collections.MapLibrary.extractedWithKeys;
 import static fr.inria.lille.commons.collections.MapLibrary.frequencies;
 import static fr.inria.lille.commons.collections.MapLibrary.getIfAbsent;
+import static fr.inria.lille.commons.collections.MapLibrary.keySetIntersection;
 import static fr.inria.lille.commons.collections.MapLibrary.keySetUnion;
 import static fr.inria.lille.commons.collections.MapLibrary.keysWithValue;
 import static fr.inria.lille.commons.collections.MapLibrary.keysWithValuesIn;
@@ -66,6 +68,23 @@ public class MapLibraryTest {
 		keyUnion = keySetUnion((Collection) asList(stringMap, byteMap));
 		assertEquals(3, keyUnion.size());
 		assertTrue(keyUnion.containsAll(asList("a", "b", "z")));
+	}
+	
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	@Test
+	public void intersectionOfKeySets() {
+		Map<String, Object> empty = newHashMap();
+		Map<String, Object> mapA = newHashMap(asList("a", "c"), asList(null, null));
+		Map<String, Object> mapB = newHashMap(asList("a", "b", "c"), asList(null, null, null));
+		Map<String, Object> mapC = newHashMap(asList("x", "y", "z"), asList(null, null, null));
+		assertEquals(0, keySetIntersection((Collection) asList()).size());
+		assertEquals(0, keySetIntersection(asList(empty)).size());
+		assertEquals(2, keySetIntersection(asList(mapA)).size());
+		assertTrue(keySetIntersection(asList(mapA)).containsAll(asList("a", "c")));
+		assertEquals(0, keySetIntersection(asList(empty, mapA)).size());
+		assertEquals(2, keySetIntersection(asList(mapA, mapB)).size());
+		assertTrue(keySetIntersection(asList(mapA)).containsAll(asList("a", "c")));
+		assertEquals(0, keySetIntersection(asList(mapA, mapC)).size());
 	}
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})
@@ -233,5 +252,20 @@ public class MapLibraryTest {
 		copy = copyOf(identityHashMap);
 		assertEquals(copy, identityHashMap);
 		assertEquals(IdentityHashMap.class, copy.getClass());
+	}
+	
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	@Test
+	public void reduceMapToSelectedKeys() {
+		Map<String, Integer> map = newHashMap(asList("a", "b", "c", "d"), asList(1, 2, 3, 4));
+		assertEquals(0, extractedWithKeys((Collection) asList(), map).size());
+		assertEquals(1, extractedWithKeys(asList("a"), map).size());
+		assertTrue(extractedWithKeys(asList("a"), map).containsKey("a"));
+		assertEquals(1, extractedWithKeys(asList("a"), map).get("a").intValue());
+		assertEquals(1, extractedWithKeys(asList("a", "x", "y", "z"), map).size());
+		assertEquals(2, extractedWithKeys(asList("a", "x", "c", "y"), map).size());
+		assertTrue(extractedWithKeys(asList("a", "x", "c", "y"), map).containsKey("a"));
+		assertTrue(extractedWithKeys(asList("a", "x", "c", "y"), map).containsKey("c"));
+		assertEquals(map, extractedWithKeys(asList("a", "b", "c", "d"), map));
 	}
 }

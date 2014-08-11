@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,6 +160,18 @@ public class MapLibrary {
 		return keys;
 	}
 	
+	public static <K, V> Set<K> keySetIntersection(Collection<Map<K, V>> maps) {
+		Set<K> keys = new HashSet<K>();
+		if (maps.size() > 0) {
+			Iterator<Map<K, V>> mapIterator = maps.iterator();
+			keys.addAll(mapIterator.next().keySet());
+			while (mapIterator.hasNext()) {
+				keys.retainAll(mapIterator.next().keySet());
+			}
+		}
+		return keys;
+	}
+	
 	public static <K, V> void putMany(Map<K, V> newMap, Collection<Map<K, V>> desintationMaps) {
 		for (Map<K, V> map : desintationMaps) {
 			putAll(newMap, map);
@@ -222,5 +235,15 @@ public class MapLibrary {
 			frequencies.put(element, count + 1);
 		}
 		return frequencies;
+	}
+	
+	public static <K, V> Map<K, V> extractedWithKeys(Collection<K> keys, Map<K, V> map) {
+		Map<K, V> extracted = newHashMap();
+		for (K key : keys) {
+			if (map.containsKey(key)) {
+				extracted.put(key, map.get(key));
+			}
+		}
+		return extracted;
 	}
 }

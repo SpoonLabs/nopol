@@ -42,7 +42,7 @@ public abstract class SolverFactory {
 	
 	private static SolverFactory solverFactory() {
 		if (solverFactory == null) {
-			solverFactory = new CVC4SolverFactory();
+			solverFactory = new Z3SolverFactory();
 		}
 		return solverFactory;
 	}

@@ -57,8 +57,7 @@ public abstract class Operator<T> extends ObjectTemplate<T> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ ((parameters == null) ? 0 : parameters.hashCode());
+		result = prime * result + ((parameters == null) ? 0 : parameters.hashCode());
 		result = prime * result + ((smtlibIdentifier == null) ? 0 : smtlibIdentifier.hashCode());
 		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
 		return result;

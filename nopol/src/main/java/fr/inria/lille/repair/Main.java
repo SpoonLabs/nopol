@@ -51,17 +51,19 @@ public class Main {
 		}
 		else if (repairMethod.equalsIgnoreCase("infinitel")) {
 			Infinitel.run(sourceFile, classpaths);
+		} else {
+			throw new RuntimeException("Invalid repair method: " + repairMethod);
 		}
 	}
 	
 	private static void showUsage() {
 		Collection<String> lines = ListLibrary.newLinkedList();
 		lines.add("$ java " + Main.class.getName() + " <repair method> <source path> <class path> z3|cvc4 <solver-path>");
-		lines.add("<repair metod>  'nopol' or 'infinitel'");
-		lines.add("<source path>   path to file/folder containing source code to be fixed");
-		lines.add("<class path>    path(s) to folder(s) with class files (separated by colon ':')");
-		lines.add("z3|cvc4         either one of these solvers");
-		lines.add("<solver-path>   path to chosen solver binary");
+		lines.add("    <repair metod>  'nopol' or 'infinitel'");
+		lines.add("    <source path>   path to file/folder containing source code to be fixed");
+		lines.add("    <class path>    path(s) to folder(s) with class files (separated by colon ':')");
+		lines.add("    z3|cvc4         either one of these solvers");
+		lines.add("    <solver-path>   path to chosen solver binary");
 		String usage = StringLibrary.join(lines, JavaLibrary.lineSeparator());
 		System.out.println(usage);
 	}

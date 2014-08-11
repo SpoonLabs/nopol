@@ -30,9 +30,9 @@ public class SynthesisScriptBuilder {
 		return smtlib;
 	}
 	
-	public IScript scriptFrom(ISymbol logic, LocationVariableContainer container, Collection<Map<String,Object>> collectedValues) {
+	public IScript scriptFrom(ISymbol logic, LocationVariableContainer container, Collection<Map<String,Object>> synthesisInputs) {
 		Collection<ICommand> commands = commandsFrom(container);
-		Collection<ICommand> assertions = assertionsFor(container, collectedValues);
+		Collection<ICommand> assertions = assertionsFor(container, synthesisInputs);
 		return smtlib().scriptFrom(logic, commands, assertions);
 	}
 	
@@ -44,9 +44,9 @@ public class SynthesisScriptBuilder {
 		return commands;
 	}
 	
-	public Collection<ICommand> assertionsFor(LocationVariableContainer container, Collection<Map<String,Object>> collectedValues) {
+	public Collection<ICommand> assertionsFor(LocationVariableContainer container, Collection<Map<String,Object>> synthesisInputs) {
 		Collection<ICommand> assertions = ListLibrary.newLinkedList();
-		addVerificationAssertions(assertions, container, collectedValues);
+		addVerificationAssertions(assertions, container, synthesisInputs);
 		assertions.add(smtlib().assertion(wellFormedConstraint().invocation(container)));
 		return assertions;
 	}
@@ -65,8 +65,8 @@ public class SynthesisScriptBuilder {
 		}
 	}
 	
-	private void addVerificationAssertions(Collection<ICommand> assertions, LocationVariableContainer container, Collection<Map<String, Object>> collectedValues) {
-		for (Map<String, Object> values : collectedValues) {
+	private void addVerificationAssertions(Collection<ICommand> assertions, LocationVariableContainer container, Collection<Map<String, Object>> synthesisInputs) {
+		for (Map<String, Object> values : synthesisInputs) {
 			IExpr invocation = verificationConstraint().invocationWithValues(container, values);
 			assertions.add(smtlib().assertion(invocation));
 		}

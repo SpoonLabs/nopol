@@ -9,8 +9,13 @@ import fr.inria.lille.commons.synthesis.smt.SMTLib;
 
 public class Z3SolverFactory extends SolverFactory {
 
+	/** Command to run from terminal:
+	 * 
+	 * 		$ z3 -smt2 <script-file>
+	 */
+	
 	public Z3SolverFactory() {
-		this("lib/cvc4-1.4.1/cvc4_for_mac");
+		this("lib/z3-4.3.2/z3_for_mac");
 	}
 	
 	public Z3SolverFactory(String solverPath) {
@@ -26,4 +31,5 @@ public class Z3SolverFactory extends SolverFactory {
 	public ISymbol logic() {
 		return SMTLib.logicAufnira();
 	}
+	
 }

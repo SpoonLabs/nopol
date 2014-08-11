@@ -7,13 +7,13 @@ import static fr.inria.lille.commons.synthesis.smt.SMTLib.intSort;
 import static fr.inria.lille.commons.synthesis.smt.SMTLib.numberSort;
 import static fr.inria.lille.commons.synthesis.smt.SMTLib.subtraction;
 
-import java.math.BigDecimal;
 import java.util.Map;
 
 import org.smtlib.IExpr;
 import org.smtlib.ISort;
 
 import fr.inria.lille.commons.collections.MapLibrary;
+import fr.inria.lille.commons.string.StringLibrary;
 import fr.inria.lille.commons.utils.ClassLibrary;
 
 public class ObjectToExpr {
@@ -52,10 +52,7 @@ public class ObjectToExpr {
 	}
 	
 	private static IExpr decimal(Number number) {
-		String value = number.toString();
-		if (value.contains("E")) {
-			value = BigDecimal.valueOf(number.doubleValue()).toPlainString();
-		}
+		String value = StringLibrary.plainDecimalRepresentation(number);
 		if (value.startsWith("-")) {
 			value = value.substring(1);
 			return negatedNumber(smtlib().decimal(value));

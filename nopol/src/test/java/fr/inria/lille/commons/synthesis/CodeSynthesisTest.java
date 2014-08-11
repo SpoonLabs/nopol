@@ -62,10 +62,10 @@ public class CodeSynthesisTest {
 	@Test
 	public void scriptResolutionWithoutInputs() {
 		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis();
-		Map<String, Object> firstValues = (Map) MapLibrary.newHashMap();
-		Map<String, Object> secondValues = (Map) MapLibrary.newHashMap();
-		Specification firstSpecification = new Specification<>(firstValues, 0);
-		Specification secondSpecification = new Specification<>(secondValues, 0);
+		Map<String, Object> firstValues = MapLibrary.newHashMap();
+		Map<String, Object> secondValues = MapLibrary.newHashMap();
+		Specification firstSpecification = new Specification<Integer>(firstValues, 0);
+		Specification secondSpecification = new Specification<Integer>(secondValues, 0);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Number.class, (List) asList(firstSpecification, secondSpecification));
 		assertTrue(genesis.isSuccessful());
 		assertEquals("0", genesis.returnStatement());
@@ -77,8 +77,8 @@ public class CodeSynthesisTest {
 		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MapLibrary.newHashMap(), theories);
 		Map<String, Object> firstValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(10, 10));
 		Map<String, Object> secondValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(15, 5));
-		Specification firstSpecification = new Specification<>(firstValues, 20);
-		Specification secondSpecification = new Specification<>(secondValues, 20);
+		Specification firstSpecification = new Specification<Integer>(firstValues, 20);
+		Specification secondSpecification = new Specification<Integer>(secondValues, 20);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Number.class, (List) asList(firstSpecification, secondSpecification));
 		assertTrue(genesis.isSuccessful());
 		assertTrue(asList("(iterations)+(array.length)", "(array.length)+(iterations)").contains(genesis.returnStatement()));
