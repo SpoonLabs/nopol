@@ -18,7 +18,6 @@ import java.util.Set;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.commons.utils.TestClassesFinder;
-import fr.inria.lille.nopol.NopolMain;
 
 public class IfMetric {
 
@@ -144,7 +143,7 @@ public class IfMetric {
 	}
 
 	private static void printUsage() {
-		NopolMain.printUsage();
+		
 	}
 
 	public static void thenStatementExecuted(String className, int ifLine) {
