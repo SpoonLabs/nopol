@@ -2,6 +2,7 @@ package fr.inria.lille.commons.trace;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -25,6 +26,8 @@ import fr.inria.lille.commons.spoon.filter.CodeSnippetFilter;
 import fr.inria.lille.commons.spoon.util.SpoonElementLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
+import fr.inria.lille.commons.suite.TestCase;
+import fr.inria.lille.commons.utils.Function;
 import fr.inria.lille.commons.utils.Singleton;
 import fr.inria.lille.toolset.NopolTest;
 
@@ -110,6 +113,65 @@ public class ValuesCollectorTest {
 		assertEquals(expected, runtimeValues.valueBuffer());
 	}
 
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	@Test
+	public void inconsistentSpecificationsAreDiscarded() {
+		TestCase testA = new TestCase("com.example", "testA");
+		TestCase testB = new TestCase("com.example", "testB");
+		TestCase testC = new TestCase("com.example", "testC");
+		RuntimeValues runtimeValues = RuntimeValues.newInstance();
+		Function<Integer, Boolean> outputForEachTrace = new Function<Integer, Boolean>() {
+			@Override
+			public Boolean outputFor(Integer value) {
+				return value % 2 == 0;
+			}
+		};
+		Map<String, Object> otherValue = (Map) MapLibrary.newHashMap(asList("c"), asList(3));
+		Map<String, Object> values = (Map) MapLibrary.newHashMap(asList("a", "b"), asList(1, 2));
+		Collection<Map<String, Object>> inconsistentTraces;
+		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<Boolean>(runtimeValues, outputForEachTrace);
+		
+		listener.processBeforeRun();
+		runtimeValues.collectValue("a", values.get("a"));
+		runtimeValues.collectValue("b", values.get("b"));
+		runtimeValues.collectionEnds();
+		assertFalse(runtimeValues.isEmpty());
+		assertEquals(1, runtimeValues.numberOfTraces());
+		listener.processSuccessfulRun(testA);
+		listener.processTestFinished(testA);
+		inconsistentTraces = listener.inconsistentTraces();
+		assertTrue(inconsistentTraces.isEmpty());
+		
+		runtimeValues.collectValue("c", otherValue.get("c"));
+		runtimeValues.collectionEnds();
+		runtimeValues.collectValue("a", values.get("a"));
+		runtimeValues.collectValue("b", values.get("b"));
+		runtimeValues.collectionEnds();
+		assertFalse(runtimeValues.isEmpty());
+		assertEquals(2, runtimeValues.numberOfTraces());
+		listener.processSuccessfulRun(testB);
+		listener.processTestFinished(testB);
+		inconsistentTraces = listener.inconsistentTraces();
+		assertEquals(1, inconsistentTraces.size());
+		assertTrue(inconsistentTraces.contains(values));
+		
+		runtimeValues.collectValue("a", values.get("a"));
+		runtimeValues.collectValue("b", values.get("b"));
+		runtimeValues.collectionEnds();
+		assertFalse(runtimeValues.isEmpty());
+		assertEquals(1, runtimeValues.numberOfTraces());
+		listener.processSuccessfulRun(testC);
+		listener.processTestFinished(testC);
+		listener.processAfterRun();
+		inconsistentTraces = listener.inconsistentTraces();
+		assertEquals(1, inconsistentTraces.size());
+		assertTrue(inconsistentTraces.contains(values));
+		
+		Collection<Specification<Boolean>> specifications = listener.specifications();
+		assertEquals(1, specifications.size());
+		assertTrue(specifications.contains(new Specification<Boolean>(otherValue, true)));
+	}
+	
 	@Test
 	public void reachedVariablesInExample1() {
 		testReachedVariableNames(1, "index == 0", "index", "s", "NopolExample.this.index", "NopolExample.s");

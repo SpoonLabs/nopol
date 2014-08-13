@@ -17,5 +17,4 @@ public class JavaLibraryTest {
 		String folderSeparator = "" + folderPathSeparator();
 		assertFalse(workingDirectory.getAbsolutePath().endsWith(folderSeparator));
 	}
-	
 }

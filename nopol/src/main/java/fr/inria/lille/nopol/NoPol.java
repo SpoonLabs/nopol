@@ -51,7 +51,7 @@ public class NoPol {
 	private static List<Patch> patchList = new ArrayList<>();
 	private static boolean oneBuild = true;
 	private final SpoonedProject spooner;
-	private final File sourceFolder;
+	private final File sourceFile;
 	private static boolean singlePatch = true;
 
 	/**
@@ -59,13 +59,13 @@ public class NoPol {
 	 * @param sourceFolder
 	 * @param classpath
 	 */
-	public NoPol(final File sourceFolder, final URL[] classpath) {
-		spooner = new SpoonedProject(sourceFolder, classpath);
+	public NoPol(final File sourceFile, final URL[] classpath) {
 		this.classpath = classpath;
-		gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath, sourceFolder);
-		synthetizerFactory = new SynthesizerFactory(sourceFolder, spooner);
-		testPatch = new TestPatch(sourceFolder, spooner);
-		this.sourceFolder = sourceFolder;
+		this.sourceFile = sourceFile;
+		spooner = new SpoonedProject(sourceFile, classpath);
+		testPatch = new TestPatch(sourceFile, spooner);
+		synthetizerFactory = new SynthesizerFactory(sourceFile, spooner);
+		gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath, spooner.topPackageNames());
 	}
 
 	public List<Patch> build() {
@@ -151,17 +151,21 @@ public class NoPol {
 			try {
 				if ( !statement.getSourceLocation().getContainingClassName().contains("Test")){ // Avoid modification on test cases
 					logger.debug("Analysing {}", statement);
-					Synthesizer synth = new SynthesizerFactory(sourceFolder, spooner).getFor(statement.getSourceLocation());
+					Synthesizer synth = new SynthesizerFactory(sourceFile, spooner).getFor(statement.getSourceLocation());
 					Patch patch = synth.buildPatch(classpath, testClasses);
 					if (isOk(patch, testClasses)) {
 						patches.add(patch);
 						if ( isSinglePatch() ){
 							break;
 						}
-					}	
+					} else {
+						logger.debug("Could not find a patch in {}", statement);
+					}
 				}
 			}
-			catch (DynamicCompilationException dce) {}
+			catch (DynamicCompilationException dce) {
+				
+			}
 		}
 		return patches;
 	}

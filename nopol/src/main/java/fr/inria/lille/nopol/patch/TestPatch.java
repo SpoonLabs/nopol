@@ -68,6 +68,7 @@ public final class TestPatch {
 		processors.set(0, createProcessor(patch, patch.getFile(sourceFolder)));
 		processors.set(1, new JavaOutputProcessor(new File(sourceFolder, SPOON_DIRECTORY), new DefaultJavaPrettyPrinter(new StandardEnvironment())));
 		ClassLoader loader = spoonedClass.processedAndDumpedToClassLoader(processors);
+		logger.info("Running test suite to check the patch \"{}\" is working", patch.asString());
 		Result result = TestSuiteExecution.runCasesIn(testClasses, loader);
 		return result.wasSuccessful();
 	}

@@ -80,9 +80,11 @@ public class DynamicClassCompiler {
 	protected boolean runCompilationTask(CompilationTask task) {
 		boolean success = task.call();
 		if (! success) {
+			Collection<String> errors = ListLibrary.newArrayList("[Compilation errors]");
 			for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics().getDiagnostics()) {
-				System.err.println(diagnostic);
+				errors.add(diagnostic.toString());
 			}
+			logDebug(logger, errors);
 			throw new DynamicCompilationException("Aborting: dynamic compilation failed");
 		}
 		return success;

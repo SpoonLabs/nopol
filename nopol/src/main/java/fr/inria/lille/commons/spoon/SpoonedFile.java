@@ -15,12 +15,15 @@ import org.slf4j.Logger;
 import spoon.compiler.Environment;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
+import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.RuntimeProcessingManager;
+import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
+import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.compiler.BytecodeClassLoader;
 import fr.inria.lille.commons.compiler.BytecodeClassLoaderBuilder;
 import fr.inria.lille.commons.compiler.DynamicClassCompiler;
@@ -43,6 +46,39 @@ public abstract class SpoonedFile {
 		prettyPrinter = new DefaultJavaPrettyPrinter(spoonEnvironment());
 	}
 
+	public Collection<CtPackage> allPackages() {
+		return spoonFactory().Package().getAll();
+	}
+	
+	public Collection<CtPackage> topPackages() {
+		Collection<CtPackage> topPackages = SetLibrary.newHashSet();
+		for (CtPackage aPackage : allPackages()) {
+			if (! aPackage.getTypes().isEmpty()) {
+				CtPackage parent = aPackage.getParent(CtPackage.class);
+				if (parent == null || parent.getTypes().isEmpty()) {
+					topPackages.add(aPackage);
+				}
+			}
+		}
+		return topPackages;
+	}
+	
+	public Collection<String> allPackageNames() {
+		return packageNames(allPackages());
+	}
+	
+	public Collection<String> topPackageNames() {
+		return packageNames(topPackages());
+	}
+	
+	public Collection<String> packageNames(Collection<CtPackage> packages) {
+		Collection<String> names = ListLibrary.newArrayList();
+		for (CtPackage aPackage : packages) {
+			names.add(aPackage.getQualifiedName());
+		}
+		return names;
+	}
+	
 	public ClassLoader dumpedToClassLoader() {
 		return newBytecodeClassloader(compiledClasses());
 	}
@@ -61,7 +97,7 @@ public abstract class SpoonedFile {
 	}
 	
 	public void process(Collection<? extends Processor<?>> processors) {
-		processModelledClasses(modelledClasses(), processors);;
+		processModelledClasses(modelledClasses(), processors);
 	}
 	
 	protected synchronized void processModelledClasses(Collection<? extends CtSimpleType<?>> modelledClasses, Collection<? extends Processor<?>> processors) {

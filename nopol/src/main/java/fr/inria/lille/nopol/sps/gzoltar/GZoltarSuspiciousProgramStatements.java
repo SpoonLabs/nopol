@@ -18,11 +18,10 @@ package fr.inria.lille.nopol.sps.gzoltar;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.FluentIterable.from;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -60,20 +59,20 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 	 * @param classpath
 	 * @return
 	 */
-	public static GZoltarSuspiciousProgramStatements create(final URL[] classpath, final File sourceFolder) {
-		return new GZoltarSuspiciousProgramStatements(checkNotNull(classpath), checkNotNull(sourceFolder));
+	public static GZoltarSuspiciousProgramStatements create(URL[] classpath, Collection<String> packageNames) {
+		return new GZoltarSuspiciousProgramStatements(checkNotNull(classpath), checkNotNull(packageNames));
 	}
 
 	private final GZoltar gzoltar;
 
-	private GZoltarSuspiciousProgramStatements(final URL[] classpath, final File sourceFolder) {
+	private GZoltarSuspiciousProgramStatements(final URL[] classpath, Collection<String> packageNames) {
 		try {
 			gzoltar = new GZoltarJava7();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
-		HashSet<String> classpaths = new HashSet(gzoltar.getClasspaths());
+		
+		HashSet<String> classpaths = new HashSet<String>(gzoltar.getClasspaths());
 		for (URL url : classpath) {
 			if ("file".equals(url.getProtocol())) {
 				classpaths.add(url.getPath());
@@ -83,64 +82,12 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		}
 		
 		gzoltar.setClassPaths(new ArrayList<String>(classpaths));
+		gzoltar.addPackageNotToInstrument("org.junit");
+		gzoltar.addPackageNotToInstrument("junit.framework");
 		
-		try {
-			gzoltar.addPackageNotToInstrument("org.junit");
-			gzoltar.addPackageNotToInstrument("junit.framework");
-			
-			String packageName = getPackageName(sourceFolder);
-			if ( packageName == null ){
-				throw new RuntimeException("Could not find package to instrument.");
-			}
+		for (String packageName : packageNames) {
 			gzoltar.addPackageToInstrument(packageName);
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
 		}
-		
-	}
-
-	private String getPackageName(File sourceFolder) throws MalformedURLException {
-		String packageName = "";
-		
-		
-			File f = getFirstClassFolder(sourceFolder);
-			if ( f != null ){
-				String tmp = new File(f.getAbsolutePath()).toURI().toURL().getPath(); // workaround because in Windows URL Object add "/" before the path
-				packageName = tmp.substring(sourceFolder.getAbsolutePath().length()+1, tmp.lastIndexOf("/")).replace(File.separatorChar, '.');
-			}
-		
-		return packageName;
-	}
-
-	private File getFirstClassFolder(File root){
-		File[] children = root.listFiles();
-		if ( children != null ){
-			for ( File child : children ){
-				if ( child.getAbsolutePath().endsWith(".java"))
-					return child;
-			}
-			for ( File child : children ){
-				if ( child.isDirectory())
-					return getFirstClassFolder(child);
-			}
-		}
-		return null;
-	}
-	
-	
-	/**
-	 * TODO delete this method
-	 */
-	private List<SuspiciousStatement> sortByDescendingOrder(List<SuspiciousStatement> statements) {
-		List<SuspiciousStatement> tmp = new ArrayList<>(statements);
-		Collections.sort(tmp, new Comparator<SuspiciousStatement>() {
-			@Override
-			public int compare(final SuspiciousStatement o1, final SuspiciousStatement o2) {
-				return Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness()); // reversed parameters because we
-				// want a descending order list
-			}
-		});
-		return tmp;
 	}
 
 	/**
@@ -158,22 +105,26 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		}
 		gzoltar.run();
 
-		
-		
 		List<SuspiciousStatement> statements = from(gzoltar.getSuspiciousStatements())
 				.filter(IsSuspicious.INSTANCE).transform(GZoltarStatementWrapperFunction.INSTANCE).toList();
-
-		
-
-		
 		
 		Logger logger = LoggerFactory.getLogger(this.getClass());
 		if (logger.isDebugEnabled()) {
 			logger.debug("Suspicious statements:\n{}", Joiner.on('\n').join(statements));
 		}
 
-		
-
 		return sortByDescendingOrder(statements);
+	}
+	
+	private List<SuspiciousStatement> sortByDescendingOrder(List<SuspiciousStatement> statements) {
+		List<SuspiciousStatement> tmp = new ArrayList<>(statements);
+		Collections.sort(tmp, new Comparator<SuspiciousStatement>() {
+			@Override
+			public int compare(final SuspiciousStatement o1, final SuspiciousStatement o2) {
+				// reversed parameters because we want a descending order list
+				return Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness());
+			}
+		});
+		return tmp;
 	}
 }

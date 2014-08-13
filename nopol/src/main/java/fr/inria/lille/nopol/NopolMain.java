@@ -33,7 +33,9 @@ public class NopolMain {
 	
 	public static void nopolLaunch(File sourceFile, URL[] classpath, boolean oneBuild, String[] args) {
 		startTime = System.currentTimeMillis();
-		JavaLibrary.extendClasspathWith(classpath);
+		
+		JavaLibrary.extendSystemClasspathWith(classpath);                   /// THIS IS FOR THE DYNAMIC CLASS COMPILER
+		
 		NoPol.setOneBuild(oneBuild);
 		NoPol nopol = new NoPol(sourceFile, classpath);
 		if (args.length > 0) {

@@ -40,7 +40,9 @@ public class SpoonModelLibrary {
 		factory.getEnvironment().setDebug(true);
 		try {
 			SpoonCompiler compiler = launcher().createCompiler(factory);
-			compiler.setSourceClasspath(classpath);
+			if (classpath != null) {
+				compiler.setSourceClasspath(classpath);
+			}
 			compiler.addInputSource(sourceFile);
 			compiler.addTemplateSource(sourceFile);
 			compiler.build();

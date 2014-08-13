@@ -56,7 +56,7 @@ public class RuntimeValues extends GlobalToggle {
 		flushBuffer();
 		setTraceNumber(traceNumber() + 1);
 	}
-	
+
 	public int numberOfTraces() {
 		return traceNumber();
 	}

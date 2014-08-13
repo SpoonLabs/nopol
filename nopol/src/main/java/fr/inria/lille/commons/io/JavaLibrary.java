@@ -1,7 +1,9 @@
 package fr.inria.lille.commons.io;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLClassLoader;
 
 public class JavaLibrary {
 
@@ -9,7 +11,7 @@ public class JavaLibrary {
 		return property("java.class.path");
 	}
 	
-	public static String extendClasspathWith(URL[] classpaths) {
+	public static String extendSystemClasspathWith(URL[] classpaths) {
 		String newClasspath = systemClasspath();
 		for (URL classpath : classpaths) {
 			newClasspath += classpathSeparator() + classpath.getPath();
@@ -20,6 +22,36 @@ public class JavaLibrary {
 	
 	public static void setClasspath(String newClasspath) {
 		setProperty("java.class.path", newClasspath);
+	}
+	
+	public static void extendSystemClassLoaderClasspathWith(URL[] classpaths) {
+		extendClassLoaderClasspathWith((URLClassLoader) ClassLoader.getSystemClassLoader(), classpaths);
+	}
+	
+	public static void extendClassLoaderClasspathWith(URLClassLoader classLoader, URL[] classpaths) {
+		Method method = methodFrom(URLClassLoader.class, "addURL", URL.class);
+		if (method != null) {
+			method.setAccessible(true);
+			try {
+				for (URL classpath : classpaths) {
+					method.invoke(classLoader, classpath);
+				}
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to extend classpath on class loader with " + classpaths);
+			} finally {
+				method.setAccessible(false);
+			}
+		}
+	}
+	
+	public static Method methodFrom(Class<?> aClass, String methodName, Class<?>... argumentClasses) {
+		Method method = null;
+		try {
+			method = aClass.getDeclaredMethod(methodName, argumentClasses);
+		} catch (NoSuchMethodException nsme) {
+			nsme.printStackTrace();
+		}
+		return method;
 	}
 	
 	public static Character classpathSeparator() {

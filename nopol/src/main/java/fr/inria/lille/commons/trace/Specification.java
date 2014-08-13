@@ -4,12 +4,10 @@ import static java.lang.String.format;
 
 import java.util.Map;
 
-import fr.inria.lille.commons.collections.MapLibrary;
-
 public class Specification<T> {
 
 	public Specification(Map<String, Object> values, T expectedOutput) {
-		this.values = MapLibrary.copyOf(values);
+		this.values = values;
 		this.expectedOutput = expectedOutput;
 	}
 	
@@ -39,15 +37,15 @@ public class Specification<T> {
 		if (getClass() != obj.getClass())
 			return false;
 		Specification<?> other = (Specification<?>) obj;
-		if (expectedOutput == null) {
-			if (other.expectedOutput != null)
+		if (output() == null) {
+			if (other.output() != null)
 				return false;
-		} else if (!expectedOutput.equals(other.expectedOutput))
+		} else if (! output().equals(other.output()))
 			return false;
-		if (values == null) {
-			if (other.values != null)
+		if (inputs() == null) {
+			if (other.inputs() != null)
 				return false;
-		} else if (!values.equals(other.values))
+		} else if (! inputs().equals(other.inputs()))
 			return false;
 		return true;
 	}

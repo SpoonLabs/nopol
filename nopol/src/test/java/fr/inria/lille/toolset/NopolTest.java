@@ -38,6 +38,19 @@ public class NopolTest {
 	
 	@Ignore
 	@Test
+	public void lang710() { 
+		String rootFolder = "/Users/virtual/Desktop/data/projects/dataset-nopol/710/";
+		String srcFolder = rootFolder + "src/main/java";
+		String classpath = rootFolder + "target/test-classes/" + ":" + rootFolder + "target/classes/";
+		String solver = "cvc4";
+		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/cvc4-1.4.1/cvc4_for_mac";
+		String testClass = "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest";
+		Main.main(new String[] {"nopol", srcFolder, classpath, solver, solverPath, testClass });
+		/* PATCH: CONDITIONAL (mean)<=(0) */
+	}
+	
+	@Ignore
+	@Test
 	public void lang_6ed8e576c4e13ac3ea05a3c5422236ea3affb799() {
 		String rootFolder = "/Users/virtual/Desktop/data/projects/dataset-nopol/lang-6ed8e576c4e13ac3ea05a3c5422236ea3affb799/";
 		String srcFolder = rootFolder + "src/";
@@ -47,22 +60,41 @@ public class NopolTest {
 		String solver = "cvc4";
 		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/cvc4-1.4.1/cvc4_for_mac";
 		String testClass = "org.apache.commons.lang.StringUtilsSubstringTest";
-		Main.main(new String[] {"nsopol", srcFolder, classpath, solver, solverPath, testClass });
+		Main.main(new String[] {"nopol", srcFolder, classpath, solver, solverPath, testClass });
 		/* PATCH: CONDITIONAL (pos > (str.length()))||((len)<=(0)) */
+	}
+	
+	@Ignore
+	@Test
+	public void percentile() { 
+		String rootFolder = "/Users/virtual/Desktop/data/projects/dataset-nopol/Percentile/";
+		String srcFolder = rootFolder + "src/";
+		String binFolder = rootFolder + "bin/";
+		String dependencyA = rootFolder + "lib/commons-beanutils-1.7.0.jar";
+		String dependencyB = rootFolder + "lib/commons-collections-2.0.jar";
+		String dependencyC = rootFolder + "lib/commons-discovery-0.4.jar";
+		String dependencyD = rootFolder + "lib/commons-lang-2.1.jar";
+		String dependencyE = rootFolder + "lib/commons-logging-1.1.1.jar";
+		String dependencyF = rootFolder + "lib/junit-3.8.jar";
+		String classpath = binFolder + ":" + dependencyA + ":" + dependencyB + ":" + dependencyC + ":" + dependencyD + ":" + dependencyE + ":" + dependencyF;
+		String solver = "z3";
+		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/z3-4.3.2/z3_for_mac";
+		Main.main(new String[] {"nopol", srcFolder, classpath, solver, solverPath });
+		/* PATCH: CONDITIONAL (fpos)==(n) */
 	}
 	
 	@Test
 	public void example1Fix() {
 		Collection<String> failedTests = asList("test5", "test6");
 		Patch patch = test(1, 12, BugKind.CONDITIONAL, failedTests);
-		fixComparison(patch, "(index)<=(0)", "(index)<(1)");
+		fixComparison(patch, "(index)<=(0)", "(index)<(1)", "(index)<=(-1)");
 	}
 	
 	@Test
 	public void example2Fix() {
 		Collection<String> failedTests = asList("test1", "test2", "test4", "test5", "test6", "test7");
 		Patch patch = test(2, 11, BugKind.CONDITIONAL, failedTests);
-		fixComparison(patch, "(a)<=(b)", "(a)<(b)", "(1)<=((b - a))", "(0)<=((b - a))");
+		fixComparison(patch, "(a)<=(b)", "(a)<(b)", "(1)<=((b - a))", "(0)<=((b - a))", "(1)<((b - a))");
 	}
 	
 	@Test

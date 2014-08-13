@@ -170,6 +170,7 @@ public class InfinitelTest {
 
 	@Test
 	public void infinitelExample1() {
+		/** This test is very slow with some versions of CVC4 */
 		Map<String, Integer> expected = expectedIterationsMap(1, asList("test1", "test2", "test3", "test4", "testNegative"), asList(0, 1, 2, 3, 4));
 		checkInfinitel(1, 8, 4, 1, expected);
 	}
