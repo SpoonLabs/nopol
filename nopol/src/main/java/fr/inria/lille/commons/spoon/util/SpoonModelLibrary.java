@@ -46,7 +46,6 @@ public class SpoonModelLibrary {
 				compiler.setSourceClasspath(StringLibrary.asClasspath(classpath));
 			}
 			compiler.addInputSource(sourceFile);
-			compiler.addTemplateSource(sourceFile);
 			compiler.build();
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -9,6 +9,8 @@ import fr.inria.lille.commons.utils.library.FileLibrary;
 
 public abstract class SolverFactory {
 
+	public abstract String solverName();
+	
 	public abstract ISymbol logic();
 
 	public abstract ISolver newSolver(Configuration smtConfig);
@@ -36,6 +38,10 @@ public abstract class SolverFactory {
 		this.solverPath = solverPath;
 	}
 	
+	public String solverPath() {
+		return solverPath;
+	}
+	
 	public ISolver newSolver() {
 		return newSolver(new SMT().smtConfig);
 	}
@@ -45,10 +51,6 @@ public abstract class SolverFactory {
 			solverFactory = new Z3SolverFactory();
 		}
 		return solverFactory;
-	}
-	
-	protected String solverPath() {
-		return solverPath;
 	}
 	
 	private String solverPath;

@@ -31,7 +31,6 @@ import fr.inria.lille.repair.infinitel.synthesis.LoopSpecificationCollector;
 public class Infinitel {
 
 	public static void run(File sourceFile, URL[] classpath) {
-		/* XXX JavaLibrary.extendClasspathWith(classpath); ??? */ 
 		Infinitel infiniteLoopFixer = new Infinitel(sourceFile, classpath);
 		infiniteLoopFixer.repair();
 	}

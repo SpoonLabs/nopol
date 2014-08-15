@@ -48,7 +48,6 @@ public class NoPol {
 	private final SynthesizerFactory synthetizerFactory;
 	private final TestPatch testPatch;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private static List<Patch> patchList = new ArrayList<>();
 	private static boolean oneBuild = true;
 	private final SpoonedProject spooner;
 	private final File sourceFile;
@@ -74,20 +73,15 @@ public class NoPol {
 	}
 	
 	public List<Patch> build(String[] testClasses) {
-		
 		Collection<SuspiciousStatement> statements = gZoltar.sortBySuspiciousness(testClasses);
 		if (statements.isEmpty()) {
 			System.out.println("No suspicious statements found.");
 		}
-		
-		List<Patch> patches;
 		if ( oneBuild ){
-			patches = solveWithOneBuild(statements, testClasses);
-		}else{
-			patches = solveWithMultipleBuild(statements, testClasses);
+			return solveWithOneBuild(statements, testClasses);
+		} else {
+			return solveWithMultipleBuild(statements, testClasses);
 		}
-		getPatchList().addAll(patches);
-		return patches;
 	}
 	
 	/*
@@ -182,10 +176,6 @@ public class NoPol {
 		return testPatch.passesAllTests(newRepair, testClasses);
 	}
 
-	public static List<Patch> getPatchList() {
-		return patchList;
-	}
-	
 	public static boolean isOneBuild() {
 		return oneBuild;
 	}

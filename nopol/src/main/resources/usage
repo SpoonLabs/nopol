@@ -1,0 +1,19 @@
+Simulation:
+-----------
+	$ java -cp <nopol-jar-file> fr.inria.lille.repair.nopol.NoPolLauncher z3|cvc4 <solver-path>
+
+
+Execution:
+----------
+	$ java -jar <nopol-jar-file> infinitel <source path> <class path> z3|cvc4 <solver-path>
+
+	$ java -jar <nopol-jar-file> nopol <source path> <class path> z3|cvc4 <solver-path> [<test-class-name>...]
+
+
+References:
+-----------
+-    <nopol-jar-file>   path to nopol *.jar file
+-    <source path>      path to file/folder containing source code to be fixed
+-    <class path>       path(s) to folder(s) with class files (separated by colon ':')
+-    z3|cvc4            either one of these solvers
+-    <solver-path>      path to chosen solver binary

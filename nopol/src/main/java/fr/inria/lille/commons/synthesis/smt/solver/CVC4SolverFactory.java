@@ -23,6 +23,11 @@ public class CVC4SolverFactory extends SolverFactory {
 	}
 	
 	@Override
+	public String solverName() {
+		return "cvc4";
+	}
+	
+	@Override
 	public ISolver newSolver(Configuration smtConfig) {
 		return new Solver_cvc4(smtConfig, solverPath());
 	}

@@ -15,18 +15,18 @@
  */
 package fr.inria.lille.repair;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collection;
 
-import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.commons.utils.library.FileLibrary;
 import fr.inria.lille.commons.utils.library.JavaLibrary;
-import fr.inria.lille.commons.utils.library.StringLibrary;
 import fr.inria.lille.repair.infinitel.Infinitel;
-import fr.inria.lille.repair.nopol.NopolMain;
+import fr.inria.lille.repair.nopol.NoPolLauncher;
 
 public class Main {
 
@@ -42,12 +42,11 @@ public class Main {
     		e.printStackTrace();
     		showUsage();
     	}
-    	System.exit(0);
     }
     
 	private Main(String[] args, String repairMethod, File sourceFile, URL[] classpaths) {
 		if (repairMethod.equalsIgnoreCase("nopol")) {
-			NopolMain.nopolLaunch(sourceFile, classpaths, false, Arrays.copyOfRange(args, 5, args.length));
+			NoPolLauncher.launch(sourceFile, classpaths, false, Arrays.copyOfRange(args, 5, args.length));
 		}
 		else if (repairMethod.equalsIgnoreCase("infinitel")) {
 			Infinitel.run(sourceFile, classpaths);
@@ -57,14 +56,17 @@ public class Main {
 	}
 	
 	private static void showUsage() {
-		Collection<String> lines = ListLibrary.newLinkedList();
-		lines.add("$ java " + Main.class.getName() + " <repair method> <source path> <class path> z3|cvc4 <solver-path>");
-		lines.add("    <repair metod>  'nopol' or 'infinitel'");
-		lines.add("    <source path>   path to file/folder containing source code to be fixed");
-		lines.add("    <class path>    path(s) to folder(s) with class files (separated by colon ':')");
-		lines.add("    z3|cvc4         either one of these solvers");
-		lines.add("    <solver-path>   path to chosen solver binary");
-		String usage = StringLibrary.join(lines, JavaLibrary.lineSeparator());
-		System.out.println(usage);
+		try {
+			InputStream usageDeatil = FileLibrary.resource("/usage").openStream();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(usageDeatil));
+			String currentLine = "";
+			while (currentLine != null) {
+				System.out.println(currentLine);
+				currentLine = reader.readLine();
+			}
+			reader.close();
+		} catch (Exception e) {
+			throw new RuntimeException("Unexpected: usage detail file not found");
+		}
 	}
 }

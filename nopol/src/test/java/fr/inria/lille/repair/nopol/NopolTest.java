@@ -15,10 +15,10 @@ import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
+import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.commons.utils.library.FileLibrary;
 import fr.inria.lille.repair.Main;
 import fr.inria.lille.repair.ProjectReference;
-import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.repair.nopol.patch.Patch;
 import fr.inria.lille.repair.nopol.synth.BugKind;
 
@@ -35,20 +35,7 @@ public class NopolTest {
 		Main.main(new String[] {"nopol", srcFolder, classpath, solver, solverPath });
 		/* PATCH: CONDITIONAL (mean)<=(0) */
 	}
-	
-	@Ignore
-	@Test
-	public void lang710() { 
-		String rootFolder = "/Users/virtual/Desktop/data/projects/dataset-nopol/710/";
-		String srcFolder = rootFolder + "src/main/java";
-		String classpath = rootFolder + "target/test-classes/" + ":" + rootFolder + "target/classes/";
-		String solver = "cvc4";
-		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/cvc4-1.4.1/cvc4_for_mac";
-		String testClass = "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest";
-		Main.main(new String[] {"nopol", srcFolder, classpath, solver, solverPath, testClass });
-		/* PATCH: CONDITIONAL (mean)<=(0) */
-	}
-	
+
 	@Ignore
 	@Test
 	public void lang_6ed8e576c4e13ac3ea05a3c5422236ea3affb799() {
@@ -57,8 +44,8 @@ public class NopolTest {
 		String binFolder = rootFolder + "bin/";
 		String dependency = rootFolder + "lib/junit-3.8.jar";
 		String classpath = binFolder + ":" + dependency;
-		String solver = "cvc4";
-		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/cvc4-1.4.1/cvc4_for_mac";
+		String solver = "z3";
+		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/z3-4.3.2/z3_for_mac";
 		String testClass = "org.apache.commons.lang.StringUtilsSubstringTest";
 		Main.main(new String[] {"nopol", srcFolder, classpath, solver, solverPath, testClass });
 		/* PATCH: CONDITIONAL (pos > (str.length()))||((len)<=(0)) */
@@ -81,6 +68,14 @@ public class NopolTest {
 		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/z3-4.3.2/z3_for_mac";
 		Main.main(new String[] {"nopol", srcFolder, classpath, solver, solverPath });
 		/* PATCH: CONDITIONAL (intPos)==(sorted.length), (fpos)==(n) */
+	}
+	
+	@Test
+	public void exampleNopolMain() {
+		SolverFactory solverFactory = SolverFactory.instance();
+		String solverName = solverFactory.solverName();
+		String solverPath = solverFactory.solverPath();
+		NoPolLauncher.main(new String[] { solverName, solverPath });
 	}
 	
 	@Test

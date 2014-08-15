@@ -23,6 +23,11 @@ public class Z3SolverFactory extends SolverFactory {
 	}
 	
 	@Override
+	public String solverName() {
+		return "z3";
+	}
+	
+	@Override
 	public ISolver newSolver(Configuration smtConfig) {
 		return new Solver_z3_4_3(smtConfig, solverPath());
 	}
