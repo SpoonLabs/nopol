@@ -13,8 +13,8 @@ import org.smtlib.IExpr;
 import org.smtlib.ISort;
 
 import fr.inria.lille.commons.collections.MapLibrary;
-import fr.inria.lille.commons.string.StringLibrary;
-import fr.inria.lille.commons.utils.ClassLibrary;
+import fr.inria.lille.commons.utils.library.ClassLibrary;
+import fr.inria.lille.commons.utils.library.StringLibrary;
 
 public class ObjectToExpr {
 

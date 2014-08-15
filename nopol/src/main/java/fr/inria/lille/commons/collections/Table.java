@@ -1,10 +1,10 @@
 package fr.inria.lille.commons.collections;
 
-import static fr.inria.lille.commons.io.JavaLibrary.lineSeparator;
-import static fr.inria.lille.commons.string.StringLibrary.join;
-import static fr.inria.lille.commons.string.StringLibrary.repeated;
-import static fr.inria.lille.commons.string.StringLibrary.rightFilled;
-import static fr.inria.lille.commons.string.StringLibrary.toStringList;
+import static fr.inria.lille.commons.utils.library.JavaLibrary.lineSeparator;
+import static fr.inria.lille.commons.utils.library.StringLibrary.join;
+import static fr.inria.lille.commons.utils.library.StringLibrary.repeated;
+import static fr.inria.lille.commons.utils.library.StringLibrary.rightFilled;
+import static fr.inria.lille.commons.utils.library.StringLibrary.toStringList;
 import static java.lang.String.format;
 
 import java.util.Collection;

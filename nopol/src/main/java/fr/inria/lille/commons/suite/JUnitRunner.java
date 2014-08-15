@@ -29,7 +29,7 @@ import org.junit.runner.notification.RunListener;
 import com.google.common.collect.ComputationException;
 
 import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.utils.ClassLibrary;
+import fr.inria.lille.commons.utils.library.ClassLibrary;
 
 /**
  * @author Favio D. DeMarco

@@ -1,19 +1,21 @@
 package fr.inria.lille.commons.test;
 
-import static fr.inria.lille.commons.string.StringLibrary.asClasspath;
-import static fr.inria.lille.commons.string.StringLibrary.firstAfterSplit;
-import static fr.inria.lille.commons.string.StringLibrary.join;
-import static fr.inria.lille.commons.string.StringLibrary.lastAfterSplit;
-import static fr.inria.lille.commons.string.StringLibrary.leftFilled;
-import static fr.inria.lille.commons.string.StringLibrary.maximumToStringLength;
-import static fr.inria.lille.commons.string.StringLibrary.plainDecimalRepresentation;
-import static fr.inria.lille.commons.string.StringLibrary.repeated;
-import static fr.inria.lille.commons.string.StringLibrary.reversed;
-import static fr.inria.lille.commons.string.StringLibrary.rightFilled;
-import static fr.inria.lille.commons.string.StringLibrary.split;
-import static fr.inria.lille.commons.string.StringLibrary.stripEnd;
-import static fr.inria.lille.commons.string.StringLibrary.toStringList;
-import static fr.inria.lille.commons.string.StringLibrary.toStringMap;
+import static fr.inria.lille.commons.utils.library.StringLibrary.asClasspath;
+import static fr.inria.lille.commons.utils.library.StringLibrary.className;
+import static fr.inria.lille.commons.utils.library.StringLibrary.firstAfterSplit;
+import static fr.inria.lille.commons.utils.library.StringLibrary.join;
+import static fr.inria.lille.commons.utils.library.StringLibrary.lastAfterSplit;
+import static fr.inria.lille.commons.utils.library.StringLibrary.leftFilled;
+import static fr.inria.lille.commons.utils.library.StringLibrary.maximumToStringLength;
+import static fr.inria.lille.commons.utils.library.StringLibrary.packageName;
+import static fr.inria.lille.commons.utils.library.StringLibrary.plainDecimalRepresentation;
+import static fr.inria.lille.commons.utils.library.StringLibrary.repeated;
+import static fr.inria.lille.commons.utils.library.StringLibrary.reversed;
+import static fr.inria.lille.commons.utils.library.StringLibrary.rightFilled;
+import static fr.inria.lille.commons.utils.library.StringLibrary.split;
+import static fr.inria.lille.commons.utils.library.StringLibrary.stripEnd;
+import static fr.inria.lille.commons.utils.library.StringLibrary.toStringList;
+import static fr.inria.lille.commons.utils.library.StringLibrary.toStringMap;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -41,6 +43,33 @@ public class StringLibraryTest {
 		assertEquals("aja", splitted.get(0));
 		assertEquals("adja!", splitted.get(1));
 		assertEquals("ao", splitted.get(2));
+		splitted = split(chained, "ad.a");
+		assertEquals(2, splitted.size());
+		assertEquals("aja~", splitted.get(0));
+		assertEquals("!~ao", splitted.get(1));
+	}
+	
+	@Test
+	public void stringSplitWithCharacter() {
+		String chained = "a.b.b.b,cc-dd(aa";
+		List<String> splitted;
+		splitted = split(chained, '.');
+		assertEquals(4, splitted.size());
+		assertEquals("a", splitted.get(0));
+		assertEquals("b", splitted.get(1));
+		assertEquals("b", splitted.get(2));
+		assertEquals("b,cc-dd(aa", splitted.get(3));
+		splitted = split(chained, ',');
+		assertEquals(2, splitted.size());
+		assertEquals("a.b.b.b", splitted.get(0));
+		assertEquals("cc-dd(aa", splitted.get(1));
+		splitted = split(chained, '(');
+		assertEquals(2, splitted.size());
+		assertEquals("a.b.b.b,cc-dd", splitted.get(0));
+		assertEquals("aa", splitted.get(1));
+		splitted = split(chained, '+');
+		assertEquals(1, splitted.size());
+		assertEquals(chained, splitted.get(0));
 	}
 	
 	@SuppressWarnings({"rawtypes","unchecked"})
@@ -199,5 +228,21 @@ public class StringLibraryTest {
 		assertEquals("-413845470000000000.0", plainDecimalRepresentation(-4.1384547E17));
 		assertEquals("0.000000000000000041384547", plainDecimalRepresentation(4.1384547E-17));
 		assertEquals("-0.000000000000000041384547", plainDecimalRepresentation(-4.1384547E-17));
+	}
+	
+	@Test
+	public void classNameFromQualifiedName() {
+		assertEquals("", className(""));
+		assertEquals("HelloWorld", className("HelloWorld"));
+		assertEquals("HelloWorld", className("java.HelloWorld"));
+		assertEquals("HelloWorld", className("java.api.HelloWorld"));
+	}
+	
+	@Test
+	public void packageNameFromQualifiedName() {
+		assertEquals("", packageName(""));
+		assertEquals("", packageName("HelloWorld"));
+		assertEquals("java", packageName("java.HelloWorld"));
+		assertEquals("java.api", packageName("java.api.HelloWorld"));
 	}
 }

@@ -1,10 +1,10 @@
 package fr.inria.lille.infinitel.mining;
 
-import fr.inria.lille.commons.io.ProjectReference;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.infinitel.InfinitelConfiguration;
 import fr.inria.lille.infinitel.instrumenting.CompoundLoopMonitor;
 import fr.inria.lille.infinitel.instrumenting.CompoundLoopMonitorBuilder;
+import fr.inria.lille.repair.ProjectReference;
 
 public class MonitoringTestExecutorBuilder {
 

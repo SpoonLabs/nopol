@@ -1,7 +1,7 @@
-package fr.inria.lille.commons.utils;
+package fr.inria.lille.commons.utils.library;
 
-import static fr.inria.lille.commons.io.JavaLibrary.lineSeparator;
-import static fr.inria.lille.commons.string.StringLibrary.join;
+import static fr.inria.lille.commons.utils.library.JavaLibrary.lineSeparator;
+import static fr.inria.lille.commons.utils.library.StringLibrary.join;
 import static java.util.Arrays.asList;
 
 import java.util.Collection;
@@ -9,8 +9,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import fr.inria.lille.commons.string.StringLibrary;
 
 
 public class LoggerLibrary {

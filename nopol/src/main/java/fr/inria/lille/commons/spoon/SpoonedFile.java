@@ -1,13 +1,14 @@
 package fr.inria.lille.commons.spoon;
 
-import static fr.inria.lille.commons.utils.LoggerLibrary.logDebug;
-import static fr.inria.lille.commons.utils.LoggerLibrary.newLoggerFor;
+import static fr.inria.lille.commons.utils.library.LoggerLibrary.logDebug;
+import static fr.inria.lille.commons.utils.library.LoggerLibrary.newLoggerFor;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -27,19 +28,18 @@ import fr.inria.lille.commons.collections.SetLibrary;
 import fr.inria.lille.commons.compiler.BytecodeClassLoader;
 import fr.inria.lille.commons.compiler.BytecodeClassLoaderBuilder;
 import fr.inria.lille.commons.compiler.DynamicClassCompiler;
-import fr.inria.lille.commons.io.JavaLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
-import fr.inria.lille.commons.string.StringLibrary;
+import fr.inria.lille.commons.utils.library.JavaLibrary;
 
 public abstract class SpoonedFile {
 	
 	protected abstract Collection<? extends CtSimpleType<?>> modelledClasses();
 	
-	public SpoonedFile(File sourceFile, URL[] classpath) {
+	public SpoonedFile(File sourceFile, URL[] projectClasspath) {
 		this.sourceFile = sourceFile;
-		this.classpath = classpath;
+		this.projectClasspath = projectClasspath;
 		logDebug(logger, format("[Building Spoon model from %s]", sourceFile()));
-		factory = SpoonModelLibrary.modelFor(sourceFile, stringClasspath());
+		factory = SpoonModelLibrary.modelFor(sourceFile, projectClasspath());
 		compiler = new DynamicClassCompiler();
 		manager = new RuntimeProcessingManager(spoonFactory());
 		compiledClasses = MapLibrary.newHashMap();
@@ -111,7 +111,7 @@ public abstract class SpoonedFile {
 	}
 	
 	private void setProcessors(Collection<? extends Processor<?>> processors) {
-		processingManager().getProcessors().clear();
+		processingManager().clear();
 		for(Processor<?> processor : processors) {
 			processingManager().addProcessor(processor);
 		}
@@ -145,23 +145,28 @@ public abstract class SpoonedFile {
 	}
 	
 	protected Map<String, byte[]> compilationFor(Map<String, String> processedSources) {
-		return compiler().javaBytecodeFor(processedSources);
+		return compiler().javaBytecodeFor(processedSources, compiledClasses(), compilationClasspath());
 	}
 	
 	protected BytecodeClassLoader newBytecodeClassloader(Map<String, byte[]> compiledClasses) {
-		return BytecodeClassLoaderBuilder.loaderWith(compiledClasses, classpath());
+		return BytecodeClassLoaderBuilder.loaderWith(compiledClasses, compilationClasspath());
 	}
 	
 	protected File sourceFile() {
 		return sourceFile;
 	}
 	
-	protected URL[] classpath() {
-		return classpath;
+	protected URL[] projectClasspath() {
+		return projectClasspath;
 	}
 	
-	protected String stringClasspath() {
-		return StringLibrary.asClasspath(classpath);
+	protected URL[] compilationClasspath() {
+		if (compilationClasspath == null) {
+			List<URL> urls = ListLibrary.newArrayList(projectClasspath());
+			urls.addAll(asList(JavaLibrary.systemURLsClasspath()));
+			compilationClasspath = urls.toArray(new URL[urls.size()]);
+		}
+		return compilationClasspath;
 	}
 	
 	protected Factory spoonFactory() {
@@ -198,7 +203,8 @@ public abstract class SpoonedFile {
 	}
 	
 	private File sourceFile;
-	private URL[] classpath;
+	private URL[] projectClasspath;
+	private URL[] compilationClasspath;
 	private Factory factory;
 	private ProcessingManager manager;
 	private DynamicClassCompiler compiler;

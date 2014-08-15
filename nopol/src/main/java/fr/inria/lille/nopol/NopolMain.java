@@ -18,7 +18,7 @@ package fr.inria.lille.nopol;
 import java.io.File;
 import java.net.URL;
 
-import fr.inria.lille.commons.io.JavaLibrary;
+import fr.inria.lille.commons.utils.library.JavaLibrary;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.synth.DefaultSynthesizer;
 import fr.inria.lille.nopol.synth.SynthesizerFactory;
@@ -34,7 +34,7 @@ public class NopolMain {
 	public static void nopolLaunch(File sourceFile, URL[] classpath, boolean oneBuild, String[] args) {
 		startTime = System.currentTimeMillis();
 		
-		JavaLibrary.extendSystemClasspathWith(classpath);                   /// THIS IS FOR THE DYNAMIC CLASS COMPILER
+//		JavaLibrary.extendSystemClasspathWith(classpath);                   /// THIS IS FOR THE DYNAMIC CLASS COMPILER
 		
 		NoPol.setOneBuild(oneBuild);
 		NoPol nopol = new NoPol(sourceFile, classpath);

@@ -1,7 +1,7 @@
 package fr.inria.lille.commons.collections;
 
 import static java.lang.String.format;
-import fr.inria.lille.commons.utils.ClassLibrary;
+import fr.inria.lille.commons.utils.library.ClassLibrary;
 
 public class Pair<U, V> implements Comparable<Pair<U, V>> {
 

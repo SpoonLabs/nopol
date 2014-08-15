@@ -1,4 +1,4 @@
-package fr.inria.lille.commons.utils;
+package fr.inria.lille.commons.utils.library;
 
 import java.lang.reflect.Modifier;
 

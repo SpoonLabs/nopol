@@ -1,6 +1,6 @@
 package fr.inria.lille.commons.collections;
 
-import static fr.inria.lille.commons.utils.ClassLibrary.newInstance;
+import static fr.inria.lille.commons.utils.library.ClassLibrary.newInstance;
 
 import java.lang.reflect.Array;
 import java.util.Collection;

@@ -1,10 +1,11 @@
 package fr.inria.lille.commons.compiler;
 
-import static fr.inria.lille.commons.utils.LoggerLibrary.logDebug;
-import static fr.inria.lille.commons.utils.LoggerLibrary.newLoggerFor;
+import static fr.inria.lille.commons.utils.library.LoggerLibrary.logDebug;
+import static fr.inria.lille.commons.utils.library.LoggerLibrary.newLoggerFor;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,7 @@ import org.slf4j.Logger;
 
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
-import fr.inria.lille.commons.string.StringLibrary;
+import fr.inria.lille.commons.utils.library.StringLibrary;
 
 public class DynamicClassCompiler {
 	
@@ -39,20 +40,44 @@ public class DynamicClassCompiler {
 		return javaBytecodeFor(qualifiedName, sourceContent, new HashMap<String, byte[]>());
 	}
 	
+	public synchronized byte[] javaBytecodeFor(String qualifiedName, String sourceContent, URL[] classpath) {
+		return javaBytecodeFor(qualifiedName, sourceContent, new HashMap<String, byte[]>(), classpath);
+	}
+	
 	public synchronized byte[] javaBytecodeFor(String qualifiedName, String sourceContent, Map<String, byte[]> compiledDependencies) {
+		return javaBytecodeFor(qualifiedName, sourceContent, compiledDependencies, options());
+	}
+	
+	public synchronized byte[] javaBytecodeFor(String qualifiedName, String sourceContent, Map<String, byte[]> compiledDependencies, URL[] classpath) {
+		return javaBytecodeFor(qualifiedName, sourceContent, compiledDependencies, optionsWithClasspath(classpath));
+	}
+	
+	public synchronized byte[] javaBytecodeFor(String qualifiedName, String sourceContent, Map<String, byte[]> compiledDependencies, List<String> options) {
 		Map<String, String> adHocMap = MapLibrary.newHashMap(qualifiedName, sourceContent);
-		return javaBytecodeFor(adHocMap, compiledDependencies).get(qualifiedName);
+		return javaBytecodeFor(adHocMap, compiledDependencies, options).get(qualifiedName);
 	}
 	
 	public synchronized Map<String, byte[]> javaBytecodeFor(Map<String, String> qualifiedNameAndContent) {
 		return javaBytecodeFor(qualifiedNameAndContent, new HashMap<String, byte[]>());
 	}
 	
+	public synchronized Map<String, byte[]> javaBytecodeFor(Map<String, String> qualifiedNameAndContent, URL[] classpath) {
+		return javaBytecodeFor(qualifiedNameAndContent, new HashMap<String, byte[]>(), classpath);
+	}
+	
 	public synchronized Map<String, byte[]> javaBytecodeFor(Map<String, String> qualifiedNameAndContent, Map<String, byte[]> compiledDependencies) {
+		return javaBytecodeFor(qualifiedNameAndContent, compiledDependencies, options());
+	}
+	
+	public synchronized Map<String, byte[]> javaBytecodeFor(Map<String, String> qualifiedNameAndContent, Map<String, byte[]> compiledDependencies, URL[] classpath) {
+		return javaBytecodeFor(qualifiedNameAndContent, compiledDependencies, optionsWithClasspath(classpath));
+	}
+	
+	public synchronized Map<String, byte[]> javaBytecodeFor(Map<String, String> qualifiedNameAndContent, Map<String, byte[]> compiledDependencies, List<String> options) {
 		logDebug(logger, format("[Compiling %d source files]", qualifiedNameAndContent.size()));
 		Collection<JavaFileObject> units = addCompilationUnits(qualifiedNameAndContent);
 		fileManager().addCompiledClasses(compiledDependencies);
-		CompilationTask task = compiler().getTask(null, fileManager(), diagnostics(), options(), null, units);
+		CompilationTask task = compiler().getTask(null, fileManager(), diagnostics(), options, null, units);
 		runCompilationTask(task);
 		Map<String, byte[]> bytecodes = collectBytecodes(qualifiedNameAndContent);
 		logDebug(logger, format("[Compilation finished successfully (%d classes)]", bytecodes.size()));
@@ -70,8 +95,8 @@ public class DynamicClassCompiler {
 	}
 
 	protected JavaFileObject addCompilationUnit(String qualifiedName, String sourceContent) {
-		String simpleClassName = StringLibrary.lastAfterSplit(qualifiedName, "[.]");
-		String packageName = StringLibrary.stripEnd(qualifiedName, "." + simpleClassName);
+		String simpleClassName = StringLibrary.lastAfterSplit(qualifiedName, '.');
+		String packageName = StringLibrary.stripEnd(qualifiedName, '.' + simpleClassName);
 		VirtualSourceFileObject sourceFile = new VirtualSourceFileObject(simpleClassName, sourceContent);
 		fileManager().addSourceFile(StandardLocation.SOURCE_PATH, packageName, simpleClassName, sourceFile);
 		return sourceFile;
@@ -104,6 +129,13 @@ public class DynamicClassCompiler {
 	
 	private String topClassName(String qualifiedName) {
 		return qualifiedName.split("[$]")[0];
+	}
+	
+	private List<String> optionsWithClasspath(URL[] classpath) {
+		List<String> options = ListLibrary.newArrayList(options());
+		options.add("-cp");
+		options.add(StringLibrary.asClasspath(classpath));
+		return options;
 	}
 	
 	protected VirtualFileObjectManager fileManager() {

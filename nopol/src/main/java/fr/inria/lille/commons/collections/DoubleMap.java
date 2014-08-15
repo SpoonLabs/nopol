@@ -129,14 +129,14 @@ public class DoubleMap<K1, K2, V> implements Map<K1, Map<K2, V>> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public boolean equals(Object object) {
+		if (this == object)
 			return true;
-		if (obj == null)
+		if (object == null)
 			return false;
-		if (getClass() != obj.getClass())
+		if (getClass() != object.getClass())
 			return false;
-		DoubleMap<?, ?, ?> other = (DoubleMap<?, ?, ?>) obj;
+		DoubleMap<?, ?, ?> other = (DoubleMap<?, ?, ?>) object;
 		if (baseMap() == null) {
 			if (other.baseMap() != null)
 				return false;

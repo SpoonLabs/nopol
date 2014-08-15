@@ -1,7 +1,7 @@
 package fr.inria.lille.infinitel;
 
-import static fr.inria.lille.commons.utils.LoggerLibrary.logDebug;
-import static fr.inria.lille.commons.utils.LoggerLibrary.newLoggerFor;
+import static fr.inria.lille.commons.utils.library.LoggerLibrary.logDebug;
+import static fr.inria.lille.commons.utils.library.LoggerLibrary.newLoggerFor;
 import static java.lang.String.format;
 
 import java.io.File;
@@ -11,7 +11,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
-import fr.inria.lille.commons.io.ProjectReference;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
@@ -25,6 +24,7 @@ import fr.inria.lille.infinitel.mining.LoopTestThresholdFinder;
 import fr.inria.lille.infinitel.mining.MonitoringTestExecutor;
 import fr.inria.lille.infinitel.mining.MonitoringTestExecutorBuilder;
 import fr.inria.lille.infinitel.synthesis.LoopSpecificationCollector;
+import fr.inria.lille.repair.ProjectReference;
 
 /** Infinite Loops Repair */
 

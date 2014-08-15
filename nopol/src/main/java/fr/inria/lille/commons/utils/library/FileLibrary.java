@@ -1,4 +1,4 @@
-package fr.inria.lille.commons.io;
+package fr.inria.lille.commons.utils.library;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,13 +7,10 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.LinkedList;
 
-import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.string.StringLibrary;
+public class FileLibrary {
 
-public class FileHandler {
-	
 	public static String currentAbsolutePath() {
 		return openFrom(".").getAbsolutePath();
 	}
@@ -61,7 +58,7 @@ public class FileHandler {
 	
 	public static Collection<File> filesMatchingNameIn(String directoryPath, String regexToMatch) {
 		File directory = directoryFrom(directoryPath);
-		Collection<File> matchingFiles = ListLibrary.newLinkedList();
+		Collection<File> matchingFiles = new LinkedList<File>();
 		for (File file : directory.listFiles()) {
 			if (file.getName().matches(regexToMatch)) {
 				matchingFiles.add(file);
@@ -111,30 +108,19 @@ public class FileHandler {
 		return URI.create(scheme);
 	}
 	
-	public static URL[] classpathFrom(String classpath) {
-		List<String> folderNames = StringLibrary.split(classpath, "" + JavaLibrary.classpathSeparator());
-		URL[] folders = new URL[folderNames.size()];
-		int index = 0;
-		for (String folderName : folderNames) {
-			folders[index] = FileHandler.urlFrom(folderName);
-			index += 1;
-		}
-		return folders;
-	}
-	
 	public static URL resource(String path) {
 		/* How method "AnyClass.getResource(filePath)" works:
 		 * Suppose the fully qualified name of class "AnyClass" is "any.package.AnyClass".
 		 * 	- If "filePath" starts with '/', then the path is relative to the CLASSPATH. That is "any/../path"
 		 * 	- Otherwise, the path is relative to the location of "AnyClass". That is "any/package/path"
 		 */
-		URL resource = FileHandler.class.getResource(path);
+		URL resource = FileLibrary.class.getResource(path);
 		if (resource == null) {
 			throw new IllegalArgumentException("Unable to find resource in: '" + path + "'");
 		}
 		return resource;
 	}
-
+	
 	private static void log(String message) {
 		System.err.println(message);
 	}

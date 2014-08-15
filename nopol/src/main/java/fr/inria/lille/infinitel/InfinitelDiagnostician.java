@@ -1,6 +1,6 @@
 package fr.inria.lille.infinitel;
 
-import static fr.inria.lille.commons.utils.LoggerLibrary.logDebug;
+import static fr.inria.lille.commons.utils.library.LoggerLibrary.logDebug;
 import static java.lang.String.format;
 
 import java.io.File;
@@ -16,22 +16,23 @@ import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.collections.MappingBag;
 import fr.inria.lille.commons.collections.Pair;
 import fr.inria.lille.commons.collections.Table;
-import fr.inria.lille.commons.io.FileHandler;
-import fr.inria.lille.commons.io.ProjectReference;
-import fr.inria.lille.commons.string.StringLibrary;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.utils.RangeMapper;
 import fr.inria.lille.commons.utils.Singleton;
+import fr.inria.lille.commons.utils.library.FileLibrary;
+import fr.inria.lille.commons.utils.library.JavaLibrary;
+import fr.inria.lille.commons.utils.library.StringLibrary;
 import fr.inria.lille.infinitel.instrumenting.CompoundLoopMonitor;
 import fr.inria.lille.infinitel.loop.FixableLoop;
 import fr.inria.lille.infinitel.loop.While;
 import fr.inria.lille.infinitel.mining.MonitoringTestExecutor;
+import fr.inria.lille.repair.ProjectReference;
 
 public class InfinitelDiagnostician extends Infinitel {
 
 	public static void main(String[] args) {
-		File sourceFile = FileHandler.openFrom(args[0]);
-		URL[] classpath = FileHandler.classpathFrom(args[1]);
+		File sourceFile = FileLibrary.openFrom(args[0]);
+		URL[] classpath = JavaLibrary.classpathFrom(args[1]);
 		new InfinitelDiagnostician(sourceFile, classpath).diagnose();
 		System.exit(0);
 	}

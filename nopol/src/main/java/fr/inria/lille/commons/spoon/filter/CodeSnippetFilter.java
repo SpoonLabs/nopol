@@ -5,7 +5,7 @@ import java.io.File;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.filter.AbstractFilter;
-import fr.inria.lille.commons.io.FileHandler;
+import fr.inria.lille.commons.utils.library.FileLibrary;
 
 public class CodeSnippetFilter extends AbstractFilter<CtElement> {
 
@@ -19,7 +19,7 @@ public class CodeSnippetFilter extends AbstractFilter<CtElement> {
 	public boolean matches(CtElement element) {
 		SourcePosition position = element.getPosition();
 		if (position != null) {
-			return  FileHandler.isSameFile(classSourceFile(), position.getFile()) && codeSnippet().equals(element.toString());
+			return  FileLibrary.isSameFile(classSourceFile(), position.getFile()) && codeSnippet().equals(element.toString());
 		}
 		return false;
 	}

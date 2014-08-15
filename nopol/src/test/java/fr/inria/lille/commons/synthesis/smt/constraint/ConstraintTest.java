@@ -25,7 +25,6 @@ import org.smtlib.IParser.ParserException;
 
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
-import fr.inria.lille.commons.string.StringLibrary;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.operator.BinaryOperator;
 import fr.inria.lille.commons.synthesis.operator.Operator;
@@ -33,6 +32,7 @@ import fr.inria.lille.commons.synthesis.operator.TernaryOperator;
 import fr.inria.lille.commons.synthesis.operator.UnaryOperator;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;
+import fr.inria.lille.commons.utils.library.StringLibrary;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class ConstraintTest {

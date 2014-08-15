@@ -21,19 +21,19 @@ import fr.inria.lille.commons.collections.Bag;
 import fr.inria.lille.commons.collections.CollectionLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
 import fr.inria.lille.commons.collections.Pair;
-import fr.inria.lille.commons.io.FileHandler;
-import fr.inria.lille.commons.io.ProjectReference;
 import fr.inria.lille.commons.spoon.util.SpoonElementLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
-import fr.inria.lille.commons.string.StringLibrary;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.trace.Specification;
+import fr.inria.lille.commons.utils.library.FileLibrary;
+import fr.inria.lille.commons.utils.library.StringLibrary;
 import fr.inria.lille.infinitel.instrumenting.CompoundLoopMonitorBuilder;
 import fr.inria.lille.infinitel.loop.FixableLoop;
 import fr.inria.lille.infinitel.loop.While;
 import fr.inria.lille.infinitel.mining.MonitoringTestExecutor;
+import fr.inria.lille.repair.ProjectReference;
 
 public class InfinitelTest {
 	
@@ -213,7 +213,7 @@ public class InfinitelTest {
 		Collection<While> infiniteLoops = infinitel.infiniteLoops(testExecutor, listener);
 		assertEquals(1, infiniteLoops.size());
 		While loop = CollectionLibrary.any(infiniteLoops);
-		assertTrue(FileHandler.isSameFile(infinitel.project().sourceFile(), loop.position().getFile()));
+		assertTrue(FileLibrary.isSameFile(infinitel.project().sourceFile(), loop.position().getFile()));
 		assertEquals(line, loop.position().getLine());
 		return Pair.from(loop, listener);
 	}

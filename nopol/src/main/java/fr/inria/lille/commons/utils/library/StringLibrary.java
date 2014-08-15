@@ -1,5 +1,6 @@
-package fr.inria.lille.commons.string;
+package fr.inria.lille.commons.utils.library;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
 import java.io.File;
@@ -16,6 +17,10 @@ import java.util.Map;
 
 public class StringLibrary {
 
+	public static List<String> split(String chainedStrings, Character character) {
+		return split(chainedStrings, format("[%c]", character));
+	}
+	
 	public static List<String> split(String chainedStrings, String splittingRegex) {
 		return asList(chainedStrings.split(splittingRegex));
 	}
@@ -43,12 +48,20 @@ public class StringLibrary {
 		return string;
 	}
 	
+	public static String firstAfterSplit(String string, Character character) {
+		return firstAfterSplit(string, format("[%c]", character));
+	}
+	
 	public static String firstAfterSplit(String string, String splittingRegex) {
 		List<String> splitted = split(string, splittingRegex);
 		if (! splitted.isEmpty()) {
 			return splitted.get(0);
 		}
 		return string;
+	}
+	
+	public static String lastAfterSplit(String string, Character character) {
+		return lastAfterSplit(string, format("[%c]", character));
 	}
 	
 	public static String lastAfterSplit(String string, String splittingRegex) {
@@ -169,6 +182,22 @@ public class StringLibrary {
 		} else {
 			return decimal.toPlainString();
 		}
+	}
+	
+	public static String className(String qualifiedClassName) {
+		int lastPackageSeparator = qualifiedClassName.lastIndexOf('.');
+		if (lastPackageSeparator > -1) {
+			return qualifiedClassName.substring(lastPackageSeparator + 1);
+		}
+		return qualifiedClassName;
+	}
+	
+	public static String packageName(String qualifiedClassName) {
+		int lastPackageSeparator = qualifiedClassName.lastIndexOf('.');
+		if (lastPackageSeparator > -1) {
+			return qualifiedClassName.substring(0, lastPackageSeparator);
+		}
+		return "";
 	}
 }
 

@@ -3,6 +3,7 @@ package fr.inria.lille.commons.spoon.util;
 import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.asBlock;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import spoon.reflect.reference.CtTypeReference;
 import com.martiansoftware.jsap.JSAPException;
 
 import fr.inria.lille.commons.collections.ListLibrary;
+import fr.inria.lille.commons.utils.library.StringLibrary;
 
 public class SpoonModelLibrary {
 
@@ -35,13 +37,13 @@ public class SpoonModelLibrary {
 		return modelFor(sourceFile, null);
 	}
 	
-	public static Factory modelFor(File sourceFile, String classpath) {
+	public static Factory modelFor(File sourceFile, URL[] classpath) {
 		Factory factory = newFactory();
 		factory.getEnvironment().setDebug(true);
 		try {
 			SpoonCompiler compiler = launcher().createCompiler(factory);
 			if (classpath != null) {
-				compiler.setSourceClasspath(classpath);
+				compiler.setSourceClasspath(StringLibrary.asClasspath(classpath));
 			}
 			compiler.addInputSource(sourceFile);
 			compiler.addTemplateSource(sourceFile);

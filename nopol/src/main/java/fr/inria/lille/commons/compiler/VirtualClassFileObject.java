@@ -8,12 +8,12 @@ import java.io.OutputStream;
 
 import javax.tools.SimpleJavaFileObject;
 
-import fr.inria.lille.commons.io.FileHandler;
+import fr.inria.lille.commons.utils.library.FileLibrary;
 
 public class VirtualClassFileObject extends SimpleJavaFileObject {
 
 	public VirtualClassFileObject(String qualifiedName, Kind kind) {
-		super(FileHandler.uriFrom(qualifiedName), kind);
+		super(FileLibrary.uriFrom(qualifiedName), kind);
 	}
 	
 	public VirtualClassFileObject(String qualifiedName, Kind kind, byte[] bytes) {

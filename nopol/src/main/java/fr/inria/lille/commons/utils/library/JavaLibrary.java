@@ -1,23 +1,47 @@
-package fr.inria.lille.commons.io;
+package fr.inria.lille.commons.utils.library;
+
+import static java.util.Arrays.asList;
 
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.LinkedList;
+import java.util.List;
 
 public class JavaLibrary {
 
 	public static String systemClasspath() {
 		return property("java.class.path");
 	}
+
+	public static URL[] systemURLsClasspath() {
+		return classpathFrom(systemClasspath());
+	}
 	
-	public static String extendSystemClasspathWith(URL[] classpaths) {
-		String newClasspath = systemClasspath();
+	public static void extendSystemClasspathWith(URL[] classpaths) {
+		StringBuilder newClasspath = new StringBuilder(systemClasspath());
 		for (URL classpath : classpaths) {
-			newClasspath += classpathSeparator() + classpath.getPath();
+			newClasspath.append(classpathSeparator() +  classpath.getPath()); 
 		}
-		setClasspath(newClasspath);
-		return newClasspath;
+		setClasspath(newClasspath.toString());
+	}
+	
+	public static URL[] extendClasspathWith(String classpath, URL[] destination) {
+		List<URL> extended = new LinkedList<URL>(asList(destination));
+		extended.addAll(asList(classpathFrom(classpath)));
+		return extended.toArray(new URL[extended.size()]);
+	}
+	
+	public static URL[] classpathFrom(String classpath) {
+		List<String> folderNames = StringLibrary.split(classpath, classpathSeparator());
+		URL[] folders = new URL[folderNames.size()];
+		int index = 0;
+		for (String folderName : folderNames) {
+			folders[index] = FileLibrary.urlFrom(folderName);
+			index += 1;
+		}
+		return folders;
 	}
 	
 	public static void setClasspath(String newClasspath) {

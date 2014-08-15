@@ -4,9 +4,15 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -77,7 +83,7 @@ public class DynamicClassCompilerTest {
 				"		return 12;" +
 				"	}" +
 				"}";
-		Map<String, String> sources = MapLibrary.newHashMap(asList(qualifiedAbstractName, qualifiedSubclassName), asList(abstractCode, subclassCode));
+		Map<String, String> sources = adHocMap(asList(qualifiedAbstractName, qualifiedSubclassName), asList(abstractCode, subclassCode));
 		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources);
 		Class<?> subclass = loader.loadClass(qualifiedSubclassName);
 		Object newInstance = subclass.newInstance();
@@ -181,7 +187,7 @@ public class DynamicClassCompilerTest {
 	}
 	
 	@Test
-	public void accesPublicMethodFromDifferentClassloader() throws ClassNotFoundException {
+	public void accessPublicMethodFromDifferentClassloader() throws ClassNotFoundException {
 		String qualifiedName = "test.dynamic.compiler.HelloWorld";
 		String qualifiedTestName = "test.dynamic.compiler.HelloWorldTest";
 		String code = 
@@ -203,7 +209,7 @@ public class DynamicClassCompilerTest {
 				"	}" + 
 				"}";
 		ClassLoader parentLoader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
-		Map<String, String> sources = MapLibrary.newHashMap(asList(qualifiedName, qualifiedTestName), asList(code, testCode));
+		Map<String, String> sources = adHocMap(asList(qualifiedName, qualifiedTestName), asList(code, testCode));
 		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources, parentLoader);
 		Class<?> testClass = loader.loadClass(qualifiedTestName);
 		Class<?> theClass = loader.loadClass(qualifiedName);
@@ -217,7 +223,7 @@ public class DynamicClassCompilerTest {
 	}
 	
 	@Test
-	public void accesProtectedMethodFromSameClassloaderAndPackage() throws ClassNotFoundException {
+	public void accessProtectedMethodFromSameClassloaderAndPackage() throws ClassNotFoundException {
 		String qualifiedName = "test.dynamic.compiler.HelloWorld";
 		String qualifiedTestName = "test.dynamic.compiler.HelloWorldTest";
 		String code = 
@@ -237,7 +243,7 @@ public class DynamicClassCompilerTest {
 				"		assertEquals(\"Hello World!\", new HelloWorld().message());" +
 				"	}" + 
 				"}";
-		Map<String, String> sources = MapLibrary.newHashMap(asList(qualifiedName, qualifiedTestName), asList(code, testCode));
+		Map<String, String> sources = adHocMap(asList(qualifiedName, qualifiedTestName), asList(code, testCode));
 		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources);
 		Class<?> testClass = loader.loadClass(qualifiedTestName);
 		Class<?> theClass = loader.loadClass(qualifiedName);
@@ -250,7 +256,7 @@ public class DynamicClassCompilerTest {
 	}
 	
 	@Test
-	public void accesProtectedMethodFromDifferentClassloaderButSamePackageName() throws ClassNotFoundException {
+	public void accessProtectedMethodFromDifferentClassloaderButSamePackageName() throws ClassNotFoundException {
 		String qualifiedName = "test.dynamic.compiler.HelloWorld";
 		String qualifiedTestName = "test.dynamic.compiler.HelloWorldTest";
 		String code = 
@@ -270,7 +276,7 @@ public class DynamicClassCompilerTest {
 				"		assertEquals(\"Hello World!\", new HelloWorld().message());" +
 				"	}" + 
 				"}";
-		Map<String, String> sources = MapLibrary.newHashMap(asList(qualifiedName, qualifiedTestName), asList(code, testCode));
+		Map<String, String> sources = adHocMap(asList(qualifiedName, qualifiedTestName), asList(code, testCode));
 		ClassLoader parentLoader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
 		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources, parentLoader);
 		Class<?> testClass = loader.loadClass(qualifiedTestName);
@@ -380,9 +386,9 @@ public class DynamicClassCompilerTest {
 				"}";
 		
 		byte[] dependencyCompilation = dependencyCompiler.javaBytecodeFor(dependencyQualifiedName, dependencyCode);
-		Map<String, byte[]> compiledDependencies = MapLibrary.newHashMap(dependencyQualifiedName, dependencyCompilation);
+		Map<String, byte[]> compiledDependencies = adHocMap(dependencyQualifiedName, dependencyCompilation);
 		
-		Map<String, String> sourceToCompile = MapLibrary.newHashMap(clientQualifiedName, clientCode);
+		Map<String, String> sourceToCompile = adHocMap(clientQualifiedName, clientCode);
 		Map<String, byte[]> clientCompilation = clientCompiler.javaBytecodeFor(sourceToCompile, compiledDependencies);
 		assertEquals(1, clientCompilation.size());
 		assertFalse(clientCompilation.containsKey(dependencyQualifiedName));
@@ -395,7 +401,7 @@ public class DynamicClassCompilerTest {
 	}
 	
 	@Test
-	public void compileModifiyAndRecompile() throws Exception {
+	public void compileModifiyAndRecompileWithSameCompiler() throws Exception {
 		DynamicClassCompiler compiler = new DynamicClassCompiler();
 		String qualifiedName ="test.dynamic.compiler.Translator";
 		String sourceCode =
@@ -433,5 +439,188 @@ public class DynamicClassCompilerTest {
 		translator = translatorClass.newInstance();
 		assertEquals("hello", translatorClass.getMethod("translate", String.class).invoke(translator, "hola"));
 		assertEquals("greetings", translatorClass.getMethod("translate", String.class).invoke(translator, "saludos"));
+	}
+	
+	@Test
+	public void jarCreationFromCompilation() throws Exception {
+		String qualifiedName = "test.dynamic.compiler.HelloWorld";
+		String code = 
+				"package test.dynamic.compiler;" +
+				"public class HelloWorld {" +
+				"	@Override" +
+				"	public String toString() {" +
+				"		return \"Hello World!\";" +
+				"	}" + 
+				"}";
+		DynamicClassCompiler compiler = new DynamicClassCompiler();
+		byte[] compilation = compiler.javaBytecodeFor(qualifiedName, code);
+		File jarFile = jarFileFor(adHocMap(qualifiedName, compilation), "HelloWorld");
+		URLClassLoader loader = new URLClassLoader(new URL[] { jarFile.toURI().toURL() });
+		Class<?> newClass = loader.loadClass(qualifiedName);
+		loader.close();
+		jarFile.delete();
+		Object newInstance = newClass.newInstance();
+		assertEquals("Hello World!", newInstance.toString());
+	}
+	
+	@Test
+	public void jarCreationWithDependency() throws Exception {
+		String dependencyName = "test.dynamic.newjar.Printer";
+		String dependencyCode = 
+				"package test.dynamic.newjar;" + 
+				"public class Printer {" +
+				"	public String print(Object object) {" +
+				"		return \"An object printed by a dependency\";" + 
+				"	}" + 
+				"}";
+		String qualifiedName = "test.dynamic.compiler.HelloWorld";
+		String code = 
+				"package test.dynamic.compiler;" +
+				"import test.dynamic.newjar.Printer;" +
+				"public class HelloWorld {" +
+				"	@Override" +
+				"	public String toString() {" +
+				"		return new Printer().print(this);" +
+				"	}" + 
+				"}";
+		DynamicClassCompiler compiler = new DynamicClassCompiler();
+		
+		Map<String, String> qualifiedNameAndContent = adHocMap(asList(dependencyName, qualifiedName), asList(dependencyCode, code));
+		Map<String, byte[]> bytecodes = compiler.javaBytecodeFor(qualifiedNameAndContent);
+		File jarFile = jarFileFor(bytecodes, "HelloWorldAndPrinter");
+		
+		URLClassLoader loader = new URLClassLoader(new URL[] { jarFile.toURI().toURL() });
+		Class<?> newClass = loader.loadClass(qualifiedName);
+		Object newInstance = newClass.newInstance();
+		assertEquals("An object printed by a dependency", newInstance.toString());
+		loader.close();
+		jarFile.delete();
+	}
+	
+	@Test
+	public void compilationFromClasspath() throws Exception {
+		String dependencyName = "test.dynamic.greetings.Greet";
+		String dependencyCode = 
+				"package test.dynamic.greetings;" + 
+				"public class Greet {" +
+				"	private Object object;" +
+				"	public Greet(Object object) {" +
+				"		this.object = object;" +
+				"	}" +
+				"	@Override" +
+				"	public String toString() {" +
+				"		return \"Hello my dearest, \" + object;" + 
+				"	}" + 
+				"}";
+		String qualifiedName = "test.dynamic.compiler.PoliteObject";
+		String code = 
+				"package test.dynamic.compiler;" +
+				"import test.dynamic.greetings.Greet;" +
+				"public class PoliteObject {" +
+				"	public String greet(Object object) {" +
+				"		return new Greet(object).toString();" +
+				"	}" + 
+				"}";
+		DynamicClassCompiler compiler = new DynamicClassCompiler();
+		byte[] dependency = compiler.javaBytecodeFor(dependencyName, dependencyCode);
+		
+		File jarFile = jarFileFor(adHocMap(dependencyName, dependency), "Greet");
+		URL[] classpath = new URL[] { jarFile.toURI().toURL() };
+		
+		DynamicClassCompiler otherCompiler = new DynamicClassCompiler();
+		byte[] otherCompilation = otherCompiler.javaBytecodeFor(qualifiedName, code, classpath);
+		
+		URLClassLoader loader = new URLClassLoader(classpath);
+		BytecodeClassLoader bytecodeLoader = BytecodeClassLoaderBuilder.loaderWith(qualifiedName, otherCompilation, classpath, loader);
+		Class<?> newClass = bytecodeLoader.loadClass(qualifiedName);
+		Object newInstance = newClass.newInstance();
+		assertEquals("Hello my dearest, 1", newClass.getMethod("greet", Object.class).invoke(newInstance, 1));
+		assertEquals("Hello my dearest, true", newClass.getMethod("greet", Object.class).invoke(newInstance, true));
+		loader.close();
+		jarFile.delete();
+	}
+	
+	@Test
+	public void compilingWithDependenciesComesBeforeClasspath() throws Exception {
+		String dependencyName = "test.dynamic.math.Calculator";
+		String dependencyCode = 
+				"package test.dynamic.math;" +
+				"public class Calculator {" +
+				"	public int sum(int a, int b) {" +
+				"		return a + b;" +
+				"	}";
+		String newDependencyCode = dependencyCode +
+				"	public int multiply(int a, int b) {" +
+				"		return a * b;" +
+				"	}" +
+				"}";
+		DynamicClassCompiler compiler = new DynamicClassCompiler();
+		byte[] firstDependencyVersion = compiler.javaBytecodeFor(dependencyName, dependencyCode + "}");
+		byte[] secondDependencyVersion = compiler.javaBytecodeFor(dependencyName, newDependencyCode);
+		
+		File firstVersionJar = jarFileFor(adHocMap(dependencyName, firstDependencyVersion), "Calculator");
+		File secondVersionJar = jarFileFor(adHocMap(dependencyName, secondDependencyVersion), "CalculatorExtended");
+		
+		String qualifiedName = "test.dynamic.math.Mathematician";
+		String code =
+				"package test.dynamic.math;" +
+				"import test.dynamic.math.Calculator;" +
+				"public class Mathematician {" +
+				"	private Calculator calculator;" +
+				"	public Mathematician(Calculator calculator) {" +
+				"		this.calculator = calculator;" +
+				"	}" +
+				"	public int sum(int a, int b) {" +
+				"		return calculator.sum(a, b);" +
+				"	}" +
+				"	public int multiply(int a, int b) {" +
+				"		return calculator.multiply(a, b);" +
+				"	}" +
+				"}";
+		
+		DynamicClassCompiler otherCompiler = new DynamicClassCompiler();
+		checkException(true, otherCompiler, qualifiedName, code, adHocMap(dependencyName, firstDependencyVersion), secondVersionJar);
+		byte[] compilation = checkException(false, otherCompiler, qualifiedName, code, adHocMap(dependencyName, secondDependencyVersion), firstVersionJar);
+
+		URLClassLoader parentLoader = new URLClassLoader(new URL[] { secondVersionJar.toURI().toURL() });
+		BytecodeClassLoader loader = BytecodeClassLoaderBuilder.loaderWith(qualifiedName, compilation, parentLoader);
+		
+		Class<?> dependencyClass = parentLoader.loadClass(dependencyName);
+		Class<?> newClass = loader.loadClass(qualifiedName);
+		Object newInstance = newClass.getConstructor(dependencyClass).newInstance(dependencyClass.newInstance());
+		assertEquals(10, newClass.getMethod("sum", int.class, int.class).invoke(newInstance, 4, 6));
+		assertEquals(24, newClass.getMethod("multiply", int.class, int.class).invoke(newInstance, 4, 6));
+		parentLoader.close();
+		firstVersionJar.delete();
+		secondVersionJar.delete();
+	}
+	
+	private <K, V> Map<K, V> adHocMap(K key, V value) {
+		return adHocMap(asList(key), asList(value));
+	}
+	
+	private <K, V> Map<K, V> adHocMap(List<K> keys, List<V> values) {
+		return MapLibrary.newHashMap(keys, values);
+	}
+	
+	private File jarFileFor(Map<String, byte[]> compilation, String jarName) {
+		JarPackage jarPackage = new JarPackage();
+		jarPackage.addAll(compilation);
+		File file = jarPackage.saveTo(new File("."), jarName);
+		return file;
+	}
+	
+	private byte[] checkException(boolean thrown, DynamicClassCompiler compiler, String qualifiedName, String code, Map<String, byte[]> dependencies, File jarDependency) {
+		boolean wasThrown = false;
+		byte[] compilation = null;
+		try {
+			compilation = compiler.javaBytecodeFor(qualifiedName, code, dependencies, new URL[] { jarDependency.toURI().toURL() });
+		} catch (DynamicCompilationException dce) {
+			wasThrown = true;
+		} catch (MalformedURLException e) {
+			fail();
+		}
+		assertEquals(thrown, wasThrown);
+		return compilation;
 	}
 }

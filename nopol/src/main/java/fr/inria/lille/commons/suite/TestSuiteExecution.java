@@ -1,7 +1,7 @@
 package fr.inria.lille.commons.suite;
 
-import static fr.inria.lille.commons.utils.LoggerLibrary.logDebug;
-import static fr.inria.lille.commons.utils.LoggerLibrary.newLoggerFor;
+import static fr.inria.lille.commons.utils.library.LoggerLibrary.logDebug;
+import static fr.inria.lille.commons.utils.library.LoggerLibrary.newLoggerFor;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 import java.util.List;

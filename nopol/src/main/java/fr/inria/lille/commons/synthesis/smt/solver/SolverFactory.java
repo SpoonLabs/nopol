@@ -5,7 +5,7 @@ import org.smtlib.ISolver;
 import org.smtlib.SMT;
 import org.smtlib.SMT.Configuration;
 
-import fr.inria.lille.commons.io.FileHandler;
+import fr.inria.lille.commons.utils.library.FileLibrary;
 
 public abstract class SolverFactory {
 
@@ -32,7 +32,7 @@ public abstract class SolverFactory {
 	}
 	
 	public SolverFactory(String solverPath) {
-		FileHandler.ensurePathIsValid(solverPath);
+		FileLibrary.ensurePathIsValid(solverPath);
 		this.solverPath = solverPath;
 	}
 	

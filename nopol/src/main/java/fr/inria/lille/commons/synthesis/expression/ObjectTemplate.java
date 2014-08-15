@@ -7,7 +7,7 @@ import java.util.Collection;
 import org.smtlib.ISort;
 
 import fr.inria.lille.commons.collections.Multimap;
-import fr.inria.lille.commons.utils.ClassLibrary;
+import fr.inria.lille.commons.utils.library.ClassLibrary;
 
 public abstract class ObjectTemplate<T> {
 	

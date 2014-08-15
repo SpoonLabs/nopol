@@ -12,15 +12,15 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.lille.commons.collections.SetLibrary;
-import fr.inria.lille.commons.io.FileHandler;
-import fr.inria.lille.commons.io.ProjectReference;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.suite.TestCasesListener;
 import fr.inria.lille.commons.suite.TestSuiteExecution;
+import fr.inria.lille.commons.utils.library.FileLibrary;
 import fr.inria.lille.nopol.NoPol;
 import fr.inria.lille.nopol.patch.Patch;
 import fr.inria.lille.nopol.synth.BugKind;
 import fr.inria.lille.repair.Main;
+import fr.inria.lille.repair.ProjectReference;
 
 public class NopolTest {
 
@@ -80,7 +80,7 @@ public class NopolTest {
 		String solver = "z3";
 		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/z3-4.3.2/z3_for_mac";
 		Main.main(new String[] {"nopol", srcFolder, classpath, solver, solverPath });
-		/* PATCH: CONDITIONAL (fpos)==(n) */
+		/* PATCH: CONDITIONAL (intPos)==(sorted.length), (fpos)==(n) */
 	}
 	
 	@Test
@@ -182,8 +182,8 @@ public class NopolTest {
 	
 	private void clean(String folderPath) {
 		String path = folderPath + "/spooned";
-		if (FileHandler.isValidPath(path)) {
-			FileHandler.deleteDirectory(path);
+		if (FileLibrary.isValidPath(path)) {
+			FileLibrary.deleteDirectory(path);
 		}
 	}
 }

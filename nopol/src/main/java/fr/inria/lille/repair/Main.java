@@ -21,10 +21,10 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.io.FileHandler;
-import fr.inria.lille.commons.io.JavaLibrary;
-import fr.inria.lille.commons.string.StringLibrary;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
+import fr.inria.lille.commons.utils.library.FileLibrary;
+import fr.inria.lille.commons.utils.library.JavaLibrary;
+import fr.inria.lille.commons.utils.library.StringLibrary;
 import fr.inria.lille.infinitel.Infinitel;
 import fr.inria.lille.nopol.NopolMain;
 
@@ -33,8 +33,8 @@ public class Main {
 	public static void main(String[] args) {
     	try {
     		String repairMethod = args[0];
-    		File sourceFile = FileHandler.openFrom(args[1]);
-    		URL[] classpath = FileHandler.classpathFrom(args[2]);
+    		File sourceFile = FileLibrary.openFrom(args[1]);
+    		URL[] classpath = JavaLibrary.classpathFrom(args[2]);
     		SolverFactory.setSolver(args[3], args[4]);
     		new Main(args, repairMethod, sourceFile, classpath);
     	}

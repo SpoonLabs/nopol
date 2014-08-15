@@ -17,7 +17,7 @@ package fr.inria.lille.nopol;
 
 import java.io.File;
 
-import fr.inria.lille.commons.io.FileHandler;
+import fr.inria.lille.commons.utils.library.FileLibrary;
 
 /**
  * @author Favio D. DeMarco
@@ -65,7 +65,7 @@ public final class SourceLocation {
 			return sourceFolder; 
 		}
 		String pathToJavaFile = getRootClassName().replace('.', File.separatorChar);
-		return FileHandler.fileFrom(sourceFolder.getAbsolutePath() + '/' +  pathToJavaFile + ".java");
+		return FileLibrary.fileFrom(sourceFolder.getAbsolutePath() + '/' +  pathToJavaFile + ".java");
 	}
 
 	/**

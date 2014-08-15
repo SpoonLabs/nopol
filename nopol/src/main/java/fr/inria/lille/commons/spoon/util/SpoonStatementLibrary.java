@@ -5,8 +5,8 @@ import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isMethod;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isStatement;
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newBlock;
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.setParent;
-import static fr.inria.lille.commons.utils.ClassLibrary.castTo;
-import static fr.inria.lille.commons.utils.ClassLibrary.isInstanceOf;
+import static fr.inria.lille.commons.utils.library.ClassLibrary.castTo;
+import static fr.inria.lille.commons.utils.library.ClassLibrary.isInstanceOf;
 
 import java.util.List;
 

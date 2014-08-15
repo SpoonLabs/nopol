@@ -7,7 +7,7 @@ import java.net.URLClassLoader;
 import java.util.Map;
 
 import fr.inria.lille.commons.collections.MapLibrary;
-import fr.inria.lille.commons.string.StringLibrary;
+import fr.inria.lille.commons.utils.library.StringLibrary;
 
 public class BytecodeClassLoader extends URLClassLoader {
 

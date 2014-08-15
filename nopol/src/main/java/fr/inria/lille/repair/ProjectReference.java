@@ -1,14 +1,16 @@
-package fr.inria.lille.commons.io;
+package fr.inria.lille.repair;
 
 import java.io.File;
 import java.net.URL;
 
 import fr.inria.lille.commons.utils.TestClassesFinder;
+import fr.inria.lille.commons.utils.library.FileLibrary;
+import fr.inria.lille.commons.utils.library.JavaLibrary;
 
 public class ProjectReference {
 
 	public ProjectReference(String sourceFile, String classpath, String[] testClasses) {
-		this(FileHandler.openFrom(sourceFile), FileHandler.classpathFrom(classpath));
+		this(FileLibrary.openFrom(sourceFile), JavaLibrary.classpathFrom(classpath));
 		this.testClasses = testClasses;
 	}
 	

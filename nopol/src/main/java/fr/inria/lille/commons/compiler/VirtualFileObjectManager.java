@@ -16,7 +16,7 @@ import javax.tools.StandardLocation;
 import fr.inria.lille.commons.collections.IterableLibrary;
 import fr.inria.lille.commons.collections.ListLibrary;
 import fr.inria.lille.commons.collections.MapLibrary;
-import fr.inria.lille.commons.io.FileHandler;
+import fr.inria.lille.commons.utils.library.FileLibrary;
 
 public class VirtualFileObjectManager extends ForwardingJavaFileManager<JavaFileManager> {
 
@@ -109,7 +109,7 @@ public class VirtualFileObjectManager extends ForwardingJavaFileManager<JavaFile
 	
 	private URI uriFor(Location location, String packageName, String simpleClassName) {
 		String uriScheme = location.getName() + '/' + packageName + '/' + simpleClassName + ".java";
-		return FileHandler.uriFrom(uriScheme);
+		return FileLibrary.uriFrom(uriScheme);
 	}
 	
 	protected Map<String, VirtualClassFileObject> classFiles() {

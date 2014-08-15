@@ -1,8 +1,8 @@
 package fr.inria.lille.commons.synthesis;
 
-import static fr.inria.lille.commons.utils.LoggerLibrary.logCollection;
-import static fr.inria.lille.commons.utils.LoggerLibrary.logDebug;
-import static fr.inria.lille.commons.utils.LoggerLibrary.newLoggerFor;
+import static fr.inria.lille.commons.utils.library.LoggerLibrary.logCollection;
+import static fr.inria.lille.commons.utils.library.LoggerLibrary.logDebug;
+import static fr.inria.lille.commons.utils.library.LoggerLibrary.newLoggerFor;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
@@ -25,7 +25,7 @@ import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableCo
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.commons.synthesis.theory.OperatorTheory;
 import fr.inria.lille.commons.trace.Specification;
-import fr.inria.lille.commons.utils.ClassLibrary;
+import fr.inria.lille.commons.utils.library.ClassLibrary;
 
 public class ConstraintBasedSynthesis {
 	
