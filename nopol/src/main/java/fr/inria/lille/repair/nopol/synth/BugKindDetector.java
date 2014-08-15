@@ -1,0 +1,69 @@
+package fr.inria.lille.repair.nopol.synth;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static fr.inria.lille.repair.nopol.synth.BugKind.CONDITIONAL;
+import static fr.inria.lille.repair.nopol.synth.BugKind.NONE;
+import static fr.inria.lille.repair.nopol.synth.BugKind.PRECONDITION;
+
+import java.io.File;
+
+import spoon.processing.AbstractProcessor;
+import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.declaration.CtElement;
+import fr.inria.lille.repair.nopol.synth.conditional.SpoonConditionalPredicate;
+import fr.inria.lille.repair.nopol.synth.precondition.SpoonStatementPredicate;
+
+final class BugKindDetector extends AbstractProcessor<CtElement> {
+	
+	private BugKind answer = NONE;
+	private final String absolutePath;
+	private final int line;
+
+	/**
+	 * @param file
+	 * @param line
+	 */
+	BugKindDetector(final File file, final int line) {
+		absolutePath = checkNotNull(file).getAbsolutePath();
+		checkArgument(line > 0, "Line should be greater than 0: %s", line);
+		this.line = line;
+	}
+
+	/**
+	 * @return the answer
+	 */
+	BugKind getType() {
+		return answer;
+	}
+
+	/**
+	 * @see spoon.processing.AbstractProcessor#isToBeProcessed(spoon.reflect.declaration.CtElement)
+	 */
+	@Override
+	public boolean isToBeProcessed(final CtElement candidate) {
+		if ( candidate.getPosition() == null )
+			return false;
+		
+		SourcePosition position = candidate.getPosition();
+		boolean isSameLine = position.getLine() == line;
+		boolean isSameFile = false;
+		File f2 = new File(absolutePath);
+		try {
+			isSameFile = position.getFile().getCanonicalFile().getAbsolutePath().equals(f2.getCanonicalFile().getAbsolutePath());
+		} catch (Exception e) {
+			throw new IllegalStateException(e);
+		}
+		boolean hasToBeProc = isSameLine && isSameFile;
+		return hasToBeProc;
+	}
+
+	@Override
+	public void process(final CtElement element) {
+		if (SpoonConditionalPredicate.INSTANCE.apply(element)) {
+			answer = CONDITIONAL;
+		} else if (SpoonStatementPredicate.INSTANCE.apply(element)) {
+			answer = PRECONDITION;
+		}
+	}
+}

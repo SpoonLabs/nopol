@@ -29,7 +29,7 @@ import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
 import fr.inria.lille.commons.suite.TestCase;
 import fr.inria.lille.commons.utils.Function;
 import fr.inria.lille.commons.utils.Singleton;
-import fr.inria.lille.toolset.NopolTest;
+import fr.inria.lille.repair.nopol.NopolTest;
 
 public class ValuesCollectorTest {
 	

@@ -25,8 +25,8 @@ import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.commons.utils.library.FileLibrary;
 import fr.inria.lille.commons.utils.library.JavaLibrary;
 import fr.inria.lille.commons.utils.library.StringLibrary;
-import fr.inria.lille.infinitel.Infinitel;
-import fr.inria.lille.nopol.NopolMain;
+import fr.inria.lille.repair.infinitel.Infinitel;
+import fr.inria.lille.repair.nopol.NopolMain;
 
 public class Main {
 
