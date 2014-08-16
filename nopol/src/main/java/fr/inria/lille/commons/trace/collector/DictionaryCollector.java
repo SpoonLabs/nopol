@@ -1,15 +1,20 @@
 package fr.inria.lille.commons.trace.collector;
 
+import static java.util.Arrays.asList;
+
+import java.util.Collection;
 import java.util.Dictionary;
-import java.util.Map;
+
+import fr.inria.lille.commons.collections.Pair;
 
 public class DictionaryCollector extends ValueCollector {
 
 	@Override
-	protected void addValue(final String name, final Object value, Map<String, Object> storage) {
+	protected Collection<Pair<String, Object>> collectedValues(final String name, final Object value) {
 		Dictionary<?, ?> dictionary = (Dictionary<?, ?>) value;
-		storage.put(name + ".size()", dictionary.size());
-		storage.put(name + ".isEmpty()", dictionary.isEmpty());
+		Pair<String, Integer> size = Pair.from(name + ".size()", dictionary.size());
+		Pair<String, Boolean> isEmpty = Pair.from(name + ".isEmpty()", dictionary.isEmpty());
+		return (Collection) asList(size, isEmpty);
 	}
 
 	@Override

@@ -18,6 +18,7 @@ import static fr.inria.lille.commons.utils.library.StringLibrary.toStringList;
 import static fr.inria.lille.commons.utils.library.StringLibrary.toStringMap;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -244,5 +245,21 @@ public class StringLibraryTest {
 		assertEquals("", packageName("HelloWorld"));
 		assertEquals("java", packageName("java.HelloWorld"));
 		assertEquals("java.api", packageName("java.api.HelloWorld"));
+	}
+	
+	@Test
+	public void internStringReturnUniqueStrings() {
+		String a = "abcdjjq";
+		String b = a + "";
+		String c = a + "";
+		assertTrue(a.equals(b));
+		assertTrue(b.equals(c));
+		assertTrue(a.equals(c));
+		assertFalse(a == b);
+		assertFalse(b == c);
+		assertFalse(a == c);
+		assertTrue(a == a.intern());
+		assertTrue(a == b.intern());
+		assertTrue(a == c.intern());
 	}
 }

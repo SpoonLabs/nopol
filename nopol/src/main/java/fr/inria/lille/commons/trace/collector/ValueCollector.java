@@ -4,13 +4,14 @@ import java.util.Collection;
 import java.util.Map;
 
 import fr.inria.lille.commons.collections.ListLibrary;
+import fr.inria.lille.commons.collections.Pair;
 
 
 public abstract class ValueCollector {
 	
 	protected abstract Class<?> collectingClass();
 	
-	protected abstract void addValue(String name, Object value, Map<String, Object> storage);
+	protected abstract Collection<Pair<String, Object>> collectedValues(String name, Object value);
 	
 	public static void collectFrom(String name, Object value, Map<String, Object> storage) {
 		if (! collectWith(primitiveCollectors(), name, value, storage)) {
@@ -25,7 +26,11 @@ public abstract class ValueCollector {
 	private static boolean collectWith(Collection<ValueCollector> collectors, String name, Object value, Map<String, Object> storage) {
 		for (ValueCollector collector : collectors) {
 			if (collector.handlesClassOf(value)) {
-				collector.addValue(name, value, storage);
+				Collection<Pair<String, Object>> collected = collector.collectedValues(name, value);
+				for (Pair<String, Object> collectedPair : collected) {
+					storage.put(collectedPair.first().intern(), collectedPair.second());
+					/** String.intern() recycles the same string instance from a String Pool */
+				}
 				return true;
 			}
 		}

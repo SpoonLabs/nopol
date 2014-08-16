@@ -1,19 +1,25 @@
 package fr.inria.lille.commons.trace.collector;
 
+import static java.util.Arrays.asList;
+
+import java.util.Collection;
 import java.util.Map;
+
+import fr.inria.lille.commons.collections.Pair;
 
 public class MapCollector extends ValueCollector {
 
 	@Override
-	protected void addValue(final String name, final Object value, Map<String, Object> storage) {
-		Map<?, ?> map = (Map<?, ?>) value;
-		storage.put(name + ".size()", map.size());
-		storage.put(name + ".isEmpty()", map.isEmpty());
+	protected Class<?> collectingClass() {
+		return Map.class;
 	}
 
 	@Override
-	protected Class<?> collectingClass() {
-		return Map.class;
+	protected Collection<Pair<String, Object>> collectedValues(String name, Object value) {
+		Map<?, ?> map = (Map<?, ?>) value;
+		Pair<String, Integer> size = Pair.from(name + ".size()", map.size());
+		Pair<String, Boolean> isEmpty = Pair.from(name + ".isEmpty()", map.isEmpty());
+		return (Collection) asList(size, isEmpty);
 	}
 	
 }

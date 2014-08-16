@@ -1,10 +1,16 @@
 package fr.inria.lille.commons.trace.collector;
 
-import java.util.Map;
+import static java.util.Arrays.asList;
+
+import java.util.Collection;
+
+import fr.inria.lille.commons.collections.Pair;
 
 public abstract class PrimitiveTypeCollector extends ValueCollector {
 
-	public void addValue(String name, Object value, Map<String, Object> storage) {
-		storage.put(name, value);
+	@Override
+	protected Collection<Pair<String, Object>> collectedValues(String name, Object object) {
+		Pair<String, Object> value = Pair.from(name, object);
+		return asList(value);
 	}
 }

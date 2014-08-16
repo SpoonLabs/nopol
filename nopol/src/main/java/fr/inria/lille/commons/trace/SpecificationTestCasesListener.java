@@ -27,7 +27,7 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 	@Override
 	protected void processSuccessfulRun(TestCase testCase) {
 		for (Entry<Map<String, Object>, Integer> uniqueTrace : runtimeValues().uniqueTraceSet()) {
-			Map<String, Object> trace = recycled(uniqueTrace.getKey());
+			Map<String, Object> trace = uniqueTrace.getKey();
 			T output = outputForEachTrace().outputFor(uniqueTrace.getValue());
 			if (! collectedTraces().containsKey(trace)) {
 				collectedTraces().put(trace, output);
@@ -39,23 +39,6 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 			}
 		}
 	}
-	
-	private Map<Object, Object> objectPool = MapLibrary.newHashMap();
-	
-	private Map<String, Object> recycled(Map<String, Object> map) {
-		Map<String, Object> recycled = MapLibrary.newHashMap();
-		for (Entry<String, Object> entry : map.entrySet()) {
-			if (! objectPool.containsKey(entry.getKey())) {
-				objectPool.put(entry.getKey(), entry.getKey());
-			}
-			if (! objectPool.containsKey(entry.getValue())) {
-				objectPool.put(entry.getValue(), entry.getValue());
-			}
-			recycled.put((String) objectPool.get(entry.getKey()), objectPool.get(entry.getValue()));
-		}
-		return recycled;
-	}
-
 	
 	@Override
     protected void processTestFinished(TestCase testCase) {

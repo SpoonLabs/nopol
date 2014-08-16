@@ -1,14 +1,13 @@
 package fr.inria.lille.commons.trace.collector;
 
+import static java.util.Arrays.asList;
+
 import java.lang.reflect.Array;
-import java.util.Map;
+import java.util.Collection;
+
+import fr.inria.lille.commons.collections.Pair;
 
 public class ArrayCollector extends ValueCollector {
-
-	@Override
-	protected void addValue(String name, Object value, Map<String, Object> storage) {
-		storage.put(name + ".length", Array.getLength(value));
-	}
 
 	@Override
 	protected Class<?> collectingClass() {
@@ -18,6 +17,12 @@ public class ArrayCollector extends ValueCollector {
 	@Override
 	public boolean handlesClassOf(Object value) {
 		return value.getClass().isArray();
+	}
+
+	@Override
+	protected Collection<Pair<String, Object>> collectedValues(String name, Object value) {
+		Pair<String, Integer> length = Pair.from(name + ".length", Array.getLength(value));
+		return (Collection) asList(length);
 	}
 
 }

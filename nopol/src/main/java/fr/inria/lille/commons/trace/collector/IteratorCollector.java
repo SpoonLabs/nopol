@@ -1,14 +1,19 @@
 package fr.inria.lille.commons.trace.collector;
 
+import static java.util.Arrays.asList;
+
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
+
+import fr.inria.lille.commons.collections.Pair;
 
 public class IteratorCollector extends ValueCollector {
 
 	@Override
-	protected void addValue(final String name, final Object value, Map<String, Object> storage) {
+	protected Collection<Pair<String, Object>> collectedValues(final String name, final Object value) {
 		Iterator<?> iterator = (Iterator<?>) value;
-		storage.put(name + ".hasNext()", iterator.hasNext());
+		Pair<String, Boolean> hasNext = Pair.from(name + ".hasNext()", iterator.hasNext());
+		return (Collection) asList(hasNext);
 	}
 
 	@Override
