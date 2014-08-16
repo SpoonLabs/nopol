@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.smtlib.IExpr;
 
-import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.collections.SetLibrary;
+import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.extensions.collection.SetLibrary;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;

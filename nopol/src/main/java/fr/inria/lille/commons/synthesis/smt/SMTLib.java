@@ -39,8 +39,8 @@ import org.smtlib.logic.QF_NIA;
 import org.smtlib.logic.QF_UF;
 import org.smtlib.sexpr.Parser;
 
-import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.collections.MapLibrary;
+import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.extensions.collection.MapLibrary;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 
 public class SMTLib {

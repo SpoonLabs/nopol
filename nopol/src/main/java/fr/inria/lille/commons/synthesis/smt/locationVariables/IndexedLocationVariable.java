@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.smtlib.IExpr;
 
-import fr.inria.lille.commons.collections.ListLibrary;
+import xxl.java.extensions.collection.ListLibrary;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 

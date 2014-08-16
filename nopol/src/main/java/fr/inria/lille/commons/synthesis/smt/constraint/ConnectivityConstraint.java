@@ -9,8 +9,8 @@ import java.util.List;
 import org.smtlib.IExpr;
 import org.smtlib.ISort;
 
-import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.collections.Multimap;
+import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.extensions.collection.Multimap;
 import fr.inria.lille.commons.synthesis.expression.ObjectTemplate;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.IndexedLocationVariable;

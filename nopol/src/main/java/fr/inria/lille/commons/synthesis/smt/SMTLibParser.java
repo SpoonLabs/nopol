@@ -18,7 +18,7 @@ import org.smtlib.IParser.ParserException;
 import org.smtlib.ISort;
 import org.smtlib.sexpr.Parser;
 
-import fr.inria.lille.commons.collections.ListLibrary;
+import xxl.java.extensions.collection.ListLibrary;
 
 public class SMTLibParser {
 

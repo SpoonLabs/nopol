@@ -1,7 +1,7 @@
 package fr.inria.lille.repair.infinitel;
 
-import static fr.inria.lille.commons.utils.library.LoggerLibrary.logDebug;
 import static java.lang.String.format;
+import static xxl.java.extensions.library.LoggerLibrary.logDebug;
 
 import java.io.File;
 import java.net.URL;
@@ -10,18 +10,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import fr.inria.lille.commons.collections.Bag;
-import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.collections.MapLibrary;
-import fr.inria.lille.commons.collections.MappingBag;
-import fr.inria.lille.commons.collections.Pair;
-import fr.inria.lille.commons.collections.Table;
-import fr.inria.lille.commons.suite.TestCasesListener;
-import fr.inria.lille.commons.utils.RangeMapper;
-import fr.inria.lille.commons.utils.Singleton;
-import fr.inria.lille.commons.utils.library.FileLibrary;
-import fr.inria.lille.commons.utils.library.JavaLibrary;
-import fr.inria.lille.commons.utils.library.StringLibrary;
+import xxl.java.extensions.collection.Bag;
+import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.extensions.collection.MapLibrary;
+import xxl.java.extensions.collection.MappingBag;
+import xxl.java.extensions.collection.Pair;
+import xxl.java.extensions.collection.Table;
+import xxl.java.extensions.junit.TestCasesListener;
+import xxl.java.extensions.library.FileLibrary;
+import xxl.java.extensions.library.JavaLibrary;
+import xxl.java.extensions.library.StringLibrary;
+import xxl.java.extensions.support.RangeMapper;
+import xxl.java.extensions.support.Singleton;
 import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.infinitel.instrumenting.CompoundLoopMonitor;
 import fr.inria.lille.repair.infinitel.loop.FixableLoop;

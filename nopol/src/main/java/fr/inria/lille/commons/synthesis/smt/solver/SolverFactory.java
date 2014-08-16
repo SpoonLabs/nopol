@@ -5,7 +5,7 @@ import org.smtlib.ISolver;
 import org.smtlib.SMT;
 import org.smtlib.SMT.Configuration;
 
-import fr.inria.lille.commons.utils.library.FileLibrary;
+import xxl.java.extensions.library.FileLibrary;
 
 public abstract class SolverFactory {
 

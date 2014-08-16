@@ -9,7 +9,7 @@ import java.util.Map;
 
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtSimpleType;
-import fr.inria.lille.commons.collections.ListLibrary;
+import xxl.java.extensions.collection.ListLibrary;
 
 public class SpoonedProject extends SpoonedFile {
 	

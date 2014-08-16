@@ -9,7 +9,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtAbstractVisitor;
-import fr.inria.lille.commons.collections.SetLibrary;
+import xxl.java.extensions.collection.SetLibrary;
 
 public class SubconditionVisitor extends CtAbstractVisitor {
 

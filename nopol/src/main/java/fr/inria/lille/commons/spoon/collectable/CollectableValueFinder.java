@@ -30,7 +30,7 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.CompositeFilter;
 import spoon.reflect.visitor.filter.FilteringOperator;
-import fr.inria.lille.commons.collections.SetLibrary;
+import xxl.java.extensions.collection.SetLibrary;
 import fr.inria.lille.commons.spoon.filter.BeforeLocationFilter;
 import fr.inria.lille.commons.spoon.filter.InBlockFilter;
 import fr.inria.lille.commons.spoon.filter.VariableAssignmentFilter;

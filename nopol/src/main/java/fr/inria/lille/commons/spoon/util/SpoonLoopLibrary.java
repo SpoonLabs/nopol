@@ -10,7 +10,7 @@ import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtMethod;
-import fr.inria.lille.commons.collections.ListLibrary;
+import xxl.java.extensions.collection.ListLibrary;
 
 public class SpoonLoopLibrary {
 

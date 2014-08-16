@@ -12,9 +12,9 @@ import java.util.Map;
 import org.smtlib.IExpr;
 import org.smtlib.ISort;
 
-import fr.inria.lille.commons.collections.MapLibrary;
-import fr.inria.lille.commons.utils.library.ClassLibrary;
-import fr.inria.lille.commons.utils.library.StringLibrary;
+import xxl.java.extensions.collection.MapLibrary;
+import xxl.java.extensions.library.ClassLibrary;
+import xxl.java.extensions.library.StringLibrary;
 
 public class ObjectToExpr {
 

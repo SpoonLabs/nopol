@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.smtlib.IExpr.ISymbol;
 
-import fr.inria.lille.commons.collections.ListLibrary;
+import xxl.java.extensions.collection.ListLibrary;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.theory.EmptyTheory;
 import fr.inria.lille.commons.synthesis.theory.IfThenElseTheory;

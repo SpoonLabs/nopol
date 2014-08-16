@@ -1,13 +1,13 @@
 package fr.inria.lille.commons.test;
 
-import static fr.inria.lille.commons.utils.library.JavaLibrary.folderPathSeparator;
 import static org.junit.Assert.assertFalse;
+import static xxl.java.extensions.library.JavaLibrary.folderPathSeparator;
 
 import java.io.File;
 
 import org.junit.Test;
 
-import fr.inria.lille.commons.utils.library.FileLibrary;
+import xxl.java.extensions.library.FileLibrary;
 
 public class JavaLibraryTest {
 

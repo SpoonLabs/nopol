@@ -1,7 +1,7 @@
 package fr.inria.lille.commons.spoon.util;
 
-import static fr.inria.lille.commons.utils.library.ClassLibrary.castTo;
-import static fr.inria.lille.commons.utils.library.ClassLibrary.isInstanceOf;
+import static xxl.java.extensions.library.ClassLibrary.castTo;
+import static xxl.java.extensions.library.ClassLibrary.isInstanceOf;
 
 import java.util.List;
 

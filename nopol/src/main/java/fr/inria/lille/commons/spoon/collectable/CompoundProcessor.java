@@ -8,7 +8,7 @@ import java.util.List;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtCodeElement;
-import fr.inria.lille.commons.collections.ListLibrary;
+import xxl.java.extensions.collection.ListLibrary;
 
 public class CompoundProcessor<T extends CtCodeElement> extends AbstractProcessor<T> {
 

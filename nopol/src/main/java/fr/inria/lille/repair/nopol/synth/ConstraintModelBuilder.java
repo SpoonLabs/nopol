@@ -25,13 +25,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.processing.Processor;
-import fr.inria.lille.commons.collections.SetLibrary;
+import xxl.java.extensions.collection.SetLibrary;
+import xxl.java.extensions.junit.TestSuiteExecution;
+import xxl.java.extensions.support.Function;
 import fr.inria.lille.commons.spoon.SpoonedProject;
-import fr.inria.lille.commons.suite.TestSuiteExecution;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.commons.trace.SpecificationTestCasesListener;
-import fr.inria.lille.commons.utils.Function;
 import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.repair.nopol.SourceLocation;
 

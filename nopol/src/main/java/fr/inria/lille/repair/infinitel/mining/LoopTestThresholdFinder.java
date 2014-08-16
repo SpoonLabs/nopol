@@ -1,10 +1,10 @@
 package fr.inria.lille.repair.infinitel.mining;
 
-import static fr.inria.lille.commons.utils.library.LoggerLibrary.logDebug;
-import static fr.inria.lille.commons.utils.library.LoggerLibrary.newLoggerFor;
 import static java.lang.String.format;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static xxl.java.extensions.library.LoggerLibrary.logDebug;
+import static xxl.java.extensions.library.LoggerLibrary.newLoggerFor;
 
 import java.util.Collection;
 import java.util.Map;
@@ -12,8 +12,8 @@ import java.util.Map;
 import org.junit.runner.Result;
 import org.slf4j.Logger;
 
-import fr.inria.lille.commons.collections.MapLibrary;
-import fr.inria.lille.commons.suite.TestCase;
+import xxl.java.extensions.collection.MapLibrary;
+import xxl.java.extensions.junit.TestCase;
 import fr.inria.lille.repair.infinitel.instrumenting.CompoundLoopMonitor;
 import fr.inria.lille.repair.infinitel.loop.While;
 

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import fr.inria.lille.commons.collections.MapLibrary;
+import xxl.java.extensions.collection.MapLibrary;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.operator.BinaryOperator;
 import fr.inria.lille.commons.synthesis.operator.Operator;

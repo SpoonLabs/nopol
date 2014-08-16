@@ -20,15 +20,15 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
-import fr.inria.lille.commons.collections.MapLibrary;
+import xxl.java.extensions.collection.MapLibrary;
+import xxl.java.extensions.junit.TestCase;
+import xxl.java.extensions.support.Function;
+import xxl.java.extensions.support.Singleton;
 import fr.inria.lille.commons.spoon.collectable.CollectableValueFinder;
 import fr.inria.lille.commons.spoon.filter.CodeSnippetFilter;
 import fr.inria.lille.commons.spoon.util.SpoonElementLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
-import fr.inria.lille.commons.suite.TestCase;
-import fr.inria.lille.commons.utils.Function;
-import fr.inria.lille.commons.utils.Singleton;
 import fr.inria.lille.repair.nopol.NopolTest;
 
 public class ValuesCollectorTest {

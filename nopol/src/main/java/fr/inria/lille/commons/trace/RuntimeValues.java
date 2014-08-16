@@ -6,9 +6,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import fr.inria.lille.commons.collections.MapLibrary;
+import xxl.java.extensions.collection.MapLibrary;
+import xxl.java.extensions.support.GlobalToggle;
 import fr.inria.lille.commons.trace.collector.ValueCollector;
-import fr.inria.lille.commons.utils.GlobalToggle;
 
 public class RuntimeValues extends GlobalToggle {
 

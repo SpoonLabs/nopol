@@ -1,8 +1,8 @@
 package fr.inria.lille.repair.infinitel.mining;
 
-import static fr.inria.lille.commons.suite.TestSuiteExecution.runCasesIn;
-import static fr.inria.lille.commons.suite.TestSuiteExecution.runTestCase;
 import static java.util.Arrays.asList;
+import static xxl.java.extensions.junit.TestSuiteExecution.runCasesIn;
+import static xxl.java.extensions.junit.TestSuiteExecution.runTestCase;
 
 import java.util.Collection;
 import java.util.Map;
@@ -10,10 +10,10 @@ import java.util.Map;
 import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 
-import fr.inria.lille.commons.collections.Table;
-import fr.inria.lille.commons.suite.NullRunListener;
-import fr.inria.lille.commons.suite.TestCase;
-import fr.inria.lille.commons.utils.Singleton;
+import xxl.java.extensions.collection.Table;
+import xxl.java.extensions.junit.NullRunListener;
+import xxl.java.extensions.junit.TestCase;
+import xxl.java.extensions.support.Singleton;
 import fr.inria.lille.repair.infinitel.instrumenting.CompoundLoopMonitor;
 import fr.inria.lille.repair.infinitel.loop.While;
 

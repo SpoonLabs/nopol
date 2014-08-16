@@ -5,7 +5,7 @@ import static java.util.Arrays.asList;
 import java.lang.reflect.Array;
 import java.util.Collection;
 
-import fr.inria.lille.commons.collections.Pair;
+import xxl.java.extensions.collection.Pair;
 
 public class ArrayCollector extends ValueCollector {
 

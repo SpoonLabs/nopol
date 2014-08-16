@@ -20,7 +20,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.visitor.CtAbstractVisitor;
-import fr.inria.lille.commons.collections.SetLibrary;
+import xxl.java.extensions.collection.SetLibrary;
 import fr.inria.lille.commons.spoon.filter.BeforeLocationFilter;
 
 public class ReachableVariableVisitor extends CtAbstractVisitor {

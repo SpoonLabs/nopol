@@ -3,9 +3,9 @@ package fr.inria.lille.repair;
 import java.io.File;
 import java.net.URL;
 
-import fr.inria.lille.commons.utils.TestClassesFinder;
-import fr.inria.lille.commons.utils.library.FileLibrary;
-import fr.inria.lille.commons.utils.library.JavaLibrary;
+import xxl.java.extensions.library.FileLibrary;
+import xxl.java.extensions.library.JavaLibrary;
+import xxl.java.extensions.support.TestClassesFinder;
 
 public class ProjectReference {
 

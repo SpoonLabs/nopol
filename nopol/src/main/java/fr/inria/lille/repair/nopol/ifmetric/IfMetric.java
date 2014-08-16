@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import xxl.java.extensions.junit.TestSuiteExecution;
+import xxl.java.extensions.support.TestClassesFinder;
 import fr.inria.lille.commons.spoon.SpoonedProject;
-import fr.inria.lille.commons.suite.TestSuiteExecution;
-import fr.inria.lille.commons.utils.TestClassesFinder;
 
 public class IfMetric {
 

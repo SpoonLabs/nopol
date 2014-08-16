@@ -3,7 +3,7 @@ package fr.inria.lille.commons.synthesis;
 import java.util.Collection;
 import java.util.List;
 
-import fr.inria.lille.commons.collections.ListLibrary;
+import xxl.java.extensions.collection.ListLibrary;
 
 
 public class CodeLine {

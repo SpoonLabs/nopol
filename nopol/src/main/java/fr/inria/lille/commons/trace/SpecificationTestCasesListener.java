@@ -4,12 +4,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.collections.MapLibrary;
-import fr.inria.lille.commons.collections.SetLibrary;
-import fr.inria.lille.commons.suite.TestCase;
-import fr.inria.lille.commons.suite.TestCasesListener;
-import fr.inria.lille.commons.utils.Function;
+import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.extensions.collection.MapLibrary;
+import xxl.java.extensions.collection.SetLibrary;
+import xxl.java.extensions.junit.TestCase;
+import xxl.java.extensions.junit.TestCasesListener;
+import xxl.java.extensions.support.Function;
 
 public class SpecificationTestCasesListener<T> extends TestCasesListener {
 

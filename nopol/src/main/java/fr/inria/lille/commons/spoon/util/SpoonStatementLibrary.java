@@ -5,8 +5,8 @@ import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isMethod;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isStatement;
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newBlock;
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.setParent;
-import static fr.inria.lille.commons.utils.library.ClassLibrary.castTo;
-import static fr.inria.lille.commons.utils.library.ClassLibrary.isInstanceOf;
+import static xxl.java.extensions.library.ClassLibrary.castTo;
+import static xxl.java.extensions.library.ClassLibrary.isInstanceOf;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
-import fr.inria.lille.commons.collections.ListLibrary;
+import xxl.java.extensions.collection.ListLibrary;
 
 public class SpoonStatementLibrary {
 

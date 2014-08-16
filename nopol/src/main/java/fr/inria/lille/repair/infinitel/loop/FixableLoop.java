@@ -2,7 +2,7 @@ package fr.inria.lille.repair.infinitel.loop;
 
 import java.util.Collection;
 
-import fr.inria.lille.commons.suite.TestCase;
+import xxl.java.extensions.junit.TestCase;
 
 public class FixableLoop extends While {
 

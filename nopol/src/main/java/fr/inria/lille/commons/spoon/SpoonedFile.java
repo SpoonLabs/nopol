@@ -1,9 +1,9 @@
 package fr.inria.lille.commons.spoon;
 
-import static fr.inria.lille.commons.utils.library.LoggerLibrary.logDebug;
-import static fr.inria.lille.commons.utils.library.LoggerLibrary.newLoggerFor;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static xxl.java.extensions.library.LoggerLibrary.logDebug;
+import static xxl.java.extensions.library.LoggerLibrary.newLoggerFor;
 
 import java.io.File;
 import java.net.URL;
@@ -22,14 +22,14 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.RuntimeProcessingManager;
-import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.collections.MapLibrary;
-import fr.inria.lille.commons.collections.SetLibrary;
-import fr.inria.lille.commons.compiler.BytecodeClassLoader;
-import fr.inria.lille.commons.compiler.BytecodeClassLoaderBuilder;
-import fr.inria.lille.commons.compiler.DynamicClassCompiler;
+import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.extensions.collection.MapLibrary;
+import xxl.java.extensions.collection.SetLibrary;
+import xxl.java.extensions.compiler.BytecodeClassLoader;
+import xxl.java.extensions.compiler.BytecodeClassLoaderBuilder;
+import xxl.java.extensions.compiler.DynamicClassCompiler;
+import xxl.java.extensions.library.JavaLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
-import fr.inria.lille.commons.utils.library.JavaLibrary;
 
 public abstract class SpoonedFile {
 	

@@ -7,7 +7,7 @@ import org.smtlib.sexpr.ISexpr;
 import org.smtlib.sexpr.ISexpr.IToken;
 import org.smtlib.sexpr.Sexpr.Seq;
 
-import fr.inria.lille.commons.collections.MapLibrary;
+import xxl.java.extensions.collection.MapLibrary;
 
 public class SexprSolutionVisitor {
 

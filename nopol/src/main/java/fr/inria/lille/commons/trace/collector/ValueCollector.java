@@ -3,8 +3,8 @@ package fr.inria.lille.commons.trace.collector;
 import java.util.Collection;
 import java.util.Map;
 
-import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.collections.Pair;
+import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.extensions.collection.Pair;
 
 
 public abstract class ValueCollector {

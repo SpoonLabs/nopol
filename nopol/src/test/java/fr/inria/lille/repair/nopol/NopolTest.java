@@ -11,12 +11,12 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import fr.inria.lille.commons.collections.SetLibrary;
-import fr.inria.lille.commons.suite.TestCase;
-import fr.inria.lille.commons.suite.TestCasesListener;
-import fr.inria.lille.commons.suite.TestSuiteExecution;
+import xxl.java.extensions.collection.SetLibrary;
+import xxl.java.extensions.junit.TestCase;
+import xxl.java.extensions.junit.TestCasesListener;
+import xxl.java.extensions.junit.TestSuiteExecution;
+import xxl.java.extensions.library.FileLibrary;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
-import fr.inria.lille.commons.utils.library.FileLibrary;
 import fr.inria.lille.repair.Main;
 import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.nopol.patch.Patch;

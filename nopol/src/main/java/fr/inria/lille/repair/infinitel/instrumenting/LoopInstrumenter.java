@@ -25,10 +25,10 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.factory.Factory;
+import xxl.java.extensions.support.Singleton;
 import fr.inria.lille.commons.spoon.collectable.CollectableValueFinder;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.RuntimeValuesInstrumenter;
-import fr.inria.lille.commons.utils.Singleton;
 
 public class LoopInstrumenter {
 	

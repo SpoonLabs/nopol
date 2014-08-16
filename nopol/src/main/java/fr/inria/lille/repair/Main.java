@@ -22,9 +22,9 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Arrays;
 
+import xxl.java.extensions.library.FileLibrary;
+import xxl.java.extensions.library.JavaLibrary;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
-import fr.inria.lille.commons.utils.library.FileLibrary;
-import fr.inria.lille.commons.utils.library.JavaLibrary;
 import fr.inria.lille.repair.infinitel.Infinitel;
 import fr.inria.lille.repair.nopol.NoPolLauncher;
 

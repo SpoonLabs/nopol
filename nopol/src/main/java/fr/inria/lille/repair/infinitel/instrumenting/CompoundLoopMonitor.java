@@ -5,9 +5,9 @@ import static java.lang.String.format;
 import java.util.Collection;
 import java.util.Map;
 
-import fr.inria.lille.commons.collections.Bag;
-import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.collections.SetLibrary;
+import xxl.java.extensions.collection.Bag;
+import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.extensions.collection.SetLibrary;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.repair.infinitel.loop.While;
 

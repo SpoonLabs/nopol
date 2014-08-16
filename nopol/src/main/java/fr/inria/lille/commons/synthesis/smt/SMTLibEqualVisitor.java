@@ -49,8 +49,8 @@ import org.smtlib.ISort.IParameter;
 import org.smtlib.ITheory;
 import org.smtlib.IVisitor;
 
-import fr.inria.lille.commons.collections.SetLibrary;
-import fr.inria.lille.commons.utils.library.LoggerLibrary;
+import xxl.java.extensions.collection.SetLibrary;
+import xxl.java.extensions.library.LoggerLibrary;
 
 public class SMTLibEqualVisitor implements IVisitor<Boolean>{
 

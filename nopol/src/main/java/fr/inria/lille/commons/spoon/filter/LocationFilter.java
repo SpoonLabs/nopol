@@ -3,7 +3,7 @@ package fr.inria.lille.commons.spoon.filter;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.filter.AbstractFilter;
-import fr.inria.lille.commons.utils.library.FileLibrary;
+import xxl.java.extensions.library.FileLibrary;
 
 public abstract class LocationFilter<T extends CtElement> extends AbstractFilter<T> {
 

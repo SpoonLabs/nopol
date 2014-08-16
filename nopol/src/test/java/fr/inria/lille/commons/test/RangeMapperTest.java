@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import fr.inria.lille.commons.collections.Pair;
-import fr.inria.lille.commons.utils.RangeMapper;
+import xxl.java.extensions.collection.Pair;
+import xxl.java.extensions.support.RangeMapper;
 
 public class RangeMapperTest {
 

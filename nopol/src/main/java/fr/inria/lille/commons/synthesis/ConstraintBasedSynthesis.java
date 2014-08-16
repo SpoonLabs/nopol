@@ -1,10 +1,10 @@
 package fr.inria.lille.commons.synthesis;
 
-import static fr.inria.lille.commons.utils.library.LoggerLibrary.logCollection;
-import static fr.inria.lille.commons.utils.library.LoggerLibrary.logDebug;
-import static fr.inria.lille.commons.utils.library.LoggerLibrary.newLoggerFor;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static xxl.java.extensions.library.LoggerLibrary.logCollection;
+import static xxl.java.extensions.library.LoggerLibrary.logDebug;
+import static xxl.java.extensions.library.LoggerLibrary.newLoggerFor;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,9 +14,10 @@ import org.slf4j.Logger;
 import org.smtlib.ICommand.IScript;
 import org.smtlib.IExpr.ISymbol;
 
-import fr.inria.lille.commons.collections.CollectionLibrary;
-import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.collections.MapLibrary;
+import xxl.java.extensions.collection.CollectionLibrary;
+import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.extensions.collection.MapLibrary;
+import xxl.java.extensions.library.ClassLibrary;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.operator.Operator;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
@@ -25,7 +26,6 @@ import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableCo
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.commons.synthesis.theory.OperatorTheory;
 import fr.inria.lille.commons.trace.Specification;
-import fr.inria.lille.commons.utils.library.ClassLibrary;
 
 public class ConstraintBasedSynthesis {
 	

@@ -5,7 +5,7 @@ import java.util.Map;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtMethod;
-import fr.inria.lille.commons.collections.MapLibrary;
+import xxl.java.extensions.collection.MapLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonReferenceLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
 import fr.inria.lille.commons.trace.RuntimeValues;

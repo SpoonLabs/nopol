@@ -26,9 +26,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.inria.lille.commons.compiler.DynamicCompilationException;
+import xxl.java.extensions.compiler.DynamicCompilationException;
+import xxl.java.extensions.support.TestClassesFinder;
 import fr.inria.lille.commons.spoon.SpoonedProject;
-import fr.inria.lille.commons.utils.TestClassesFinder;
 import fr.inria.lille.repair.nopol.patch.Patch;
 import fr.inria.lille.repair.nopol.patch.TestPatch;
 import fr.inria.lille.repair.nopol.sps.SuspiciousStatement;

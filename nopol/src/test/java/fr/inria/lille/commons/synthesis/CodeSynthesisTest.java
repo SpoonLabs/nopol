@@ -12,9 +12,9 @@ import java.util.Map;
 import org.junit.Test;
 import org.smtlib.ISort;
 
-import fr.inria.lille.commons.collections.MapLibrary;
-import fr.inria.lille.commons.collections.Multimap;
-import fr.inria.lille.commons.collections.SetLibrary;
+import xxl.java.extensions.collection.MapLibrary;
+import xxl.java.extensions.collection.Multimap;
+import xxl.java.extensions.collection.SetLibrary;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.expression.ObjectTemplate;
 import fr.inria.lille.commons.synthesis.operator.BinaryOperator;

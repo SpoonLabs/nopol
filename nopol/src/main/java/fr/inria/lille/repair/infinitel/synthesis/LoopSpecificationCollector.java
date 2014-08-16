@@ -7,12 +7,12 @@ import java.util.Map;
 
 import org.junit.runner.Result;
 
-import fr.inria.lille.commons.collections.SetLibrary;
-import fr.inria.lille.commons.suite.TestCase;
+import xxl.java.extensions.collection.SetLibrary;
+import xxl.java.extensions.junit.TestCase;
+import xxl.java.extensions.support.Function;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.commons.trace.SpecificationTestCasesListener;
-import fr.inria.lille.commons.utils.Function;
 import fr.inria.lille.repair.infinitel.loop.While;
 import fr.inria.lille.repair.infinitel.mining.MonitoringTestExecutor;
 

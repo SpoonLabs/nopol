@@ -25,11 +25,10 @@ import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.extensions.library.StringLibrary;
 
 import com.martiansoftware.jsap.JSAPException;
-
-import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.utils.library.StringLibrary;
 
 public class SpoonModelLibrary {
 

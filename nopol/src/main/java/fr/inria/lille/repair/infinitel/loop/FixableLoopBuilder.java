@@ -1,19 +1,19 @@
 package fr.inria.lille.repair.infinitel.loop;
 
-import static fr.inria.lille.commons.utils.library.LoggerLibrary.logDebug;
-import static fr.inria.lille.commons.utils.library.LoggerLibrary.newLoggerFor;
 import static java.lang.String.format;
+import static xxl.java.extensions.library.LoggerLibrary.logDebug;
+import static xxl.java.extensions.library.LoggerLibrary.newLoggerFor;
 
 import java.util.Collection;
 import java.util.Map;
 
 import org.slf4j.Logger;
 
-import fr.inria.lille.commons.collections.ListLibrary;
-import fr.inria.lille.commons.collections.MapLibrary;
-import fr.inria.lille.commons.collections.SetLibrary;
-import fr.inria.lille.commons.collections.Table;
-import fr.inria.lille.commons.suite.TestCase;
+import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.extensions.collection.MapLibrary;
+import xxl.java.extensions.collection.SetLibrary;
+import xxl.java.extensions.collection.Table;
+import xxl.java.extensions.junit.TestCase;
 import fr.inria.lille.repair.infinitel.mining.MonitoringTestExecutor;
 
 public class FixableLoopBuilder {
