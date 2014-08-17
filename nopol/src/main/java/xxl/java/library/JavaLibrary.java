@@ -78,7 +78,7 @@ public class JavaLibrary {
 	}
 	
 	public static void extendClassLoaderClasspathWith(URLClassLoader classLoader, URL[] classpaths) {
-		Method method = ClassLibrary.method(URLClassLoader.class, "addURL", URL.class);
+		Method method = ClassLibrary.method("addURL", URLClassLoader.class, URL.class);
 		if (method != null) {
 			method.setAccessible(true);
 			try {

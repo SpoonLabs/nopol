@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static xxl.java.container.various.Bag.flatBag;
 import static xxl.java.container.various.Bag.newHashBag;
+import static xxl.java.container.various.Bag.sum;
 
 import java.util.List;
 import java.util.Map;
@@ -185,5 +186,13 @@ public class BagTest {
 		Bag<String> miniBagC = newHashBag("b", "b", "b");
 		Bag<String> miniBagD = newHashBag("a", "a", "a", "a");
 		assertEquals(bag, flatBag(asList(miniBagA, miniBagB, miniBagC, miniBagD)));
+	}
+	
+	@Test
+	public void sumIntegerBag() {
+		Bag<Integer> bag = newHashBag();
+		assertEquals(0, sum(bag));
+		bag.addAll(asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+		assertEquals(70, sum(bag));
 	}
 }

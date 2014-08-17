@@ -121,6 +121,14 @@ public class LoopMonitor extends GlobalToggle {
 		return returnRecords().size();
 	}
 	
+	protected int numberOfConditionalExits() {
+		return numberOfRecords() - (numberOfBreakExits() + numberOfReturnExits());
+	}
+	
+	protected long numberOfIterations() {
+		return Bag.sum(exitRecords());
+	}
+	
 	protected Integer lastRecordedValue() {
 		return lastRecordedValue;
 	}

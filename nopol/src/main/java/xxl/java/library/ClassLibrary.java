@@ -1,29 +1,53 @@
 package xxl.java.library;
 
+import static java.lang.String.format;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
+import java.util.List;
+
+import xxl.java.container.classic.MetaList;
 
 public class ClassLibrary {
 
 	public static <T> T newInstance(Class<T> theClass) {
 		try {
 			return theClass.newInstance();
-		} catch (InstantiationException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			throw new RuntimeException("Colud not instantiate " + theClass,e);
 		}
-		return null;
 	}
 	
-	public static Method method(Class<?> aClass, String methodName, Class<?>... argumentClasses) {
-		Method method = null;
+	public static Object invoke(Method method, Object receiver, Object... arguments) {
 		try {
-			method = aClass.getDeclaredMethod(methodName, argumentClasses);
+			return method.invoke(receiver, arguments);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(format("Failed invocation to %s", method.toString()), e);
+		}
+	}
+
+	public static Method method(String methodName, Class<?> aClass, Collection<Class<?>> argumentClasses) {
+		return method(methodName, aClass, argumentClasses.toArray(new Class[argumentClasses.size()]));
+	}
+	
+	public static Method method(String methodName, Class<?> aClass, Class<?>... argumentClasses) {
+		try {
+			return aClass.getDeclaredMethod(methodName, argumentClasses);
 		} catch (NoSuchMethodException nsme) {
 			nsme.printStackTrace();
+			throw new RuntimeException(format("Method not found %s#%s", aClass.getName(), methodName), nsme);
 		}
-		return method;
+	}
+	
+	public static List<Class<?>> asClasses(Collection<? extends Object> objects) {
+		List<Class<?>> classes = MetaList.newArrayList(objects.size());
+		for (Object object : objects) {
+			classes.add(object.getClass());
+		}
+		return classes;
 	}
 	
 	public static boolean isInstanceOf(Class<?> aClass, Object object) {
@@ -42,12 +66,12 @@ public class ClassLibrary {
 		return Modifier.isAbstract(aClass.getModifiers());
 	}
 	
-	public static <T> boolean isGreaterThan(T comparedOne, T comparingOne) {
-		return comparison(comparingOne, comparedOne) > 0;
+	public static <T> boolean isGreaterThan(T compared, T inRelationTo) {
+		return comparison(compared, inRelationTo) > 0;
 	}
 	
-	public static <T> boolean isLessThan(T comparedOne, T comparingOne) {
-		return comparison(comparingOne, comparedOne) < 0;
+	public static <T> boolean isLessThan(T compared, T inRelationTo) {
+		return comparison(compared, inRelationTo) < 0;
 	}
 	
 	@SuppressWarnings("unchecked")

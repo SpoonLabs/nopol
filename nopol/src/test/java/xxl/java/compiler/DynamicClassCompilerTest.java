@@ -28,12 +28,8 @@ import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
-import xxl.java.compiler.BytecodeClassLoader;
-import xxl.java.compiler.BytecodeClassLoaderBuilder;
-import xxl.java.compiler.DynamicClassCompiler;
-import xxl.java.compiler.DynamicCompilationException;
-import xxl.java.compiler.JarPackage;
 import xxl.java.container.classic.MetaMap;
+import xxl.java.library.JavaLibrary;
 
 public class DynamicClassCompilerTest {
 
@@ -469,6 +465,41 @@ public class DynamicClassCompilerTest {
 	}
 	
 	@Test
+	public void jarCreationAndLoadingInSystem() throws Exception {
+		String qualifiedName = "test.dynamic.compiler.DynamicClass";
+		String code = 
+				"package test.dynamic.compiler;" +
+				"public class DynamicClass {" +
+				"	@Override" +
+				"	public String toString() {" +
+				"		return \"Successfully loaded in system\";" +
+				"	}" + 
+				"}";
+		DynamicClassCompiler compiler = new DynamicClassCompiler();
+		byte[] compilation = compiler.javaBytecodeFor(qualifiedName, code);
+		File jarFile = jarFileFor(adHocMap(qualifiedName, compilation), "DynamicClass");
+		
+		URL[] newClasspath = new URL[] { jarFile.toURI().toURL() };
+		ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+		
+		/**Class cannot be loaded because the system ClassLoader cannot find it*/
+		checkException(true, systemClassLoader, qualifiedName);
+		
+		/** Setting the classpath is not the solution */
+		String originalClasspath = JavaLibrary.systemClasspath();
+		JavaLibrary.extendSystemClasspathWith(newClasspath);
+		checkException(true, systemClassLoader, qualifiedName);
+		JavaLibrary.setClasspath(originalClasspath);
+		
+		/** Changing the classpath of the system ClassLoader is the solution */
+		JavaLibrary.extendSystemClassLoaderClasspathWith(newClasspath);
+		Class<?> loaded = checkException(false, systemClassLoader, qualifiedName);
+		jarFile.delete();
+		Object newInstance = loaded.newInstance();
+		assertEquals("Successfully loaded in system", newInstance.toString());
+	}
+	
+	@Test
 	public void jarCreationWithDependency() throws Exception {
 		String dependencyName = "test.dynamic.newjar.Printer";
 		String dependencyCode = 
@@ -614,7 +645,7 @@ public class DynamicClassCompilerTest {
 		File file = jarPackage.saveTo(new File("."), jarName);
 		return file;
 	}
-	
+
 	private byte[] checkException(boolean thrown, DynamicClassCompiler compiler, String qualifiedName, String code, Map<String, byte[]> dependencies, File jarDependency) {
 		boolean wasThrown = false;
 		byte[] compilation = null;
@@ -627,5 +658,17 @@ public class DynamicClassCompilerTest {
 		}
 		assertEquals(thrown, wasThrown);
 		return compilation;
+	}
+	
+	private Class<?> checkException(boolean thrown, ClassLoader loader, String qualifiedName) {
+		boolean wasThrown = false;
+		Class<?> loaded = null;
+		try {
+			loaded = loader.loadClass(qualifiedName);
+		} catch (ClassNotFoundException cnfe) {
+			wasThrown = true;
+		}
+		assertEquals(thrown, wasThrown);
+		return loaded;
 	}
 }

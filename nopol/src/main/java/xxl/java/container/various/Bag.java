@@ -13,6 +13,14 @@ import java.util.Set;
 
 public class Bag<T> {
 
+	public static long sum(Bag<Integer> bag) {
+		long total = 0;
+		for (Integer record : bag.asSet()) {
+			total += record * bag.repetitionsOf(record);
+		}
+		return total;
+	}
+	
 	public static <T> Bag<T> newHashBag() {
 		Map<T, Integer> newMap = newHashMap();
 		return new Bag<T>(newMap);

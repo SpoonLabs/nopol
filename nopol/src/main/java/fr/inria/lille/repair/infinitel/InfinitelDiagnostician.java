@@ -1,6 +1,7 @@
 package fr.inria.lille.repair.infinitel;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static xxl.java.library.LoggerLibrary.logDebug;
 
 import java.io.File;
@@ -20,6 +21,7 @@ import xxl.java.junit.TestCasesListener;
 import xxl.java.library.FileLibrary;
 import xxl.java.library.JavaLibrary;
 import xxl.java.library.StringLibrary;
+import xxl.java.support.Function;
 import xxl.java.support.RangeMapper;
 import xxl.java.support.Singleton;
 import fr.inria.lille.repair.ProjectReference;
@@ -116,11 +118,7 @@ public class InfinitelDiagnostician extends Infinitel {
 			number += 1;
 			addRowFrom(table.rowAddIfAbsent(number), 
 					number,
-					loop.numberOfBreaks(),
-					loop.numberOfReturns(),
-					monitor.numberOfRecordsIn(loop),
-					monitor.numberOfBreakExitsIn(loop),
-					monitor.numberOfReturnExitsIn(loop),
+					asList(loop),
 					allExitRanges.asSet(),
 					toMappingBag(monitor.exitRecordsOf(loop)),
 					toMappingBag(monitor.breakRecordsOf(loop)),
@@ -129,49 +127,47 @@ public class InfinitelDiagnostician extends Infinitel {
 		}
 	}
 
-	private void addRowFrom(Map<String, Object> map, int loopNumber, int breaks, int returns, int invocations, int breakExits, int returnExits,
-			Collection<Pair<Integer, Integer>> ranges, Bag<Pair<Integer, Integer>> exitRanges, Bag<Pair<Integer, Integer>> breakExitRanges,
-			Bag<Pair<Integer, Integer>> returnExitRanges, Bag<Integer> exitRecords) {
-		map.put("loop-number", loopNumber);
-		map.put("breaks", breaks);
-		map.put("returns", returns);
-		map.put("invocations", invocations);
-		map.put("break-exits", breakExits);
-		map.put("return-exits", returnExits);
-		logBag(map, "exit-ranges", exitRanges, ranges);
-		logBag(map, "break-exit-ranges", breakExitRanges, ranges);
-		logBag(map, "return-exit-ranges", returnExitRanges, ranges);
-		map.put("exit-records", logBag((Map) MetaMap.newLinkedHashMap(), "", exitRecords, exitRecords.asSet()));
-	}
-	
 	private void logAccumulatedStatistics(Collection<While> loops, CompoundLoopMonitor monitor, Table<Integer, String, Object> table, Bag<Integer> allExitBag,
 			Bag<Pair<Integer, Integer>> allExitRangesBag, Bag<Pair<Integer, Integer>> allBreakRangesBag, Bag<Pair<Integer, Integer>> allReturnRangesBag) {
 		int rowNumber = loops.size() + 1;
 		addRowFrom(table.rowAddIfAbsent(rowNumber),
 				rowNumber,
-				totalNumberOfBreaks(loops),
-				totalNumberOfReturns(loops),
-				allExitBag.size(),
-				allBreakRangesBag.size(),
-				allReturnRangesBag.size(),
+				loops,
 				allExitRangesBag.asSet(),
 				allExitRangesBag,
 				allBreakRangesBag,
 				allReturnRangesBag,
 				allExitBag);
 	}
+	
+	private void addRowFrom(Map<String, Object> map, int row, Collection<While> loops, Collection<Pair<Integer, Integer>> ranges, Bag<Pair<Integer, Integer>> exitRanges,
+			Bag<Pair<Integer, Integer>> breakExitRanges, Bag<Pair<Integer, Integer>> returnExitRanges, Bag<Integer> exitRecords) {
+		map.put("loop-number", row);
+		map.put("breaks", totalNumberOfBreaks(loops));
+		map.put("returns", totalNumberOfReturns(loops));
+		map.put("invocations", exitRecords.size());
+		map.put("conditional-exits", exitRecords.size() - breakExitRanges.size() - returnExitRanges.size());
+		map.put("break-exits", breakExitRanges.size());
+		map.put("return-exits", returnExitRanges.size());
+		map.put("total-iterations", Bag.sum(exitRecords));
+		logBag(map, "exit-ranges", exitRanges, ranges);
+		logBag(map, "break-exit-ranges", breakExitRanges, ranges);
+		logBag(map, "return-exit-ranges", returnExitRanges, ranges);
+		map.put("exit-records", logBag((Map) MetaMap.newLinkedHashMap(), "", exitRecords, exitRecords.asSet()));
+	}
 
 	private <T extends Comparable<T>> String logBag(Map<String, Object> row, String description, Bag<T> bag, Collection<T> keys) {
 		List<T> sortedKeys = MetaList.newArrayList(keys);
 		Collections.sort(sortedKeys);
+		double bagSize = bag.size();
 		for (T key : sortedKeys) {
-			row.put(format("%s[%s]", description, key.toString()), bag.repetitionsOf(key));
+			double percentage = (bagSize < 1.0) ? 0.0 : bag.repetitionsOf(key) / bagSize;
+			row.put(format("%s %s", description, key.toString()), percentage);
 		}
 		return row.toString();
 	}
 	
 	private void logTable(Collection<String> loopStatisticsLog, Table<Integer, String, Object> table, int numberOfLoops) {
-		/** FIXME TEST PRETTYPRINTED OF TABLE!!! */
 		String columnSeparator = " | ";
 		Collection<String> columnNames = table.row(1).keySet();
 		loopStatisticsLog.add(StringLibrary.join(columnNames, columnSeparator));
@@ -222,6 +218,19 @@ public class InfinitelDiagnostician extends Infinitel {
 	}
 	
 	private MappingBag<Integer, Pair<Integer, Integer>> toMappingBag(Bag<Integer> bag) {
-		return MappingBag.newMappingBag(new RangeMapper(10, 5), bag);
+		final int lowerLimit = 100;
+		final int upperLimit = configuration().diagnosticsIterationsThreshold();
+		final RangeMapper mapper = new RangeMapper(10, 5);
+		Function<Integer, Pair<Integer, Integer>> function = new Function<Integer, Pair<Integer, Integer>>() {
+			@Override
+			public Pair<Integer, Integer> outputFor(Integer value) {
+				Pair<Integer, Integer> output = mapper.outputFor(value);
+				if (output.first() >= lowerLimit) {
+					return Pair.from(lowerLimit, upperLimit);
+				}
+				return output;
+			}
+		};
+		return MappingBag.newMappingBag(function, bag);
 	}
 }

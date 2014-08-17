@@ -89,6 +89,14 @@ public class CompoundLoopMonitor {
 		return monitorOf(loop).numberOfReturnExits();
 	}
 	
+	public int numberOfConditionalExits(While loop) {
+		return monitorOf(loop).numberOfConditionalExits();
+	}
+	
+	public long numberOfIterations(While loop) {
+		return monitorOf(loop).numberOfIterations();
+	}
+	
 	public Bag<Integer> exitRecordsOf(While loop) {
 		return monitorOf(loop).exitRecords();
 	}
