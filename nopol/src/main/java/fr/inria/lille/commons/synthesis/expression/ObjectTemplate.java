@@ -6,8 +6,8 @@ import java.util.Collection;
 
 import org.smtlib.ISort;
 
-import xxl.java.extensions.collection.Multimap;
-import xxl.java.extensions.library.ClassLibrary;
+import xxl.java.container.map.Multimap;
+import xxl.java.library.ClassLibrary;
 
 public abstract class ObjectTemplate<T> {
 	

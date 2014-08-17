@@ -5,7 +5,7 @@ import java.util.Map;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtMethod;
-import xxl.java.extensions.collection.MapLibrary;
+import xxl.java.container.classic.MetaMap;
 import fr.inria.lille.commons.spoon.util.SpoonReferenceLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
 import fr.inria.lille.commons.trace.RuntimeValues;
@@ -15,8 +15,8 @@ public class CompoundLoopMonitorBuilder extends AbstractProcessor<CtWhile> {
 
 	public CompoundLoopMonitorBuilder(int threshold) {
 		this.threshold = threshold;
-		submonitors = MapLibrary.newHashMap();
-		runtimeValues = MapLibrary.newHashMap();
+		submonitors = MetaMap.newHashMap();
+		runtimeValues = MetaMap.newHashMap();
 	}
 	
 	@Override

@@ -3,7 +3,7 @@ package fr.inria.lille.commons.synthesis.expression;
 import java.util.Collection;
 import java.util.List;
 
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 
 
 public class Expression<T> extends ObjectTemplate<T> {
@@ -13,7 +13,7 @@ public class Expression<T> extends ObjectTemplate<T> {
 	}
 	
 	public static List<String> expressionsOf(Collection<? extends Expression<?>> expressions) {
-		List<String> collected = ListLibrary.newArrayList();
+		List<String> collected = MetaList.newArrayList();
 		for (Expression<?> expression : expressions) {
 			collected.add(expression.expression());
 		}

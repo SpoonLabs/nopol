@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.smtlib.IExpr.ISymbol;
 
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.theory.EmptyTheory;
 import fr.inria.lille.commons.synthesis.theory.IfThenElseTheory;
@@ -28,7 +28,7 @@ public class SynthesisTheoriesBuilder {
 	}
 	
 	public static List<OperatorTheory> theoriesForAufnira() {
-		List<OperatorTheory> theories = ListLibrary.newArrayList();
+		List<OperatorTheory> theories = MetaList.newArrayList();
 		EmptyTheory empty = new EmptyTheory();
 		NumberComparisonTheory comparison = new NumberComparisonTheory();
 		LogicTheory logic = new LogicTheory();
@@ -40,7 +40,7 @@ public class SynthesisTheoriesBuilder {
 	}
 	
 	public static List<OperatorTheory> theoriesForAuflira() {
-		List<OperatorTheory> theories = ListLibrary.newArrayList();
+		List<OperatorTheory> theories = MetaList.newArrayList();
 		EmptyTheory empty = new EmptyTheory();
 		NumberComparisonTheory comparison = new NumberComparisonTheory();
 		LogicTheory logic = new LogicTheory();

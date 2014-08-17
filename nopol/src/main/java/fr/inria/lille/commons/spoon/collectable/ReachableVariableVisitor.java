@@ -20,7 +20,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.visitor.CtAbstractVisitor;
-import xxl.java.extensions.collection.SetLibrary;
+import xxl.java.container.classic.MetaSet;
 import fr.inria.lille.commons.spoon.filter.BeforeLocationFilter;
 
 public class ReachableVariableVisitor extends CtAbstractVisitor {
@@ -37,7 +37,7 @@ public class ReachableVariableVisitor extends CtAbstractVisitor {
 	
 	public Collection<CtVariable<?>> reachedVariables() {
 		if (reachedVariables == null) {
-			reachedVariables = SetLibrary.newHashSet();
+			reachedVariables = MetaSet.newHashSet();
 			scan(startingNode());
 		}
 		return reachedVariables;

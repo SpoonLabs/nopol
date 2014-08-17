@@ -1,7 +1,6 @@
 package fr.inria.lille.commons.spoon.util;
 
-import static xxl.java.extensions.library.ClassLibrary.castTo;
-import static xxl.java.extensions.library.ClassLibrary.isInstanceOf;
+import static xxl.java.library.ClassLibrary.isInstanceOf;
 
 import java.util.List;
 
@@ -74,7 +73,7 @@ public class SpoonElementLibrary {
 	
 	public static boolean hasStaticModifier(CtElement element) {
 		if (allowsModifiers(element)) {
-			return castTo(CtModifiable.class, element).getModifiers().contains(ModifierKind.STATIC);
+			return ((CtModifiable) element).getModifiers().contains(ModifierKind.STATIC);
 		}
 		return false;
 	}

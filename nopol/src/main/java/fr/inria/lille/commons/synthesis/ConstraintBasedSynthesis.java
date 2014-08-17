@@ -2,9 +2,9 @@ package fr.inria.lille.commons.synthesis;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static xxl.java.extensions.library.LoggerLibrary.logCollection;
-import static xxl.java.extensions.library.LoggerLibrary.logDebug;
-import static xxl.java.extensions.library.LoggerLibrary.newLoggerFor;
+import static xxl.java.library.LoggerLibrary.logCollection;
+import static xxl.java.library.LoggerLibrary.logDebug;
+import static xxl.java.library.LoggerLibrary.newLoggerFor;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,10 +14,10 @@ import org.slf4j.Logger;
 import org.smtlib.ICommand.IScript;
 import org.smtlib.IExpr.ISymbol;
 
-import xxl.java.extensions.collection.CollectionLibrary;
-import xxl.java.extensions.collection.ListLibrary;
-import xxl.java.extensions.collection.MapLibrary;
-import xxl.java.extensions.library.ClassLibrary;
+import xxl.java.container.classic.MetaCollection;
+import xxl.java.container.classic.MetaList;
+import xxl.java.container.classic.MetaMap;
+import xxl.java.library.ClassLibrary;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.operator.Operator;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
@@ -34,7 +34,7 @@ public class ConstraintBasedSynthesis {
 	}
 	
 	public ConstraintBasedSynthesis(ISymbol logic) {
-		this(logic, MapLibrary.newHashMap(asList("-1", "0", "1"), asList(-1, 0, 1)), SynthesisTheoriesBuilder.theoriesForConstraintBasedSynthesis(logic));
+		this(logic, MetaMap.newHashMap(asList("-1", "0", "1"), asList(-1, 0, 1)), SynthesisTheoriesBuilder.theoriesForConstraintBasedSynthesis(logic));
 	}
 	
 	public ConstraintBasedSynthesis(ISymbol logic, Map<String, Integer> constants, Collection<OperatorTheory> theories) {
@@ -45,7 +45,7 @@ public class ConstraintBasedSynthesis {
 	}
 	
 	public <T> CodeGenesis codesSynthesisedFrom(Class<T> outputClass, Collection<Specification<T>> specifications) {
-		Collection<Operator<?>> operators = ListLibrary.newLinkedList();
+		Collection<Operator<?>> operators = MetaList.newLinkedList();
 		Expression<?> outputExpression = outputExpressionFor(outputClass);
 		Collection<Map<String, Object>> synthesisInputs = synhtesisInputValues(specifications, outputExpression);
 		Collection<Expression<?>> inputs = inputExpressions(synthesisInputs, outputExpression); 
@@ -67,7 +67,7 @@ public class ConstraintBasedSynthesis {
 
 	private <T> Collection<Map<String, Object>> synhtesisInputValues(Collection<Specification<T>> specifications, Expression<?> outputExpression) {
 		logCollection(logger, "Specifications:", specifications);
-		Collection<Map<String, Object>> synthesisInputs = ListLibrary.newLinkedList();
+		Collection<Map<String, Object>> synthesisInputs = MetaList.newLinkedList();
 		for (Specification<T> specification : specifications) {
 			Map<String, Object> newMap = specification.inputs();
 			newMap.put(outputExpression.expression(), specification.output());
@@ -78,7 +78,7 @@ public class ConstraintBasedSynthesis {
 	}
 	
 	private <T> Map<String, Object> compatibleValuesFrom(Map<String, Object> map) {
-		Map<String, Object> collectedValues = MapLibrary.newHashMap();
+		Map<String, Object> collectedValues = MetaMap.newHashMap();
 		for (String key : map.keySet()) {
 			Object compatibleValue = compatibleValueOf(map.get(key));
 			collectedValues.put(key, compatibleValue);
@@ -95,9 +95,9 @@ public class ConstraintBasedSynthesis {
 	
 	protected Collection<Expression<?>> inputExpressions(Collection<Map<String, Object>> collectedValues, Expression<?> outputExpression) {
 		// FIXME: what to do when keys of collectedValues do not match; intersection of keys?
-		Collection<Expression<?>> expressions = ListLibrary.newLinkedList();
-		Map<String, Object> anyValueMap = CollectionLibrary.any(collectedValues);
-		Collection<String> variableNames = MapLibrary.keySetIntersection(collectedValues);
+		Collection<Expression<?>> expressions = MetaList.newLinkedList();
+		Map<String, Object> anyValueMap = MetaCollection.any(collectedValues);
+		Collection<String> variableNames = MetaMap.keySetIntersection(collectedValues);
 		for (String variableName : variableNames) {
 			Class<?> compatibleClass = compatibleClassOf(anyValueMap.get(variableName));
 			expressions.add(new Expression(compatibleClass, variableName));
@@ -128,7 +128,7 @@ public class ConstraintBasedSynthesis {
 		IScript smtScript = scriptBuilder().scriptFrom(logic(), container, synthesisInputs);
 		logCollection(logger, "SMTLib Script:", smtScript.commands());
 		Map<String, String> satisfyingValues = scriptSolution(container, smtScript);
-		Map<String, Integer> toInteger = MapLibrary.valuesParsedAsInteger(satisfyingValues);
+		Map<String, Integer> toInteger = MetaMap.valuesParsedAsInteger(satisfyingValues);
 		return toInteger;
 	}
 

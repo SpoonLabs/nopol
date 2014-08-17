@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.operator.BinaryOperator;
 import fr.inria.lille.commons.synthesis.operator.Operator;
@@ -52,11 +52,11 @@ public class LocationVariableContainerTest {
 		checkParameter(container, Number.class, 6, 2, 2);
 		checkParameter(container, Boolean.class, 7, 3, 0);
 		
-		assertTrue(ListLibrary.isPartitionOf(container.inputsAndOutput(), container.inputs(), asList(container.outputVariable())));
-		assertTrue(ListLibrary.isPartitionOf(container.inputsAndOperators(), container.inputs(), container.operators()));
-		assertTrue(ListLibrary.isPartitionOf(container.operatorsAndParameters(), container.operators(), container.allParameters()));
-		assertTrue(ListLibrary.isPartitionOf(container.operatorsParametersAndOutput(), container.operatorsAndParameters(), asList(container.outputVariable())));
-		assertTrue(ListLibrary.isPartitionOf(container.allVariables(), container.inputs(), container.operatorsParametersAndOutput()));
+		assertTrue(MetaList.isPartitionOf(container.inputsAndOutput(), container.inputs(), asList(container.outputVariable())));
+		assertTrue(MetaList.isPartitionOf(container.inputsAndOperators(), container.inputs(), container.operators()));
+		assertTrue(MetaList.isPartitionOf(container.operatorsAndParameters(), container.operators(), container.allParameters()));
+		assertTrue(MetaList.isPartitionOf(container.operatorsParametersAndOutput(), container.operatorsAndParameters(), asList(container.outputVariable())));
+		assertTrue(MetaList.isPartitionOf(container.allVariables(), container.inputs(), container.operatorsParametersAndOutput()));
 	}
 
 	private void checkInput(LocationVariableContainer container, Class<?> expectedClass, int inputIndex) {

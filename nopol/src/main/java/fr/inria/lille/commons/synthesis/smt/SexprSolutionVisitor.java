@@ -7,12 +7,12 @@ import org.smtlib.sexpr.ISexpr;
 import org.smtlib.sexpr.ISexpr.IToken;
 import org.smtlib.sexpr.Sexpr.Seq;
 
-import xxl.java.extensions.collection.MapLibrary;
+import xxl.java.container.classic.MetaMap;
 
 public class SexprSolutionVisitor {
 
 	public static Map<String, String> solutionsFrom(IResponse response) {
-		Map<String, String> solutions = MapLibrary.newHashMap();
+		Map<String, String> solutions = MetaMap.newHashMap();
 		visit(response, solutions);
 		return solutions;
 	}

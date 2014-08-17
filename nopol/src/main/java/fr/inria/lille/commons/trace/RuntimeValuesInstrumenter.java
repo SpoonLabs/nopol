@@ -13,13 +13,13 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.factory.Factory;
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 
 public class RuntimeValuesInstrumenter {
 
 	public static CtStatement runtimeCollectionBefore(CtStatement insertionPoint, Collection<String> reachableValues, RuntimeValues runtimeValues) {
 		Factory factory = insertionPoint.getFactory();
-		List<CtStatement> newStatements = ListLibrary.newLinkedList();
+		List<CtStatement> newStatements = MetaList.newLinkedList();
 		for (String reachableValue : reachableValues) {
 			addCollectionStatementFor(newStatements, reachableValue, factory, runtimeValues);
 		}

@@ -5,14 +5,14 @@ import java.util.Map;
 
 import org.smtlib.IExpr;
 
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 
 public class IndexedLocationVariable<T> extends LocationVariable<T> {
 
 	public static List<Object> extractWithObjectExpressions(Map<String, Object> map, List<IndexedLocationVariable<?>> locationVariables) {
-		List<Object> extracted = ListLibrary.newLinkedList();
+		List<Object> extracted = MetaList.newLinkedList();
 		for (IndexedLocationVariable<?> locationVariable : locationVariables) {
 			extracted.add(map.get(locationVariable.objectTemplate().expression()));
 		}

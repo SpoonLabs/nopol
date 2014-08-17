@@ -20,10 +20,10 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
-import xxl.java.extensions.collection.MapLibrary;
-import xxl.java.extensions.junit.TestCase;
-import xxl.java.extensions.support.Function;
-import xxl.java.extensions.support.Singleton;
+import xxl.java.container.classic.MetaMap;
+import xxl.java.junit.TestCase;
+import xxl.java.support.Function;
+import xxl.java.support.Singleton;
 import fr.inria.lille.commons.spoon.collectable.CollectableValueFinder;
 import fr.inria.lille.commons.spoon.filter.CodeSnippetFilter;
 import fr.inria.lille.commons.spoon.util.SpoonElementLibrary;
@@ -46,7 +46,7 @@ public class ValuesCollectorTest {
 		runtimeValues.collectValue(name, value);
 		
 		// THEN
-		Map<String, ?> expected = MapLibrary.newHashMap(asList(name + "!=null", name + ".size()", name + ".isEmpty()"), asList(true, value.size(), value.isEmpty()));
+		Map<String, ?> expected = MetaMap.newHashMap(asList(name + "!=null", name + ".size()", name + ".isEmpty()"), asList(true, value.size(), value.isEmpty()));
 		assertEquals(expected, runtimeValues.valueBuffer());
 	}
 
@@ -62,7 +62,7 @@ public class ValuesCollectorTest {
 		runtimeValues.collectValue(name, value);
 		
 		// THEN
-		Map<String, ?> expected = MapLibrary.newHashMap(asList(name + "!=null", name + ".size()", name + ".isEmpty()"), asList(true, value.size(), value.isEmpty()));
+		Map<String, ?> expected = MetaMap.newHashMap(asList(name + "!=null", name + ".size()", name + ".isEmpty()"), asList(true, value.size(), value.isEmpty()));
 		assertEquals(expected, runtimeValues.valueBuffer());
 	}
 
@@ -78,7 +78,7 @@ public class ValuesCollectorTest {
 		runtimeValues.collectValue(name, value);
 
 		// THEN
-		Map<String, ?> expected = MapLibrary.newHashMap(asList(name + "!=null", name + ".length()", name + ".length()==0"), asList(true, value.length(), value.isEmpty()));
+		Map<String, ?> expected = MetaMap.newHashMap(asList(name + "!=null", name + ".length()", name + ".length()==0"), asList(true, value.length(), value.isEmpty()));
 		assertEquals(expected, runtimeValues.valueBuffer());
 	}
 
@@ -94,7 +94,7 @@ public class ValuesCollectorTest {
 		runtimeValues.collectValue(name, value);
 
 		// THEN
-		Map<String, ?> expected = MapLibrary.newHashMap(asList(name + "!=null", name + ".length"), asList(true, value.length));
+		Map<String, ?> expected = MetaMap.newHashMap(asList(name + "!=null", name + ".length"), asList(true, value.length));
 		assertEquals(expected, runtimeValues.valueBuffer());
 	}
 	
@@ -109,7 +109,7 @@ public class ValuesCollectorTest {
 		runtimeValues.collectValue(name, null);
 
 		// THEN
-		Map<String, ?> expected = MapLibrary.newHashMap(asList(name + "!=null"), asList(false));
+		Map<String, ?> expected = MetaMap.newHashMap(asList(name + "!=null"), asList(false));
 		assertEquals(expected, runtimeValues.valueBuffer());
 	}
 
@@ -126,8 +126,8 @@ public class ValuesCollectorTest {
 				return value % 2 == 0;
 			}
 		};
-		Map<String, Object> otherValue = (Map) MapLibrary.newHashMap(asList("c"), asList(3));
-		Map<String, Object> values = (Map) MapLibrary.newHashMap(asList("a", "b"), asList(1, 2));
+		Map<String, Object> otherValue = (Map) MetaMap.newHashMap(asList("c"), asList(3));
+		Map<String, Object> values = (Map) MetaMap.newHashMap(asList("a", "b"), asList(1, 2));
 		Collection<Map<String, Object>> inconsistentTraces;
 		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<Boolean>(runtimeValues, outputForEachTrace);
 		

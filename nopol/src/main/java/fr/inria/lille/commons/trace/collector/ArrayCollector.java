@@ -5,7 +5,7 @@ import static java.util.Arrays.asList;
 import java.lang.reflect.Array;
 import java.util.Collection;
 
-import xxl.java.extensions.collection.Pair;
+import xxl.java.container.various.Pair;
 
 public class ArrayCollector extends ValueCollector {
 

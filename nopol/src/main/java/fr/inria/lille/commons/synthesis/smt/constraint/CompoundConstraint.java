@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.smtlib.IExpr;
 
-import xxl.java.extensions.collection.ListLibrary;
-import xxl.java.extensions.collection.SetLibrary;
+import xxl.java.container.classic.MetaList;
+import xxl.java.container.classic.MetaSet;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;
@@ -23,6 +23,10 @@ public abstract class CompoundConstraint extends Constraint {
 		return subconstraints;
 	}
 	
+	public int numberOfSubconstraints() {
+		return subconstraints().size();
+	}
+	
 	@Override
 	public boolean isCompound() {
 		return true;
@@ -30,24 +34,24 @@ public abstract class CompoundConstraint extends Constraint {
 	
 	@Override
 	public List<LocationVariable<?>> variablesForExpression(LocationVariableContainer container) {
-		Set<LocationVariable<?>> linkedSet = SetLibrary.newLinkedHashSet();
+		Set<LocationVariable<?>> linkedSet = MetaSet.newLinkedHashSet(numberOfSubconstraints());
 		for (Constraint constraint : subconstraints()) {
 			linkedSet.addAll(constraint.variablesForExpression(container));
 		}
-		return ListLibrary.newLinkedList(linkedSet);
+		return MetaList.newLinkedList(linkedSet);
 	}
 	
 	@Override
 	public List<LocationVariable<?>> variablesForSubexpression(LocationVariableContainer container) {
-		Set<LocationVariable<?>> linkedSet = SetLibrary.newLinkedHashSet();
+		Set<LocationVariable<?>> linkedSet = MetaSet.newLinkedHashSet(numberOfSubconstraints());
 		for (Constraint constraint : subconstraints()) {
 			linkedSet.addAll(constraint.variablesForSubexpression(container));
 		}
-		return ListLibrary.newLinkedList(linkedSet);
+		return MetaList.newLinkedList(linkedSet);
 	}
 	
 	protected Collection<IExpr> subconstraintInvocations(LocationVariableContainer locationVariableContainer) {
-		Collection<IExpr> invocations = ListLibrary.newLinkedList();
+		Collection<IExpr> invocations = MetaList.newLinkedList();
 		for (Constraint constraint : subconstraints()) {
 			invocations.add(constraint.invocation(locationVariableContainer));
 		}

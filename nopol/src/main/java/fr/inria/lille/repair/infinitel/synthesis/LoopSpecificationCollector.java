@@ -7,9 +7,9 @@ import java.util.Map;
 
 import org.junit.runner.Result;
 
-import xxl.java.extensions.collection.SetLibrary;
-import xxl.java.extensions.junit.TestCase;
-import xxl.java.extensions.support.Function;
+import xxl.java.container.classic.MetaSet;
+import xxl.java.junit.TestCase;
+import xxl.java.support.Function;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.commons.trace.SpecificationTestCasesListener;
@@ -23,7 +23,7 @@ public class LoopSpecificationCollector {
 	}
 	
 	public Collection<Specification<Boolean>> testSpecifications(Map<TestCase, Integer> thresholdsByTest, While loop) {
-		Collection<Specification<Boolean>> specifications = SetLibrary.newHashSet();
+		Collection<Specification<Boolean>> specifications = MetaSet.newHashSet();
 		for (TestCase testCase : thresholdsByTest.keySet()) {
 			Integer testThreshold = thresholdsByTest.get(testCase);
 			addSpecificationsAfterExecution(specifications, testCase, loop, testThreshold);

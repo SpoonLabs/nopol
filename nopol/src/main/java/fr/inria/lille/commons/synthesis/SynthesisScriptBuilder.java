@@ -9,7 +9,7 @@ import org.smtlib.ICommand.IScript;
 import org.smtlib.IExpr;
 import org.smtlib.IExpr.ISymbol;
 
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.smt.constraint.CompoundConstraint;
 import fr.inria.lille.commons.synthesis.smt.constraint.Constraint;
@@ -37,7 +37,7 @@ public class SynthesisScriptBuilder {
 	}
 	
 	public Collection<ICommand> commandsFrom(LocationVariableContainer container) {
-		Collection<ICommand> commands = ListLibrary.newLinkedList();
+		Collection<ICommand> commands = MetaList.newLinkedList();
 		addLocationVariableDeclarations(commands, container);
 		addDefinitions(commands, wellFormedConstraint(), container);
 		addDefinitions(commands, verificationConstraint(), container);
@@ -45,7 +45,7 @@ public class SynthesisScriptBuilder {
 	}
 	
 	public Collection<ICommand> assertionsFor(LocationVariableContainer container, Collection<Map<String,Object>> synthesisInputs) {
-		Collection<ICommand> assertions = ListLibrary.newLinkedList();
+		Collection<ICommand> assertions = MetaList.newLinkedList();
 		addVerificationAssertions(assertions, container, synthesisInputs);
 		assertions.add(smtlib().assertion(wellFormedConstraint().invocation(container)));
 		return assertions;

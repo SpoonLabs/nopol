@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.smtlib.IExpr;
 
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.expression.ObjectTemplate;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
@@ -14,7 +14,7 @@ import fr.inria.lille.commons.synthesis.smt.SMTLib;
 public abstract class LocationVariable<T> extends Expression<T> {
 	
 	public static List<String> subexpressionsOf(Collection<? extends LocationVariable<?>> variables) {
-		List<String> identifiers = ListLibrary.newArrayList();
+		List<String> identifiers = MetaList.newArrayList();
 		for (LocationVariable<?> variable : variables) {
 			identifiers.add(variable.subexpression());
 		}

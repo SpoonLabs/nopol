@@ -4,9 +4,9 @@ import static java.lang.String.format;
 
 import java.util.List;
 
-import xxl.java.extensions.collection.Bag;
-import xxl.java.extensions.collection.ListLibrary;
-import xxl.java.extensions.support.GlobalToggle;
+import xxl.java.container.classic.MetaList;
+import xxl.java.container.various.Bag;
+import xxl.java.support.GlobalToggle;
 import fr.inria.lille.repair.infinitel.loop.While;
 
 public class LoopMonitor extends GlobalToggle {
@@ -153,7 +153,7 @@ public class LoopMonitor extends GlobalToggle {
 	
 	private static List<LoopMonitor> allInstances() {
 		if (allInstances == null) {
-			allInstances = ListLibrary.newArrayList();
+			allInstances = MetaList.newArrayList();
 		}
 		return allInstances;
 	}

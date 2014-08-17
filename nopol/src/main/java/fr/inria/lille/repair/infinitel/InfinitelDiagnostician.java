@@ -1,7 +1,7 @@
 package fr.inria.lille.repair.infinitel;
 
 import static java.lang.String.format;
-import static xxl.java.extensions.library.LoggerLibrary.logDebug;
+import static xxl.java.library.LoggerLibrary.logDebug;
 
 import java.io.File;
 import java.net.URL;
@@ -10,18 +10,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import xxl.java.extensions.collection.Bag;
-import xxl.java.extensions.collection.ListLibrary;
-import xxl.java.extensions.collection.MapLibrary;
-import xxl.java.extensions.collection.MappingBag;
-import xxl.java.extensions.collection.Pair;
-import xxl.java.extensions.collection.Table;
-import xxl.java.extensions.junit.TestCasesListener;
-import xxl.java.extensions.library.FileLibrary;
-import xxl.java.extensions.library.JavaLibrary;
-import xxl.java.extensions.library.StringLibrary;
-import xxl.java.extensions.support.RangeMapper;
-import xxl.java.extensions.support.Singleton;
+import xxl.java.container.classic.MetaList;
+import xxl.java.container.classic.MetaMap;
+import xxl.java.container.various.Bag;
+import xxl.java.container.various.MappingBag;
+import xxl.java.container.various.Pair;
+import xxl.java.container.various.Table;
+import xxl.java.junit.TestCasesListener;
+import xxl.java.library.FileLibrary;
+import xxl.java.library.JavaLibrary;
+import xxl.java.library.StringLibrary;
+import xxl.java.support.RangeMapper;
+import xxl.java.support.Singleton;
 import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.infinitel.instrumenting.CompoundLoopMonitor;
 import fr.inria.lille.repair.infinitel.loop.FixableLoop;
@@ -52,7 +52,7 @@ public class InfinitelDiagnostician extends Infinitel {
 
 	public void diagnose() {
 		MonitoringTestExecutor testExecutor = newTestExecutor();
-		Collection<String> toBeLogged = ListLibrary.newLinkedList();
+		Collection<String> toBeLogged = MetaList.newLinkedList();
 		toBeLogged.addAll(logLoopsInvokedOnlyOnce(testExecutor));
 		toBeLogged.add("");
 		toBeLogged.addAll(logLoopStatistics(testExecutor));
@@ -73,7 +73,7 @@ public class InfinitelDiagnostician extends Infinitel {
 	}
 	
 	private List<String> logLoopPositions(Collection<FixableLoop> loopsInvokedOnce) {
-		List<String> lines = ListLibrary.newLinkedList();
+		List<String> lines = MetaList.newLinkedList();
 		for (FixableLoop loop : loopsInvokedOnce) {
 			lines.add("[" + loop.position() + "]");
 		}
@@ -82,7 +82,7 @@ public class InfinitelDiagnostician extends Infinitel {
 	
 	private Collection<String> logLoopStatistics(MonitoringTestExecutor testExecutor) {
 		testExecutor.execute(project().testClasses());
-		List<String> loopStatisticsLog = ListLibrary.newLinkedList();
+		List<String> loopStatisticsLog = MetaList.newLinkedList();
 		CompoundLoopMonitor monitor = testExecutor.monitor();
 		logLoopStatisticsIn(loopStatisticsLog, monitor);
 		return loopStatisticsLog;
@@ -141,7 +141,7 @@ public class InfinitelDiagnostician extends Infinitel {
 		logBag(map, "exit-ranges", exitRanges, ranges);
 		logBag(map, "break-exit-ranges", breakExitRanges, ranges);
 		logBag(map, "return-exit-ranges", returnExitRanges, ranges);
-		map.put("exit-records", logBag((Map) MapLibrary.newLinkedHashMap(), "", exitRecords, exitRecords.asSet()));
+		map.put("exit-records", logBag((Map) MetaMap.newLinkedHashMap(), "", exitRecords, exitRecords.asSet()));
 	}
 	
 	private void logAccumulatedStatistics(Collection<While> loops, CompoundLoopMonitor monitor, Table<Integer, String, Object> table, Bag<Integer> allExitBag,
@@ -162,7 +162,7 @@ public class InfinitelDiagnostician extends Infinitel {
 	}
 
 	private <T extends Comparable<T>> String logBag(Map<String, Object> row, String description, Bag<T> bag, Collection<T> keys) {
-		List<T> sortedKeys = ListLibrary.newArrayList(keys);
+		List<T> sortedKeys = MetaList.newArrayList(keys);
 		Collections.sort(sortedKeys);
 		for (T key : sortedKeys) {
 			row.put(format("%s[%s]", description, key.toString()), bag.repetitionsOf(key));

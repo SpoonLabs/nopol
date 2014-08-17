@@ -1,6 +1,6 @@
 package fr.inria.lille.commons.spoon.util;
 
-import static xxl.java.extensions.library.ClassLibrary.isInstanceOf;
+import static xxl.java.library.ClassLibrary.isInstanceOf;
 import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 

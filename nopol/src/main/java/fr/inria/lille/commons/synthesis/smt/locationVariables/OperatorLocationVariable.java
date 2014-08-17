@@ -3,7 +3,7 @@ package fr.inria.lille.commons.synthesis.smt.locationVariables;
 import java.util.Collection;
 import java.util.List;
 
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 import fr.inria.lille.commons.synthesis.operator.Operator;
 import fr.inria.lille.commons.synthesis.operator.Parameter;
 
@@ -15,7 +15,7 @@ public class OperatorLocationVariable<T> extends LocationVariable<T> {
 	}
 
 	private List<ParameterLocationVariable<?>> parameterLocationVariablesFor(Operator<T> operator) {
-		List<ParameterLocationVariable<?>> variables = ListLibrary.newArrayList();
+		List<ParameterLocationVariable<?>> variables = MetaList.newArrayList();
 		int parameterIndex = 0;
 		for (Parameter<?> parameter : operator.parameters()) {
 			variables.add(new ParameterLocationVariable(parameter, subexpression() + "<" + parameterIndex + ">" , this));

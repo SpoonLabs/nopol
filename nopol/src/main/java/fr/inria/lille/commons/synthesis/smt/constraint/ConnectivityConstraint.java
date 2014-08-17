@@ -9,8 +9,8 @@ import java.util.List;
 import org.smtlib.IExpr;
 import org.smtlib.ISort;
 
-import xxl.java.extensions.collection.ListLibrary;
-import xxl.java.extensions.collection.Multimap;
+import xxl.java.container.classic.MetaList;
+import xxl.java.container.map.Multimap;
 import fr.inria.lille.commons.synthesis.expression.ObjectTemplate;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.IndexedLocationVariable;
@@ -36,7 +36,7 @@ public class ConnectivityConstraint extends Constraint {
 	
 	@Override
 	protected Collection<IExpr> definitionExpressions(LocationVariableContainer container) {
-		Collection<IExpr> implications = ListLibrary.newLinkedList();
+		Collection<IExpr> implications = MetaList.newLinkedList();
 		Multimap<ISort, LocationVariable<?>> bySort = (Multimap) ObjectTemplate.bySort(container.inputsAndOperators());
 		addImplicationsForOutput(implications, container.outputVariable(), bySort);
 		addImplicationsForParameters(implications, container.allParameters(), bySort);
@@ -55,7 +55,7 @@ public class ConnectivityConstraint extends Constraint {
 	
 	private void addImplicationsForParameters(Collection<IExpr> implications, List<ParameterLocationVariable<?>> parameters, Multimap<ISort, LocationVariable<?>> bySort) {
 		for (ParameterLocationVariable<?> parameter : parameters) {
-			Collection<LocationVariable<?>> sameTypeVariables = ListLibrary.newLinkedList(bySort.get(parameter.smtSort()));
+			Collection<LocationVariable<?>> sameTypeVariables = MetaList.newLinkedList(bySort.get(parameter.smtSort()));
 			sameTypeVariables.remove(parameter.operatorLocationVariable());
 			addImplicationsBetween(implications, parameter, sameTypeVariables);
 		}

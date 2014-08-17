@@ -12,9 +12,9 @@ import java.util.Map;
 import org.junit.Test;
 import org.smtlib.ISort;
 
-import xxl.java.extensions.collection.MapLibrary;
-import xxl.java.extensions.collection.Multimap;
-import xxl.java.extensions.collection.SetLibrary;
+import xxl.java.container.classic.MetaMap;
+import xxl.java.container.classic.MetaSet;
+import xxl.java.container.map.Multimap;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.expression.ObjectTemplate;
 import fr.inria.lille.commons.synthesis.operator.BinaryOperator;
@@ -38,20 +38,20 @@ public class CodeSynthesisTest {
 		Expression<?> outputExpression = synthesiser.outputExpressionFor(Integer.class);
 		assertEquals(SMTLib.numberSort(), outputExpression.smtSort());
 		
-		Map<String, Integer> inputs = MapLibrary.newHashMap(asList("a", "b"), asList(1, 2));
+		Map<String, Integer> inputs = MetaMap.newHashMap(asList("a", "b"), asList(1, 2));
 		Collection<Expression<?>> inputExpressions = synthesiser.inputExpressions((Collection) asList(inputs), outputExpression);
 		assertEquals(2, inputExpressions.size());
 		Multimap<ISort,ObjectTemplate<?>> bySort = ObjectTemplate.bySort((List) inputExpressions);
-		assertEquals(SetLibrary.newHashSet(SMTLib.numberSort()), bySort.keySet());
+		assertEquals(MetaSet.newHashSet(SMTLib.numberSort()), bySort.keySet());
 	}
 	
 	@Test
 	public void scriptResolutionWithoutComponents() {
 		
 		Collection<OperatorTheory> theories = (List) asList(new EmptyTheory());
-		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MapLibrary.newHashMap(), theories);
-		Map<String, Object> firstValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(10, 15));
-		Map<String, Object> secondValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(10, 7));
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MetaMap.newHashMap(), theories);
+		Map<String, Object> firstValues = (Map) MetaMap.newHashMap(asList("array.length", "iterations"), asList(10, 15));
+		Map<String, Object> secondValues = (Map) MetaMap.newHashMap(asList("array.length", "iterations"), asList(10, 7));
 		Specification firstSpecification = new Specification<>(firstValues, 10);
 		Specification secondSpecification = new Specification<>(secondValues, 10);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Number.class, (List) asList(firstSpecification, secondSpecification));
@@ -62,8 +62,8 @@ public class CodeSynthesisTest {
 	@Test
 	public void scriptResolutionWithoutInputs() {
 		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis();
-		Map<String, Object> firstValues = MapLibrary.newHashMap();
-		Map<String, Object> secondValues = MapLibrary.newHashMap();
+		Map<String, Object> firstValues = MetaMap.newHashMap();
+		Map<String, Object> secondValues = MetaMap.newHashMap();
 		Specification firstSpecification = new Specification<Integer>(firstValues, 0);
 		Specification secondSpecification = new Specification<Integer>(secondValues, 0);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Number.class, (List) asList(firstSpecification, secondSpecification));
@@ -74,9 +74,9 @@ public class CodeSynthesisTest {
 	@Test
 	public void scriptResolutionWithOneTheory() {
 		Collection<OperatorTheory> theories = (List) asList(new LinearTheory());
-		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MapLibrary.newHashMap(), theories);
-		Map<String, Object> firstValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(10, 10));
-		Map<String, Object> secondValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(15, 5));
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MetaMap.newHashMap(), theories);
+		Map<String, Object> firstValues = (Map) MetaMap.newHashMap(asList("array.length", "iterations"), asList(10, 10));
+		Map<String, Object> secondValues = (Map) MetaMap.newHashMap(asList("array.length", "iterations"), asList(15, 5));
 		Specification firstSpecification = new Specification<Integer>(firstValues, 20);
 		Specification secondSpecification = new Specification<Integer>(secondValues, 20);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Number.class, (List) asList(firstSpecification, secondSpecification));
@@ -87,10 +87,10 @@ public class CodeSynthesisTest {
 	@Test
 	public void scriptResolutionWithOneTheoryBooleanOutput() {
 		Collection<OperatorTheory> theories = (List) asList(new NumberComparisonTheory());
-		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MapLibrary.newHashMap(), theories);
-		Map<String, Object> firstValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(4, 15));
-		Map<String, Object> secondValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(16, 5));
-		Map<String, Object> thirdValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations"), asList(16, 16));
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MetaMap.newHashMap(), theories);
+		Map<String, Object> firstValues = (Map) MetaMap.newHashMap(asList("array.length", "iterations"), asList(4, 15));
+		Map<String, Object> secondValues = (Map) MetaMap.newHashMap(asList("array.length", "iterations"), asList(16, 5));
+		Map<String, Object> thirdValues = (Map) MetaMap.newHashMap(asList("array.length", "iterations"), asList(16, 16));
 		Specification<Boolean> firstSpecification = new Specification<>(firstValues, false);
 		Specification<Boolean> secondSpecification = new Specification<>(secondValues, true);
 		Specification<Boolean> thirdSpecification = new Specification<>(thirdValues, true);
@@ -102,9 +102,9 @@ public class CodeSynthesisTest {
 	@Test
 	public void scriptResolutionWithTwoTheories() {
 		Collection<OperatorTheory> theories = (List) asList(new IfThenElseTheory(), new LinearTheory());
-		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MapLibrary.newHashMap(asList("1"), asList(1)), theories);
-		Map<String, Object> firstValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations", "isEmpty"), asList(12, 11, true));
-		Map<String, Object> secondValues = (Map) MapLibrary.newHashMap(asList("array.length", "iterations", "isEmpty"), asList(11, 15, false));
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MetaMap.newHashMap(asList("1"), asList(1)), theories);
+		Map<String, Object> firstValues = (Map) MetaMap.newHashMap(asList("array.length", "iterations", "isEmpty"), asList(12, 11, true));
+		Map<String, Object> secondValues = (Map) MetaMap.newHashMap(asList("array.length", "iterations", "isEmpty"), asList(11, 15, false));
 		Specification firstSpecification = new Specification<>(firstValues, 10);
 		Specification secondSpecification = new Specification<>(secondValues, 10);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Number.class, (List) asList(firstSpecification, secondSpecification));
@@ -115,13 +115,13 @@ public class CodeSynthesisTest {
 	@Test
 	public void defaultConstants() {
 		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis();
-		Map<String, Integer> expectedDefaultContants = MapLibrary.newHashMap(asList("-1", "0", "1"), asList(-1 , 0, 1));
+		Map<String, Integer> expectedDefaultContants = MetaMap.newHashMap(asList("-1", "0", "1"), asList(-1 , 0, 1));
 		assertEquals(expectedDefaultContants, synthesiser.constants());
 	}
 	
 	@Test
 	public void justABooleanConstant() {
-		Map<String, Integer> locations = MapLibrary.newHashMap();
+		Map<String, Integer> locations = MetaMap.newHashMap();
 		locations.put("L@out", 6);
 		CodeGenesis synthesis = new CodeGenesis(exampleWithoutOperators(), locations);
 		assertTrue(synthesis.isSuccessful());
@@ -132,14 +132,14 @@ public class CodeSynthesisTest {
 	
 	@Test
 	public void justAVariable() {
-		Map<String, Integer> locations = MapLibrary.newHashMap();
+		Map<String, Integer> locations = MetaMap.newHashMap();
 		locations.put("L@out", 1);
 		CodeGenesis synthesis = new CodeGenesis(exampleWithoutOperators(), locations);
 		assertEquals("inhibit", synthesis.returnStatement());
 	}
 	
 	@Test public void justAnIntegerConstant() {
-		Map<String, Integer> locations = MapLibrary.newHashMap();
+		Map<String, Integer> locations = MetaMap.newHashMap();
 		locations.put("L@out", 3);
 		CodeGenesis synthesis = new CodeGenesis(exampleWithoutOperators(), locations);
 		assertEquals("-1", synthesis.returnStatement());
@@ -147,7 +147,7 @@ public class CodeSynthesisTest {
 	
 	@Test
 	public void justOneComponent() {
-		Map<String, Integer> locations = MapLibrary.newHashMap();
+		Map<String, Integer> locations = MetaMap.newHashMap();
 		locations.put("L@out", 9);
 		locations.put("L@op<0>", 10);
 		locations.put("L@op<0><0>", 0);
@@ -167,7 +167,7 @@ public class CodeSynthesisTest {
 	
 	@Test
 	public void moreThanOneComponent() {
-		Map<String, Integer> locations = MapLibrary.newHashMap();
+		Map<String, Integer> locations = MetaMap.newHashMap();
 		locations.put("L@out", 11);
 		locations.put("L@op<0>", 10);
 		locations.put("L@op<0><0>", 8);

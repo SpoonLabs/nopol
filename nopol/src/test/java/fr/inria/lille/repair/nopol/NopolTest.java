@@ -11,11 +11,11 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import xxl.java.extensions.collection.SetLibrary;
-import xxl.java.extensions.junit.TestCase;
-import xxl.java.extensions.junit.TestCasesListener;
-import xxl.java.extensions.junit.TestSuiteExecution;
-import xxl.java.extensions.library.FileLibrary;
+import xxl.java.container.classic.MetaSet;
+import xxl.java.junit.TestCase;
+import xxl.java.junit.TestCasesListener;
+import xxl.java.junit.TestSuiteExecution;
+import xxl.java.library.FileLibrary;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.Main;
 import fr.inria.lille.repair.ProjectReference;
@@ -153,7 +153,7 @@ public class NopolTest {
 	}
 	
 	private void fixComparison(Patch foundPatch, String... expectedFixes) {
-		Collection<String> possibleFixes = SetLibrary.newHashSet(expectedFixes);
+		Collection<String> possibleFixes = MetaSet.newHashSet(expectedFixes);
 		assertTrue(possibleFixes.contains(foundPatch.asString()));
 	}
 	

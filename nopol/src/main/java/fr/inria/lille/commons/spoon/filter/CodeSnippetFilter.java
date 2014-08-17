@@ -5,7 +5,7 @@ import java.io.File;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.filter.AbstractFilter;
-import xxl.java.extensions.library.FileLibrary;
+import xxl.java.library.FileLibrary;
 
 public class CodeSnippetFilter extends AbstractFilter<CtElement> {
 

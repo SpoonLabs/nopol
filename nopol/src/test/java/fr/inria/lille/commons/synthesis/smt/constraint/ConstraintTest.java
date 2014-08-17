@@ -23,9 +23,9 @@ import org.smtlib.IExpr;
 import org.smtlib.IExpr.IDeclaration;
 import org.smtlib.IParser.ParserException;
 
-import xxl.java.extensions.collection.ListLibrary;
-import xxl.java.extensions.collection.MapLibrary;
-import xxl.java.extensions.library.StringLibrary;
+import xxl.java.container.classic.MetaList;
+import xxl.java.container.classic.MetaMap;
+import xxl.java.library.StringLibrary;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.operator.BinaryOperator;
 import fr.inria.lille.commons.synthesis.operator.Operator;
@@ -175,7 +175,7 @@ public class ConstraintTest {
 		checkDefinition(verification, container, declarations, smtDeclarations, definitions, smtDefinitions, "");
 		arguments.removeAll(asList("in<0>", "in<1>", "in<2>", "out"));
 		arguments.addAll(asList("true", "1", "3", "false"));
-		Map<String, Object> values = MapLibrary.newHashMap(asList("i != null", "i.size()", "i.get(\"n\")", "returnValue"), (List) asList(true, 1, 3, false));
+		Map<String, Object> values = MetaMap.newHashMap(asList("i != null", "i.size()", "i.get(\"n\")", "returnValue"), (List) asList(true, 1, 3, false));
 		checkInvocationWithValues(verification, container, values, arguments);
 	}
 	
@@ -218,7 +218,7 @@ public class ConstraintTest {
 		Expression<?> output = new Expression<>(Short.class, "a");
 		LocationVariableContainer containerWithoutOperands = new LocationVariableContainer((List) asList(input), (List) asList(), output);
 		Constraint verification = new VerificationConstraint(smtlib());
-		Map<String, Object> values = (Map) MapLibrary.newHashMap(asList("2", "a"), asList(2, 3));
+		Map<String, Object> values = (Map) MetaMap.newHashMap(asList("2", "a"), asList(2, 3));
 		IExpr actualInvocation = verification.invocationWithValues(containerWithoutOperands, values);
 		IExpr smtInvocation = expressionFrom(format("(%s L@out 2 3)", verification.nameSymbol()));
 		assertTrue(areEquals(actualInvocation, smtInvocation));
@@ -298,7 +298,7 @@ public class ConstraintTest {
 	}
 	
 	private Map<String,String> typesFor(LocationVariableContainer container) {
-		Map<String, String> types = MapLibrary.newHashMap();
+		Map<String, String> types = MetaMap.newHashMap();
 		for (LocationVariable<?> locationVariable : container.allVariables()) {
 			types.put(locationVariable.expression(), "Int");
 			Class<?> type = locationVariable.objectTemplate().type();
@@ -314,7 +314,7 @@ public class ConstraintTest {
 	}
  	
 	private List<String> builtDeclarations(List<String> expectedArguments, Map<String, String> types) {
-		List<String> declarations = ListLibrary.newArrayList();
+		List<String> declarations = MetaList.newArrayList();
 		for (String expectedArgument : expectedArguments) {
 			declarations.add("(" + expectedArgument + " " + types.get(expectedArgument) + ")");
 		}

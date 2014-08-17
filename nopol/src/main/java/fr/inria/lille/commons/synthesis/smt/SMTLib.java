@@ -39,8 +39,8 @@ import org.smtlib.logic.QF_NIA;
 import org.smtlib.logic.QF_UF;
 import org.smtlib.sexpr.Parser;
 
-import xxl.java.extensions.collection.ListLibrary;
-import xxl.java.extensions.collection.MapLibrary;
+import xxl.java.container.classic.MetaList;
+import xxl.java.container.classic.MetaMap;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 
 public class SMTLib {
@@ -199,7 +199,7 @@ public class SMTLib {
 	}
 	
 	public List<ISymbol> symbolsFor(Collection<String> symbols) {
-		List<ISymbol> smtSymbols = ListLibrary.newLinkedList();
+		List<ISymbol> smtSymbols = MetaList.newLinkedList();
 		for (String symbol : symbols) {
 			smtSymbols.add(symbolFor(symbol));
 		}
@@ -219,7 +219,7 @@ public class SMTLib {
 	}
 	
 	public List<IExpr> asIExprs(Collection<Object> objects) {
-		List<IExpr> smtExprs = ListLibrary.newLinkedList();
+		List<IExpr> smtExprs = MetaList.newLinkedList();
 		for (Object object : objects) {
 			smtExprs.add(asIExpr(object));
 		}
@@ -231,7 +231,7 @@ public class SMTLib {
 	}
 	
 	public IFcnExpr expression(ISymbol identifier, IExpr... arguments) {
-		List<IExpr> argumentList = ListLibrary.newArrayList(arguments);
+		List<IExpr> argumentList = MetaList.newArrayList(arguments);
 		return expression(identifier, argumentList);
 	}
 	
@@ -274,7 +274,7 @@ public class SMTLib {
 	}
 	
 	public Ideclare_fun constant(ISymbol symbol, ISort type) {
-		List<ISort> zeroParameters = ListLibrary.newLinkedList();
+		List<ISort> zeroParameters = MetaList.newLinkedList();
 		return functionDeclaration(symbol, zeroParameters, type);
 	}
 	
@@ -299,7 +299,7 @@ public class SMTLib {
 	}
 	
 	public IScript scriptFrom(ISymbol solverLogic, Collection<ICommand> commands, Collection<ICommand> assertions) {
-		List<ICommand> allCommands = ListLibrary.newLinkedList(produceModelOption(), setLogicCommand(solverLogic));
+		List<ICommand> allCommands = MetaList.newLinkedList(produceModelOption(), setLogicCommand(solverLogic));
 		allCommands.addAll(commands);
 		allCommands.addAll(assertions);
 		return commandFactory().script(null, allCommands);
@@ -312,7 +312,7 @@ public class SMTLib {
 			response = solver().get_value(expressionArray);
 			return SexprSolutionVisitor.solutionsFrom(response);
 		}
-		return MapLibrary.newHashMap();
+		return MetaMap.newHashMap();
 	}
 
 	public boolean isSatisfitable(ISolver solver) {
@@ -385,7 +385,7 @@ public class SMTLib {
 	
 	private Map<String, IAccept> globalSMTLibElements() {
 		if (globalSMTLibElements == null) {
-			globalSMTLibElements = MapLibrary.newHashMap();
+			globalSMTLibElements = MetaMap.newHashMap();
 		}
 		return globalSMTLibElements;
 	}

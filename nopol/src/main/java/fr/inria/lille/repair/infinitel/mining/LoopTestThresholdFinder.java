@@ -3,8 +3,8 @@ package fr.inria.lille.repair.infinitel.mining;
 import static java.lang.String.format;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static xxl.java.extensions.library.LoggerLibrary.logDebug;
-import static xxl.java.extensions.library.LoggerLibrary.newLoggerFor;
+import static xxl.java.library.LoggerLibrary.logDebug;
+import static xxl.java.library.LoggerLibrary.newLoggerFor;
 
 import java.util.Collection;
 import java.util.Map;
@@ -12,8 +12,8 @@ import java.util.Map;
 import org.junit.runner.Result;
 import org.slf4j.Logger;
 
-import xxl.java.extensions.collection.MapLibrary;
-import xxl.java.extensions.junit.TestCase;
+import xxl.java.container.classic.MetaMap;
+import xxl.java.junit.TestCase;
 import fr.inria.lille.repair.infinitel.instrumenting.CompoundLoopMonitor;
 import fr.inria.lille.repair.infinitel.loop.While;
 
@@ -24,7 +24,7 @@ public class LoopTestThresholdFinder {
 	}
 
 	public Map<TestCase, Integer> thresholdsByTest(While loop, Collection<TestCase> failedTests, Collection<TestCase> successfulTests) {
-		Map<TestCase, Integer> thresholdMap = MapLibrary.newHashMap();
+		Map<TestCase, Integer> thresholdMap = MetaMap.newHashMap();
 		int threshold = monitor().threshold();
 		findThresholdsFromExecution(successfulTests, loop, thresholdMap, threshold);
 		findThresholdsProbing(failedTests, loop, thresholdMap, threshold);

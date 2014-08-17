@@ -18,12 +18,12 @@ import org.smtlib.IParser.ParserException;
 import org.smtlib.ISort;
 import org.smtlib.sexpr.Parser;
 
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 
 public class SMTLibParser {
 
 	public static List<IExpr> expressionsFrom(Collection<String> expressions) throws ParserException {
-		List<IExpr> parsedExpressions = ListLibrary.newArrayList();
+		List<IExpr> parsedExpressions = MetaList.newArrayList();
 		for (String expression : expressions) {
 			parsedExpressions.add(expressionFrom(expression));
 		}
@@ -31,7 +31,7 @@ public class SMTLibParser {
 	}
 	
 	public static List<IDeclaration> declarationsFrom(Collection<String> declarations) throws ParserException {
-		List<IDeclaration> parsedDeclarations = ListLibrary.newArrayList();
+		List<IDeclaration> parsedDeclarations = MetaList.newArrayList();
 		for (String declaration : declarations) {
 			parsedDeclarations.add(declarationFrom(declaration));
 		}

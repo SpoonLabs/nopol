@@ -12,7 +12,7 @@ import java.util.List;
 import org.junit.Test;
 import org.smtlib.ISort;
 
-import xxl.java.extensions.collection.Multimap;
+import xxl.java.container.map.Multimap;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.expression.ObjectTemplate;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.IndexedLocationVariable;

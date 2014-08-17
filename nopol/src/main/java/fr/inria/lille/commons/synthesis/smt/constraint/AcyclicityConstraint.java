@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.smtlib.IExpr;
 
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;
@@ -26,7 +26,7 @@ public class AcyclicityConstraint extends Constraint {
 	
 	@Override
 	protected Collection<IExpr> definitionExpressions(LocationVariableContainer locationVariableContainer) {
-		Collection<IExpr> parametersBeforeOperators = ListLibrary.newLinkedList();
+		Collection<IExpr> parametersBeforeOperators = MetaList.newLinkedList();
 		for (ParameterLocationVariable<?> parameter : locationVariableContainer.allParameters()) {
 			IExpr parameterExpr = expressionSymbolOf(parameter);
 			IExpr operatorExpr = expressionSymbolOf(parameter.operatorLocationVariable());

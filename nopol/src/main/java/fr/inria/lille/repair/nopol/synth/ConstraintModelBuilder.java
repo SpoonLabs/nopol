@@ -25,9 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.processing.Processor;
-import xxl.java.extensions.collection.SetLibrary;
-import xxl.java.extensions.junit.TestSuiteExecution;
-import xxl.java.extensions.support.Function;
+import xxl.java.container.classic.MetaSet;
+import xxl.java.junit.TestSuiteExecution;
+import xxl.java.support.Function;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
@@ -67,7 +67,7 @@ public final class ConstraintModelBuilder {
 	 * @see fr.inria.lille.repair.nopol.synth.ConstraintModelBuilder#buildFor(java.net.URL[], java.lang.String[])
 	 */
 	public Collection<Specification<Boolean>> buildFor(final URL[] classpath, final String[] testClasses) {
-		Collection<Specification<Boolean>> specifications = SetLibrary.newHashSet();
+		Collection<Specification<Boolean>> specifications = MetaSet.newHashSet();
 		if (NoPol.isOneBuild()) {
 			ConditionalValueHolder.ID_Conditional = mapID;
 			if (type == BugKind.CONDITIONAL || type == BugKind.PRECONDITION) {

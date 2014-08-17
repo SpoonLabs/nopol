@@ -15,8 +15,8 @@ import org.smtlib.IExpr;
 import org.smtlib.IExpr.IDeclaration;
 import org.smtlib.IExpr.ISymbol;
 
-import xxl.java.extensions.collection.CollectionLibrary;
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaCollection;
+import xxl.java.container.classic.MetaList;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
@@ -27,11 +27,11 @@ public abstract class Constraint {
 	protected abstract Collection<IExpr> definitionExpressions(LocationVariableContainer container);
 	
 	public List<LocationVariable<?>> variablesForExpression(LocationVariableContainer container) {
-		return ListLibrary.newArrayList();
+		return MetaList.newArrayList();
 	}
 	
 	public List<LocationVariable<?>> variablesForSubexpression(LocationVariableContainer container) {
-		return ListLibrary.newArrayList();
+		return MetaList.newArrayList();
 	}
 	
 	protected List<IExpr> instantiatedArguments(LocationVariableContainer container, Map<String, Object> values) {
@@ -80,7 +80,7 @@ public abstract class Constraint {
 	}
 	
 	protected List<IDeclaration> declarationsFromExpression(Collection<LocationVariable<?>> locationVariables) {
-		List<IDeclaration> declarations = ListLibrary.newLinkedList();
+		List<IDeclaration> declarations = MetaList.newLinkedList();
 		for (LocationVariable<?> locationVariable : locationVariables) {
 			declarations.add(declarationFromExpression(locationVariable));
 		}
@@ -92,7 +92,7 @@ public abstract class Constraint {
 	}
 	
 	protected List<IDeclaration> declarationsFromSubexpression(Collection<LocationVariable<?>> locationVariables) {
-		List<IDeclaration> declarations = ListLibrary.newLinkedList();
+		List<IDeclaration> declarations = MetaList.newLinkedList();
 		for (LocationVariable<?> locationVariable : locationVariables) {
 			declarations.add(declarationFromSubexpression(locationVariable));
 		}
@@ -169,7 +169,7 @@ public abstract class Constraint {
 			return booleanTrue();
 		}
 		if (expressions.size() == 1) {
-			return CollectionLibrary.any(expressions);
+			return MetaCollection.any(expressions);
 		}
 		return smtlib().expression(symbol, expressions.toArray(new IExpr[expressions.size()]));
 	}

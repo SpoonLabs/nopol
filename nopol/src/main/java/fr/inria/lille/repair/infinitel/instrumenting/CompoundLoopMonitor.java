@@ -5,9 +5,9 @@ import static java.lang.String.format;
 import java.util.Collection;
 import java.util.Map;
 
-import xxl.java.extensions.collection.Bag;
-import xxl.java.extensions.collection.ListLibrary;
-import xxl.java.extensions.collection.SetLibrary;
+import xxl.java.container.classic.MetaList;
+import xxl.java.container.classic.MetaSet;
+import xxl.java.container.various.Bag;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.repair.infinitel.loop.While;
 
@@ -24,7 +24,7 @@ public class CompoundLoopMonitor {
 	}
 	
 	public Collection<While> loopsWithBreak() {
-		Collection<While> loops = ListLibrary.newArrayList();
+		Collection<While> loops = MetaList.newArrayList();
 		for (While loop : allLoops()) {
 			if (loop.hasBreaks()) {
 				loops.add(loop);
@@ -34,7 +34,7 @@ public class CompoundLoopMonitor {
 	}
 	
 	public Collection<While> loopsWithReturn() {
-		Collection<While> loops = ListLibrary.newArrayList();
+		Collection<While> loops = MetaList.newArrayList();
 		for (While loop : allLoops()) {
 			if (loop.hasReturns()) {
 				loops.add(loop);
@@ -44,7 +44,7 @@ public class CompoundLoopMonitor {
 	}
 	
 	public Collection<While> loopsWithBreakAndReturn() {
-		Collection<While> loops = ListLibrary.newArrayList();
+		Collection<While> loops = MetaList.newArrayList();
 		for (While loop : loopsWithReturn()) {
 			if (loop.hasBreaks()) {
 				loops.add(loop);
@@ -54,7 +54,7 @@ public class CompoundLoopMonitor {
 	}
 	
 	public Collection<While> loopsWithoutBodyExit() {
-		Collection<While> loops = ListLibrary.newArrayList();
+		Collection<While> loops = MetaList.newArrayList();
 		for (While loop : allLoops()) {
 			if (! (loop.hasBodyExit())) {
 				loops.add(loop);
@@ -64,7 +64,7 @@ public class CompoundLoopMonitor {
 	}
 	
 	public Collection<While> loopsReachingThreshold() {
-		Collection<While> loops = SetLibrary.newHashSet();	
+		Collection<While> loops = MetaSet.newHashSet();	
 		for (While loop : allLoops()) {
 			if (monitorOf(loop).thresholdWasReached()) {
 				loops.add(loop);

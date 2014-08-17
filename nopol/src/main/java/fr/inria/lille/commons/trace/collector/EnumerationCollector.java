@@ -5,7 +5,7 @@ import static java.util.Arrays.asList;
 import java.util.Collection;
 import java.util.Enumeration;
 
-import xxl.java.extensions.collection.Pair;
+import xxl.java.container.various.Pair;
 
 public class EnumerationCollector extends ValueCollector {
 	

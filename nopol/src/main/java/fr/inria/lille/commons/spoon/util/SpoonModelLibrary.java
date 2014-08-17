@@ -25,8 +25,8 @@ import spoon.reflect.factory.CodeFactory;
 import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
-import xxl.java.extensions.collection.ListLibrary;
-import xxl.java.extensions.library.StringLibrary;
+import xxl.java.container.classic.MetaList;
+import xxl.java.library.JavaLibrary;
 
 import com.martiansoftware.jsap.JSAPException;
 
@@ -42,7 +42,7 @@ public class SpoonModelLibrary {
 		try {
 			SpoonCompiler compiler = launcher().createCompiler(factory);
 			if (classpath != null) {
-				compiler.setSourceClasspath(StringLibrary.asClasspath(classpath));
+				compiler.setSourceClasspath(JavaLibrary.asClasspath(classpath));
 			}
 			compiler.addInputSource(sourceFile);
 			compiler.build();
@@ -101,7 +101,7 @@ public class SpoonModelLibrary {
 	}
 
 	public static CtBlock<CtStatement> newBlock(Factory factory, CtStatement... statements) {
-		return newBlock(factory, ListLibrary.newArrayList(statements));
+		return newBlock(factory, MetaList.newArrayList(statements));
 	}
 	
 	public static CtBlock<CtStatement> newBlock(Factory factory, List<CtStatement> blockStatements) {

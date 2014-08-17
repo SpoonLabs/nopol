@@ -3,13 +3,13 @@ package fr.inria.lille.commons.synthesis;
 import java.util.Collection;
 import java.util.List;
 
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 
 
 public class CodeLine {
 
 	public static List<String> collectContent(Collection<CodeLine> codeLines) {
-		List<String> contents = ListLibrary.newArrayList();
+		List<String> contents = MetaList.newArrayList();
 		for (CodeLine codeLine : codeLines) {
 			contents.add(codeLine.content());
 		}

@@ -8,7 +8,7 @@ import java.util.List;
 import org.smtlib.IExpr;
 import org.smtlib.IExpr.ISymbol;
 
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;
@@ -27,7 +27,7 @@ public class LibraryConstraint extends Constraint {
 	
 	@Override
 	protected Collection<IExpr> definitionExpressions(LocationVariableContainer locationVariableContainer) {
-		Collection<IExpr> expressions = ListLibrary.newLinkedList();
+		Collection<IExpr> expressions = MetaList.newLinkedList();
 		for (OperatorLocationVariable<?> operator : locationVariableContainer.operators()) {
 			expressions.add(specificationOf(operator));
 		}

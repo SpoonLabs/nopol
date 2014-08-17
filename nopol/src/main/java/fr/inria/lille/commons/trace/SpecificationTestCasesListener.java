@@ -4,19 +4,19 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import xxl.java.extensions.collection.ListLibrary;
-import xxl.java.extensions.collection.MapLibrary;
-import xxl.java.extensions.collection.SetLibrary;
-import xxl.java.extensions.junit.TestCase;
-import xxl.java.extensions.junit.TestCasesListener;
-import xxl.java.extensions.support.Function;
+import xxl.java.container.classic.MetaList;
+import xxl.java.container.classic.MetaMap;
+import xxl.java.container.classic.MetaSet;
+import xxl.java.junit.TestCase;
+import xxl.java.junit.TestCasesListener;
+import xxl.java.support.Function;
 
 public class SpecificationTestCasesListener<T> extends TestCasesListener {
 
 	public SpecificationTestCasesListener(RuntimeValues runtimeValues, Function<Integer, T> outputForEachTrace) {
 		this.runtimeValues = runtimeValues;
 		this.outputForEachTrace = outputForEachTrace;
-		collectedTraces = MapLibrary.newHashMap();
+		collectedTraces = MetaMap.newHashMap();
 	}
 	
 	@Override
@@ -51,7 +51,7 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
     }
     
     public Collection<Specification<T>> specifications() {
-    	Collection<Specification<T>> specifications = ListLibrary.newLinkedList();
+    	Collection<Specification<T>> specifications = MetaList.newLinkedList();
     	for (Map<String, Object> input : collectedTraces().keySet()) {
     		if (! isInconsistentTrace(input)) {
     			specifications.add(new Specification<T>(input, specifiedOutput(input)));
@@ -61,7 +61,7 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
     }
     
     protected Collection<Map<String, Object>> inconsistentTraces() {
-    	Collection<Map<String, Object>> inconsistentTraces = SetLibrary.newHashSet();
+    	Collection<Map<String, Object>> inconsistentTraces = MetaSet.newHashSet();
     	for (Map<String, Object> input : collectedTraces().keySet()) {
     		if (isInconsistentTrace(input)) {
     			inconsistentTraces.add(input);

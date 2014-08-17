@@ -30,7 +30,7 @@ import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.CompositeFilter;
 import spoon.reflect.visitor.filter.FilteringOperator;
-import xxl.java.extensions.collection.SetLibrary;
+import xxl.java.container.classic.MetaSet;
 import fr.inria.lille.commons.spoon.filter.BeforeLocationFilter;
 import fr.inria.lille.commons.spoon.filter.InBlockFilter;
 import fr.inria.lille.commons.spoon.filter.VariableAssignmentFilter;
@@ -46,7 +46,7 @@ public class CollectableValueFinder {
 	protected CollectableValueFinder() {}
 	
 	public Collection<String> findFromStatement(CtStatement statement) {
-		Collection<String> collectables = SetLibrary.newHashSet();
+		Collection<String> collectables = MetaSet.newHashSet();
 		addCollectableVariables(collectables, statement);
 		return collectables;
 	}
@@ -75,7 +75,7 @@ public class CollectableValueFinder {
 	}
 	
 	protected Collection<String> variableNames(Collection<CtVariable<?>> reachedVariables) {
-		Collection<String> names = SetLibrary.newHashSet();
+		Collection<String> names = MetaSet.newHashSet();
 		for (CtVariable<?> variable : reachedVariables) {
 			names.add(nameFor(variable));
 		}
@@ -101,7 +101,7 @@ public class CollectableValueFinder {
 	}
 	
 	private Collection<CtVariable<?>> variablesInitializedBefore(CtStatement statement, Collection<CtVariable<?>> reachedVariables) {
-		Collection<CtVariable<?>> initializedVariables = SetLibrary.newHashSet();
+		Collection<CtVariable<?>> initializedVariables = MetaSet.newHashSet();
 		for (CtVariable<?> variable : reachedVariables) {
 			if (! SpoonElementLibrary.isLocalVariable(variable) || wasInitializedBefore(statement, variable)) {
 				initializedVariables.add(variable);

@@ -2,8 +2,8 @@ package fr.inria.lille.commons.spoon;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static xxl.java.extensions.library.LoggerLibrary.logDebug;
-import static xxl.java.extensions.library.LoggerLibrary.newLoggerFor;
+import static xxl.java.library.LoggerLibrary.logDebug;
+import static xxl.java.library.LoggerLibrary.newLoggerFor;
 
 import java.io.File;
 import java.net.URL;
@@ -22,13 +22,13 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.RuntimeProcessingManager;
-import xxl.java.extensions.collection.ListLibrary;
-import xxl.java.extensions.collection.MapLibrary;
-import xxl.java.extensions.collection.SetLibrary;
-import xxl.java.extensions.compiler.BytecodeClassLoader;
-import xxl.java.extensions.compiler.BytecodeClassLoaderBuilder;
-import xxl.java.extensions.compiler.DynamicClassCompiler;
-import xxl.java.extensions.library.JavaLibrary;
+import xxl.java.compiler.BytecodeClassLoader;
+import xxl.java.compiler.BytecodeClassLoaderBuilder;
+import xxl.java.compiler.DynamicClassCompiler;
+import xxl.java.container.classic.MetaList;
+import xxl.java.container.classic.MetaMap;
+import xxl.java.container.classic.MetaSet;
+import xxl.java.library.JavaLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 
 public abstract class SpoonedFile {
@@ -42,7 +42,7 @@ public abstract class SpoonedFile {
 		factory = SpoonModelLibrary.modelFor(sourceFile, projectClasspath());
 		compiler = new DynamicClassCompiler();
 		manager = new RuntimeProcessingManager(spoonFactory());
-		compiledClasses = MapLibrary.newHashMap();
+		compiledClasses = MetaMap.newHashMap();
 		prettyPrinter = new DefaultJavaPrettyPrinter(spoonEnvironment());
 	}
 
@@ -51,7 +51,7 @@ public abstract class SpoonedFile {
 	}
 	
 	public Collection<CtPackage> topPackages() {
-		Collection<CtPackage> topPackages = SetLibrary.newHashSet();
+		Collection<CtPackage> topPackages = MetaSet.newHashSet();
 		for (CtPackage aPackage : allPackages()) {
 			if (! aPackage.getTypes().isEmpty()) {
 				CtPackage parent = aPackage.getParent(CtPackage.class);
@@ -72,7 +72,7 @@ public abstract class SpoonedFile {
 	}
 	
 	public Collection<String> packageNames(Collection<CtPackage> packages) {
-		Collection<String> names = ListLibrary.newArrayList();
+		Collection<String> names = MetaList.newArrayList();
 		for (CtPackage aPackage : packages) {
 			names.add(aPackage.getQualifiedName());
 		}
@@ -137,7 +137,7 @@ public abstract class SpoonedFile {
 	}
 	
 	protected Map<String, String> sourcesForModelledClasses(Collection<? extends CtSimpleType<?>> modelledClasses) {
-		Map<String, String> processedClasses = MapLibrary.newHashMap();
+		Map<String, String> processedClasses = MetaMap.newHashMap();
 		for (CtSimpleType<?> modelledClass : modelledClasses) {
 			processedClasses.put(modelledClass.getQualifiedName(), sourceForModelledClass(modelledClass));
 		}
@@ -162,7 +162,7 @@ public abstract class SpoonedFile {
 	
 	protected URL[] compilationClasspath() {
 		if (compilationClasspath == null) {
-			List<URL> urls = ListLibrary.newArrayList(projectClasspath());
+			List<URL> urls = MetaList.newArrayList(projectClasspath());
 			urls.addAll(asList(JavaLibrary.systemURLsClasspath()));
 			compilationClasspath = urls.toArray(new URL[urls.size()]);
 		}

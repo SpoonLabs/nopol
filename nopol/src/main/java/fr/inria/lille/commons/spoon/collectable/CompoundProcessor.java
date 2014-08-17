@@ -8,7 +8,7 @@ import java.util.List;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtCodeElement;
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 
 public class CompoundProcessor<T extends CtCodeElement> extends AbstractProcessor<T> {
 
@@ -18,7 +18,7 @@ public class CompoundProcessor<T extends CtCodeElement> extends AbstractProcesso
 	
 	public CompoundProcessor(Class<T> targetClass, Collection<Processor<? super T>> processors) {
 		this.targetCtClass = targetClass;
-		subprocessors = ListLibrary.newLinkedList();
+		subprocessors = MetaList.newLinkedList();
 		subprocessors().addAll(processors);
 	}
 	

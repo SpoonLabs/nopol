@@ -62,7 +62,7 @@ import org.smtlib.IExpr.INumeral;
 import org.smtlib.IExpr.ISymbol;
 import org.smtlib.IParser.ParserException;
 
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 
 public class SMTLibEqualVisitorTest {
 
@@ -355,7 +355,7 @@ public class SMTLibEqualVisitorTest {
 	
 	@Test
 	public void containsElement() throws ParserException {
-		Collection<IAccept> collection = ListLibrary.newLinkedList();
+		Collection<IAccept> collection = MetaList.newLinkedList();
 		assertFalse(contains(symbolFrom("a"), collection));
 		assertFalse(contains(symbolFrom("b"), collection));
 		collection.add(symbolFrom("a"));
@@ -365,8 +365,8 @@ public class SMTLibEqualVisitorTest {
 	
 	@Test
 	public void collectionsHaveSameElements() throws ParserException {
-		Collection<IAccept> collection = ListLibrary.newLinkedList();
-		Collection<IAccept> otherCollection = ListLibrary.newLinkedList();
+		Collection<IAccept> collection = MetaList.newLinkedList();
+		Collection<IAccept> otherCollection = MetaList.newLinkedList();
 		assertTrue(haveSameElements(collection, otherCollection)); 	// {} {}
 		collection.add(symbolFrom("a"));
 		assertFalse(haveSameElements(collection, otherCollection));	// {a} {}
@@ -385,7 +385,7 @@ public class SMTLibEqualVisitorTest {
 	
 	@Test
 	public void collectionAddIfNotContained() throws ParserException {
-		Collection<IAccept> collection = ListLibrary.newLinkedList();
+		Collection<IAccept> collection = MetaList.newLinkedList();
 		assertTrue(collection.isEmpty());
 		ISymbol symbol = symbolFrom("a");
 		assertTrue(addIfNotContained(symbol, collection));

@@ -1,8 +1,8 @@
 package fr.inria.lille.repair.infinitel;
 
 import static java.lang.String.format;
-import static xxl.java.extensions.library.LoggerLibrary.logDebug;
-import static xxl.java.extensions.library.LoggerLibrary.newLoggerFor;
+import static xxl.java.library.LoggerLibrary.logDebug;
+import static xxl.java.library.LoggerLibrary.newLoggerFor;
 
 import java.io.File;
 import java.net.URL;
@@ -11,9 +11,9 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
-import xxl.java.extensions.junit.TestCase;
-import xxl.java.extensions.junit.TestCasesListener;
-import xxl.java.extensions.support.Singleton;
+import xxl.java.junit.TestCase;
+import xxl.java.junit.TestCasesListener;
+import xxl.java.support.Singleton;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.trace.Specification;

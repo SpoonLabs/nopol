@@ -1,19 +1,19 @@
 package fr.inria.lille.repair.infinitel.loop;
 
 import static java.lang.String.format;
-import static xxl.java.extensions.library.LoggerLibrary.logDebug;
-import static xxl.java.extensions.library.LoggerLibrary.newLoggerFor;
+import static xxl.java.library.LoggerLibrary.logDebug;
+import static xxl.java.library.LoggerLibrary.newLoggerFor;
 
 import java.util.Collection;
 import java.util.Map;
 
 import org.slf4j.Logger;
 
-import xxl.java.extensions.collection.ListLibrary;
-import xxl.java.extensions.collection.MapLibrary;
-import xxl.java.extensions.collection.SetLibrary;
-import xxl.java.extensions.collection.Table;
-import xxl.java.extensions.junit.TestCase;
+import xxl.java.container.classic.MetaList;
+import xxl.java.container.classic.MetaMap;
+import xxl.java.container.classic.MetaSet;
+import xxl.java.container.various.Table;
+import xxl.java.junit.TestCase;
 import fr.inria.lille.repair.infinitel.mining.MonitoringTestExecutor;
 
 public class FixableLoopBuilder {
@@ -22,7 +22,7 @@ public class FixableLoopBuilder {
 		logDebug(logger, "Running test cases to count number of invocations in:", loops.toString());
 		Table<While, TestCase, Integer> failingTestInvocations = executor.invocationsPerTest(loops, failed);
 		Table<While, TestCase, Integer> passingTestInvocations = executor.invocationsPerTest(loops, passed);
-		Collection<FixableLoop> fixableLoops = SetLibrary.newHashSet();
+		Collection<FixableLoop> fixableLoops = MetaSet.newHashSet();
 		for (While loop : loops) {
 			addIfFixable(loop, fixableLoops, failingTestInvocations.row(loop), passingTestInvocations.row(loop));
 		}
@@ -40,12 +40,12 @@ public class FixableLoopBuilder {
 	}
 	
 	private static Collection<TestCase> testsExtractedForRepair(Map<TestCase, Integer> invocations) {
-		Collection<TestCase> nonInvoking = MapLibrary.keysWithValue(0, invocations);
-		Collection<TestCase> invokingOnce = MapLibrary.keysWithValue(1, invocations);
+		Collection<TestCase> nonInvoking = MetaMap.keysWithValue(0, invocations);
+		Collection<TestCase> invokingOnce = MetaMap.keysWithValue(1, invocations);
 		if (nonInvoking.size() + invokingOnce.size() == invocations.size()) {
 			return invokingOnce;
 		}
-		return ListLibrary.newArrayList();
+		return MetaList.newArrayList();
 	}
 	
 	private static Logger logger = newLoggerFor(FixableLoopBuilder.class); 

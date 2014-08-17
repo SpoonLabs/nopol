@@ -10,12 +10,12 @@ import spoon.reflect.code.CtLoop;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtSwitch;
 import spoon.reflect.declaration.CtMethod;
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 
 public class SpoonLoopLibrary {
 
 	public static Collection<CtBreak> breakStatementsIn(CtLoop loop) {
-		List<CtBreak> breaksOfLoop = ListLibrary.newArrayList();
+		List<CtBreak> breaksOfLoop = MetaList.newArrayList();
 		List<CtBreak> allBreaks = allChildrenOf(loop, CtBreak.class);
 		for (CtBreak candidateBreak : allBreaks) {
 			if (isBreakingFrom(loop, candidateBreak)) {
@@ -33,7 +33,7 @@ public class SpoonLoopLibrary {
 	}
 
 	public static Collection<CtReturn<?>> returnStatementsIn(CtLoop loop) {
-		List<CtReturn<?>> returnsOfLoop = ListLibrary.newArrayList();
+		List<CtReturn<?>> returnsOfLoop = MetaList.newArrayList();
 		List<CtReturn<?>> allReturns = (List) allChildrenOf(loop, CtReturn.class);
 		for (CtReturn<?> candidateReturn : allReturns) {
 			if (isReturningFrom(loop, candidateReturn)) {

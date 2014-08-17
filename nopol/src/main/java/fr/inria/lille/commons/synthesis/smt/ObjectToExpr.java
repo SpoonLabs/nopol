@@ -12,9 +12,9 @@ import java.util.Map;
 import org.smtlib.IExpr;
 import org.smtlib.ISort;
 
-import xxl.java.extensions.collection.MapLibrary;
-import xxl.java.extensions.library.ClassLibrary;
-import xxl.java.extensions.library.StringLibrary;
+import xxl.java.container.classic.MetaMap;
+import xxl.java.library.ClassLibrary;
+import xxl.java.library.StringLibrary;
 
 public class ObjectToExpr {
 
@@ -73,7 +73,7 @@ public class ObjectToExpr {
 	
 	private static Map<Class<?>, ISort> conversions() {
 		if (conversions == null) {
-			Map<Class<?>, ISort> classes = MapLibrary.newHashMap();
+			Map<Class<?>, ISort> classes = MetaMap.newHashMap();
 			classes.put(Long.class, intSort());
 			classes.put(Short.class, intSort());
 			classes.put(Integer.class, intSort());

@@ -9,7 +9,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtAbstractVisitor;
-import xxl.java.extensions.collection.SetLibrary;
+import xxl.java.container.classic.MetaSet;
 
 public class SubconditionVisitor extends CtAbstractVisitor {
 
@@ -41,7 +41,7 @@ public class SubconditionVisitor extends CtAbstractVisitor {
 	
 	public Collection<String> subexpressions() {
 		if (subexpressions == null) {
-			subexpressions = SetLibrary.newHashSet();
+			subexpressions = MetaSet.newHashSet();
 			scan(expression());
 		}
 		return subexpressions;

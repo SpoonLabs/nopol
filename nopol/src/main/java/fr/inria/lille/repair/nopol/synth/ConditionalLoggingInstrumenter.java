@@ -20,7 +20,7 @@ import java.util.Collection;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
-import xxl.java.extensions.support.Singleton;
+import xxl.java.support.Singleton;
 import fr.inria.lille.commons.spoon.collectable.CollectableValueFinder;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.RuntimeValuesInstrumenter;

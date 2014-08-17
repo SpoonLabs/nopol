@@ -9,7 +9,7 @@ import java.util.Map;
 
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtSimpleType;
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 
 public class SpoonedProject extends SpoonedFile {
 	
@@ -27,7 +27,7 @@ public class SpoonedProject extends SpoonedFile {
 	}
 	
 	protected Collection<CtSimpleType<?>> modelledClasses(Collection<String> qualifiedNames) {
-		Collection<CtSimpleType<?>> modelledClasses = ListLibrary.newLinkedList();
+		Collection<CtSimpleType<?>> modelledClasses = MetaList.newLinkedList();
 		for (String qualifiedName : qualifiedNames) {
 			modelledClasses.add(modelledClass(qualifiedName));
 		}

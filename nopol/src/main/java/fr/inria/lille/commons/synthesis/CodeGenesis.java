@@ -7,8 +7,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import xxl.java.extensions.collection.ListLibrary;
-import xxl.java.extensions.collection.MapLibrary;
+import xxl.java.container.classic.MetaList;
+import xxl.java.container.classic.MetaMap;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.IndexedLocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;
@@ -68,7 +68,7 @@ public class CodeGenesis {
 	}
 
 	private List<CodeLine> codeLinesFor(Collection<LocationVariable<?>> locationVariables) {
-		List<CodeLine> codeLines = ListLibrary.newArrayList();
+		List<CodeLine> codeLines = MetaList.newArrayList();
 		for (LocationVariable<?> parameter : locationVariables) {
 			codeLines.add(codeLineFor(parameter));
 		}
@@ -101,7 +101,7 @@ public class CodeGenesis {
 	
 	private Map<Integer, OperatorLocationVariable<?>> orderedOperators() {
 		if (orderedOperators == null) {
-			Map<Integer, OperatorLocationVariable<?>> operatorMap = MapLibrary.newHashMap();
+			Map<Integer, OperatorLocationVariable<?>> operatorMap = MetaMap.newHashMap();
 			for (OperatorLocationVariable<?> operator : container().operators()) {
 				operatorMap.put(smtSolverResult().get(operator.expression()), operator);
 			}

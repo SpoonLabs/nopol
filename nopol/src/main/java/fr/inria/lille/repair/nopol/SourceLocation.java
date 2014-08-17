@@ -17,7 +17,7 @@ package fr.inria.lille.repair.nopol;
 
 import java.io.File;
 
-import xxl.java.extensions.library.FileLibrary;
+import xxl.java.library.FileLibrary;
 
 /**
  * @author Favio D. DeMarco

@@ -11,8 +11,8 @@ import org.smtlib.IExpr;
 import org.smtlib.IExpr.ISymbol;
 import org.smtlib.ISort;
 
-import xxl.java.extensions.collection.ListLibrary;
-import xxl.java.extensions.collection.Multimap;
+import xxl.java.container.classic.MetaList;
+import xxl.java.container.map.Multimap;
 import fr.inria.lille.commons.synthesis.expression.ObjectTemplate;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariable;
@@ -33,7 +33,7 @@ public class LineBoundConstraint extends Constraint {
 	
 	@Override
 	protected Collection<IExpr> definitionExpressions(LocationVariableContainer container) {
-		Collection<IExpr> locationVariableBounds = ListLibrary.newLinkedList();
+		Collection<IExpr> locationVariableBounds = MetaList.newLinkedList();
 		Multimap<ISort, LocationVariable<?>> bySort = (Multimap) ObjectTemplate.bySort(container.inputsAndOperators());
 		addOperatorBounds(locationVariableBounds, container);
 		addParameterTypeBounds(locationVariableBounds, bySort, container.allParameters());
@@ -60,7 +60,7 @@ public class LineBoundConstraint extends Constraint {
 	private void addParameterTypeBounds(Collection<IExpr> expressions, Multimap<ISort, LocationVariable<?>> bySort, List<ParameterLocationVariable<?>> parameters) {
 		for (ParameterLocationVariable<?> parameter : parameters) {
 			ISort sort = parameter.smtSort();
-			Collection<LocationVariable<?>> operands = ListLibrary.newLinkedList(bySort.get(sort));
+			Collection<LocationVariable<?>> operands = MetaList.newLinkedList(bySort.get(sort));
 			operands.remove(parameter.operatorLocationVariable());
 			expressions.add(equalToAnyExpression(operands, parameter));
 		}
@@ -77,7 +77,7 @@ public class LineBoundConstraint extends Constraint {
 	}
 	
 	private IExpr equalToAnyExpression(Collection<LocationVariable<?>> operands, LocationVariable<?> variable) {
-		Collection<IExpr> equalities = ListLibrary.newLinkedList();
+		Collection<IExpr> equalities = MetaList.newLinkedList();
 		for (LocationVariable<?> operand : operands) {
 			equalities.add(binaryOperation(operand.encodedLineNumber(), equality(), expressionSymbolOf(variable)));
 		}

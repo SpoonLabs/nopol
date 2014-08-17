@@ -49,8 +49,8 @@ import org.smtlib.ISort.IParameter;
 import org.smtlib.ITheory;
 import org.smtlib.IVisitor;
 
-import xxl.java.extensions.collection.SetLibrary;
-import xxl.java.extensions.library.LoggerLibrary;
+import xxl.java.container.classic.MetaSet;
+import xxl.java.library.LoggerLibrary;
 
 public class SMTLibEqualVisitor implements IVisitor<Boolean>{
 
@@ -71,7 +71,7 @@ public class SMTLibEqualVisitor implements IVisitor<Boolean>{
 	public static boolean haveSameElements(Collection<IAccept> actual, Collection<IAccept> expected) {
 		boolean sameSize = expected.size() == actual.size();
 		if (sameSize) {
-			Collection<Integer> alreadyMatched = SetLibrary.newHashSet();
+			Collection<Integer> alreadyMatched = MetaSet.newHashSet();
 			for (IAccept expectedItem : expected) {
 				if (! contains(expectedItem, actual, alreadyMatched)) {
 					return false;
@@ -83,7 +83,7 @@ public class SMTLibEqualVisitor implements IVisitor<Boolean>{
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static boolean contains(IAccept expected, Collection<IAccept> actual) {
-		return contains(expected, actual, (Collection) SetLibrary.newHashSet());
+		return contains(expected, actual, (Collection) MetaSet.newHashSet());
 	}
 	
 	private static boolean contains(IAccept expected, Collection<IAccept> actual, Collection<Integer> alreadyMatched) {

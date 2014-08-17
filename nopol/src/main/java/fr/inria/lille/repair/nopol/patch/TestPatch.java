@@ -28,7 +28,7 @@ import spoon.processing.Processor;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.StandardEnvironment;
-import xxl.java.extensions.junit.TestSuiteExecution;
+import xxl.java.junit.TestSuiteExecution;
 import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.repair.nopol.synth.BugKind;

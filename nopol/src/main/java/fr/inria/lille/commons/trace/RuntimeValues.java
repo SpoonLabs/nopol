@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import xxl.java.extensions.collection.MapLibrary;
-import xxl.java.extensions.support.GlobalToggle;
+import xxl.java.container.classic.MetaMap;
+import xxl.java.support.GlobalToggle;
 import fr.inria.lille.commons.trace.collector.ValueCollector;
 
 public class RuntimeValues extends GlobalToggle {
@@ -75,7 +75,7 @@ public class RuntimeValues extends GlobalToggle {
 	
 	protected RuntimeValues(int instanceID) {
 		this.instanceID = instanceID;
-		uniqueTraces = MapLibrary.newHashMap();
+		uniqueTraces = MetaMap.newHashMap();
 		renewBuffer();
 	}
 	
@@ -100,7 +100,7 @@ public class RuntimeValues extends GlobalToggle {
 	}
 	
 	private void renewBuffer() {
-		valueBuffer = MapLibrary.newHashMap();
+		valueBuffer = MetaMap.newHashMap();
 	}
 	
 	private void flushBuffer() {
@@ -109,7 +109,7 @@ public class RuntimeValues extends GlobalToggle {
 	
 	private static Map<Integer, RuntimeValues> allInstances() {
 		if (allInstances == null) {
-			allInstances = MapLibrary.newHashMap();
+			allInstances = MetaMap.newHashMap();
 		}
 		return allInstances;
 	}

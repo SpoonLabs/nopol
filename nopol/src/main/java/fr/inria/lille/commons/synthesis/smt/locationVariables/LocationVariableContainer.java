@@ -6,16 +6,16 @@ import static java.util.Arrays.asList;
 import java.util.Collection;
 import java.util.List;
 
-import xxl.java.extensions.collection.ListLibrary;
+import xxl.java.container.classic.MetaList;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.operator.Operator;
 
 public class LocationVariableContainer {
 
 	public LocationVariableContainer(Collection<Expression<?>> inputs, Collection<Operator<?>> operators, Expression<?> outputExpression) {
-		inputVariables = ListLibrary.newLinkedList();
-		allParameters = ListLibrary.newLinkedList();
-		operatorVariables = ListLibrary.newLinkedList();
+		inputVariables = MetaList.newLinkedList();
+		allParameters = MetaList.newLinkedList();
+		operatorVariables = MetaList.newLinkedList();
 		addInputs(inputs);
 		addOperators(operators);
 		allParameters().addAll(parameterLocationVariablesFrom(operators()));
@@ -45,7 +45,7 @@ public class LocationVariableContainer {
 	}
 	
 	private List<ParameterLocationVariable<?>> parameterLocationVariablesFrom(Collection<OperatorLocationVariable<?>> operators) {
-		List<ParameterLocationVariable<?>> parameters = ListLibrary.newArrayList();
+		List<ParameterLocationVariable<?>> parameters = MetaList.newArrayList();
 		for (OperatorLocationVariable<?> operator : operators) {
 			parameters.addAll(operator.parameterLocationVariables());
 		}
@@ -77,23 +77,23 @@ public class LocationVariableContainer {
 	}
 	
 	public List<IndexedLocationVariable<?>> inputsAndOutput() {
-		return ListLibrary.flatArrayList(inputs(), asList(outputVariable())); 
+		return MetaList.flatArrayList(inputs(), asList(outputVariable())); 
 	}
 	
 	public List<LocationVariable<?>> inputsAndOperators() {
-		return ListLibrary.flatArrayList(inputs(), operators()); 
+		return MetaList.flatArrayList(inputs(), operators()); 
 	}
 	
 	public List<LocationVariable<?>> operatorsAndParameters() {
-		return ListLibrary.flatArrayList(operators(), allParameters()); 
+		return MetaList.flatArrayList(operators(), allParameters()); 
 	}
 	
 	public List<LocationVariable<?>> operatorsParametersAndOutput() {
-		return ListLibrary.flatArrayList(operatorsAndParameters(), asList(outputVariable())); 
+		return MetaList.flatArrayList(operatorsAndParameters(), asList(outputVariable())); 
 	}
 	
 	public List<LocationVariable<?>> allVariables() {
-		return ListLibrary.flatArrayList(inputs(), operatorsParametersAndOutput()); 
+		return MetaList.flatArrayList(inputs(), operatorsParametersAndOutput()); 
 	}
 	
 	private IndexedLocationVariable<?> outputVariable;
