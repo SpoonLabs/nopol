@@ -3,7 +3,7 @@ package xxl.java.compiler;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static xxl.java.library.LoggerLibrary.logDebug;
-import static xxl.java.library.LoggerLibrary.newLoggerFor;
+import static xxl.java.library.LoggerLibrary.loggerFor;
 
 import java.net.URL;
 import java.util.Collection;
@@ -75,13 +75,13 @@ public class DynamicClassCompiler {
 	}
 	
 	public synchronized Map<String, byte[]> javaBytecodeFor(Map<String, String> qualifiedNameAndContent, Map<String, byte[]> compiledDependencies, List<String> options) {
-		logDebug(logger, format("[Compiling %d source files]", qualifiedNameAndContent.size()));
+		logDebug(logger(), format("[Compiling %d source files]", qualifiedNameAndContent.size()));
 		Collection<JavaFileObject> units = addCompilationUnits(qualifiedNameAndContent);
 		fileManager().addCompiledClasses(compiledDependencies);
 		CompilationTask task = compiler().getTask(null, fileManager(), diagnostics(), options, null, units);
 		runCompilationTask(task);
 		Map<String, byte[]> bytecodes = collectBytecodes(qualifiedNameAndContent);
-		logDebug(logger, format("[Compilation finished successfully (%d classes)]", bytecodes.size()));
+		logDebug(logger(), format("[Compilation finished successfully (%d classes)]", bytecodes.size()));
 		return bytecodes;
 	}
 	
@@ -110,7 +110,7 @@ public class DynamicClassCompiler {
 			for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics().getDiagnostics()) {
 				errors.add(diagnostic.toString());
 			}
-			logDebug(logger, errors);
+			logDebug(logger(), errors);
 			throw new DynamicCompilationException("Aborting: dynamic compilation failed");
 		}
 		return success;
@@ -155,10 +155,12 @@ public class DynamicClassCompiler {
 		return diagnostics;
 	}
 	
+	private Logger logger() {
+		return loggerFor(this);
+	}
+	
 	private List<String> options;
 	private JavaCompiler compiler;
 	private VirtualFileObjectManager fileManager;
 	private DiagnosticCollector<JavaFileObject> diagnostics;
-	
-	private static Logger logger = newLoggerFor(DynamicClassCompiler.class);
 }

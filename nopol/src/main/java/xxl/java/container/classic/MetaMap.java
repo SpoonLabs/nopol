@@ -261,7 +261,7 @@ public class MetaMap {
 		return keys;
 	}
 	
-	public static <K, V> boolean containsKeys(Collection<K> keys, Map<K, V> map) {
+	public static <K, V> boolean containsAllKeys(Collection<K> keys, Map<K, V> map) {
 		for (K key : keys) {
 			if (! map.containsKey(key)) {
 				return false;
@@ -285,10 +285,10 @@ public class MetaMap {
 	}
 	
 	public static <K, V> boolean onlyValueIs(V value, Map<K, V> map) {
-		return valuesAreIn(asList(value), map);
+		return allValuesIn(asList(value), map);
 	}
 	
-	public static <K, V> boolean valuesAreIn(Collection<V> restrictedValues, Map<K, V> map) {
+	public static <K, V> boolean allValuesIn(Collection<V> restrictedValues, Map<K, V> map) {
 		for (K key : map.keySet()) {
 			if (! restrictedValues.contains(map.get(key))) {
 				return false;

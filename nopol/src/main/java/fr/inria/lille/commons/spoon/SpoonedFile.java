@@ -3,7 +3,7 @@ package fr.inria.lille.commons.spoon;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static xxl.java.library.LoggerLibrary.logDebug;
-import static xxl.java.library.LoggerLibrary.newLoggerFor;
+import static xxl.java.library.LoggerLibrary.loggerFor;
 
 import java.io.File;
 import java.net.URL;
@@ -38,7 +38,7 @@ public abstract class SpoonedFile {
 	public SpoonedFile(File sourceFile, URL[] projectClasspath) {
 		this.sourceFile = sourceFile;
 		this.projectClasspath = projectClasspath;
-		logDebug(logger, format("[Building Spoon model from %s]", sourceFile()));
+		logDebug(logger(), format("[Building Spoon model from %s]", sourceFile()));
 		factory = SpoonModelLibrary.modelFor(sourceFile, projectClasspath());
 		compiler = new DynamicClassCompiler();
 		manager = new RuntimeProcessingManager(spoonFactory());
@@ -104,7 +104,7 @@ public abstract class SpoonedFile {
 		setProcessors(processors);
 		for (CtSimpleType<?> modelledClass : modelledClasses) {
 			String qualifiedName = modelledClass.getQualifiedName();
-			logDebug(logger, format("[Spoon processing of %s]", qualifiedName));
+			logDebug(logger(), format("[Spoon processing of %s]", qualifiedName));
 			processingManager().process(modelledClass);
 		}
 		compileModelledClasses(modelledClasses);
@@ -129,7 +129,7 @@ public abstract class SpoonedFile {
 	}
 
 	protected synchronized String sourceForModelledClass(CtSimpleType<?> modelledClass) {
-		logDebug(logger, format("[Scanning source code of %s]", modelledClass.getQualifiedName()));
+		logDebug(logger(), format("[Scanning source code of %s]", modelledClass.getQualifiedName()));
 		prettyPrinter().scan(modelledClass);
 		String sourceCode = modelledClass.getPackage().toString() + JavaLibrary.lineSeparator() +  prettyPrinter().toString();
 		prettyPrinter().reset();
@@ -202,6 +202,10 @@ public abstract class SpoonedFile {
 		return "Spoon model for: " + sourceFile();
 	}
 	
+	private Logger logger() {
+		return loggerFor(this);
+	}
+	
 	private File sourceFile;
 	private URL[] projectClasspath;
 	private URL[] compilationClasspath;
@@ -210,6 +214,4 @@ public abstract class SpoonedFile {
 	private DynamicClassCompiler compiler;
 	private Map<String, byte[]> compiledClasses;
 	private DefaultJavaPrettyPrinter prettyPrinter;
-
-	protected static Logger logger = newLoggerFor(SpoonedFile.class);
 }

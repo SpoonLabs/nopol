@@ -2,7 +2,7 @@ package fr.inria.lille.repair.infinitel.loop;
 
 import static java.lang.String.format;
 import static xxl.java.library.LoggerLibrary.logDebug;
-import static xxl.java.library.LoggerLibrary.newLoggerFor;
+import static xxl.java.library.LoggerLibrary.loggerFor;
 
 import java.util.Collection;
 import java.util.Map;
@@ -19,7 +19,7 @@ import fr.inria.lille.repair.infinitel.mining.MonitoringTestExecutor;
 public class FixableLoopBuilder {
 	
 	public static Collection<FixableLoop> buildFrom(Collection<While> loops, Collection<TestCase> failed, Collection<TestCase> passed, MonitoringTestExecutor executor) {
-		logDebug(logger, "Running test cases to count number of invocations in:", loops.toString());
+		logDebug(logger(), "Running test cases to count number of invocations in:", loops.toString());
 		Table<While, TestCase, Integer> failingTestInvocations = executor.invocationsPerTest(loops, failed);
 		Table<While, TestCase, Integer> passingTestInvocations = executor.invocationsPerTest(loops, passed);
 		Collection<FixableLoop> fixableLoops = MetaSet.newHashSet();
@@ -35,7 +35,7 @@ public class FixableLoopBuilder {
 		if (failingInvoking.size() + passingInvoking.size() > 0) {
 			fixableLoops.add(new FixableLoop(loop, failingInvoking, passingInvoking));
 		} else {
-			logDebug(logger, format("Unfixable loop (%s)", loop.toString()));
+			logDebug(logger(), format("Unfixable loop (%s)", loop.toString()));
 		}
 	}
 	
@@ -48,5 +48,7 @@ public class FixableLoopBuilder {
 		return MetaList.newArrayList();
 	}
 	
-	private static Logger logger = newLoggerFor(FixableLoopBuilder.class); 
+	private static Logger logger() {
+		return loggerFor(FixableLoopBuilder.class);
+	}
 }

@@ -1,6 +1,7 @@
 package fr.inria.lille.commons.synthesis.smt;
 
 import static org.junit.Assert.assertEquals;
+import static xxl.java.library.LoggerLibrary.loggerFor;
 
 import java.util.Collection;
 
@@ -50,7 +51,6 @@ import org.smtlib.ITheory;
 import org.smtlib.IVisitor;
 
 import xxl.java.container.classic.MetaSet;
-import xxl.java.library.LoggerLibrary;
 
 public class SMTLibEqualVisitor implements IVisitor<Boolean>{
 
@@ -298,7 +298,7 @@ public class SMTLibEqualVisitor implements IVisitor<Boolean>{
 	public Boolean visit(IBinding arg0) throws VisitorException {
 		if (instanceOf(IBinding.class, expected())) {
 			IBinding casted = (IBinding) expected();
-			logger.warn("Empty implementation of " + getClass().getCanonicalName() + ".visit(IBinding)");
+			logger().warn("Empty implementation of " + getClass().getCanonicalName() + ".visit(IBinding)");
 		}
 		return true;
 	}
@@ -580,9 +580,8 @@ public class SMTLibEqualVisitor implements IVisitor<Boolean>{
 	}
 	
 	private Logger logger() {
-		return logger;
+		return loggerFor(this);
 	}
 
 	private Object expected;
-	private Logger logger = LoggerLibrary.newLoggerFor(SMTLibEqualVisitor.class);
 }

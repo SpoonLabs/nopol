@@ -2,7 +2,7 @@ package xxl.java.junit;
 
 import static java.lang.String.format;
 import static xxl.java.library.LoggerLibrary.logDebug;
-import static xxl.java.library.LoggerLibrary.newLoggerFor;
+import static xxl.java.library.LoggerLibrary.loggerFor;
 
 import java.util.Collection;
 
@@ -35,7 +35,7 @@ public class TestCasesListener extends RunListener {
     public void testStarted(Description description) throws Exception {
 		incrementNumberOfTests();
 		TestCase testCase = addTestCaseTo(allTests(), description);
-		logDebug(logger, format("[#%d. %s started...]", numberOfTests(), testCase.toString()));
+		logDebug(logger(), format("[#%d. %s started...]", numberOfTests(), testCase.toString()));
 	}
 	
     @Override
@@ -48,10 +48,10 @@ public class TestCasesListener extends RunListener {
     public void testFinished(Description description) throws Exception {
     	TestCase testCase = testCaseOf(description);
 		if (failedTests().contains(testCase)) {
-			logDebug(logger, format("[#%d. FAILED]", numberOfTests()));
+			logDebug(logger(), format("[#%d. FAILED]", numberOfTests()));
 			processFailedRun(testCase);
 		} else {
-			logDebug(logger, format("[#%d. SUCCESS]", numberOfTests()));
+			logDebug(logger(), format("[#%d. SUCCESS]", numberOfTests()));
 			processSuccessfulRun(testCase);
 		}
 		processTestFinished(testCase);
@@ -119,7 +119,7 @@ public class TestCasesListener extends RunListener {
 		numberOfTests += 1;
 	}
 	
-	private static void logTestRunFinished(Result result) {
+	private void logTestRunFinished(Result result) {
 		Collection<String> lines = MetaList.newArrayList();
 		lines.add("Tests run finished");
 		lines.add("~ Total tests run: " + result.getRunCount());
@@ -135,11 +135,14 @@ public class TestCasesListener extends RunListener {
 				lines.add("    at " + element.toString());
 			}
 		}
-		logDebug(logger, lines);
+		logDebug(logger(), lines);
+	}
+	
+	private Logger logger() {
+		return loggerFor(this);
 	}
 
 	private int numberOfTests;
     private Collection<TestCase> testCases;
     private Collection<TestCase> failedTests;
-    protected static Logger logger = newLoggerFor(TestCasesListener.class);
 }

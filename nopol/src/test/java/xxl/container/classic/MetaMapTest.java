@@ -4,7 +4,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static xxl.java.container.classic.MetaMap.containsKeys;
+import static xxl.java.container.classic.MetaMap.containsAllKeys;
 import static xxl.java.container.classic.MetaMap.copyOf;
 import static xxl.java.container.classic.MetaMap.extractedWithKeys;
 import static xxl.java.container.classic.MetaMap.frequencies;
@@ -20,7 +20,7 @@ import static xxl.java.container.classic.MetaMap.onlyValueIs;
 import static xxl.java.container.classic.MetaMap.putAllFlat;
 import static xxl.java.container.classic.MetaMap.putMany;
 import static xxl.java.container.classic.MetaMap.sameContent;
-import static xxl.java.container.classic.MetaMap.valuesAreIn;
+import static xxl.java.container.classic.MetaMap.allValuesIn;
 import static xxl.java.container.classic.MetaMap.valuesParsedAsInteger;
 
 import java.util.Arrays;
@@ -92,12 +92,12 @@ public class MetaMapTest {
 	@Test
 	public void mapContainsKeys() {
 		Map<String, Integer> map = newHashMap(asList("a", "b", "c"), asList(10, 20, 30));
-		assertTrue(containsKeys(asList("a", "b", "c"), map));
-		assertTrue(containsKeys(asList("a", "b"), map));
-		assertTrue(containsKeys((List) asList(), map));
-		assertFalse(containsKeys(asList("a", "b", "C"), map));
-		assertFalse(containsKeys(asList(""), map));
-		assertFalse(containsKeys(asList("C"), map));
+		assertTrue(containsAllKeys(asList("a", "b", "c"), map));
+		assertTrue(containsAllKeys(asList("a", "b"), map));
+		assertTrue(containsAllKeys((List) asList(), map));
+		assertFalse(containsAllKeys(asList("a", "b", "C"), map));
+		assertFalse(containsAllKeys(asList(""), map));
+		assertFalse(containsAllKeys(asList("C"), map));
 	}
 	
 	@Test
@@ -168,14 +168,14 @@ public class MetaMapTest {
 	@Test
 	public void restricedValuesOfAMap() {
 		Map<String, String> map = newHashMap(asList("a", "b", "c"), asList("x", "y", "z"));
-		assertTrue(valuesAreIn(asList("x", "y", "z"), map));
-		assertTrue(valuesAreIn(asList("x", "y", "z", "t"), map));
-		assertFalse(valuesAreIn(asList("w", "y", "z"), map));
-		assertFalse(valuesAreIn(asList("y", "z"), map));
-		assertFalse(valuesAreIn((List) asList(), map));
+		assertTrue(allValuesIn(asList("x", "y", "z"), map));
+		assertTrue(allValuesIn(asList("x", "y", "z", "t"), map));
+		assertFalse(allValuesIn(asList("w", "y", "z"), map));
+		assertFalse(allValuesIn(asList("y", "z"), map));
+		assertFalse(allValuesIn((List) asList(), map));
 		map.put("w", "w");
-		assertFalse(valuesAreIn(asList("x", "y", "z"), map));
-		assertFalse(valuesAreIn((List) asList(), newHashMap()));
+		assertFalse(allValuesIn(asList("x", "y", "z"), map));
+		assertFalse(allValuesIn((List) asList(), newHashMap()));
 	}
 	
 	@Test

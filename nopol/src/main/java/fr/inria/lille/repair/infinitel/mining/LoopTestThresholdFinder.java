@@ -4,7 +4,7 @@ import static java.lang.String.format;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static xxl.java.library.LoggerLibrary.logDebug;
-import static xxl.java.library.LoggerLibrary.newLoggerFor;
+import static xxl.java.library.LoggerLibrary.loggerFor;
 
 import java.util.Collection;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class LoopTestThresholdFinder {
 	
 	protected void findThresholdsFromExecution(Collection<TestCase> tests, While loop, Map<TestCase, Integer> thresholdMap, Integer threshold) {
 		for (TestCase testCase : tests) {
-			logDebug(logger, format("[Executing %s to get test threshold in %s]", testCase.toString(), loop.toString()));
+			logDebug(logger(), format("[Executing %s to get test threshold in %s]", testCase.toString(), loop.toString()));
 			Result result = testExecutor().execute(testCase, loop);
 			assertTrue(format("Could not find threshold for %s, it is a faling test", testCase), result.wasSuccessful());
 			Integer lastRecord = monitor().lastRecordIn(loop);
@@ -47,7 +47,7 @@ public class LoopTestThresholdFinder {
 	
 	protected void findThresholdsProbing(Collection<TestCase> tests, While loop, Map<TestCase, Integer> thresholdMap, Integer threshold) {
 		for (TestCase testCase : tests) {
-			logDebug(logger, format("[Finding test threshold of %s in %s]", testCase.toString(), loop.toString()));
+			logDebug(logger(), format("[Finding test threshold of %s in %s]", testCase.toString(), loop.toString()));
 			probeTestThreshold(testCase, loop, thresholdMap, threshold);
 		}
 	}
@@ -71,6 +71,9 @@ public class LoopTestThresholdFinder {
 		return testExecutor;
 	}
 	
+	private Logger logger() {
+		return loggerFor(this);
+	}
+	
 	private MonitoringTestExecutor testExecutor;
-	private static Logger logger = newLoggerFor(LoopTestThresholdFinder.class);
 }

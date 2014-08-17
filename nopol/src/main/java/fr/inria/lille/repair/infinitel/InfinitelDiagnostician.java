@@ -56,7 +56,7 @@ public class InfinitelDiagnostician extends Infinitel {
 		toBeLogged.addAll(logLoopsInvokedOnlyOnce(testExecutor));
 		toBeLogged.add("");
 		toBeLogged.addAll(logLoopStatistics(testExecutor));
-		logDebug(logger, toBeLogged);
+		logDebug(logger(), toBeLogged);
 	}
 
 	protected Collection<String> logLoopsInvokedOnlyOnce(MonitoringTestExecutor testExecutor) {

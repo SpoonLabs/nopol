@@ -2,7 +2,7 @@ package xxl.java.junit;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static xxl.java.library.LoggerLibrary.logDebug;
-import static xxl.java.library.LoggerLibrary.newLoggerFor;
+import static xxl.java.library.LoggerLibrary.loggerFor;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -49,7 +49,7 @@ public class TestSuiteExecution {
 		} catch (ExecutionException e) {
 			throw new RuntimeException(e);
 		} catch (TimeoutException e) {
-			logDebug(logger, String.format("Timeout after %d seconds. Infinite loop?", secondsForTimeout()));
+			logDebug(logger(), String.format("Timeout after %d seconds. Infinite loop?", secondsForTimeout()));
 		}
 		executor.shutdownNow();
 		return result;
@@ -71,6 +71,9 @@ public class TestSuiteExecution {
 		return Singleton.of(NullRunListener.class);
 	}
 	
+	private static Logger logger() {
+		return loggerFor(TestSuiteExecution.class);
+	}
+	
 	private static long secondsForTimeout = MINUTES.toSeconds(60L);
-	private static Logger logger = newLoggerFor(TestSuiteExecution.class);
 }

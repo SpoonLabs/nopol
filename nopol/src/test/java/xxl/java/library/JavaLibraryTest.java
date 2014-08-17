@@ -46,5 +46,4 @@ public class JavaLibraryTest {
 		assertEquals("java", packageName("java.HelloWorld"));
 		assertEquals("java.api", packageName("java.api.HelloWorld"));
 	}
-	
 }

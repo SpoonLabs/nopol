@@ -97,19 +97,19 @@ public class LoggerLibrary {
 		logError(logger, join(lines, lineSeparator()));
 	}
 	
-	public static void logDebug(Logger logger, String message) {
+	public synchronized static void logDebug(Logger logger, String message) {
 		logger.debug(message);
 	}
 	
-	public static void logInfo(Logger logger, String message) {
+	public synchronized static void logInfo(Logger logger, String message) {
 		logger.info(message);
 	}
 	
-	public static void logWarning(Logger logger, String message) {
+	public synchronized static void logWarning(Logger logger, String message) {
 		logger.warn(message);
 	}
 	
-	public static void logError(Logger logger, String message) {
+	public synchronized static void logError(Logger logger, String message) {
 		logger.error(message);
 	}
 	
@@ -133,16 +133,15 @@ public class LoggerLibrary {
 		logDebug(logger, stringList);
 	}
 	
-	public static Logger newLoggerFor(Class<?> aClass) {
-		return LoggerFactory.getLogger(aClass);
+	public synchronized static Logger loggerFor(Object object) {
+		return loggerFor(object.getClass());
 	}
 	
-	private synchronized static Logger loggerFor(Object object) {
-		Class<?> objectClass = object.getClass();
-		if (! loggers().containsKey(objectClass)) {
-			loggers().put(objectClass, newLoggerFor(objectClass));
+	public synchronized static Logger loggerFor(Class<?> aClass) {
+		if (! loggers().containsKey(aClass)) {
+			loggers().put(aClass, newLoggerFor(aClass));
 		}
-		return loggers().get(objectClass);
+		return loggers().get(aClass);
 	}
 	
 	private synchronized static Map<Class<?>, Logger> loggers() {
@@ -150,6 +149,10 @@ public class LoggerLibrary {
 			loggers = MetaMap.newHashMap();
 		}
 		return loggers;
+	}
+	
+	private static Logger newLoggerFor(Class<?> aClass) {
+		return LoggerFactory.getLogger(aClass);
 	}
 	
 	private static Map<Class<?>, Logger> loggers; 

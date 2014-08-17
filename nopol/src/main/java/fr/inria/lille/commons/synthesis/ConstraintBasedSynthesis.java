@@ -4,7 +4,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static xxl.java.library.LoggerLibrary.logCollection;
 import static xxl.java.library.LoggerLibrary.logDebug;
-import static xxl.java.library.LoggerLibrary.newLoggerFor;
+import static xxl.java.library.LoggerLibrary.loggerFor;
 
 import java.util.Collection;
 import java.util.List;
@@ -66,7 +66,7 @@ public class ConstraintBasedSynthesis {
 	}
 
 	private <T> Collection<Map<String, Object>> synhtesisInputValues(Collection<Specification<T>> specifications, Expression<?> outputExpression) {
-		logCollection(logger, "Specifications:", specifications);
+		logCollection(logger(), "Specifications:", specifications);
 		Collection<Map<String, Object>> synthesisInputs = MetaList.newLinkedList();
 		for (Specification<T> specification : specifications) {
 			Map<String, Object> newMap = specification.inputs();
@@ -120,13 +120,13 @@ public class ConstraintBasedSynthesis {
 	}
 	
 	private LocationVariableContainer variableContainerFor(Expression<?> outputExpression, Collection<Operator<?>> operators, Collection<Expression<?>> inputs) {
-		logCollection(logger, "Operators:", operators);
+		logCollection(logger(), "Operators:", operators);
 		return new LocationVariableContainer(inputs, operators, outputExpression);
 	}
 	
 	protected Map<String, Integer> satisfyingSolution(LocationVariableContainer container, Collection<Map<String, Object>> synthesisInputs) {
 		IScript smtScript = scriptBuilder().scriptFrom(logic(), container, synthesisInputs);
-		logCollection(logger, "SMTLib Script:", smtScript.commands());
+		logCollection(logger(), "SMTLib Script:", smtScript.commands());
 		Map<String, String> satisfyingValues = scriptSolution(container, smtScript);
 		Map<String, Integer> toInteger = MetaMap.valuesParsedAsInteger(satisfyingValues);
 		return toInteger;
@@ -143,12 +143,12 @@ public class ConstraintBasedSynthesis {
 	
 	private CodeGenesis successfulGenesis(LocationVariableContainer container, Map<String, Integer> toInteger) {
 		CodeGenesis genesis = new CodeGenesis(container, toInteger);
-		logDebug(logger, "Successful code synthesis: " + genesis.returnStatement());
+		logDebug(logger(), "Successful code synthesis: " + genesis.returnStatement());
 		return genesis;
 	}
 	
 	private NullCodeGenesis unsuccessfulGenesis() {
-		logDebug(logger, "Failed code synthesis, returning NullCodeGenesis");
+		logDebug(logger(), "Failed code synthesis, returning NullCodeGenesis");
 		return new NullCodeGenesis();
 	}
 	
@@ -168,9 +168,12 @@ public class ConstraintBasedSynthesis {
 		return logic;
 	}
 
+	private Logger logger() {
+		return loggerFor(this);
+	}
+	
 	private ISymbol logic;
 	private Map<String, Integer> constants;
 	private Collection<OperatorTheory> theories;
 	private SynthesisScriptBuilder scriptBuilder;
-	private static Logger logger = newLoggerFor(ConstraintBasedSynthesis.class);
 }

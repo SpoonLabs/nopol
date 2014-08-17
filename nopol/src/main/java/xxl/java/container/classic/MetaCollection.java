@@ -52,13 +52,13 @@ public class MetaCollection {
 	
 	@SafeVarargs
 	public static <T> boolean addAll(Collection<T> destination, T... elements) {
-		return addAll(destination, asList(elements));
+		return destination.addAll(asList(elements));
 	}
 	
 	public static <T> boolean addAll(Collection<T> destination, Iterable<? extends T> elements) {
 		boolean changed = false;
 		for (T element : elements) {
-			changed = changed | destination.add(element);
+			changed |= destination.add(element);
 		}
 		return changed;
 	}
@@ -66,7 +66,7 @@ public class MetaCollection {
 	public static <T> boolean addAll(Collection<T> destination, Enumeration<? extends T> elements) {
 		boolean changed = false;
 		while (elements.hasMoreElements()) {
-			changed = changed | destination.add(elements.nextElement());
+			changed |= destination.add(elements.nextElement());
 		}
 		return changed;
 	}
@@ -79,7 +79,7 @@ public class MetaCollection {
 	public static <T> boolean addAllFlat(Collection<T> destination, Collection<Iterable<? extends T>> collections) {
 		boolean changed = false;
 		for (Iterable<? extends T> collection : collections) {
-			changed = changed | addAll(destination, collection);
+			changed |= addAll(destination, collection);
 		}
 		return changed;
 	}

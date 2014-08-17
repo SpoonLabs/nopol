@@ -2,7 +2,7 @@ package fr.inria.lille.repair.infinitel;
 
 import static java.lang.String.format;
 import static xxl.java.library.LoggerLibrary.logDebug;
-import static xxl.java.library.LoggerLibrary.newLoggerFor;
+import static xxl.java.library.LoggerLibrary.loggerFor;
 
 import java.io.File;
 import java.net.URL;
@@ -68,9 +68,9 @@ public class Infinitel {
 	
 	protected Collection<While> infiniteLoops(MonitoringTestExecutor testExecutor, TestCasesListener listener) {
 		String[] testClasses = project().testClasses();
-		logDebug(logger, "# Running test cases to find infinite loops");
+		logDebug(logger(), "# Running test cases to find infinite loops");
 		Collection<While> loopsReachingThreshold = testExecutor.loopsReachingThresholdFor(testClasses, listener);
-		logDebug(logger, "# Number of infinite loops: " + loopsReachingThreshold.size());
+		logDebug(logger(), "# Number of infinite loops: " + loopsReachingThreshold.size());
 		return loopsReachingThreshold;
 	}
 	
@@ -85,29 +85,29 @@ public class Infinitel {
 	}
 	
 	protected Map<TestCase, Integer> thresholdsByTest(While loop, MonitoringTestExecutor executor, Collection<TestCase> failed, Collection<TestCase> passed) {
-		logDebug(logger, "# Finding test thresholds");
+		logDebug(logger(), "# Finding test thresholds");
 		LoopTestThresholdFinder thresholdFinder = new LoopTestThresholdFinder(executor);
 		Map<TestCase, Integer> thresholdsByTest = thresholdFinder.thresholdsByTest(loop, failed, passed);
-		logDebug(logger, format("# Found test thresholds for %d tests which invoke the loop (%s) only once", thresholdsByTest.size(), loop));
+		logDebug(logger(), format("# Found test thresholds for %d tests which invoke the loop (%s) only once", thresholdsByTest.size(), loop));
 		return thresholdsByTest;
 	}
 	
 	protected Collection<Specification<Boolean>> testSpecifications(Map<TestCase, Integer> thresholdsByTest, MonitoringTestExecutor executor, While loop) {
-		logDebug(logger, "# Running each test individually to colllect runtime values");
+		logDebug(logger(), "# Running each test individually to colllect runtime values");
 		LoopSpecificationCollector collector = new LoopSpecificationCollector(executor);
 		Collection<Specification<Boolean>> testSpecifications = collector.testSpecifications(thresholdsByTest, loop);
-		logDebug(logger, "# Finished runtime value collection");
+		logDebug(logger(), "# Finished runtime value collection");
 		return testSpecifications;
 	}
 	
 	protected CodeGenesis synthesiseCodeFor(Collection<Specification<Boolean>> specifications) {
-		logDebug(logger, "# Code synthesis begins");
+		logDebug(logger(), "# Code synthesis begins");
 		ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis();
 		CodeGenesis synthesisedCode = synthesis.codesSynthesisedFrom(Boolean.class, specifications);
 		if (synthesisedCode.isSuccessful()) {
-			logDebug(logger, "# Code synthesis completed successfully", "A working looping condition is:", synthesisedCode.returnStatement());
+			logDebug(logger(), "# Code synthesis completed successfully", "A working looping condition is:", synthesisedCode.returnStatement());
 		} else {
-			logDebug(logger, "# Code synthesis failed");
+			logDebug(logger(), "# Code synthesis failed");
 		}
 		return synthesisedCode;
 	}
@@ -116,6 +116,9 @@ public class Infinitel {
 		return Singleton.of(InfinitelConfiguration.class);
 	}
 	
+	protected Logger logger() {
+		return loggerFor(this);
+	}
+	
 	private ProjectReference project;
-	protected static Logger logger = newLoggerFor(Infinitel.class);
 }
