@@ -142,18 +142,24 @@ public class InfinitelDiagnostician extends Infinitel {
 	
 	private void addRowFrom(Map<String, Object> map, int row, Collection<While> loops, Collection<Pair<Integer, Integer>> ranges, Bag<Pair<Integer, Integer>> exitRanges,
 			Bag<Pair<Integer, Integer>> breakExitRanges, Bag<Pair<Integer, Integer>> returnExitRanges, Bag<Integer> exitRecords) {
-		map.put("loop-number", row);
+		int invocations = exitRecords.size();
+		long totalIterations = Bag.sum(exitRecords);
+		int breakExits = breakExitRanges.size();
+		int returnExtis = returnExitRanges.size();
+		double iterationsPerInvocation = (invocations == 0) ? 0.0 : ((double) totalIterations) / invocations; 
+		map.put("label", row);
 		map.put("breaks", totalNumberOfBreaks(loops));
 		map.put("returns", totalNumberOfReturns(loops));
-		map.put("invocations", exitRecords.size());
-		map.put("conditional-exits", exitRecords.size() - breakExitRanges.size() - returnExitRanges.size());
-		map.put("break-exits", breakExitRanges.size());
-		map.put("return-exits", returnExitRanges.size());
-		map.put("total-iterations", Bag.sum(exitRecords));
-		logBag(map, "exit-ranges", exitRanges, ranges);
-		logBag(map, "break-exit-ranges", breakExitRanges, ranges);
-		logBag(map, "return-exit-ranges", returnExitRanges, ranges);
-		map.put("exit-records", logBag((Map) MetaMap.newLinkedHashMap(), "", exitRecords, exitRecords.asSet()));
+		map.put("invocations", invocations);
+		map.put("total-iterations", totalIterations);
+		map.put("iterations-per-invocation", iterationsPerInvocation);
+		map.put("conditional-exits", invocations - breakExits - returnExtis);
+		map.put("break-exits", breakExits);
+		map.put("return-exits", returnExtis);
+		logBag(map, "exit-range", exitRanges, ranges);
+		logBag(map, "break-exit-range", breakExitRanges, ranges);
+		logBag(map, "return-exit-range", returnExitRanges, ranges);
+		map.put("plain-exit-records", logBag((Map) MetaMap.newLinkedHashMap(), "", exitRecords, exitRecords.asSet()));
 	}
 
 	private <T extends Comparable<T>> String logBag(Map<String, Object> row, String description, Bag<T> bag, Collection<T> keys) {
@@ -162,7 +168,7 @@ public class InfinitelDiagnostician extends Infinitel {
 		double bagSize = bag.size();
 		for (T key : sortedKeys) {
 			double percentage = (bagSize < 1.0) ? 0.0 : bag.repetitionsOf(key) / bagSize;
-			row.put(format("%s %s", description, key.toString()), percentage);
+			row.put(format("%s %s", description, key.toString()).replace('<', '[').replace('>', ')'), percentage);
 		}
 		return row.toString();
 	}

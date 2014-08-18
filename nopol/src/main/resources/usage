@@ -1,6 +1,13 @@
 Simulation:
 -----------
 	$ java -cp <nopol-jar-file> fr.inria.lille.repair.nopol.NoPolLauncher z3|cvc4 <solver-path>
+	
+NOTE: This simulation looks for a folder named "/misc" in the same location as the jar file. 
+
+
+Loop analysis
+-------------
+	$ java -cp <nopol-jar-file> fr.inria.lille.repair.infinitel.InfinitelDiagnostician <source path> <class path>
 
 
 Execution:
