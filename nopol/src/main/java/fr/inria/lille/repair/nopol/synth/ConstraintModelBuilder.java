@@ -48,11 +48,13 @@ public final class ConstraintModelBuilder {
 	
 	private final ClassLoader classLoader;
 	private RuntimeValues runtimeValues;
+	private SourceLocation sourceLocation;
 	
 	public ConstraintModelBuilder(final File sourceFolder, RuntimeValues runtimeValues, final SourceLocation sourceLocation,
 			final Processor<?> processor, SpoonedProject spooner, final BugKind type) {
 		this.type = type;
 		mapID = ConditionalValueHolder.ID_Conditional;
+		this.sourceLocation = sourceLocation;
 		String qualifiedName = sourceLocation.getRootClassName();
 		if ( NoPol.isOneBuild() ){
 			ConditionalValueHolder.ID_Conditional++;
@@ -103,7 +105,7 @@ public final class ConstraintModelBuilder {
 		firstFailures.retainAll(secondFailures);
 		viablePatch = firstFailures.isEmpty();
 		if (!viablePatch) {
-			logger.debug("Failing test(s): {}", firstFailures);
+			logger.debug("Failing test(s): {}\n{}", sourceLocation, firstFailures);
 			Logger testsOutput = LoggerFactory.getLogger("tests.output");
 			testsOutput.debug("First set: \n{}", firstResult.getFailures());
 			testsOutput.debug("Second set: \n{}", secondResult.getFailures());

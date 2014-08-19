@@ -6,8 +6,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static xxl.java.container.various.Table.newTable;
 
+import java.util.Map;
+
 import org.junit.Test;
 
+import xxl.java.container.classic.MetaMap;
 import xxl.java.container.various.Table;
 
 public class TableTest {
@@ -146,5 +149,29 @@ public class TableTest {
 		assertEquals(4, table.numberOfColumns());
 		assertTrue(table.columns().containsAll(asList("W", "X", "Y", "Z")));
 		assertEquals(0, table.cell("a", "X").intValue());
+	}
+	
+	@Test
+	public void defineAColumnOfATable() {
+		Table<String, String, String> table = newTable(".");
+		Map<String, String> column = MetaMap.newLinkedHashMap(asList("a", "b", "c"), asList("0", "1", "2"));
+		table.putColumn("Index", column);
+		assertEquals(1, table.numberOfColumns());
+		assertEquals(3, table.numberOfRows());
+		assertEquals("0", table.cell("a", "Index"));
+		assertEquals("1", table.cell("b", "Index"));
+		assertEquals("2", table.cell("c", "Index"));
+	}
+	
+	@Test
+	public void defineARowOfATable() {
+		Table<String, String, String> table = newTable(".");
+		Map<String, String> row = MetaMap.newLinkedHashMap(asList("Index", "Upper", "Next"), asList("0", "A", "b"));
+		table.putRow("a", row);
+		assertEquals(3, table.numberOfColumns());
+		assertEquals(1, table.numberOfRows());
+		assertEquals("0", table.cell("a", "Index"));
+		assertEquals("A", table.cell("a", "Upper"));
+		assertEquals("b", table.cell("a", "Next"));
 	}
 }

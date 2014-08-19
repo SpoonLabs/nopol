@@ -94,6 +94,18 @@ public class Table<R, C, V> {
 		targetRow.put(column, cell);
 		return targetColumn.put(row, cell);
 	}
+
+	public void putRow(R row, Map<C, V> columns) {
+		for (C column : columns.keySet()) {
+			put(row, column, columns.get(column));
+		}
+	}
+	
+	public void putColumn(C column, Map<R, V> rows) {
+		for (R row : rows.keySet()) {
+			put(row, column, rows.get(row));
+		}
+	}
 	
 	public V cell(R row, C column) {
 		return row(row).get(column);

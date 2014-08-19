@@ -56,7 +56,7 @@ public class InfinitelTest {
 		InfinitelDiagnostician diagnostician = new InfinitelDiagnostician(infinitel.project());
 		MonitoringTestExecutor testExecutor = diagnostician.newTestExecutor();
 		assertEquals(2, testExecutor.allLoops().size());
-		Collection<FixableLoop> loopsInvokedOnlyOnce = diagnostician.loopsInvokedOnlyOnce(testExecutor);
+		Collection<FixableLoop> loopsInvokedOnlyOnce = diagnostician.fixableInfiniteLoops(testExecutor);
 		assertEquals(1, loopsInvokedOnlyOnce.size());
 		FixableLoop loop = MetaCollection.any(loopsInvokedOnlyOnce);
 		assertEquals(7, loop.position().getLine());
