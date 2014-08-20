@@ -30,8 +30,6 @@ import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.repair.ProjectReference;
-import fr.inria.lille.repair.infinitel.Infinitel;
-import fr.inria.lille.repair.infinitel.InfinitelDiagnostician;
 import fr.inria.lille.repair.infinitel.instrumenting.CompoundLoopMonitorBuilder;
 import fr.inria.lille.repair.infinitel.loop.FixableLoop;
 import fr.inria.lille.repair.infinitel.loop.While;
@@ -59,7 +57,7 @@ public class InfinitelTest {
 		Collection<FixableLoop> loopsInvokedOnlyOnce = diagnostician.fixableInfiniteLoops(testExecutor);
 		assertEquals(1, loopsInvokedOnlyOnce.size());
 		FixableLoop loop = MetaCollection.any(loopsInvokedOnlyOnce);
-		assertEquals(7, loop.position().getLine());
+		assertEquals(7, loop.loop().position().getLine());
 	}
 	
 	@Test

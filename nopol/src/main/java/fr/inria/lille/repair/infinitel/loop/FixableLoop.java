@@ -4,12 +4,16 @@ import java.util.Collection;
 
 import xxl.java.junit.TestCase;
 
-public class FixableLoop extends While {
+public class FixableLoop {
 
 	public FixableLoop(While loop, Collection<TestCase> failingTests, Collection<TestCase> passingTests) {
-		super(loop.astLoop(), loop.breakStatements(), loop.returnStatements());
+		this.loop = loop;
 		this.failingTests = failingTests;
 		this.passingTests = passingTests;
+	}
+	
+	public While loop() {
+		return loop;
 	}
 
 	public Collection<TestCase> failingTests() {
@@ -23,9 +27,10 @@ public class FixableLoop extends While {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((failingTests == null) ? 0 : failingTests.hashCode());
-		result = prime * result + ((passingTests == null) ? 0 : passingTests.hashCode());
+		int result = 1;
+		result = prime * result + ((loop() == null) ? 0 : loop().hashCode());
+		result = prime * result + ((failingTests() == null) ? 0 : failingTests().hashCode());
+		result = prime * result + ((passingTests() == null) ? 0 : passingTests().hashCode());
 		return result;
 	}
 
@@ -33,24 +38,30 @@ public class FixableLoop extends While {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		FixableLoop other = (FixableLoop) obj;
-		if (failingTests == null) {
-			if (other.failingTests != null)
+		if (loop() == null) {
+			if (other.loop() != null)
 				return false;
-		} else if (!failingTests.equals(other.failingTests))
+		} else if (!loop().equals(other.loop()))
 			return false;
-		if (passingTests == null) {
-			if (other.passingTests != null)
+		if (failingTests() == null) {
+			if (other.failingTests() != null)
 				return false;
-		} else if (!passingTests.equals(other.passingTests))
+		} else if (!failingTests().equals(other.failingTests()))
+			return false;
+		if (passingTests() == null) {
+			if (other.passingTests() != null)
+				return false;
+		} else if (!passingTests().equals(other.passingTests()))
 			return false;
 		return true;
 	}
 
+	private While loop;
 	private Collection<TestCase> failingTests;
 	private Collection<TestCase> passingTests;
 }

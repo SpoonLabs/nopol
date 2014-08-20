@@ -35,7 +35,7 @@ public class FixableLoopBuilder {
 		if (failingInvoking.size() + passingInvoking.size() > 0) {
 			fixableLoops.add(new FixableLoop(loop, failingInvoking, passingInvoking));
 		} else {
-			logDebug(logger(), format("Unfixable loop (%s)", loop.toString()));
+			logDebug(logger(), format("Unfixable loop (%s)", loop.toString()), "Invocations in failing tests: " + failing, "Invocations in passing tests: " + passing);
 		}
 	}
 	

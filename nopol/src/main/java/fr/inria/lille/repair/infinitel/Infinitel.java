@@ -2,6 +2,7 @@ package fr.inria.lille.repair.infinitel;
 
 import static java.lang.String.format;
 import static xxl.java.library.LoggerLibrary.logDebug;
+import static xxl.java.library.LoggerLibrary.logError;
 import static xxl.java.library.LoggerLibrary.loggerFor;
 
 import java.io.File;
@@ -32,7 +33,12 @@ public class Infinitel {
 
 	public static void run(File sourceFile, URL[] classpath) {
 		Infinitel infiniteLoopFixer = new Infinitel(sourceFile, classpath);
-		infiniteLoopFixer.repair();
+		try {
+			infiniteLoopFixer.repair();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logError(infiniteLoopFixer.logger(), "Repair failed");
+		}
 	}
 	
 	public Infinitel(File sourceFile, URL[] classpath) {
@@ -79,8 +85,8 @@ public class Infinitel {
 	}
 	
 	private void findRepairIn(FixableLoop loop, MonitoringTestExecutor testExecutor) {
-		Map<TestCase, Integer> thresholdsByTest = thresholdsByTest(loop, testExecutor, loop.failingTests(), loop.passingTests());
-		Collection<Specification<Boolean>> testSpecifications = testSpecifications(thresholdsByTest, testExecutor, loop);
+		Map<TestCase, Integer> thresholdsByTest = thresholdsByTest(loop.loop(), testExecutor, loop.failingTests(), loop.passingTests());
+		Collection<Specification<Boolean>> testSpecifications = testSpecifications(thresholdsByTest, testExecutor, loop.loop());
 		synthesiseCodeFor(testSpecifications);
 	}
 	
