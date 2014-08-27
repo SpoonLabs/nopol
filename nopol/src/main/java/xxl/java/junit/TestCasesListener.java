@@ -36,6 +36,7 @@ public class TestCasesListener extends RunListener {
 		incrementNumberOfTests();
 		TestCase testCase = addTestCaseTo(allTests(), description);
 		logDebug(logger(), format("[#%d. %s started...]", numberOfTests(), testCase.toString()));
+		processTestStarted(testCase);
 	}
 	
     @Override
@@ -66,6 +67,10 @@ public class TestCasesListener extends RunListener {
     protected void processBeforeRun() {
     	/* subclassResponsibility */
     }
+    
+    protected void processTestStarted(TestCase testCase) {
+    	/* subclassResponsibility */
+	}
     
 	protected void processSuccessfulRun(TestCase testCase) {
 		/* subclassResponsibility */
@@ -106,7 +111,7 @@ public class TestCasesListener extends RunListener {
     }
     
 	protected TestCase testCaseOf(Description description) {
-    	return new TestCase(description.getClassName(), description.getMethodName());
+    	return TestCase.from(description.getClassName(), description.getMethodName());
     }
 	
 	private TestCase addTestCaseTo(Collection<TestCase> collection, Description description) {
@@ -121,10 +126,10 @@ public class TestCasesListener extends RunListener {
 	
 	private void logTestRunFinished(Result result) {
 		Collection<String> lines = MetaList.newArrayList();
-		lines.add("Tests run finished");
-		lines.add("~ Total tests run: " + result.getRunCount());
-		lines.add("~ Ignored tests: " + result.getIgnoreCount());
-		lines.add("~ Failed tests: " + result.getFailureCount());
+		lines.add(format("Tests run finished (%d ms)", result.getRunTime()));
+		lines.add("<> Total tests run: " + result.getRunCount());
+		lines.add("<> Ignored tests: " + result.getIgnoreCount());
+		lines.add("<> Failed tests: " + result.getFailureCount());
 		for (Failure failure : result.getFailures()) {
 			lines.add("~ " + failure.getTestHeader());
 			lines.add("[" + failure.getMessage() + "]");

@@ -2,18 +2,19 @@ package xxl.java.library;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static xxl.java.container.classic.MetaMap.remade;
+import static xxl.java.library.ObjectLibrary.methodToString;
 
-import java.io.File;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import xxl.java.support.Function;
 
 public class StringLibrary {
 
@@ -102,11 +103,8 @@ public class StringLibrary {
 	}
 	
 	public static <K, V> Map<String, V> toStringMap(Map<K, V> sourceMap) {
-		Map<String, V> toStringMap = new HashMap<String, V>();
-		for (K key : sourceMap.keySet()) {
-			toStringMap.put(key.toString(), sourceMap.get(key));
-		}
-		return toStringMap;
+		Function<K, String> toStringKey = methodToString();
+		return remade(sourceMap, toStringKey);
 	}
 	
 	public static int maximumToStringLength(Collection<? extends Object> objects, int lengthOfNullToString) {

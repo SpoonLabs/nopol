@@ -33,7 +33,8 @@ import fr.inria.lille.commons.trace.RuntimeValuesInstrumenter;
  */
 public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtStatement> {
 
-	public ConditionalLoggingInstrumenter(RuntimeValues runtimeValues) {
+	public ConditionalLoggingInstrumenter(RuntimeValues<Boolean> runtimeValues, String outputName) {
+		this.outputName = outputName;
 		this.runtimeValues = runtimeValues;
 		this.collectableFinder = Singleton.of(CollectableValueFinder.class);
 	}
@@ -41,7 +42,7 @@ public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtSt
 	@Override
 	public void process(CtStatement element) {
 		Collection<String> collectables = collectablesOf(element);
-		RuntimeValuesInstrumenter.runtimeCollectionBefore(element, collectables, runtimeValues());
+		RuntimeValuesInstrumenter.runtimeCollectionBefore(element, collectables, outputName(), runtimeValues());
 	}
 	
 	private Collection<String> collectablesOf(CtStatement element) {
@@ -58,10 +59,15 @@ public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtSt
 		return collectableFinder;
 	}
 	
-	private RuntimeValues runtimeValues() {
+	private RuntimeValues<Boolean> runtimeValues() {
 		return runtimeValues;
 	}
 	
-	private RuntimeValues runtimeValues;
+	private String outputName() {
+		return outputName;
+	}
+	
+	private String outputName;
+	private RuntimeValues<Boolean> runtimeValues;
 	private CollectableValueFinder collectableFinder;
 }

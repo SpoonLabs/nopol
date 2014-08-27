@@ -22,7 +22,6 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
 import xxl.java.container.classic.MetaMap;
 import xxl.java.junit.TestCase;
-import xxl.java.support.Function;
 import xxl.java.support.Singleton;
 import fr.inria.lille.commons.spoon.collectable.CollectableValueFinder;
 import fr.inria.lille.commons.spoon.filter.CodeSnippetFilter;
@@ -41,9 +40,9 @@ public class ValuesCollectorTest {
 		Collection<?> value = asList(1, 2, 3);
 
 		// WHEN
-		RuntimeValues runtimeValues = RuntimeValues.newInstance();
+		RuntimeValues<?> runtimeValues = RuntimeValues.newInstance();
 		runtimeValues.enable();
-		runtimeValues.collectValue(name, value);
+		runtimeValues.collectInput(name, value);
 		
 		// THEN
 		Map<String, ?> expected = MetaMap.newHashMap(asList(name + "!=null", name + ".size()", name + ".isEmpty()"), asList(true, value.size(), value.isEmpty()));
@@ -57,9 +56,9 @@ public class ValuesCollectorTest {
 		Map<?, ?> value = Collections.singletonMap("key", "value");
 
 		// WHEN
-		RuntimeValues runtimeValues = RuntimeValues.newInstance();
+		RuntimeValues<?> runtimeValues = RuntimeValues.newInstance();
 		runtimeValues.enable();
-		runtimeValues.collectValue(name, value);
+		runtimeValues.collectInput(name, value);
 		
 		// THEN
 		Map<String, ?> expected = MetaMap.newHashMap(asList(name + "!=null", name + ".size()", name + ".isEmpty()"), asList(true, value.size(), value.isEmpty()));
@@ -73,9 +72,9 @@ public class ValuesCollectorTest {
 		String value = "Take nothing on its looks; take everything on evidence. There's no better rule.";
 
 		// WHEN
-		RuntimeValues runtimeValues = RuntimeValues.newInstance();
+		RuntimeValues<?> runtimeValues = RuntimeValues.newInstance();
 		runtimeValues.enable();
-		runtimeValues.collectValue(name, value);
+		runtimeValues.collectInput(name, value);
 
 		// THEN
 		Map<String, ?> expected = MetaMap.newHashMap(asList(name + "!=null", name + ".length()", name + ".length()==0"), asList(true, value.length(), value.isEmpty()));
@@ -89,9 +88,9 @@ public class ValuesCollectorTest {
 		int[] value = { 1, 2, 3 };
 
 		// WHEN
-		RuntimeValues runtimeValues = RuntimeValues.newInstance();
+		RuntimeValues<?> runtimeValues = RuntimeValues.newInstance();
 		runtimeValues.enable();
-		runtimeValues.collectValue(name, value);
+		runtimeValues.collectInput(name, value);
 
 		// THEN
 		Map<String, ?> expected = MetaMap.newHashMap(asList(name + "!=null", name + ".length"), asList(true, value.length));
@@ -104,9 +103,9 @@ public class ValuesCollectorTest {
 		String name = "null";
 
 		// WHEN
-		RuntimeValues runtimeValues = RuntimeValues.newInstance();
+		RuntimeValues<?> runtimeValues = RuntimeValues.newInstance();
 		runtimeValues.enable();
-		runtimeValues.collectValue(name, null);
+		runtimeValues.collectInput(name, null);
 
 		// THEN
 		Map<String, ?> expected = MetaMap.newHashMap(asList(name + "!=null"), asList(false));
@@ -116,60 +115,64 @@ public class ValuesCollectorTest {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void inconsistentSpecificationsAreDiscarded() {
-		TestCase testA = new TestCase("com.example", "testA");
-		TestCase testB = new TestCase("com.example", "testB");
-		TestCase testC = new TestCase("com.example", "testC");
-		RuntimeValues runtimeValues = RuntimeValues.newInstance();
-		Function<Integer, Boolean> outputForEachTrace = new Function<Integer, Boolean>() {
-			@Override
-			public Boolean outputFor(Integer value) {
-				return value % 2 == 0;
-			}
-		};
+		TestCase testA = TestCase.from("com.example", "testA");
+		TestCase testB = TestCase.from("com.example", "testB");
+		TestCase testC = TestCase.from("com.example", "testC");
+		RuntimeValues<Boolean> runtimeValues = RuntimeValues.newInstance();
+		
+		Collection<Specification<Boolean>> specifications;
+		Collection<Map<String, Object>> inconsistencies;
 		Map<String, Object> otherValue = (Map) MetaMap.newHashMap(asList("c"), asList(3));
 		Map<String, Object> values = (Map) MetaMap.newHashMap(asList("a", "b"), asList(1, 2));
-		Collection<Map<String, Object>> inconsistentTraces;
-		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<Boolean>(runtimeValues, outputForEachTrace);
+		Specification<Boolean> consistent = new Specification<Boolean>(otherValue, true);
+		Specification<Boolean> inconsistent = new Specification<Boolean>(values, false);
+		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<Boolean>(runtimeValues);
 		
 		listener.processBeforeRun();
-		runtimeValues.collectValue("a", values.get("a"));
-		runtimeValues.collectValue("b", values.get("b"));
+		listener.processTestStarted(testA);
+		runtimeValues.collectInput("a", values.get("a"));
+		runtimeValues.collectInput("b", values.get("b"));
+		runtimeValues.collectOutput(false);
 		runtimeValues.collectionEnds();
 		assertFalse(runtimeValues.isEmpty());
-		assertEquals(1, runtimeValues.numberOfTraces());
 		listener.processSuccessfulRun(testA);
-		listener.processTestFinished(testA);
-		inconsistentTraces = listener.inconsistentTraces();
-		assertTrue(inconsistentTraces.isEmpty());
-		
-		runtimeValues.collectValue("c", otherValue.get("c"));
-		runtimeValues.collectionEnds();
-		runtimeValues.collectValue("a", values.get("a"));
-		runtimeValues.collectValue("b", values.get("b"));
-		runtimeValues.collectionEnds();
-		assertFalse(runtimeValues.isEmpty());
-		assertEquals(2, runtimeValues.numberOfTraces());
-		listener.processSuccessfulRun(testB);
-		listener.processTestFinished(testB);
-		inconsistentTraces = listener.inconsistentTraces();
-		assertEquals(1, inconsistentTraces.size());
-		assertTrue(inconsistentTraces.contains(values));
-		
-		runtimeValues.collectValue("a", values.get("a"));
-		runtimeValues.collectValue("b", values.get("b"));
-		runtimeValues.collectionEnds();
-		assertFalse(runtimeValues.isEmpty());
-		assertEquals(1, runtimeValues.numberOfTraces());
-		listener.processSuccessfulRun(testC);
-		listener.processTestFinished(testC);
-		listener.processAfterRun();
-		inconsistentTraces = listener.inconsistentTraces();
-		assertEquals(1, inconsistentTraces.size());
-		assertTrue(inconsistentTraces.contains(values));
-		
-		Collection<Specification<Boolean>> specifications = listener.specifications();
+		specifications = listener.specifications();
 		assertEquals(1, specifications.size());
-		assertTrue(specifications.contains(new Specification<Boolean>(otherValue, true)));
+		assertTrue(specifications.contains(inconsistent));
+		inconsistencies = listener.inconsistentInputs();
+		assertTrue(inconsistencies.isEmpty());
+		
+		listener.processTestStarted(testB);
+		runtimeValues.collectInput("c", otherValue.get("c"));
+		runtimeValues.collectOutput(true);
+		runtimeValues.collectionEnds();
+		runtimeValues.collectInput("a", values.get("a"));
+		runtimeValues.collectInput("b", values.get("b"));
+		runtimeValues.collectOutput(true);
+		runtimeValues.collectionEnds();
+		assertFalse(runtimeValues.isEmpty());
+		listener.processSuccessfulRun(testB);
+		specifications = listener.specifications();
+		assertEquals(1, specifications.size());
+		assertTrue(specifications.contains(consistent));
+		inconsistencies = listener.inconsistentInputs();
+		assertEquals(1, inconsistencies.size());
+		assertTrue(inconsistencies.containsAll(asList(inconsistent.inputs())));
+		
+		listener.processTestStarted(testC);
+		runtimeValues.collectInput("a", values.get("a"));
+		runtimeValues.collectInput("b", values.get("b"));
+		runtimeValues.collectOutput(true);
+		runtimeValues.collectionEnds();
+		assertFalse(runtimeValues.isEmpty());
+		listener.processSuccessfulRun(testC);
+		listener.processAfterRun();
+		specifications = listener.specifications();
+		assertEquals(1, specifications.size());
+		assertTrue(specifications.contains(consistent));
+		inconsistencies = listener.inconsistentInputs();
+		assertEquals(1, inconsistencies.size());
+		assertTrue(inconsistencies.containsAll(asList(inconsistent.inputs())));
 	}
 	
 	@Test
@@ -238,9 +241,9 @@ public class ValuesCollectorTest {
 	
 	@Test
 	public void replaceQuotationMarksToCollectSubconditions() {
-		RuntimeValues runtimeValues = RuntimeValues.newInstance();
+		RuntimeValues<Boolean> runtimeValues = RuntimeValues.newInstance();
 		String invocation = runtimeValues.invocationOnCollectionOf("\"aaaa\".startsWith(\"b\")");
-		String toMatch = "collectValue(\"\\\"aaaa\\\".startsWith(\\\"b\\\")\", \"aaaa\".startsWith(\"b\"))";
+		String toMatch = "collectInput(\"\\\"aaaa\\\".startsWith(\\\"b\\\")\", \"aaaa\".startsWith(\"b\"))";
 		assertTrue(invocation.endsWith(toMatch));
 	}
 	

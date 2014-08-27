@@ -15,9 +15,22 @@ import java.util.Map;
 import java.util.Set;
 
 import xxl.java.support.Factory;
+import xxl.java.support.Function;
 
 public class MetaMap {
 
+/** Method */
+	
+	public static <K, V> Function<K, V> methodGet(final Map<K, V> map) {
+		return new Function<K, V>() {
+			@Override
+			public V outputFor(K key) {
+				return map.get(key);
+			}
+		};
+	}
+	
+	
 /** Factory */
 	
 	public static <K, V> Factory<Map<K, V>> hashMapFactory() {
@@ -67,6 +80,11 @@ public class MetaMap {
 		Map<K, V> newMap = newHashMap(keys.size());
 		return withAll(newMap, keys, values);
 	}
+	
+	public static <K, V> Map<K, V> newHashMap(Collection<K> keys, Function<K, V> toValue) {
+		Map<K, V> newMap = newHashMap(keys.size());
+		return withAll(newMap, keys, toValue);
+	}
 
 	
 /** LinkedHashMap */
@@ -98,6 +116,11 @@ public class MetaMap {
 		return withAll(newMap, keys, values);
 	}
 	
+	public static <K, V> Map<K, V> newLinkedHashMap(Collection<K> keys, Function<K, V> toValue) {
+		Map<K, V> newMap = newLinkedHashMap(keys.size());
+		return withAll(newMap, keys, toValue);
+	}
+	
 	
 /** IdentityHashMap */
 	
@@ -123,6 +146,11 @@ public class MetaMap {
 		Map<K, V> newMap = newIdentityHashMap(keyCapacity);
 		return withAll(newMap, keys, values);
 	}
+	
+	public static <K, V> Map<K, V> newIdentityHashMap(int keyCapacity, Collection<K> keys, Function<K, V> toValue) {
+		Map<K, V> newMap = newIdentityHashMap(keyCapacity);
+		return withAll(newMap, keys, toValue);
+	}
 
 	
 /** Operations */
@@ -140,13 +168,12 @@ public class MetaMap {
 	}
 	
 	public static <K, V> Map<K, V> withAll(Map<K, V> destination, List<K> keys, List<V> values) {
-		if (keys.size() == values.size()) {
-			int index = 0;
-			for (K key : keys) {
-				destination.put(key, values.get(index));
-				index += 1;
-			}
-		}
+		putAll(destination, keys, values);
+		return destination;
+	}
+	
+	public static <K, V> Map<K, V> withAll(Map<K, V> destination, Collection<K> keys, Function<K, V> toValue) {
+		putAll(destination, keys, toValue);
 		return destination;
 	}
 	
@@ -177,6 +204,32 @@ public class MetaMap {
 		return previousValues;
 	}
 	
+	public static <K, V> Map<K, V> putAll(Map<K, V> map, List<K> keys, List<V> values) {
+		Map<K, V> previousValues = newHashMap();
+		if (keys.size() == values.size()) {
+			int index = 0;
+			for (K key : keys) {
+				V oldValue = map.put(key, values.get(index));
+				if (oldValue != null) {
+					previousValues.put(key, oldValue);
+				}
+				index += 1;
+			}
+		}
+		return previousValues;
+	}
+	
+	public static <K, V> Map<K, V> putAll(Map<K, V> map, Collection<K> keys, Function<K, V> toValue) {
+		Map<K, V> previousValues = newHashMap();
+		for (K key : keys) {
+			V previousValue = map.put(key, toValue.outputFor(key));
+			if (previousValue != null) {
+				previousValues.put(key, previousValue);
+			}
+		}
+		return previousValues;
+	}
+	
 	public static <K, V> void putAllFlat(Map<K, V> newMap, Collection<Map<K, V>> desintationMaps) {
 		for (Map<K, V> map : desintationMaps) {
 			putAll(newMap, map);
@@ -190,6 +243,15 @@ public class MetaMap {
 		return copy;
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <C, K, V> Map<C, V> remade(Map<K, V> map, Function<K, C> toOtherKey) {
+		Map<C, V> remade = newInstance(map.getClass());
+		for (K key : map.keySet()) {
+			remade.put(toOtherKey.outputFor(key), map.get(key));
+		}
+		return remade;
+	}
+	
 	public static <K, V> V getPutIfAbsent(Map<K, V> map, K key, V valueIfAbsent) {
 		if (! map.containsKey(key)) {
 			map.put(key, valueIfAbsent);

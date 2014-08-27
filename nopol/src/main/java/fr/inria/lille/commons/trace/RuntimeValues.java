@@ -4,32 +4,30 @@ import static java.lang.String.format;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import xxl.java.container.classic.MetaMap;
+import xxl.java.container.classic.MetaSet;
 import xxl.java.support.GlobalToggle;
 import fr.inria.lille.commons.trace.collector.ValueCollector;
 
-public class RuntimeValues extends GlobalToggle {
+public class RuntimeValues<T> extends GlobalToggle {
 
-	public static RuntimeValues newInstance() {
+	public static <T> RuntimeValues<T> newInstance() {
 		int instanceNumber = numberOfInstances();
-		RuntimeValues newInstance = new RuntimeValues(instanceNumber);
+		RuntimeValues<T> newInstance = new RuntimeValues<T>(instanceNumber);
 		allInstances().put(instanceNumber, newInstance);
 		return newInstance;
 	}
 	
-	public static RuntimeValues instance(int instanceID) {
+	public static RuntimeValues<?> instance(int instanceID) {
 		return allInstances().get(instanceID);
 	}
 	
 	@Override
-	public void reset() {
-		uniqueTraces().clear();
-		setTraceNumber(0);
-		flushBuffer();
+	protected void reset() {
+		specifications().clear();
 	}
-
+	
 	@Override
 	protected String globallyAccessibleName() {
 		return format("%s.instance(%d)", getClass().getName(), instanceID());
@@ -37,58 +35,47 @@ public class RuntimeValues extends GlobalToggle {
 	
 	public String invocationOnCollectionOf(String variableName) {
 		String quoatationSafeName = variableName.replace("\"", "\\\"");
-		return globallyAccessibleName() + format(".collectValue(\"%s\", %s)", quoatationSafeName, variableName);
+		return globallyAccessibleName() + format(".collectInput(\"%s\", %s)", quoatationSafeName, variableName);
+	}
+	
+	public String invocationOnOutputCollection(String outputName) {
+		return globallyAccessibleName() + format(".collectOutput(%s)", outputName, outputName);
 	}
 	
 	public String invocationOnCollectionEnd() {
 		return globallyAccessibleName() + ".collectionEnds()";
 	}
 	
-	public void collectValue(String variableName, Object value) {
+	public void collectInput(String variableName, Object value) {
 		ValueCollector.collectFrom(variableName, value, valueBuffer());
 	}
 	
-	public void collectionEnds() {
-		if (! uniqueTraces().containsKey(valueBuffer())) {
-			uniqueTraces().put(valueBuffer(), traceNumber());
-			renewBuffer();
-		}
-		flushBuffer();
-		setTraceNumber(traceNumber() + 1);
+	public void collectOutput(Object output) {
+		outputBuffer = output;
 	}
-
-	public int numberOfTraces() {
-		return traceNumber();
+	
+	@SuppressWarnings("unchecked")
+	public void collectionEnds() {
+		specifications().add(new Specification<T>(valueBuffer(), (T) outputBuffer()));
+		flush();
 	}
 	
 	public boolean isEmpty() {
-		return uniqueTraces().isEmpty();
+		return specifications().isEmpty();
 	}
 	
-	public Collection<Entry<Map<String, Object>, Integer>> uniqueTraceSet() {
-		return uniqueTraces().entrySet();
+	public Collection<Specification<T>> specifications() {
+		return specifications;
 	}
-	
-	private Map<Map<String, Object>, Integer> uniqueTraces() {
-		return uniqueTraces;
-	}
-	
+
 	protected RuntimeValues(int instanceID) {
 		this.instanceID = instanceID;
-		uniqueTraces = MetaMap.newHashMap();
-		renewBuffer();
+		specifications = MetaSet.newHashSet();
+		flush();
 	}
 	
 	private Integer instanceID() {
 		return instanceID;
-	}
-	
-	private int traceNumber() {
-		return traceNumber;
-	}
-	
-	private void setTraceNumber(int value) {
-		traceNumber = value;
 	}
 	
 	private static int numberOfInstances() {
@@ -99,15 +86,16 @@ public class RuntimeValues extends GlobalToggle {
 		return valueBuffer;
 	}
 	
-	private void renewBuffer() {
+	protected Object outputBuffer() {
+		return outputBuffer;
+	}
+	
+	protected void flush() {
+		outputBuffer = null;
 		valueBuffer = MetaMap.newHashMap();
 	}
 	
-	private void flushBuffer() {
-		valueBuffer().clear();
-	}
-	
-	private static Map<Integer, RuntimeValues> allInstances() {
+	private static Map<Integer, RuntimeValues<?>> allInstances() {
 		if (allInstances == null) {
 			allInstances = MetaMap.newHashMap();
 		}
@@ -115,8 +103,8 @@ public class RuntimeValues extends GlobalToggle {
 	}
 	
 	private int instanceID;
-	private int traceNumber;
+	private Object outputBuffer;
 	private Map<String, Object> valueBuffer;
-	private Map<Map<String, Object>, Integer> uniqueTraces;
-	private static Map<Integer, RuntimeValues> allInstances;
+	private Collection<Specification<T>> specifications;
+	private static Map<Integer, RuntimeValues<?>> allInstances;
 }

@@ -2,21 +2,19 @@ package fr.inria.lille.commons.trace;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import xxl.java.container.classic.MetaList;
 import xxl.java.container.classic.MetaMap;
 import xxl.java.container.classic.MetaSet;
 import xxl.java.junit.TestCase;
 import xxl.java.junit.TestCasesListener;
-import xxl.java.support.Function;
 
 public class SpecificationTestCasesListener<T> extends TestCasesListener {
 
-	public SpecificationTestCasesListener(RuntimeValues runtimeValues, Function<Integer, T> outputForEachTrace) {
+	public SpecificationTestCasesListener(RuntimeValues<T> runtimeValues) {
 		this.runtimeValues = runtimeValues;
-		this.outputForEachTrace = outputForEachTrace;
-		collectedTraces = MetaMap.newHashMap();
+		consistentInputs = MetaMap.newHashMap();
+		inconsistentInputs = MetaSet.newHashSet();
 	}
 	
 	@Override
@@ -25,26 +23,34 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
     }
     
 	@Override
+	protected void processTestStarted(TestCase testCase) {
+		runtimeValues().reset();
+	}
+	
+	@Override
 	protected void processSuccessfulRun(TestCase testCase) {
-		for (Entry<Map<String, Object>, Integer> uniqueTrace : runtimeValues().uniqueTraceSet()) {
-			Map<String, Object> trace = uniqueTrace.getKey();
-			T output = outputForEachTrace().outputFor(uniqueTrace.getValue());
-			if (! collectedTraces().containsKey(trace)) {
-				collectedTraces().put(trace, output);
-			} else {
-				T specifiedOutput = specifiedOutput(trace);
-				if (! (specifiedOutput == null || specifiedOutput.equals(output))) {
-					collectedTraces().put(trace, null);
-				}
+		for (Specification<T> specification : runtimeValues().specifications()) {
+			T output = specification.output();
+			Map<String, Object> inputs = specification.inputs();
+			if (consistencyCheck(inputs, output)) {
+				consistentInputs().put(inputs, output);
 			}
 		}
 	}
 	
-	@Override
-    protected void processTestFinished(TestCase testCase) {
-    	runtimeValues().reset();
+	private boolean consistencyCheck(Map<String, Object> inputs, T output) {
+		if (! inconsistentInputs().contains(inputs)) {
+			T reference = consistentInputs().get(inputs);
+			if (reference == null || output.equals(reference)) {
+				return true;
+			} else {
+				consistentInputs().remove(inputs);
+				inconsistentInputs().add(inputs);
+			}
+		}
+		return false;
 	}
-    
+	
 	@Override
     protected void processAfterRun() {
     	runtimeValues().disable();
@@ -52,45 +58,25 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
     
     public Collection<Specification<T>> specifications() {
     	Collection<Specification<T>> specifications = MetaList.newLinkedList();
-    	for (Map<String, Object> input : collectedTraces().keySet()) {
-    		if (! isInconsistentTrace(input)) {
-    			specifications.add(new Specification<T>(input, specifiedOutput(input)));
-    		}
+    	for (Map<String, Object> input : consistentInputs().keySet()) {
+			specifications.add(new Specification<T>(input, consistentInputs().get(input)));
     	}
     	return specifications;
     }
     
-    protected Collection<Map<String, Object>> inconsistentTraces() {
-    	Collection<Map<String, Object>> inconsistentTraces = MetaSet.newHashSet();
-    	for (Map<String, Object> input : collectedTraces().keySet()) {
-    		if (isInconsistentTrace(input)) {
-    			inconsistentTraces.add(input);
-    		}
-    	}
-    	return inconsistentTraces;
-    }
-    
-    protected boolean isInconsistentTrace(Map<String, Object> trace) {
-    	return specifiedOutput(trace) == null;
-    }
-    
-    private T specifiedOutput(Map<String, Object> trace) {
-    	return collectedTraces().get(trace);
-    }
-    
-    private RuntimeValues runtimeValues() {
+	protected RuntimeValues<T> runtimeValues() {
     	return runtimeValues;
     }
-    
-    private Function<Integer, T> outputForEachTrace() {
-    	return outputForEachTrace;
+	
+    protected Map<Map<String, Object>, T> consistentInputs() {
+    	return consistentInputs;
     }
     
-    protected Map<Map<String, Object>, T> collectedTraces() {
-    	return collectedTraces;
+    protected Collection<Map<String, Object>> inconsistentInputs() {
+    	return inconsistentInputs;
     }
 
-    private RuntimeValues runtimeValues;
-    private Function<Integer, T> outputForEachTrace;
-    private Map<Map<String, Object>, T> collectedTraces;
+    private RuntimeValues<T> runtimeValues;
+    private Map<Map<String, Object>, T> consistentInputs;
+    private Collection<Map<String, Object>> inconsistentInputs;
 }

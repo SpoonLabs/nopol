@@ -115,4 +115,13 @@ public class MultimapTest {
 		identityListMultimap.add("extra", 0);
 		assertEquals(3, identityListMultimap.size());
 	}
+	
+	@Test
+	public void sizeOfValuesForAKey() {
+		Multimap<String, String> multimap = newListMultimap();
+		multimap.add("a", "A");
+		multimap.add("a", "AA");
+		assertEquals(0, multimap.totalValuesOf("b"));
+		assertEquals(2, multimap.totalValuesOf("a"));
+	}
 }

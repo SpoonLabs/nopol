@@ -42,7 +42,7 @@ public final class SynthesizerFactory {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final SpoonedProject spooner;
 	private static int nbStatementsAnalysed = 0;
-	private static RuntimeValues runtimeValuesInstance = RuntimeValues.newInstance();
+	private static RuntimeValues<Boolean> runtimeValuesInstance = RuntimeValues.newInstance();
 	/**
 	 * 
 	 */
@@ -54,7 +54,7 @@ public final class SynthesizerFactory {
 	public Synthesizer getFor(final SourceLocation statement) {
 		DelegatingProcessor processor;
 		BugKind type = getType(statement);
-		RuntimeValues runtimeValues = runtimeValuesInstance;
+		RuntimeValues<Boolean> runtimeValues = runtimeValuesInstance;
 		if (NoPol.isOneBuild()) {
 			runtimeValues = RuntimeValues.newInstance();
 		}
@@ -62,14 +62,14 @@ public final class SynthesizerFactory {
 		case CONDITIONAL:
 			processor = new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
-			processor.addProcessor((Processor) new ConditionalLoggingInstrumenter(runtimeValues));
+			processor.addProcessor((Processor) new ConditionalLoggingInstrumenter(runtimeValues, ConditionalValueHolder.VARIABLE_NAME));
 			processor.addProcessor(new ConditionalReplacer(ConditionalValueHolder.VARIABLE_NAME));
 
 			break;
 		case PRECONDITION:
 			processor = new DelegatingProcessor(SpoonStatementPredicate.INSTANCE,
 					statement.getSourceFile(sourceFolder), statement.getLineNumber());
-			processor.addProcessor((Processor) new ConditionalLoggingInstrumenter(runtimeValues));
+			processor.addProcessor((Processor) new ConditionalLoggingInstrumenter(runtimeValues, ConditionalValueHolder.VARIABLE_NAME));
 			processor.addProcessor(new ConditionalAdder(ConditionalValueHolder.VARIABLE_NAME)); 
 			logger.debug("No synthetizer found for {}, trying a precondition.", statement);
 			break;

@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import spoon.processing.Processor;
 import xxl.java.container.classic.MetaSet;
 import xxl.java.junit.TestSuiteExecution;
-import xxl.java.support.Function;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
@@ -47,10 +46,10 @@ public final class ConstraintModelBuilder {
 	private final int mapID;
 	
 	private final ClassLoader classLoader;
-	private RuntimeValues runtimeValues;
+	private RuntimeValues<Boolean> runtimeValues;
 	private SourceLocation sourceLocation;
 	
-	public ConstraintModelBuilder(final File sourceFolder, RuntimeValues runtimeValues, final SourceLocation sourceLocation,
+	public ConstraintModelBuilder(final File sourceFolder, RuntimeValues<Boolean> runtimeValues, final SourceLocation sourceLocation,
 			final Processor<?> processor, SpoonedProject spooner, final BugKind type) {
 		this.type = type;
 		mapID = ConditionalValueHolder.ID_Conditional;
@@ -76,7 +75,7 @@ public final class ConstraintModelBuilder {
 				ConditionalValueHolder.enableNextCondition();
 			}
 		}
-		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<Boolean>(runtimeValues, outputForEachTrace());
+		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<Boolean>(runtimeValues);
 		Result firstResult = TestSuiteExecution.runCasesIn(testClasses, classLoader, listener);
 		if (firstResult == null) {
 			return specifications;
@@ -90,15 +89,6 @@ public final class ConstraintModelBuilder {
 		return listener.specifications();
 	}
 
-	private Function<Integer, Boolean> outputForEachTrace() {
-		return new Function<Integer, Boolean>() {
-			@Override
-			public Boolean outputFor(Integer trace) {
-				return ConditionalValueHolder.booleanValue;
-			}
-		};
-	}
-	
 	private void determineViability(final Result firstResult, final Result secondResult) {
 		Collection<Description> firstFailures = TestSuiteExecution.collectDescription(firstResult.getFailures());
 		Collection<Description> secondFailures = TestSuiteExecution.collectDescription(secondResult.getFailures());

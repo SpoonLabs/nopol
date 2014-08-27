@@ -163,7 +163,7 @@ public abstract class SpoonedFile {
 	protected URL[] compilationClasspath() {
 		if (compilationClasspath == null) {
 			List<URL> urls = MetaList.newArrayList(projectClasspath());
-			urls.addAll(asList(JavaLibrary.systemURLsClasspath()));
+			urls.addAll(asList(JavaLibrary.systemClasspathURLs()));
 			compilationClasspath = urls.toArray(new URL[urls.size()]);
 		}
 		return compilationClasspath;
