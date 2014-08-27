@@ -8,10 +8,51 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.cu.SourcePosition;
+import xxl.java.container.classic.MetaList;
 import fr.inria.lille.commons.spoon.util.SpoonLoopLibrary;
 
 public class While {
 
+	public static Collection<While> loopsWithBreak(Collection<While> loops) {
+		Collection<While> loopsWithBreak = MetaList.newLinkedList();
+		for (While loop : loops) {
+			if (loop.hasBreaks()) {
+				loopsWithBreak.add(loop);
+			}
+		}
+		return loopsWithBreak;
+	}
+	
+	public static Collection<While> loopsWithReturn(Collection<While> loops) {
+		Collection<While> loopsWithReturn = MetaList.newLinkedList();
+		for (While loop : loops) {
+			if (loop.hasReturns()) {
+				loopsWithReturn.add(loop);
+			}
+		}
+		return loopsWithReturn;
+	}
+	
+	public static Collection<While> loopsWithBreakAndReturn(Collection<While> loops) {
+		Collection<While> loopsWithBreakAndReturn = MetaList.newLinkedList();
+		for (While loop : loopsWithReturn(loops)) {
+			if (loop.hasBreaks()) {
+				loopsWithBreakAndReturn.add(loop);
+			}
+		}
+		return loopsWithBreakAndReturn;
+	}
+	
+	public static Collection<While> loopsWithoutBodyExit(Collection<While> loops) {
+		Collection<While> loopsWithoutBodyExit = MetaList.newLinkedList();
+		for (While loop : loops) {
+			if (! (loop.hasBodyExit())) {
+				loopsWithoutBodyExit.add(loop);
+			}
+		}
+		return loopsWithoutBodyExit;
+	}
+	
 	public While(CtWhile astLoop) {
 		this(astLoop, SpoonLoopLibrary.breakStatementsIn(astLoop), SpoonLoopLibrary.returnStatementsIn(astLoop));
 	}
@@ -20,6 +61,7 @@ public class While {
 		this.astLoop = astLoop;
 		this.breakStatements = breakStatements;
 		this.returnStatements = returnStatements;
+		loopingCondition = astLoop().getLoopingExpression().toString();
 	}
 	
 	public boolean hasBodyExit() {
@@ -28,6 +70,10 @@ public class While {
 
 	public CtWhile astLoop() {
 		return astLoop;
+	}
+	
+	public String loopingCondition() {
+		return loopingCondition;
 	}
 
 	public SourcePosition position() {
@@ -88,10 +134,11 @@ public class While {
 	
 	@Override
 	public String toString() {
-		return "While(" + position().toString() + ")";
+		return "While(" + loopingCondition() + "): " + position().toString();
 	}
 
 	private CtWhile astLoop;
+	private String loopingCondition;
 	private Collection<CtBreak> breakStatements; 
 	private Collection<CtReturn<?>> returnStatements;
 }

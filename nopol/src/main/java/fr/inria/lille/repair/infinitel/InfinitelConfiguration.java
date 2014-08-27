@@ -13,8 +13,4 @@ public class InfinitelConfiguration {
 		return (int) 1E6;
 	}
 
-	public int diagnosticsIterationsThreshold() {
-		return (int) 1E7;
-	}
-
 }

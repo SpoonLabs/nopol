@@ -18,7 +18,7 @@ public class TestSuiteExecutionTest {
 	
 	@Test
 	public void runSingleTest() {
-		TestCase testCase = new TestCase(SampleTestClass.class.getName(), "joinTrue");
+		TestCase testCase = TestCase.from(SampleTestClass.class.getName(), "joinTrue");
 		Result result = TestSuiteExecution.runTestCase(testCase, getClass().getClassLoader());
 		assertTrue(result.wasSuccessful());
 		assertEquals(1, result.getRunCount());

@@ -1,14 +1,18 @@
 package xxl.java.library;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import xxl.java.container.classic.MetaList;
 
 public class JavaLibrary {
 
@@ -20,7 +24,7 @@ public class JavaLibrary {
 		return StringLibrary.join(paths, classpathSeparator());
 	}
 	
-	public static String className(String qualifiedClassName) {
+	public static String simpleClassName(String qualifiedClassName) {
 		int lastPackageSeparator = qualifiedClassName.lastIndexOf('.');
 		if (lastPackageSeparator > -1) {
 			return qualifiedClassName.substring(lastPackageSeparator + 1);
@@ -40,7 +44,7 @@ public class JavaLibrary {
 		return property("java.class.path");
 	}
 
-	public static URL[] systemURLsClasspath() {
+	public static URL[] systemClasspathURLs() {
 		return classpathFrom(systemClasspath());
 	}
 	
@@ -53,7 +57,7 @@ public class JavaLibrary {
 	}
 	
 	public static URL[] extendClasspathWith(String classpath, URL[] destination) {
-		List<URL> extended = new LinkedList<URL>(asList(destination));
+		List<URL> extended = MetaList.newLinkedList(destination);
 		extended.addAll(asList(classpathFrom(classpath)));
 		return extended.toArray(new URL[extended.size()]);
 	}
@@ -78,18 +82,42 @@ public class JavaLibrary {
 	}
 	
 	public static void extendClassLoaderClasspathWith(URLClassLoader classLoader, URL[] classpaths) {
-		Method method = ClassLibrary.method("addURL", URLClassLoader.class, URL.class);
-		if (method != null) {
-			method.setAccessible(true);
+		Method addURL = ClassLibrary.method("addURL", URLClassLoader.class, URL.class);
+		if (addURL != null) {
 			try {
 				for (URL classpath : classpaths) {
-					method.invoke(classLoader, classpath);
+					ClassLibrary.invokeTrespassing(addURL, classLoader, classpath);
 				}
 			} catch (Exception e) {
 				throw new RuntimeException("Failed to extend classpath on class loader with " + classpaths);
-			} finally {
-				method.setAccessible(false);
 			}
+		}
+	}
+
+	public static Collection<Class<?>> classesFromClasspath(URL[] classpath, Collection<String> qualifiedNames) {
+		URLClassLoader loader = new URLClassLoader(classpath);
+		Collection<Class<?>> classes = loadedClassesFrom(loader, qualifiedNames);
+		close(loader);
+		return classes;
+	}
+	
+	public static Collection<Class<?>> loadedClassesFrom(ClassLoader classLoader, Collection<String> qualifiedNames) {
+		Collection<Class<?>> classes = MetaList.newArrayList(qualifiedNames.size());
+		try {
+			for (String qualifiedName : qualifiedNames) {
+				classes.add(classLoader.loadClass(qualifiedName));
+			}
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(format("Could not load classes %s", qualifiedNames.toString()), e);
+		}
+		return classes;
+	}
+	
+	public static void close(URLClassLoader loader) {
+		try {
+			loader.close();
+		} catch (IOException ioe) {
+			throw new RuntimeException("Could not close URLClassLoader properly");
 		}
 	}
 	

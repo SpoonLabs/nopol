@@ -28,6 +28,19 @@ public class ClassLibrary {
 			throw new RuntimeException(format("Failed invocation to %s", method.toString()), e);
 		}
 	}
+	
+	public static Object invokeTrespassing(Method method, Object receiver, Object... arguments) {
+		boolean oldValue = method.isAccessible();
+		method.setAccessible(true);
+		try {
+			Object response = invoke(method, receiver, arguments);
+			return response;
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			method.setAccessible(oldValue);
+		}
+	}
 
 	public static Method method(String methodName, Class<?> aClass, Collection<Class<?>> argumentClasses) {
 		return method(methodName, aClass, argumentClasses.toArray(new Class[argumentClasses.size()]));
@@ -37,7 +50,6 @@ public class ClassLibrary {
 		try {
 			return aClass.getDeclaredMethod(methodName, argumentClasses);
 		} catch (NoSuchMethodException nsme) {
-			nsme.printStackTrace();
 			throw new RuntimeException(format("Method not found %s#%s", aClass.getName(), methodName), nsme);
 		}
 	}

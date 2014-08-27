@@ -81,6 +81,10 @@ public class Multimap<K, V> extends NeoMap<K, Collection<V>> {
 		return getPutIfAbsent(key, factory()).add(value);
 	}
 	
+	public int totalValuesOf(K key) {
+		return getIfAbsent(key, factory()).size();
+	}
+	
 	private Factory<? extends Collection<V>> factory() {
 		return factory;
 	}

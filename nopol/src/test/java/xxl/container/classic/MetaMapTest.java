@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static xxl.java.container.classic.MetaMap.allValuesIn;
 import static xxl.java.container.classic.MetaMap.containsAllKeys;
 import static xxl.java.container.classic.MetaMap.copyOf;
 import static xxl.java.container.classic.MetaMap.extractedWithKeys;
@@ -13,6 +14,7 @@ import static xxl.java.container.classic.MetaMap.keySetIntersection;
 import static xxl.java.container.classic.MetaMap.keySetUnion;
 import static xxl.java.container.classic.MetaMap.keysWithValue;
 import static xxl.java.container.classic.MetaMap.keysWithValuesIn;
+import static xxl.java.container.classic.MetaMap.methodGet;
 import static xxl.java.container.classic.MetaMap.newHashMap;
 import static xxl.java.container.classic.MetaMap.newIdentityHashMap;
 import static xxl.java.container.classic.MetaMap.newLinkedHashMap;
@@ -20,7 +22,6 @@ import static xxl.java.container.classic.MetaMap.onlyValueIs;
 import static xxl.java.container.classic.MetaMap.putAllFlat;
 import static xxl.java.container.classic.MetaMap.putMany;
 import static xxl.java.container.classic.MetaMap.sameContent;
-import static xxl.java.container.classic.MetaMap.allValuesIn;
 import static xxl.java.container.classic.MetaMap.valuesParsedAsInteger;
 
 import java.util.Arrays;
@@ -33,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+
+import xxl.java.support.Function;
 
 public class MetaMapTest {
 	
@@ -268,5 +271,13 @@ public class MetaMapTest {
 		assertTrue(extractedWithKeys(asList("a", "x", "c", "y"), map).containsKey("a"));
 		assertTrue(extractedWithKeys(asList("a", "x", "c", "y"), map).containsKey("c"));
 		assertEquals(map, extractedWithKeys(asList("a", "b", "c", "d"), map));
+	}
+	
+	@Test
+	public void createMapApplyingFunction() {
+		Map<String, String> map = newHashMap(asList("a", "b", "c"), asList("A", "B", "C"));
+		Function<String, String> extract = methodGet(map);
+		Map<String, String> newMap = newHashMap(map.keySet(), extract);
+		assertEquals(map, newMap);
 	}
 }

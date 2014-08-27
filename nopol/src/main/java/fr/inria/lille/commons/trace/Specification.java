@@ -23,8 +23,8 @@ public class Specification<T> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((expectedOutput == null) ? 0 : expectedOutput.hashCode());
-		result = prime * result + ((values == null) ? 0 : values.hashCode());
+		result = prime * result + ((output() == null) ? 0 : output().hashCode());
+		result = prime * result + ((inputs() == null) ? 0 : inputs().hashCode());
 		return result;
 	}
 

@@ -78,7 +78,7 @@ public class JarPackage {
 	}
 	
 	protected String className(String qualifiedClassName) {
-		return JavaLibrary.className(qualifiedClassName);
+		return JavaLibrary.simpleClassName(qualifiedClassName);
 	}
 	
 	protected String packageName(String qualifiedClassName) {
