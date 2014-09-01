@@ -15,7 +15,7 @@ public class CVC4SolverFactory extends SolverFactory {
 	 */
 	
 	public CVC4SolverFactory() {
-		this("lib/cvc4-1.4.1/cvc4_for_mac");
+		this("lib/cvc4-1.4.2/cvc4_for_mac");
 	}
 	
 	public CVC4SolverFactory(String solverPath) {

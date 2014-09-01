@@ -21,6 +21,8 @@ import static xxl.java.container.classic.MetaMap.newLinkedHashMap;
 import static xxl.java.container.classic.MetaMap.onlyValueIs;
 import static xxl.java.container.classic.MetaMap.putAllFlat;
 import static xxl.java.container.classic.MetaMap.putMany;
+import static xxl.java.container.classic.MetaMap.remade;
+import static xxl.java.container.classic.MetaMap.remapped;
 import static xxl.java.container.classic.MetaMap.sameContent;
 import static xxl.java.container.classic.MetaMap.valuesParsedAsInteger;
 
@@ -279,5 +281,42 @@ public class MetaMapTest {
 		Function<String, String> extract = methodGet(map);
 		Map<String, String> newMap = newHashMap(map.keySet(), extract);
 		assertEquals(map, newMap);
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void remapKeysOfAMap() {
+		Map<String, String> map = newHashMap(asList("a", "aa", "aaa"), asList("1", "2", "3"));
+		Map<Integer, String> remade = remade(map, (Function) function());
+		assertEquals(3, remade.size());
+		assertTrue(remade.containsKey(1));
+		assertTrue(remade.containsKey(2));
+		assertTrue(remade.containsKey(3));
+		assertEquals("1", remade.get(1));
+		assertEquals("2", remade.get(2));
+		assertEquals("3", remade.get(3));
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void remapValuesOfAMap() {
+		Map<String, String> map = newHashMap(asList("1", "2", "3"), asList("a", "aa", "aaa"));
+		Map<String, Integer> remade = remapped(map, (Function) function());
+		assertEquals(3, remade.size());
+		assertTrue(remade.containsKey("1"));
+		assertTrue(remade.containsKey("2"));
+		assertTrue(remade.containsKey("3"));
+		assertTrue(1 == remade.get("1").intValue());
+		assertTrue(2 == remade.get("2").intValue());
+		assertTrue(3 == remade.get("3").intValue());
+	}
+	
+	private Function<Object, Integer> function() {
+		return new Function<Object, Integer>() {
+			@Override
+			public Integer outputFor(Object value) {
+				return value.toString().length();
+			}
+		};
 	}
 }

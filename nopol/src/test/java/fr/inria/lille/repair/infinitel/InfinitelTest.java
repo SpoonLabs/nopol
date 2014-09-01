@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import spoon.reflect.code.CtWhile;
@@ -169,6 +170,7 @@ public class InfinitelTest {
 		CodeGenesis fix = checkInfinitel(1, 8, 4, 1, expected);
 		checkFix(fix, asList("(b != a)&&(((a)<=((1)+(1)))||((b)<(a)))",
 							 "((!(((a)-(1))<(b)))||(((a)-(1))<=(1)))&&(b != a)",
+							 "((b != a)&&(((1)+(1))!=((a)-(1))))||((b)<=((a)-(1)))",
 							 "!((((a)+(-1))<(b))&&((((1)-((a)+(-1)))<=(-1))||((a)==(b))))"));
 	}
 	
@@ -183,7 +185,7 @@ public class InfinitelTest {
 	public void infinitelExample3() {
 		Map<TestCase, Integer> expected = expectedIterationsMap(3, asList("doesNotReachZeroReturnCopy"), asList(0));
 		CodeGenesis fix = checkInfinitel(3, 7, 3, 0, expected);
-		checkFix(fix, asList("(-1)<(aCopy)"));
+		checkFix(fix, asList("(-1)<(aCopy)", "(1)<=(a)"));
 	}
 	
 	private CodeGenesis checkInfinitel(int infinitelExample, int infiniteLoopLine, int passingTests, int failingTests, Map<TestCase, Integer> testThresholds) {

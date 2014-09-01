@@ -137,7 +137,7 @@ public class ConstraintBasedSynthesis {
 		List<LocationVariable<?>> variables = container.operatorsParametersAndOutput(); 
 		Collection<String> expressions = LocationVariable.expressionsOf(variables);
 		List<ISymbol> smtExpressions = newSMTLib.symbolsFor(expressions);
-		Map<String, String> satisfyingValues = newSMTLib.satisfyingValuesFor(smtExpressions, smtScript);
+		Map<String, String> satisfyingValues = newSMTLib.anySolutionFor(smtScript, smtExpressions);
 		return satisfyingValues;
 	}
 	

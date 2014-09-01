@@ -3,6 +3,7 @@ package xxl.java.library;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static xxl.java.container.classic.MetaMap.remade;
+import static xxl.java.container.classic.MetaMap.remapped;
 import static xxl.java.library.ObjectLibrary.methodToString;
 
 import java.math.BigDecimal;
@@ -102,9 +103,18 @@ public class StringLibrary {
 		return toStringList;
 	}
 	
-	public static <K, V> Map<String, V> toStringMap(Map<K, V> sourceMap) {
+	public static <K, V> Map<String, String> asStringMap(Map<K, V> sourceMap) {
+		return mapWithStringValues(mapWithStringKeys(sourceMap));
+	}
+	
+	public static <K, V> Map<String, V> mapWithStringKeys(Map<K, V> sourceMap) {
 		Function<K, String> toStringKey = methodToString();
 		return remade(sourceMap, toStringKey);
+	}
+	
+	public static <K, V> Map<K, String> mapWithStringValues(Map<K, V> sourceMap) {
+		Function<V, String> toStringValue = methodToString();
+		return remapped(sourceMap, toStringValue);
 	}
 	
 	public static int maximumToStringLength(Collection<? extends Object> objects, int lengthOfNullToString) {

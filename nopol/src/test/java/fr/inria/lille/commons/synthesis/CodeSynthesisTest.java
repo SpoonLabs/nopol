@@ -47,7 +47,6 @@ public class CodeSynthesisTest {
 	
 	@Test
 	public void scriptResolutionWithoutComponents() {
-		
 		Collection<OperatorTheory> theories = (List) asList(new EmptyTheory());
 		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MetaMap.newHashMap(), theories);
 		Map<String, Object> firstValues = (Map) MetaMap.newHashMap(asList("array.length", "iterations"), asList(10, 15));

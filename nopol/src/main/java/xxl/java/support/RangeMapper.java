@@ -7,8 +7,8 @@ import xxl.java.container.various.Pair;
 
 public class RangeMapper implements Function<Integer, Pair<Integer, Integer>> {
 
-	public RangeMapper(int factor, int step) {
-		this.factor = factor;
+	public RangeMapper(int base, int step) {
+		this.base = base;
 		this.step = step;
 	}
 	
@@ -18,33 +18,32 @@ public class RangeMapper implements Function<Integer, Pair<Integer, Integer>> {
 	}
 	
 	public Pair<Integer, Integer> rangeFor(int value) {
-		int originalValue = value;
-		value = abs(value);
-		int factorPower = coefficient(value);
-		int area = value / factorPower / step();
+		int unsigned = abs(value);
+		int factorPower = coefficient(unsigned);
+		int area = unsigned / factorPower / step();
 		int lowValue = step() * (area) + ((factorPower > 1 && area == 0) ? 1 : 0);
 		int highValue = step() * (area + 1);
-		return pairCorrectingSign(originalValue, factorPower * lowValue, factorPower * highValue);
+		return pairCorrectingSign(value < unsigned, factorPower * lowValue, factorPower * highValue);
 	}
 	
 	private int coefficient(int value) {
 		if (value == 0) {
 			return 1;
 		}
-		Double logFactor = log10(value) / log10(factor());
-		Double power = pow(factor(), logFactor.intValue());
+		Double logFactor = log10(value) / log10(base());
+		Double power = pow(base(), logFactor.intValue());
 		return power.intValue();
 	}
 	
-	private Pair<Integer, Integer> pairCorrectingSign(int value, int lowValue, int highValue) {
-		if (value < 0) {
+	private Pair<Integer, Integer> pairCorrectingSign(boolean negative, int lowValue, int highValue) {
+		if (negative) {
 			return Pair.from(-1 * highValue, -1 * lowValue);
 		}
 		return Pair.from(lowValue, highValue);
 	}
 	
-	private int factor() {
-		return factor;
+	private int base() {
+		return base;
 	}
 	
 	private int step() {
@@ -52,5 +51,5 @@ public class RangeMapper implements Function<Integer, Pair<Integer, Integer>> {
 	}
 	
 	private int step;
-	private int factor;
+	private int base;
 }

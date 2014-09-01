@@ -125,6 +125,7 @@ public class NopolTest {
 		Patch patch = test(7, 21, BugKind.CONDITIONAL, failedTests);
 		fixComparison(patch, "(intermediaire == 0)&&((1)<=((-1)+((a)-(1))))", 
 				"(intermediaire == 0)&&((!(((a)+(-1))<=(1)))||((((a)+(-1))-(-1))==(intermediaire)))",
+				"((1)<=((1)-(a)))||((intermediaire == 0)&&((intermediaire)!=(((1)-(a))+(1))))",
 				"(intermediaire == 0)&&((((1)-((a)+(0)))<(-1))||(((a)+(0))!=((a)+(0))))",
 				"!((((a)+(-1))<=(1))||((0)!=(intermediaire)))");
 	}

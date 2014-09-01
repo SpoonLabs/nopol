@@ -1,6 +1,7 @@
 package fr.inria.lille.commons.synthesis.smt;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,7 +25,6 @@ import org.smtlib.IExpr.IKeyword;
 import org.smtlib.IExpr.INumeral;
 import org.smtlib.IExpr.ISymbol;
 import org.smtlib.IParser;
-import org.smtlib.IResponse;
 import org.smtlib.ISolver;
 import org.smtlib.ISort;
 import org.smtlib.ISource;
@@ -230,6 +230,34 @@ public class SMTLib {
 		return ObjectToExpr.asIExpr(object);
 	}
 	
+	public IFcnExpr equalsExpression(IExpr first, IExpr second) {
+		return expression(equality(), first, second);
+	}
+	
+	public IFcnExpr distinctExpression(IExpr first, IExpr second) {
+		return expression(distinct(), first, second);
+	}
+	
+	public IFcnExpr conjunctionExpression(List<? extends IExpr> elements) {
+		return expression(and(), elements);
+	}
+	
+	public IFcnExpr conjunctionExpression(IExpr... elements) {
+		return expression(and(), asList(elements));
+	}
+	
+	public IFcnExpr disjunctionExpression(List<? extends IExpr> elements) {
+		return expression(or(), elements);
+	}
+	
+	public IFcnExpr disjunctionExpression(IExpr... elements) {
+		return expression(or(), asList(elements));
+	}
+	
+	public IFcnExpr notExpression(IExpr subexpression) {
+		return expression(not(), subexpression);
+	}
+	
 	public IFcnExpr expression(ISymbol identifier, IExpr... arguments) {
 		List<IExpr> argumentList = MetaList.newArrayList(arguments);
 		return expression(identifier, argumentList);
@@ -302,21 +330,23 @@ public class SMTLib {
 		List<ICommand> allCommands = MetaList.newLinkedList(produceModelOption(), setLogicCommand(solverLogic));
 		allCommands.addAll(commands);
 		allCommands.addAll(assertions);
-		return commandFactory().script(null, allCommands);
+		return scriptFrom(allCommands);
 	}
 	
-	public Map<String, String> satisfyingValuesFor(List<? extends IExpr> expressions, IScript script) {
-		IResponse response = script.execute(solver());
-		if (response.isOK() && isSatisfitable(solver())) {
-			IExpr[] expressionArray = expressions.toArray(new IExpr[expressions.size()]);
-			response = solver().get_value(expressionArray);
-			return SexprSolutionVisitor.solutionsFrom(response);
+	public IScript scriptFrom(List<ICommand> commands) {
+		return commandFactory().script(null, commands);
+	}
+	
+	public Map<String, String> anySolutionFor(IScript script, List<? extends IExpr> variables) {
+		SMTLibScriptSolution scriptSolver = scriptSolution(script, variables);
+		if (scriptSolver.hasMoreElements()) {
+			return scriptSolver.nextElement();
 		}
 		return MetaMap.newHashMap();
 	}
-
-	public boolean isSatisfitable(ISolver solver) {
-		return solver.check_sat().equals(org.smtlib.impl.Response.SAT);
+	
+	public SMTLibScriptSolution scriptSolution(IScript script, List<? extends IExpr> variables) {
+		return new SMTLibScriptSolution(this, script, variables);
 	}
 
 	public Parser parserFor(String response) {

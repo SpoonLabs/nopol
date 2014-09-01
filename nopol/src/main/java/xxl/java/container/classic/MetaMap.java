@@ -252,6 +252,15 @@ public class MetaMap {
 		return remade;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static <K, V, B> Map<K, B> remapped(Map<K, V> map, Function<V, B> toOtherValue) {
+		Map<K, B> remapped = newInstance(map.getClass());
+		for (K key : map.keySet()) {
+			remapped.put(key, toOtherValue.outputFor(map.get(key)));
+		}
+		return remapped;
+	}
+	
 	public static <K, V> V getPutIfAbsent(Map<K, V> map, K key, V valueIfAbsent) {
 		if (! map.containsKey(key)) {
 			map.put(key, valueIfAbsent);

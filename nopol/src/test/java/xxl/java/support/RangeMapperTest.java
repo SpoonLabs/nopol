@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import xxl.java.container.various.Pair;
-import xxl.java.support.RangeMapper;
 
 public class RangeMapperTest {
 

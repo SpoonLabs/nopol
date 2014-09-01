@@ -26,6 +26,7 @@ import static fr.inria.lille.commons.synthesis.smt.SMTLib.numberSort;
 import static fr.inria.lille.commons.synthesis.smt.SMTLib.or;
 import static fr.inria.lille.commons.synthesis.smt.SMTLib.smtlib;
 import static fr.inria.lille.commons.synthesis.smt.SMTLib.subtraction;
+import static fr.inria.lille.commons.synthesis.smt.SMTLibParser.commandFrom;
 import static fr.inria.lille.commons.synthesis.smt.SMTLibParser.declarationFrom;
 import static fr.inria.lille.commons.synthesis.smt.SMTLibParser.expressionFrom;
 import static java.util.Arrays.asList;
@@ -34,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -58,8 +59,10 @@ import org.smtlib.IExpr.ISymbol;
 import org.smtlib.IParser.ParserException;
 import org.smtlib.ISort;
 
+import xxl.java.container.classic.MetaSet;
 import fr.inria.lille.commons.synthesis.smt.ObjectToExpr;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
+import fr.inria.lille.commons.synthesis.smt.SMTLibScriptSolution;
 
 public class SMTLibTest {
 
@@ -82,11 +85,11 @@ public class SMTLibTest {
 		ICommand variableX = smtlib.constant(x, intSort());
 		ICommand variableY = smtlib.constant(y, intSort());
 		
-		List<ICommand> variables = Arrays.asList(variableX, variableY);
-		List<ICommand> assertions = Arrays.asList(firstAssertion, secondAssertion);
+		List<ICommand> variables = asList(variableX, variableY);
+		List<ICommand> assertions = asList(firstAssertion, secondAssertion);
 		
 		IScript script = smtlib.scriptFrom(SMTLib.logicQfLia(), variables, assertions);
-		Map<String, String> values = smtlib.satisfyingValuesFor(asList(x, y), script);
+		Map<String, String> values = smtlib.anySolutionFor(script, asList(x, y));
 		
 		assertEquals(2, values.size());
 		assertTrue(values.containsKey("x"));
@@ -114,11 +117,11 @@ public class SMTLibTest {
 		ICommand variableX = smtlib.constant(x, intSort());
 		ICommand variableY = smtlib.constant(y, intSort());
 		
-		List<ICommand> variables = Arrays.asList(variableX, variableY);
-		List<ICommand> assertions = Arrays.asList(firstAssertion, secondAssertion);
+		List<ICommand> variables = asList(variableX, variableY);
+		List<ICommand> assertions = asList(firstAssertion, secondAssertion);
 		
 		IScript script = smtlib.scriptFrom(SMTLib.logicQfLia(), variables, assertions);
-		Map<String, String> values = smtlib.satisfyingValuesFor(asList(x, y), script);
+		Map<String, String> values = smtlib.anySolutionFor(script, asList(x, y));
 		
 		assertEquals(0, values.size());
 	}
@@ -142,17 +145,119 @@ public class SMTLibTest {
 		ICommand variableX = smtlib.constant(x, intSort());
 		ICommand variableY = smtlib.constant(y, intSort());
 		
-		List<ICommand> variables = Arrays.asList(variableX, variableY);
-		List<ICommand> assertions = Arrays.asList(firstAssertion, secondAssertion);
+		List<ICommand> variables = asList(variableX, variableY);
+		List<ICommand> assertions = asList(firstAssertion, secondAssertion);
 		
 		IScript script = smtlib.scriptFrom(SMTLib.logicQfLia(), variables, assertions);
-		Map<String, String> values = smtlib.satisfyingValuesFor(asList(x, y), script);
+		Map<String, String> values = smtlib.anySolutionFor(script, asList(x, y));
 		
 		assertEquals(2, values.size());
 		assertTrue(values.containsKey("x"));
-		assertEquals("( - 2 )", values.get("x"));
+		assertEquals("(- 2)", values.get("x"));
 		assertTrue(values.containsKey("y"));
-		assertEquals("( - 8 )", values.get("y"));
+		assertEquals("(- 8)", values.get("y"));
+	}
+	
+	@Test
+	public void allSolutionsOfAModel() {
+		SMTLib smtlib = new SMTLib();
+		IExpr x = smtlib.symbolFor("X");
+		IExpr y = smtlib.symbolFor("Y");
+		ICommand xDef = commandFrom("(declare-fun X() Bool)");
+		ICommand yDef = commandFrom("(declare-fun Y() Bool)");
+		ICommand trueOrFalse = commandFrom("(define-fun TrueOrFalse ((A Bool)) Bool (or (= true A) (= false A)))");
+		ICommand xor = commandFrom("(define-fun Xor ((A Bool)(B Bool)) Bool (ite A (= false B) (= true B)))");
+		ICommand xBound = commandFrom("(assert (TrueOrFalse X))");
+		ICommand yBound = commandFrom("(assert (Xor X Y))");
+		
+		Map<String, String> variables;
+		Collection<String> xValues = MetaSet.newHashSet();
+		Collection<String> yValues = MetaSet.newHashSet();
+		IScript script = smtlib.scriptFrom(SMTLib.logicQfLia(), asList(xDef, yDef, trueOrFalse, xor), asList(xBound, yBound));
+		SMTLibScriptSolution solution = smtlib.scriptSolution(script, asList(x, y));
+
+		int solutions = 0;
+		while (solution.hasMoreElements()) {
+			variables = solution.nextElement();
+			assertTrue(variables.containsKey("X"));
+			assertTrue(variables.containsKey("Y"));
+			xValues.add(variables.get("X"));
+			yValues.add(variables.get("Y"));
+			solutions += 1;
+		}
+		assertEquals(2, solutions);
+		assertEquals(2, xValues.size());
+		assertTrue(xValues.containsAll(asList("true", "false")));
+		assertEquals(2, yValues.size());
+		assertTrue(yValues.containsAll(asList("true", "false")));
+	}
+	
+	@Test
+	public void allSolutionsOfAModel2() {
+		SMTLib smtlib = new SMTLib();
+		IExpr x = smtlib.symbolFor("X");
+		IExpr y = smtlib.symbolFor("Y");
+		ICommand xDef = commandFrom("(declare-fun X() Int)");
+		ICommand yDef = commandFrom("(declare-fun Y() Int)");
+		ICommand oneOrTwo = commandFrom("(define-fun OneOrTwo ((A Int)) Bool (or (= 1 A) (= 2 A)))");
+		ICommand zeroOrFour = commandFrom("(define-fun ZeroOrFour ((A Int)) Bool (or (= 0 A) (= 4 A)))");
+		ICommand xBound = commandFrom("(assert (OneOrTwo X))");
+		ICommand yBound = commandFrom("(assert (ZeroOrFour Y))");
+		
+		Map<String, String> variables;
+		Collection<String> xValues = MetaSet.newHashSet();
+		Collection<String> yValues = MetaSet.newHashSet();
+		IScript script = smtlib.scriptFrom(SMTLib.logicQfLia(), asList(xDef, yDef, oneOrTwo, zeroOrFour), asList(xBound, yBound));
+		SMTLibScriptSolution solution = smtlib.scriptSolution(script, asList(x, y));
+
+		int solutions = 0;
+		while (solution.hasMoreElements()) {
+			variables = solution.nextElement();
+			assertTrue(variables.containsKey("X"));
+			assertTrue(variables.containsKey("Y"));
+			xValues.add(variables.get("X"));
+			yValues.add(variables.get("Y"));
+			solutions += 1;
+		}
+		assertEquals(4, solutions);
+		assertEquals(2, xValues.size());
+		assertTrue(xValues.containsAll(asList("1", "2")));
+		assertEquals(2, yValues.size());
+		assertTrue(yValues.containsAll(asList("0", "4")));
+	}
+	
+	@Test
+	public void allSolutionsOfAModel3() {
+		SMTLib smtlib = new SMTLib();
+		IExpr x = smtlib.symbolFor("X");
+		IExpr y = smtlib.symbolFor("Y");
+		ICommand xDef = commandFrom("(declare-fun X() Real)");
+		ICommand yDef = commandFrom("(declare-fun Y() Real)");
+		ICommand oneOrTwo = commandFrom("(define-fun OneOrTwo ((A Real)) Bool (or (= 1.0 A) (= 2.0 A)))");
+		ICommand by2 = commandFrom("(define-fun By2 ((A Real)(B Real)) Bool (= B (+ A A)))");
+		ICommand xBound = commandFrom("(assert (OneOrTwo X))");
+		ICommand yBound = commandFrom("(assert (By2 X Y))");
+		
+		Map<String, String> variables;
+		Collection<String> xValues = MetaSet.newHashSet();
+		Collection<String> yValues = MetaSet.newHashSet();
+		IScript script = smtlib.scriptFrom(SMTLib.logicQfLra(), asList(xDef, yDef, oneOrTwo, by2), asList(xBound, yBound));
+		SMTLibScriptSolution solution = smtlib.scriptSolution(script, asList(x, y));
+
+		int solutions = 0;
+		while (solution.hasMoreElements()) {
+			variables = solution.nextElement();
+			assertTrue(variables.containsKey("X"));
+			assertTrue(variables.containsKey("Y"));
+			xValues.add(variables.get("X"));
+			yValues.add(variables.get("Y"));
+			solutions += 1;
+		}
+		assertEquals(2, solutions);
+		assertEquals(2, xValues.size());
+		assertTrue(asList("1.0", "1", "2.0", "2").containsAll(xValues));
+		assertEquals(2, yValues.size());
+		assertTrue(asList("2.0", "2", "4.0", "4").containsAll(yValues));
 	}
 	
 	@Test
@@ -252,7 +357,7 @@ public class SMTLibTest {
 		IDeclaration y = smtlib().declaration(ySymbol, intSort());
 		IExpr yLessThan3 = smtlib().expression(lessThan(), ySymbol, smtlib().numeral("3"));
 		IExpr predicate = smtlib().expression(equality(), xSymbol, yLessThan3);
-		IExists exists = smtlib().exists(Arrays.asList(x, y), predicate);
+		IExists exists = smtlib().exists(asList(x, y), predicate);
 		IExists parsedExists = (IExists) expressionFrom("(exists ((x Bool) (y Int)) (= x (< y 3)))");
 		assertEquals(2, exists.parameters().size());
 		assertEquals(2, parsedExists.parameters().size());
@@ -271,7 +376,7 @@ public class SMTLibTest {
 		IDeclaration y = smtlib().declaration(ySymbol, intSort());
 		IExpr yLessThan3 = smtlib().expression(lessThan(), ySymbol, smtlib().numeral("3"));
 		IExpr predicate = smtlib().expression(equality(), xSymbol, yLessThan3);
-		IForall forall = smtlib().forall(Arrays.asList(x, y), predicate);
+		IForall forall = smtlib().forall(asList(x, y), predicate);
 		assertEquals(2, forall.parameters().size());
 		assertEquals("x", forall.parameters().get(0).parameter().value());
 		assertEquals("Bool", forall.parameters().get(0).sort().toString());
@@ -290,7 +395,7 @@ public class SMTLibTest {
 	
 	@Test
 	public void functionDeclaration() {
-		List<ISort> argsSort = Arrays.asList(boolSort(), intSort(), intSort());
+		List<ISort> argsSort = asList(boolSort(), intSort(), intSort());
 		Ideclare_fun functionDeclaration = smtlib().functionDeclaration(smtlib().symbolFor("?!"), argsSort, intSort());
 		assertEquals(3, functionDeclaration.argSorts().size());
 		assertEquals("Bool", functionDeclaration.argSorts().get(0).toString());
@@ -307,7 +412,7 @@ public class SMTLibTest {
 		IDeclaration x = smtlib().declaration(xSymbol, numberSort());
 		IDeclaration y = smtlib().declaration(ySymbol, intSort());
 		IExpr definition = smtlib().expression(smtlib().symbolFor("<"), xSymbol, ySymbol);
-		Idefine_fun functionDefinition = smtlib().functionDefinition(smtlib().symbolFor("lt"), Arrays.asList(x, y), boolSort(), definition);
+		Idefine_fun functionDefinition = smtlib().functionDefinition(smtlib().symbolFor("lt"), asList(x, y), boolSort(), definition);
 		assertEquals(2, functionDefinition.parameters().size());
 		assertEquals("x", functionDefinition.parameters().get(0).parameter().value());
 		assertEquals("Real", functionDefinition.parameters().get(0).sort().toString());

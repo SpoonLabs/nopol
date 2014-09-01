@@ -36,5 +36,4 @@ public class Z3SolverFactory extends SolverFactory {
 	public ISymbol logic() {
 		return SMTLib.logicAufnira();
 	}
-	
 }

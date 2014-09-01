@@ -61,13 +61,13 @@ public class CodeGenesis {
 	private void writeBody() {
 		for (int lineNumber = numberOfInputLines(); lineNumber < totalNumberOfLines(); lineNumber += 1) {
 			OperatorLocationVariable<?> operator = orderedOperators().get(lineNumber);
-			List<CodeLine> parameterExpressions = codeLinesFor((List) operator.parameterLocationVariables());
+			List<CodeLine> parameterExpressions = codeLinesFor(operator.parameterLocationVariables());
 			CodeLine newCodeLine = new OperationCodeLine(lineNumber, operator.objectTemplate(), parameterExpressions);
 			setLine(lineNumber, newCodeLine);
 		}
 	}
 
-	private List<CodeLine> codeLinesFor(Collection<LocationVariable<?>> locationVariables) {
+	private List<CodeLine> codeLinesFor(Collection<? extends LocationVariable<?>> locationVariables) {
 		List<CodeLine> codeLines = MetaList.newArrayList();
 		for (LocationVariable<?> parameter : locationVariables) {
 			codeLines.add(codeLineFor(parameter));

@@ -4,10 +4,13 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static xxl.java.library.StringLibrary.asStringMap;
 import static xxl.java.library.StringLibrary.firstAfterSplit;
 import static xxl.java.library.StringLibrary.join;
 import static xxl.java.library.StringLibrary.lastAfterSplit;
 import static xxl.java.library.StringLibrary.leftFilled;
+import static xxl.java.library.StringLibrary.mapWithStringKeys;
+import static xxl.java.library.StringLibrary.mapWithStringValues;
 import static xxl.java.library.StringLibrary.maximumToStringLength;
 import static xxl.java.library.StringLibrary.plainDecimalRepresentation;
 import static xxl.java.library.StringLibrary.repeated;
@@ -16,7 +19,6 @@ import static xxl.java.library.StringLibrary.rightFilled;
 import static xxl.java.library.StringLibrary.split;
 import static xxl.java.library.StringLibrary.stripEnd;
 import static xxl.java.library.StringLibrary.toStringList;
-import static xxl.java.library.StringLibrary.toStringMap;
 import static xxl.java.library.StringLibrary.unique;
 
 import java.util.HashMap;
@@ -124,12 +126,38 @@ public class StringLibraryTest {
 		Map<Integer, Boolean> map = new HashMap<Integer, Boolean>();
 		map.put(0, false);
 		map.put(1, true);
-		Map<String, Boolean> stringMap = toStringMap(map);
-		assertEquals(2, stringMap.keySet().size());
+		Map<String, Boolean> stringMap = mapWithStringKeys(map);
+		assertEquals(2, stringMap.size());
 		assertTrue(stringMap.containsKey("0"));
 		assertEquals(false, stringMap.get("0"));
 		assertTrue(stringMap.containsKey("1"));
 		assertEquals(true, stringMap.get("1"));
+	}
+	
+	@Test
+	public void convertValuesToStringInMap() {
+		Map<Integer, Boolean> map = new HashMap<Integer, Boolean>();
+		map.put(0, false);
+		map.put(1, true);
+		Map<Integer, String> stringMap = mapWithStringValues(map);
+		assertEquals(2, stringMap.size());
+		assertTrue(stringMap.containsKey(0));
+		assertEquals("false", stringMap.get(0));
+		assertTrue(stringMap.containsKey(1));
+		assertEquals("true", stringMap.get(1));
+	}
+	
+	@Test
+	public void convertMapToStringMap() {
+		Map<Integer, Boolean> map = new HashMap<Integer, Boolean>();
+		map.put(0, false);
+		map.put(1, true);
+		Map<String, String> stringMap = asStringMap(map);
+		assertEquals(2, stringMap.size());
+		assertTrue(stringMap.containsKey("0"));
+		assertEquals("false", stringMap.get("0"));
+		assertTrue(stringMap.containsKey("1"));
+		assertEquals("true", stringMap.get("1"));
 	}
 	
 	@Test
