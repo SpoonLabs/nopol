@@ -7,6 +7,7 @@ import static xxl.java.container.classic.MetaCollection.addMany;
 import static xxl.java.container.classic.MetaCollection.any;
 import static xxl.java.container.classic.MetaCollection.combinedSize;
 import static xxl.java.container.classic.MetaCollection.copyOf;
+import static xxl.java.container.classic.MetaCollection.maximum;
 import static xxl.java.container.classic.MetaCollection.repetitions;
 
 import java.util.ArrayList;
@@ -117,5 +118,14 @@ public class MetaCollectionTest {
 		assertEquals(0, combinedSize(empty));
 		assertEquals(4, combinedSize(firstList));
 		assertEquals(9, combinedSize(firstList, secondList, empty, set));
+	}
+	
+	@Test
+	public void maximumIntegerOfACollection() {
+		Collection<Integer> empty = asList();
+		assertTrue(null == maximum(empty));
+		assertTrue(0 == maximum(empty, 0));
+		assertEquals(4, maximum(asList(1, 4, 3)).intValue());
+		assertEquals(1, maximum(asList(1, -1, 0)).intValue());
 	}
 }

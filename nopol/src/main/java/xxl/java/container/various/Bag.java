@@ -1,7 +1,9 @@
 package xxl.java.container.various;
 
 import static java.lang.Math.min;
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static xxl.java.container.classic.MetaCollection.sorted;
 import static xxl.java.container.classic.MetaMap.getIfAbsent;
 import static xxl.java.container.classic.MetaMap.getPutIfAbsent;
 import static xxl.java.container.classic.MetaMap.newHashMap;
@@ -13,12 +15,27 @@ import java.util.Set;
 
 public class Bag<T> {
 
-	public static long sum(Bag<Integer> bag) {
-		long total = 0;
-		for (Integer record : bag.asSet()) {
-			total += record * bag.repetitionsOf(record);
+	public static <T> Bag<T> empty() {
+		return NullBag.instance();
+	}
+	
+	public static <T extends Comparable<T>> T accessedInOrder(int elementNumber, Bag<T> bag) {
+		if ((elementNumber < 0) || (elementNumber >= bag.size())) {
+			throw new IndexOutOfBoundsException(format("Tried to access a bag in order with invalid index (%d, size: %d)", elementNumber, bag.size()));
 		}
-		return total;
+		T element = null;
+		for (T key : sortedKeys(bag)) {
+			elementNumber -= bag.repetitionsOf(key);
+			if (elementNumber < 0) {
+				element = key;
+				break;
+			}
+		}
+		return element;
+	}
+	
+	public static <T extends Comparable<T>> List<T> sortedKeys(Bag<T> bag) {
+		return sorted(bag.asSet());
 	}
 	
 	public static <T> Bag<T> newHashBag() {
@@ -107,6 +124,14 @@ public class Bag<T> {
 			asFrequencyMap().put(object, oldValue + numberOfTimes);
 		}
 		return oldValue;
+	}
+	
+	public boolean remove(Bag<T> bag) {
+		int originalSize = size();
+		for (T key : bag.asSet()) {
+			remove(key, bag.repetitionsOf(key));
+		}
+		return originalSize > size();
 	}
 	
 	public boolean remove(T element) {

@@ -66,12 +66,13 @@ public class ClassLibrary {
 		return aClass.isInstance(object);
 	}
 	
-	public static boolean isSuperclassOf(Class<?> aClass, Class<?> queriedClass) {
-		return queriedClass.isAssignableFrom(aClass);
+	public static boolean isSuperclassOf(Class<?> subclass, Class<?> thisClass) {
+		return thisClass.isAssignableFrom(subclass);
 	}
 	
-	public static boolean isSubclassOf(Class<?> aClass, Class<?> queriedClass) {
-		return aClass.isAssignableFrom(queriedClass);
+	public static boolean isSubclassOf(Class<?> superclass, Class<?> thisClass) {
+		/** "is assignable from" ~= "is superclass of" */
+		return superclass.isAssignableFrom(thisClass);
 	}
 	
 	public static boolean isAbstract(Class<?> aClass) {

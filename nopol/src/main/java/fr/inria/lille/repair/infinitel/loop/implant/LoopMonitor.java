@@ -34,7 +34,7 @@ public class LoopMonitor extends GlobalToggle {
 	protected String globallyAccessibleName() {
 		return format("%s.instance(%d)", getClass().getName(), instanceID());
 	}
-
+	
 	public String invocationOnLoopConditionEvaluation(String originalCondition, String counterName) {
 		return  globallyAccessibleName() + format(".canEnterLoop(%s, %s)", originalCondition, counterName);
 	}
@@ -77,7 +77,7 @@ public class LoopMonitor extends GlobalToggle {
 	}
 	
 	public LoopStatistics asExportable() {
-		LoopStatistics stats = new LoopStatistics(loop());
+		LoopStatistics stats = new LoopStatistics();
 		stats.setExitRecords(exitRecords().copy());
 		stats.setBreakRecords(breakRecords().copy());
 		stats.setReturnRecords(returnRecords().copy());

@@ -97,6 +97,22 @@ public class LoggerLibrary {
 		logError(logger, join(lines, lineSeparator()));
 	}
 	
+	public synchronized static void logDebugLn(Logger logger, String message) {
+		logDebug(logger, message + lineSeparator());
+	}
+	
+	public synchronized static void logInfoLn(Logger logger, String message) {
+		logInfo(logger, message + lineSeparator());
+	}
+	
+	public synchronized static void logWarningLn(Logger logger, String message) {
+		logWarning(logger, message + lineSeparator());
+	}
+	
+	public synchronized static void logErrorLn(Logger logger, String message) {
+		logError(logger, message + lineSeparator());
+	}
+	
 	public synchronized static void logDebug(Logger logger, String message) {
 		logger.debug(message);
 	}

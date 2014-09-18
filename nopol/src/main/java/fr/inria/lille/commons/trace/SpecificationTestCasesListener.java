@@ -1,5 +1,7 @@
 package fr.inria.lille.commons.trace;
 
+import static xxl.java.library.LoggerLibrary.logWarning;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -46,6 +48,7 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 			} else {
 				consistentInputs().remove(inputs);
 				inconsistentInputs().add(inputs);
+				logWarning(logger(), "Inconsistent input found when collecting specifications");
 			}
 		}
 		return false;

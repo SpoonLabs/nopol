@@ -3,11 +3,13 @@ package xxl.java.library;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static xxl.java.library.JavaLibrary.asClasspath;
-import static xxl.java.library.JavaLibrary.simpleClassName;
+import static xxl.java.library.JavaLibrary.asFilePath;
 import static xxl.java.library.JavaLibrary.classesFromClasspath;
 import static xxl.java.library.JavaLibrary.folderPathSeparator;
 import static xxl.java.library.JavaLibrary.packageName;
+import static xxl.java.library.JavaLibrary.simpleClassName;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -35,6 +37,17 @@ public class JavaLibraryTest {
 		String classpath = asClasspath(new URL[] {url, url2});
 		Character classPathSeparator = File.pathSeparatorChar;
 		assertEquals("/imaginary/project/folder/src" + classPathSeparator + "/imaginary/dependency/lib.jar", classpath);
+	}
+	
+	@Test
+	public void filePathFromClasspath() throws MalformedURLException {
+		URL url = new URL("file:///imaginary/project/folder/src");
+		URL url2 = new URL("file:///imaginary/dependency/lib.jar");
+		URL[] classpath = new URL[] {url, url2};
+		String[] filePath = asFilePath(classpath);
+		assertTrue(2 == filePath.length);
+		assertEquals("/imaginary/project/folder/src", filePath[0]);
+		assertEquals("/imaginary/dependency/lib.jar", filePath[1]);
 	}
 	
 	@Test

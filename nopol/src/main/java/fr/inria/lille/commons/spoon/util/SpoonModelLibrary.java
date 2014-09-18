@@ -42,7 +42,7 @@ public class SpoonModelLibrary {
 		try {
 			SpoonCompiler compiler = launcher().createCompiler(factory);
 			if (classpath != null) {
-				compiler.setSourceClasspath(JavaLibrary.asClasspath(classpath));
+				compiler.setSourceClasspath(JavaLibrary.asFilePath(classpath));
 			}
 			compiler.addInputSource(sourceFile);
 			compiler.build();
@@ -141,7 +141,7 @@ public class SpoonModelLibrary {
 		newIf.setElseStatement(elseBranch);
 		return newIf;
 	}
-	
+
 	public static void setParent(CtElement parent, Collection<? extends CtElement> children) {
 		setParent(parent, children.toArray(new CtElement[children.size()]));
 	}

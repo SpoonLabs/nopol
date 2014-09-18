@@ -6,7 +6,10 @@ import static xxl.java.library.ClassLibrary.newInstance;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 public class MetaCollection {
 	
@@ -138,5 +141,35 @@ public class MetaCollection {
 			return element;
 		}
 		return null;
+	}
+	
+	public static <T extends Comparable<T>> T maximum(Collection<? extends T> values) {
+		return maximum(values, null);
+	}
+	
+	public static <T extends Comparable<T>> T maximum(Collection<? extends T> values, T ifEmpty) {
+		try {
+			return Collections.max(values);
+		} catch (NoSuchElementException nsee) {
+			return ifEmpty;
+		}
+	}
+	
+	public static <T extends Number & Comparable<T>> T minimum(Collection<? extends T> values) {
+		return minimum(values, null);
+	}
+	
+	public static <T extends Number & Comparable<T>> T minimum(Collection<? extends T> values, T ifEmpty) {
+		try {
+			return Collections.min(values);
+		} catch (NoSuchElementException nsee) {
+			return ifEmpty;
+		}
+	}
+	
+	public static <T extends Comparable<T>> List<T> sorted(Collection<? extends T> values) {
+		List<T> ordered = MetaList.newArrayList(values);
+		Collections.sort(ordered);
+		return ordered;
 	}
 }

@@ -9,6 +9,8 @@ import static xxl.java.library.ClassLibrary.invoke;
 import static xxl.java.library.ClassLibrary.invokeTrespassing;
 import static xxl.java.library.ClassLibrary.isGreaterThan;
 import static xxl.java.library.ClassLibrary.isLessThan;
+import static xxl.java.library.ClassLibrary.isSubclassOf;
+import static xxl.java.library.ClassLibrary.isSuperclassOf;
 import static xxl.java.library.ClassLibrary.method;
 import static xxl.java.library.ClassLibrary.newInstance;
 
@@ -24,6 +26,16 @@ public class ClassLibraryTest {
 		List<? extends Class<?>> classes = asList(String.class, ClassLibraryTest.class, OtherClass.class);
 		List<? extends Object> objects = asList("p", new ClassLibraryTest(), new OtherClass());
 		assertEquals(classes, asClasses(objects));
+	}
+	
+	@Test
+	public void subclassRelationship() {
+		Class<?> string = String.class;
+		Class<?> object = Object.class;
+		assertTrue(isSubclassOf(object, string));
+		assertFalse(isSubclassOf(string, object));
+		assertTrue(isSuperclassOf(string, object));
+		assertFalse(isSuperclassOf(object, string));
 	}
 	
 	@Test

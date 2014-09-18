@@ -66,17 +66,17 @@ public class ReachableVariableVisitor extends CtAbstractVisitor {
 
 	@Override
 	public <R> void visitCtBlock(CtBlock<R> block) {
-		scanElementsIn((Collection) block.getStatements());
+		scanElementsIn(block.getStatements());
 	}
 
 	@Override
 	public <T> void visitCtMethod(CtMethod<T> method) {
-		scanElementsIn((Collection) method.getParameters());
+		scanElementsIn(method.getParameters());
 	}
 	
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
-		scanElementsIn((Collection) ctClass.getFields());
+		scanElementsIn(ctClass.getFields());
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public class ReachableVariableVisitor extends CtAbstractVisitor {
 		}
 	}
 	
-	private void scanElementsIn(Collection<CtElement> elements) {
+	private void scanElementsIn(Collection<? extends CtElement> elements) {
 		for (CtElement element : elements) {
 			super.scan(element);
 		}

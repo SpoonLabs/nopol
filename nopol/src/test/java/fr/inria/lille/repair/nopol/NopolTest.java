@@ -31,7 +31,7 @@ public class NopolTest {
 		String srcFolder = rootFolder + "src/main/java";
 		String classpath = rootFolder + "target/test-classes/" + ":" + rootFolder + "target/classes/";
 		String solver = "cvc4";
-		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/cvc4-1.4.1/cvc4_for_mac";
+		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/cvc4-1.4.2/cvc4_for_mac";
 		Main.main(new String[] {"nopol", srcFolder, classpath, solver, solverPath });
 		/* PATCH: CONDITIONAL (mean)<=(0) */
 	}

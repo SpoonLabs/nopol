@@ -1,8 +1,7 @@
 package fr.inria.lille.repair.infinitel.loop.examination;
 
 import static java.lang.String.format;
-import static xxl.java.library.NumberLibrary.maximumInt;
-import static xxl.java.library.NumberLibrary.mean;
+import static xxl.java.container.classic.MetaCollection.maximum;
 import static xxl.java.library.NumberLibrary.sumInts;
 import static xxl.java.library.NumberLibrary.sumLongs;
 
@@ -94,8 +93,12 @@ public class LoopTestResult {
 		return statistics(loop, testCase).iterationsRatio();
 	}
 	
+	public double iterationsMedianIn(While loop, TestCase testCase) {
+		return statistics(loop, testCase).iterationsMedian();
+	}
+	
 	public int aggregatedTopRecord(While loop) {
-		return maximumInt(topRecordsByTestIn(loop).values(), 0);
+		return maximum(topRecordsByTestIn(loop).values(), 0);
 	}
 	
 	public int aggregatedNumberOfRecords(While loop) {
@@ -122,16 +125,12 @@ public class LoopTestResult {
 		return sumLongs(numberOfIterationsByTestIn(loop).values());
 	}
 	
-	public double aggregatedIterationsRatio(While loop) {
-		return mean(iterationsRatioByTestIn(loop).values());
-	}
-	
-	public double aggregatedInvocationsPerTest(While loop) {
-		return mean(numberOfRecordsByTestIn(loop).values());
-	}
-	
 	public Bag<Integer> aggregatedExitRecordsOf(While loop) {
 		return Bag.flatBag(exitRecordsByTestIn(loop).values());
+	}
+	
+	public Bag<Integer> aggregatedConditionalRecordsOf(While loop) {
+		return Bag.flatBag(conditionalRecordsByTestIn(loop).values());
 	}
 	
 	public Bag<Integer> aggregatedBreakRecordsOf(While loop) {
@@ -142,10 +141,26 @@ public class LoopTestResult {
 		return Bag.flatBag(returnRecordsByTestIn(loop).values());
 	}
 	
+	public Bag<Integer> aggregatedNumberOfRecordsOf(While loop) {
+		return Bag.newHashBag(numberOfRecordsByTestIn(loop).values());
+	}
+	
+	public int numberOfLoopsOf(TestCase testCase) {
+		return loopsOf(testCase).size();
+	}
+	
 	public Bag<Integer> aggregatedExitRecords() {
 		Bag<Integer> exitRecords = Bag.newHashBag();
 		for (While loop : loops()) {
 			exitRecords.addAll(aggregatedExitRecordsOf(loop));
+		}
+		return exitRecords;
+	}
+	
+	public Bag<Integer> aggregatedConditionalRecords() {
+		Bag<Integer> exitRecords = Bag.newHashBag();
+		for (While loop : loops()) {
+			exitRecords.addAll(aggregatedConditionalRecordsOf(loop));
 		}
 		return exitRecords;
 	}
@@ -223,6 +238,10 @@ public class LoopTestResult {
 		return testsUsing(loop, testCases());
 	}
 	
+	public Collection<While> loopsOf(TestCase testCase) {
+		return loopsUsing(testCase, loops());
+	}
+	
 	public Collection<TestCase> successfulTestsOf(While loop) {
 		return testsUsing(loop, successfulTests());
 	}
@@ -281,12 +300,12 @@ public class LoopTestResult {
 		return byTest(loop, testsOf(loop), LoopStatistics.methodNumberOfReturnExits());
 	}
 	
-	public Map<TestCase, Double> iterationsRatioByTestIn(While loop) {
-		return byTest(loop, testsOf(loop), LoopStatistics.methodIterationsRatio());
-	}
-	
 	public Map<TestCase, Bag<Integer>> exitRecordsByTestIn(While loop) {
 		return byTest(loop, testsOf(loop), LoopStatistics.methodExitRecords());
+	}
+	
+	public Map<TestCase, Bag<Integer>> conditionalRecordsByTestIn(While loop) {
+		return byTest(loop, testsOf(loop), LoopStatistics.methodConditionalRecords());
 	}
 	
 	public Map<TestCase, Bag<Integer>> breakRecordsByTestIn(While loop) {
@@ -304,6 +323,16 @@ public class LoopTestResult {
 			byTest.put(testCase, method.outputFor(statistics));
 		}
 		return byTest;
+	}
+	
+	@SuppressWarnings("unused")
+	private <T> Map<TestCase, T> byLoop(TestCase testCase, Collection<While> loops, Function<LoopStatistics, T> method) {
+		Map<TestCase, T> byLoop= MetaMap.newHashMap();
+		for (While loop : loops) {
+			LoopStatistics statistics = statistics(loop, testCase);
+			byLoop.put(testCase, method.outputFor(statistics));
+		}
+		return byLoop;
 	}
 	
 	private boolean notHalting(While loop, TestCase testCase) {

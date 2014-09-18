@@ -1,19 +1,19 @@
 package fr.inria.lille.repair.infinitel;
 
 import static java.lang.String.format;
-import static xxl.java.library.LoggerLibrary.logDebug;
+import static xxl.java.library.LoggerLibrary.logDebugLn;
 
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-import xxl.java.container.classic.MetaList;
+import xxl.java.container.classic.MetaCollection;
 import xxl.java.container.various.Bag;
 import xxl.java.container.various.MappingBag;
 import xxl.java.container.various.Pair;
 import xxl.java.container.various.Table;
+import xxl.java.junit.TestCase;
 import xxl.java.library.FileLibrary;
 import xxl.java.library.JavaLibrary;
 import xxl.java.library.StringLibrary;
@@ -27,10 +27,27 @@ import fr.inria.lille.repair.infinitel.loop.implant.MonitoringTestExecutor;
 
 public class InfinitelDiagnostician extends Infinitel {
 
+	/* Expected configuration in logback.xml:
+	 * --------------------------------------
+	 * 
+	 * <appender name="DIAGNOSTICIAN" class="ch.qos.logback.core.FileAppender">
+	 *	<file>diagnostics.log</file>
+	 *	<append>false</append>
+	 *	<encoder>
+	 *		<pattern>%msg</pattern>
+	 *	</encoder>
+	 * </appender>
+	 *
+	 *	<logger name="fr.inria.lille.repair.infinitel.InfinitelDiagnostician" additivity="false">
+	 *		<appender-ref ref="DIAGNOSTICIAN" />
+	 *	</logger>
+	 */
+	
 	public static void main(String[] args) {
 		File sourceFile = FileLibrary.openFrom(args[0]);
 		URL[] classpath = JavaLibrary.classpathFrom(args[1]);
 		new InfinitelDiagnostician(sourceFile, classpath).diagnose();
+		System.out.println("Diagnostics ended");
 	}
 	
 	public InfinitelDiagnostician(File sourceFile, URL[] classpath) {
@@ -47,59 +64,90 @@ public class InfinitelDiagnostician extends Infinitel {
 	}
 
 	private void diagnose() {
-		Collection<String> log = MetaList.newLinkedList();
 		MonitoringTestExecutor executor = newTestExecutor();
 		LoopTestResult testResult = newTestResult(executor);
-		Table<While, String, Object> table = dataTable(testResult);
-		logTable(log, table);
-		logDebug(logger(), log);
+		logTable(loopDataTable(testResult));
+		logTable(testDataTable(testResult));
+		logAllExitRecords(testResult);
+		logRecordComparison(testResult);
+		logInvocations(testResult);
 	}
-	
-	private Table<While, String, Object> dataTable(LoopTestResult testResult) {
+
+	private Table<While, String, Object> loopDataTable(LoopTestResult testResult) {
 		Table<While, String, Object> table = Table.newTable(null);
 		int label = 1;
-		Collection<Pair<Integer, Integer>> exitRanges = asMappingBag(testResult.aggregatedExitRecords()).asSet();
+		Collection<Pair<Integer, Integer>> sortedRanges = MetaCollection.sorted(asMappingBag(testResult.aggregatedExitRecords()).asSet());
 		for (While loop : testResult.loops()) {
 			table.put(loop, "label", label++);
 			table.put(loop, "breaks", loop.numberOfBreaks());
 			table.put(loop, "returns", loop.numberOfReturns());
 			table.put(loop, "iterations", testResult.aggregatedNumberOfIterations(loop));
-			table.put(loop, "iterations-ratio", testResult.aggregatedIterationsRatio(loop));
 			table.put(loop, "invocations", testResult.aggregatedNumberOfRecords(loop));
 			table.put(loop, "conditional-exits", testResult.aggregatedNumberOfConditionalExits(loop));
 			table.put(loop, "break-exits", testResult.aggregatedNumberOfBreakExits(loop));
 			table.put(loop, "return-exits", testResult.aggregatedNumberOfReturnExits(loop));
 			table.put(loop, "tests", testResult.numberOfTestsOf(loop));
 			table.put(loop, "top-record", testResult.aggregatedTopRecord(loop));
-			table.put(loop, "invocations-ratio", testResult.aggregatedInvocationsPerTest(loop));
-			putRanges(table, loop, "exit", exitRanges, testResult.aggregatedExitRecordsOf(loop));
-			putRanges(table, loop, "break", exitRanges, testResult.aggregatedBreakRecordsOf(loop));
-			putRanges(table, loop, "return", exitRanges, testResult.aggregatedReturnRecordsOf(loop));
+			putRanges(table, loop, "exit", sortedRanges, testResult.aggregatedExitRecordsOf(loop));
+			putRanges(table, loop, "break", sortedRanges, testResult.aggregatedBreakRecordsOf(loop));
+			putRanges(table, loop, "return", sortedRanges, testResult.aggregatedReturnRecordsOf(loop));
 			table.put(loop, "condition", loop.loopingCondition());
 			table.put(loop, "location", loop.position().toString());
 		}
 		return table;
 	}
 	
+	private Table<TestCase, String, Object> testDataTable(LoopTestResult testResult) {
+		Table<TestCase, String, Object> table = Table.newTable(null);
+		for (TestCase testCase : testResult.testCases()) {
+			table.put(testCase, "name", testCase.toString());
+			table.put(testCase, "loops", testResult.numberOfLoopsOf(testCase));
+			table.put(testCase, "passed", testResult.successfulTests().contains(testCase));
+		}
+		return table;
+	}
+	
 	private void putRanges(Table<While, String, Object> table, While loop, String description, Collection<Pair<Integer, Integer>> ranges, Bag<Integer> records) {
 		Bag<Pair<Integer, Integer>> recordsInRanges = asMappingBag(records); 
-		List<Pair<Integer, Integer>> sortedKeys = MetaList.newArrayList(ranges);
-		Collections.sort(sortedKeys);
-		double bagSize = recordsInRanges.size();
-		for (Pair<Integer, Integer> range : sortedKeys) {
-			double percentage = (bagSize < 1.0) ? 0.0 : recordsInRanges.repetitionsOf(range) / bagSize;
+		for (Pair<Integer, Integer> range : ranges) {
 			String columnName = format("%s-%s", description, range.toString()).replace('<', '[').replace('>', ')');
-			table.put(loop, columnName, percentage);
+			table.put(loop, columnName, recordsInRanges.repetitionsOf(range));
 		}
 	}
 
-	private void logTable(Collection<String> log, Table<While, String, Object> table) {
-		String columnSeparator = " !! ";
-		Collection<String> columnNames = table.columns();
-		log.add(StringLibrary.join(columnNames, columnSeparator));
-		for (While loop : table.rows()) {
-			List<String> rowString = StringLibrary.toStringList(table.row(loop).values());
-			log.add(StringLibrary.join(rowString, columnSeparator));
+	private void logAllExitRecords(LoopTestResult testResult) {
+		int label = 1;
+		for (While loop : testResult.loops()) {
+			logPlainRecords("loop " + label++, testResult.aggregatedExitRecordsOf(loop));
+		}
+	}
+	
+	private void logRecordComparison(LoopTestResult testResult) {
+		logPlainRecords("conditional", testResult.aggregatedConditionalRecords());
+		logPlainRecords("breaks", testResult.aggregatedBreakRecords());
+		logPlainRecords("return", testResult.aggregatedReturnRecords());
+	}
+	
+	private void logInvocations(LoopTestResult testResult) {
+		int label = 1;
+		for (While loop : testResult.loops()) {
+			logPlainRecords("loop " + label++, testResult.aggregatedNumberOfRecordsOf(loop));
+		}
+	}
+	
+	private void logPlainRecords(String description, Bag<Integer> records) {
+		List<Integer> ordered = MetaCollection.sorted(records.asSet());
+		for (Integer record : ordered) {
+			logLn(description + columnSeparator() + record + columnSeparator() + records.repetitionsOf(record));
+		}
+	}
+	
+	private <R> void logTable(Table<R, ? extends Object, ? extends Object> table) {
+		Collection<String> columnNames = StringLibrary.toStringList(table.columns());
+		logLn(StringLibrary.join(columnNames, columnSeparator()));
+		for (R row : table.rows()) {
+			List<String> rowString = StringLibrary.toStringList(table.row(row).values());
+			logLn(StringLibrary.join(rowString, columnSeparator()));
 		}
 	}
 	
@@ -118,5 +166,13 @@ public class InfinitelDiagnostician extends Infinitel {
 			}
 		};
 		return MappingBag.newMappingBag(function, bag);
+	}
+	
+	private String columnSeparator() {
+		return " ¨ ";
+	}
+	
+	private void logLn(String string) {
+		logDebugLn(logger(), string);
 	}
 }

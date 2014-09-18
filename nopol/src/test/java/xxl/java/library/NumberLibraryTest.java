@@ -1,12 +1,11 @@
 package xxl.java.library;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static xxl.java.library.NumberLibrary.bounded;
 import static xxl.java.library.NumberLibrary.ifNegative;
-import static xxl.java.library.NumberLibrary.maximumInt;
 import static xxl.java.library.NumberLibrary.mean;
+import static xxl.java.library.NumberLibrary.median;
 import static xxl.java.library.NumberLibrary.sumInts;
 import static xxl.java.library.NumberLibrary.sumLongs;
 
@@ -60,19 +59,22 @@ public class NumberLibraryTest {
 	}
 	
 	@Test
-	public void maximumIntegerOfACollection() {
-		Collection<Integer> empty = asList();
-		assertTrue(null == maximumInt(empty));
-		assertTrue(0 == maximumInt(empty, 0));
-		assertEquals(4, maximumInt(asList(1, 4, 3)).intValue());
-		assertEquals(1, maximumInt(asList(1, -1, 0)).intValue());
-	}
-	
-	@Test
 	public void meanValueOfACollection() {
 		Collection<Integer> empty = asList();
 		assertTrue(0.0 == mean(empty));
 		assertTrue(0.0 == mean(asList(-1, 0, 1)));
 		assertTrue(0.0 == mean(asList(-2.2, 2.2)));
+	}
+	
+	@Test
+	public void medianValueOfACollection() {
+		Collection<Integer> empty = asList();
+		assertTrue(0.0 == median(empty));
+		assertTrue(92.0 == median(asList(92)));
+		assertTrue(96.0 == median(asList(92, 100)));
+		assertTrue(3.0 == median(asList(1, 2, 3, 4, 5)));
+		assertTrue(3.5 == median(asList(1, 2, 3, 4, 5, 6)));
+		assertTrue(21.0 == median(asList(400, 500, 19, 21, 3)));
+		assertTrue(20.0 == median(asList(400, 500, 19, 21, 3, 0)));
 	}
 }

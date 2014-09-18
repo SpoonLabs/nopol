@@ -51,10 +51,10 @@ public abstract class ObjectTemplate<T> {
 		if (getClass() != obj.getClass())
 			return false;
 		ObjectTemplate<?> other = (ObjectTemplate<?>) obj;
-		if (myClass == null) {
+		if (type() == null) {
 			if (other.type() != null)
 				return false;
-		} else if (! myClass.getName().equals(other.type().getName()))
+		} else if (! type().getName().equals(other.type().getName()))
 			return false;
 		return true;
 	}

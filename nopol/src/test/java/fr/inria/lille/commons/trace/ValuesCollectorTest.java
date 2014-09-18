@@ -22,6 +22,7 @@ import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
 import xxl.java.container.classic.MetaMap;
 import xxl.java.junit.TestCase;
+import xxl.java.library.FileLibrary;
 import xxl.java.support.Singleton;
 import fr.inria.lille.commons.spoon.collectable.CollectableValueFinder;
 import fr.inria.lille.commons.spoon.filter.CodeSnippetFilter;
@@ -111,13 +112,28 @@ public class ValuesCollectorTest {
 		Map<String, ?> expected = MetaMap.newHashMap(asList(name + "!=null"), asList(false));
 		assertEquals(expected, runtimeValues.valueBuffer());
 	}
+	
+	@Test
+	public void collectingCharacters() {
+		// GIVEN
+		String name = "separator";
+
+		// WHEN
+		RuntimeValues<?> runtimeValues = RuntimeValues.newInstance();
+		runtimeValues.enable();
+		runtimeValues.collectInput(name, ';');
+
+		// THEN
+		Map<String, ?> expected = MetaMap.newHashMap(asList(name), asList(';'));
+		assertEquals(expected, runtimeValues.valueBuffer());
+	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void inconsistentSpecificationsAreDiscarded() {
-		TestCase testA = TestCase.from("com.example", "testA");
-		TestCase testB = TestCase.from("com.example", "testB");
-		TestCase testC = TestCase.from("com.example", "testC");
+		TestCase testA = TestCase.from("com.example", "testA", 1);
+		TestCase testB = TestCase.from("com.example", "testB", 2);
+		TestCase testC = TestCase.from("com.example", "testC", 3);
 		RuntimeValues<Boolean> runtimeValues = RuntimeValues.newInstance();
 		
 		Collection<Specification<Boolean>> specifications;
@@ -177,68 +193,87 @@ public class ValuesCollectorTest {
 	
 	@Test
 	public void reachedVariablesInExample1() {
-		testReachedVariableNames(1, "index == 0", "index", "s", "NopolExample.this.index", "NopolExample.s");
+		CtElement element = elementInNopolProject(1, "index == 0");
+		testReachedVariableNames(element, "index", "s", "NopolExample.this.index", "NopolExample.s");
 	}
 	
 	@Test
 	public void reachedVariablesInExample2() {
-		testReachedVariableNames(2, "(b - a) < 0", "b", "a", "NopolExample.this.fieldOfOuterClass");
+		CtElement element = elementInNopolProject(2, "(b - a) < 0");
+		testReachedVariableNames(element, "b", "a", "NopolExample.this.fieldOfOuterClass");
 	}
 	
 	@Test
 	public void reachedVariablesInExample3() {
-		testReachedVariableNames(3, "tmp != 0", "a", "tmp");
+		CtElement element = elementInNopolProject(3, "tmp != 0");
+		testReachedVariableNames(element, "a", "tmp");
 	}
 	
 	@Test
 	public void reachedVariablesInExample4() {
-		existsCodeSnippet(4, "int uninitializedVariableShouldNotBeCollected");
-		testReachedVariableNames(4, "a = a.substring(1)", "a", "initializedVariableShouldBeCollected", "otherInitializedVariableShouldBeCollected");
+		elementInNopolProject(4, "int uninitializedVariableShouldNotBeCollected");
+		CtElement element = elementInNopolProject(4, "a = a.substring(1)");
+		testReachedVariableNames(element, "a", "initializedVariableShouldBeCollected", "otherInitializedVariableShouldBeCollected");
 	}
 	
 	@Test
 	public void reachedVariablesInExample5() {
-		testReachedVariableNames(5, "r = -1", "r", "a", "NopolExample.this.unreachableFromInnterStaticClass");
+		CtElement element = elementInNopolProject(5, "r = -1");
+		testReachedVariableNames(element, "r", "a", "NopolExample.this.unreachableFromInnterStaticClass");
 	}
 	
 	@Test
 	public void reachedVariablesInExample6() {
-		testReachedVariableNames(6, "a > b", "a", "b");
+		CtElement element = elementInNopolProject(6, "a > b");
+		testReachedVariableNames(element, "a", "b");
 	}
 	
 	@Test
 	public void reachedVariablesInsideConstructor() {
-		testReachedVariableNames(1, "index = 2 * variableInsideConstructor", "variableInsideConstructor");
+		CtElement element = elementInNopolProject(1, "index = 2 * variableInsideConstructor");
+		testReachedVariableNames(element, "variableInsideConstructor");
 	}
 	
 	@Test
 	public void reachedVariableOfOuterClass() {
-		testReachedVariableNames(2, "int result = 29", "aBoolean", "NopolExample.this.fieldOfOuterClass", "InnerNopolExample.this.fieldOfInnerClass");
+		CtElement element = elementInNopolProject(2, "int result = 29");
+		testReachedVariableNames(element, "aBoolean", "NopolExample.this.fieldOfOuterClass", "InnerNopolExample.this.fieldOfInnerClass");
 	}
 	
 	@Test
 	public void unreachedVariableInIfBranch() {
-		existsCodeSnippet(3, "int unreachableVariable");
-		testReachedVariableNames(3, "(!aBoolean) || (reachableVariable < 2)", "aBoolean", "reachableVariable");
+		elementInNopolProject(3, "int unreachableVariable");
+		CtElement element = elementInNopolProject(3, "(!aBoolean) || (reachableVariable < 2)");
+		testReachedVariableNames(element, "aBoolean", "reachableVariable");
 	}
 	
 	@Test
 	public void reachedVariableInIfBranch() {
-		existsCodeSnippet(3, "int uninitializedReachableVariable");
-		testReachedVariableNames(3, "(!aBoolean) && (uninitializedReachableVariable < 2)", "aBoolean", "uninitializedReachableVariable");
+		elementInNopolProject(3, "int uninitializedReachableVariable");
+		CtElement element = elementInNopolProject(3, "(!aBoolean) && (uninitializedReachableVariable < 2)");
+		testReachedVariableNames(element, "aBoolean", "uninitializedReachableVariable");
 	}
 	
 	@Test
 	public void unreachedVariableInInnerStaticClass() {
-		existsCodeSnippet(5, "private java.lang.Integer unreachableFromInnterStaticClass;");
-		testReachedVariableNames(5, "!(stringParameter.isEmpty())", "stringParameter");	
+		elementInNopolProject(5, "private java.lang.Integer unreachableFromInnterStaticClass;");
+		CtElement element = elementInNopolProject(5, "!(stringParameter.isEmpty())");
+		testReachedVariableNames(element, "stringParameter");	
 	}
 	
 	@Test
 	public void fieldOfAnonymousClass() {
-		testReachedVariableNames(2, "(fieldOfOuterClass) > (limit)", "this.limit");
+		CtElement element = elementInNopolProject(2, "(fieldOfOuterClass) > (limit)");
+		testReachedVariableNames(element, "this.limit");
 	}
 	
+	@Test
+	public void fieldsOfParameters() {
+		CtElement element = elementInClassToSpoon("(nested.publicNestedInstanceField) == null");
+		testReachedVariableNames(element, "nested", "nested.protectedNestedInstanceField", "nested.publicNestedInstanceField", "nested.privateNestedInstanceField",
+										  "ClassToSpoon.protectedStaticField", "ClassToSpoon.publicStaticField", "ClassToSpoon.privateStaticField");
+	}
+
 	@Test
 	public void replaceQuotationMarksToCollectSubconditions() {
 		RuntimeValues<Boolean> runtimeValues = RuntimeValues.newInstance();
@@ -249,8 +284,11 @@ public class ValuesCollectorTest {
 	
 	@Test
 	public void collectSubexpressionValues() {
-		CtIf ifStatement = (CtIf) testReachedVariableNames(8, "((a * b) < 11) || (productLowerThan100(a, b))", "a", "b");
-		List<String> expected = asList("a", "b", "((a * b) < 11)", "11", "(a * b)", "(productLowerThan100(a, b))", "((a * b) < 11) || (productLowerThan100(a, b))");
+		CtElement element = elementInNopolProject(8, "(((a * b) < 11) || (productLowerThan100(a, b))) || (!(a < b))");
+		CtIf ifStatement = (CtIf) testReachedVariableNames(element, "a", "b");
+		List<String> expected = asList("(productLowerThan100(a, b))", "((a * b) < 11)", "b", "(a * b)", "a", "(!(a < b))", "11", "(a < b)",
+									   "(((a * b) < 11) || (productLowerThan100(a, b)))",
+									   "(((a * b) < 11) || (productLowerThan100(a, b))) || (!(a < b))");
 		checkFoundFromIf(ifStatement, expected);
 	}
 	
@@ -260,19 +298,28 @@ public class ValuesCollectorTest {
 		assertTrue(collectablesFromIf.containsAll(expected));
 	}
 	
-	private CtStatement testReachedVariableNames(int exampleNumber, String codeSnippet, String... expectedReachedVariables) {
-		CtElement firstElement = existsCodeSnippet(exampleNumber, codeSnippet);
-		assertTrue(CtCodeElement.class.isInstance(firstElement));
-		CtStatement statement = SpoonStatementLibrary.statementOf((CtCodeElement) firstElement);
+	private CtStatement testReachedVariableNames(CtElement element, String... expectedReachedVariables) {
+		assertTrue(CtCodeElement.class.isInstance(element));
+		CtStatement statement = SpoonStatementLibrary.statementOf((CtCodeElement) element);
 		Collection<String> reachedVariables = collectableFinder().findFromStatement(statement);
+		System.out.println(reachedVariables);
 		assertEquals(expectedReachedVariables.length, reachedVariables.size());
 		assertTrue(reachedVariables.containsAll(Arrays.asList(expectedReachedVariables)));
 		return statement;
 	}
 	
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	private CtElement existsCodeSnippet(int exampleNumber, String codeSnippet) {
+	private CtElement elementInNopolProject(int exampleNumber, String codeSnippet) {
 		File sourceFile = NopolTest.projectForExample(exampleNumber).sourceFile();
+		return elementFromSnippet(sourceFile, codeSnippet);
+	}
+	
+	private CtElement elementInClassToSpoon(String codeSnippet) {
+		File filePath = FileLibrary.fileFrom("src/test/resources/spoon/example/ClassToSpoon.java");
+		return elementFromSnippet(filePath, codeSnippet);
+	}
+	
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	private CtElement elementFromSnippet(File sourceFile, String codeSnippet) {
 		Factory model = SpoonModelLibrary.modelFor(sourceFile);
 		Filter filter = new CodeSnippetFilter(sourceFile, codeSnippet);
 		List<CtElement> elements = SpoonElementLibrary.filteredElements(model, filter);

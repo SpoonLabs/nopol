@@ -46,6 +46,7 @@ public abstract class ValueCollector {
 			Collection<ValueCollector> collectorInstances = MetaList.newArrayList();
 			collectorInstances.add(new BooleanCollector());
 			collectorInstances.add(new NumberCollector());
+			collectorInstances.add(new CharacterCollector());
 			primitiveCollectors = collectorInstances;
 		}
 		return primitiveCollectors;

@@ -1,8 +1,9 @@
 package xxl.java.library;
 
+import static xxl.java.container.classic.MetaCollection.sorted;
+
 import java.util.Collection;
-import java.util.Collections;
-import java.util.NoSuchElementException;
+import java.util.List;
 
 import xxl.java.support.Function;
 
@@ -41,7 +42,7 @@ public class NumberLibrary {
 		return target;
 	}
 	
-	public static int sumInts(Collection<Integer> values) {
+	public static int sumInts(Iterable<Integer> values) {
 		int total = 0;
 		for (Integer value : values) {
 			total += value;
@@ -49,34 +50,40 @@ public class NumberLibrary {
 		return total;
 	}
 	
-	public static long sumLongs(Collection<Long> values) {
+	public static long sumLongs(Iterable<Long> values) {
 		long total = 0;
 		for (Long value : values) {
 			total += value;
 		}
 		return total;
 	}
-
-	public static Integer maximumInt(Collection<Integer> values) {
-		return maximumInt(values, null);
-	}
 	
-	public static Integer maximumInt(Collection<Integer> values, Integer ifEmpty) {
-		try {
-			return Collections.max(values);
-		} catch (NoSuchElementException nsee) {
-			return ifEmpty;
+	public static double sum(Iterable<? extends Number> values) {
+		double total = 0.0;
+		for  (Number value : values) {
+			total += value.doubleValue();
 		}
+		return total;
 	}
 	
 	public static double mean(Collection<? extends Number> values) {
 		if (values.isEmpty()) {
 			return 0.0;
 		}
-		double accumulated = 0.0;
-		for (Number number : values) {
-			accumulated += number.doubleValue();
+		return sum(values) / values.size();
+	}
+	
+	public static <T extends Number & Comparable<T>> double median(Collection<? extends T> values) {
+		if (values.isEmpty()) {
+			return 0.0;
 		}
-		return accumulated / values.size();
+		int size = values.size();
+		int median = size / 2;
+		List<? extends T> ordered = sorted(values);
+		double medianValue = ordered.get(median).doubleValue();
+		if (size % 2 == 0) {
+			medianValue = (medianValue + ordered.get(median - 1).doubleValue()) / 2.0;
+		}
+		return medianValue;
 	}
 }

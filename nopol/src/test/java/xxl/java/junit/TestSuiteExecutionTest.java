@@ -18,7 +18,7 @@ public class TestSuiteExecutionTest {
 	
 	@Test
 	public void runSingleTest() {
-		TestCase testCase = TestCase.from(SampleTestClass.class.getName(), "joinTrue");
+		TestCase testCase = TestCase.from(SampleTestClass.class.getName(), "joinTrue", 1);
 		Result result = TestSuiteExecution.runTestCase(testCase, getClass().getClassLoader());
 		assertTrue(result.wasSuccessful());
 		assertEquals(1, result.getRunCount());
@@ -31,6 +31,15 @@ public class TestSuiteExecutionTest {
 		TestSuiteExecution.runCasesIn(new String[]{ SampleTestClass.class.getName() }, getClass().getClassLoader(), listener);
 		assertEquals(2, listener.allTests().size());
 		assertEquals(2, listener.successfulTests().size());
+		assertEquals(0, listener.failedTests().size());
+	}
+	
+	@Test
+	public void doNotUseSameTestNameTwice() {
+		TestCasesListener listener = new TestCasesListener();
+		TestSuiteExecution.runCasesIn(new String[]{ SampleTestClass.class.getName(), SampleTestClass.class.getName() }, getClass().getClassLoader(), listener);
+		assertEquals(4, listener.allTests().size());
+		assertEquals(4, listener.successfulTests().size());
 		assertEquals(0, listener.failedTests().size());
 	}
 }

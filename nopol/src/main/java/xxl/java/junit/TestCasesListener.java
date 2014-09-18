@@ -111,7 +111,7 @@ public class TestCasesListener extends RunListener {
     }
     
 	protected TestCase testCaseOf(Description description) {
-    	return TestCase.from(description.getClassName(), description.getMethodName());
+		return TestCase.from(description.getClassName(), description.getMethodName(), numberOfTests());
     }
 	
 	private TestCase addTestCaseTo(Collection<TestCase> collection, Description description) {
@@ -143,7 +143,7 @@ public class TestCasesListener extends RunListener {
 		logDebug(logger(), lines);
 	}
 	
-	private Logger logger() {
+	protected Logger logger() {
 		return loggerFor(this);
 	}
 

@@ -4,9 +4,9 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static xxl.java.container.various.Bag.empty;
 import static xxl.java.container.various.Bag.flatBag;
 import static xxl.java.container.various.Bag.newHashBag;
-import static xxl.java.container.various.Bag.sum;
 
 import java.util.List;
 import java.util.Map;
@@ -189,10 +189,34 @@ public class BagTest {
 	}
 	
 	@Test
-	public void sumIntegerBag() {
-		Bag<Integer> bag = newHashBag();
-		assertEquals(0, sum(bag));
-		bag.addAll(asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-		assertEquals(70, sum(bag));
+	public void singletonForEmptyBag() {
+		Bag<String> emptyStringBag = empty();
+		assertTrue(emptyStringBag.isEmpty());
+		Bag<Object> emptyObjectBag = empty();
+		assertTrue(emptyObjectBag.isEmpty());
+		Bag<Bag<Integer>> emptyBagBag = empty();
+		assertTrue(emptyBagBag.isEmpty());
+	}
+	
+	@Test
+	public void removeBagFromBag() {
+		Bag<Character> otherBag = newHashBag();
+		Bag<Character> bag = newHashBag('a', 'b', 'a', 'b', 'c');
+		bag.remove(otherBag);
+		assertTrue(5 == bag.size());
+		otherBag.addAll(asList('a', 'c'));
+		bag.remove(otherBag);
+		assertTrue(3 == bag.size());
+		assertFalse(bag.contains('c'));
+		assertTrue(1 == bag.repetitionsOf('a'));
+		bag.remove(otherBag);
+		assertTrue(2 == bag.size());
+		assertFalse(bag.contains('a'));
+		bag.remove(otherBag);
+		assertTrue(2 == bag.size());
+		assertFalse(bag.contains('a'));
+		otherBag.addAll(asList('b', 'b'));
+		bag.remove(otherBag);
+		assertTrue(bag.isEmpty());
 	}
 }

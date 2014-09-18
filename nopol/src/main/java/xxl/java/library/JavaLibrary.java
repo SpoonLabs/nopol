@@ -24,6 +24,15 @@ public class JavaLibrary {
 		return StringLibrary.join(paths, classpathSeparator());
 	}
 	
+	public static String[] asFilePath(URL[] urls) {
+		int length = urls.length;
+		String[] filePath = new String[length];
+		for (int i = 0; i < length; i += 1) {
+			filePath[i] = urls[i].getFile();
+		}
+		return filePath;
+	}
+	
 	public static String simpleClassName(String qualifiedClassName) {
 		int lastPackageSeparator = qualifiedClassName.lastIndexOf('.');
 		if (lastPackageSeparator > -1) {

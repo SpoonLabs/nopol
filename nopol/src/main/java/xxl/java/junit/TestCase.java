@@ -6,8 +6,8 @@ import xxl.java.container.classic.MetaSet;
 
 public class TestCase {
 
-	public static TestCase from(String qualifiedClassName, String testName) {
-		return new TestCase(qualifiedClassName, testName);
+	public static TestCase from(String qualifiedClassName, String testName, int testNumber) {
+		return new TestCase(qualifiedClassName, testName, testNumber);
 	}
 	
 	public static Collection<String> testClasses(Collection<TestCase> testCases) {
@@ -26,8 +26,9 @@ public class TestCase {
     	return testNames;
 	}
 	
-	private TestCase(String qualifiedClassName, String testName) {
+	private TestCase(String qualifiedClassName, String testName, int testNumber) {
 		this.qualifiedClassName = qualifiedClassName;
+		this.testNumber = testNumber;
 		this.testName = testName;
 	}
 	
@@ -38,6 +39,10 @@ public class TestCase {
 	public String testName() {
 		return testName;
 	}
+	
+	public int testNumber() {
+		return testNumber;
+	}
 
 	@Override
 	public String toString() {
@@ -47,8 +52,10 @@ public class TestCase {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = prime + ((qualifiedClassName == null) ? 0 : qualifiedClassName.hashCode());
-		result = prime * result + ((testName == null) ? 0 : testName.hashCode());
+		int result = 1;
+		result = prime * result + ((className() == null) ? 0 : className().hashCode());
+		result = prime * result + ((testName() == null) ? 0 : testName().hashCode());
+		result = prime * result + testNumber();
 		return result;
 	}
 
@@ -61,19 +68,22 @@ public class TestCase {
 		if (getClass() != obj.getClass())
 			return false;
 		TestCase other = (TestCase) obj;
-		if (qualifiedClassName == null) {
-			if (other.qualifiedClassName != null)
+		if (className() == null) {
+			if (other.className() != null)
 				return false;
-		} else if (!qualifiedClassName.equals(other.qualifiedClassName))
+		} else if (! className().equals(other.className()))
 			return false;
-		if (testName == null) {
-			if (other.testName != null)
+		if (testName() == null) {
+			if (other.testName() != null)
 				return false;
-		} else if (!testName.equals(other.testName))
+		} else if (!testName().equals(other.testName()))
+			return false;
+		if (testNumber() != other.testNumber())
 			return false;
 		return true;
 	}
 
-	private String qualifiedClassName;
+	private int testNumber;
 	private String testName;
+	private String qualifiedClassName;
 }

@@ -1,6 +1,7 @@
 package fr.inria.lille.commons.synthesis;
 
-import java.util.Arrays;
+import static java.util.Arrays.asList;
+
 import java.util.List;
 
 public class NullCodeGenesis extends CodeGenesis {
@@ -24,7 +25,7 @@ public class NullCodeGenesis extends CodeGenesis {
 	
 	@Override
 	public List<CodeLine> codeLines() {
-		return Arrays.asList();
+		return asList();
 	}
 
 	@Override

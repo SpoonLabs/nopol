@@ -6,7 +6,9 @@ import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
+import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtThisAccess;
+import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import xxl.java.container.classic.MetaSet;
@@ -25,6 +27,12 @@ public class SubconditionVisitor extends CtAbstractVisitor {
 	}
 	
 	@Override
+	public <T> void visitCtUnaryOperator(CtUnaryOperator<T> operator) {
+		addFrom(operator);
+		scan(operator.getOperand());
+	}
+	
+	@Override
 	public <T> void visitCtLiteral(CtLiteral<T> literal) {
 		addFrom(literal);
 	}
@@ -33,7 +41,7 @@ public class SubconditionVisitor extends CtAbstractVisitor {
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
 		addFrom(invocation);
 	}
-	
+
 	@Override
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
 		/* this method has to be implemented by the non abstract class */

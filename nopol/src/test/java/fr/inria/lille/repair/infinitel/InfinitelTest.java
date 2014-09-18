@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import spoon.reflect.code.CtWhile;
@@ -157,16 +156,17 @@ public class InfinitelTest {
 		assertEquals(6, testResult.aggregatedNumberOfRecords(loop));
 		assertEquals(Bag.newHashBag(0,1,1,3,4,6), testResult.aggregatedExitRecordsOf(loop));
 		List<String> testNames = asList("returnExitIn1", "returnExitIn4", "breakExitIn1", "breakExitIn3", "normalExitIn0", "normalExitIn6");
-		Map<TestCase, Integer> expected = expectedIterationsMap(4, testNames, asList(1, 4, 1, 3, 0, 6));
-		for (TestCase testCase : expected.keySet()) {
-			assertEquals((long) expected.get(testCase), testResult.numberOfIterationsIn(loop, testCase));
+		Map<String, Integer> expected = expectedIterationsMap(4, testNames, asList(1, 4, 1, 3, 0, 6));
+		for (String testName : expected.keySet()) {
+			TestCase testCase = testWithName(testName, testResult);
+			assertEquals((long) expected.get(testName), testResult.numberOfIterationsIn(loop, testCase));
 		}
 	}
 
 	@Test
 	public void infinitelExample1() {
 		/** This test is very slow with some versions of CVC4 */
-		Map<TestCase, Integer> expected = expectedIterationsMap(1, asList("testNegative"), asList(4));
+		Map<String, Integer> expected = expectedIterationsMap(1, asList("testNegative"), asList(4));
 		CodeGenesis fix = checkInfinitel(1, 8, 4, 1, expected);
 		checkFix(fix, asList("(b != a)&&(((a)<=((1)+(1)))||((b)<(a)))",
 							 "((!(((a)-(1))<(b)))||(((a)-(1))<=(1)))&&(b != a)",
@@ -176,19 +176,19 @@ public class InfinitelTest {
 	
 	@Test
 	public void infinitelExample2() {
-		Map<TestCase, Integer> expected = expectedIterationsMap(2, asList("infiniteLoop"), asList(1));
+		Map<String, Integer> expected = expectedIterationsMap(2, asList("infiniteLoop"), asList(1));
 		CodeGenesis fix = checkInfinitel(2, 7, 1, 1, expected);
 		checkFix(fix, asList("(a == 0)"));
 	}
 	
 	@Test
 	public void infinitelExample3() {
-		Map<TestCase, Integer> expected = expectedIterationsMap(3, asList("doesNotReachZeroReturnCopy"), asList(0));
+		Map<String, Integer> expected = expectedIterationsMap(3, asList("doesNotReachZeroReturnCopy"), asList(0));
 		CodeGenesis fix = checkInfinitel(3, 7, 3, 0, expected);
 		checkFix(fix, asList("(-1)<(aCopy)", "(1)<=(a)"));
 	}
 	
-	private CodeGenesis checkInfinitel(int infinitelExample, int infiniteLoopLine, int passingTests, int failingTests, Map<TestCase, Integer> testThresholds) {
+	private CodeGenesis checkInfinitel(int infinitelExample, int infiniteLoopLine, int passingTests, int failingTests, Map<String, Integer> testThresholds) {
 		InfiniteLoopFixer fixer = infiniteLoopFixerForExample(infinitelExample);
 		LoopTestResult testResult = fixer.testResult();
 		assertEquals(failingTests, testResult.numberOfFailedTests());
@@ -207,12 +207,12 @@ public class InfinitelTest {
 		assertTrue(fixes.contains(fix.returnStatement()));
 	}
 	
-	private void checkSuccessfulIterations(Map<TestCase, Integer> expected, While loop, InfiniteLoopFixer fixer, LoopTestResult testResult) {
+	private void checkSuccessfulIterations(Map<String, Integer> expected, While loop, InfiniteLoopFixer fixer, LoopTestResult testResult) {
 		Map<TestCase, Integer> nonHaltingTests = testResult.nonHaltingTestsOf(loop);
-		assertEquals(expected.keySet(), nonHaltingTests.keySet());
-		for (TestCase testCase : expected.keySet()) {
+		for (String testName : expected.keySet()) {
+			TestCase testCase = testWithName(testName, testResult);
 			int actual = fixer.firstSuccessfulIteration(loop, testCase, nonHaltingTests.get(testCase));
-			assertEquals((long) expected.get(testCase), actual);
+			assertEquals((long) expected.get(testName), actual);
 		}
 	}
 	
@@ -231,14 +231,21 @@ public class InfinitelTest {
 		return new InfiniteLoopFixer(testResult, testExecutor);
 	}
 
-	private Map<TestCase, Integer> expectedIterationsMap(int exampleNumber, List<String> testNames, List<Integer> iterations) {
-		String qualifiedClassName = format("infinitel_examples.infinitel_example_%d.InfinitelExampleTest", exampleNumber);
-		Map<TestCase, Integer> expectedMap = MetaMap.newHashMap();
+	private Map<String, Integer> expectedIterationsMap(int exampleNumber, List<String> testNames, List<Integer> iterations) {
+		Map<String, Integer> expectedMap = MetaMap.newHashMap();
 		assertEquals(testNames.size(), iterations.size());
 		for (int i = 0; i < testNames.size(); i += 1) {
-			String testName = testNames.get(i);
-			expectedMap.put(TestCase.from(qualifiedClassName, testName), iterations.get(i));
+			expectedMap.put(testNames.get(i), iterations.get(i));
 		}
 		return expectedMap;
+	}
+	
+	private TestCase testWithName(String testName, LoopTestResult testResult) {
+		for (TestCase testCase : testResult.testCases()) {
+			if (testCase.testName().equals(testName)) {
+				return testCase;
+			}
+		}
+		throw new RuntimeException("Test case not found: " + testName);
 	}
 }
