@@ -21,8 +21,12 @@ import static xxl.java.library.StringLibrary.stripEnd;
 import static xxl.java.library.StringLibrary.toStringList;
 import static xxl.java.library.StringLibrary.unique;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Test;
@@ -243,6 +247,19 @@ public class StringLibraryTest {
 		assertEquals("-413845470000000000.0", plainDecimalRepresentation(-4.1384547E17));
 		assertEquals("0.000000000000000041384547", plainDecimalRepresentation(4.1384547E-17));
 		assertEquals("-0.000000000000000041384547", plainDecimalRepresentation(-4.1384547E-17));
+	}
+	
+	@Test
+	public void decimalRepresentationUsingDot() throws Exception {
+		Locale french = Locale.FRANCE;
+		Double half = NumberFormat.getInstance(french).parse("0,5").doubleValue();
+		DecimalFormat decimalFormat = new DecimalFormat("#0.0", new DecimalFormatSymbols(french));
+		assertEquals("0,5", decimalFormat.format(half));
+		assertEquals("0.5", plainDecimalRepresentation(half));
+		
+		Double twoAndHalf = NumberFormat.getInstance(french).parse("2,5").doubleValue();
+		assertEquals("2,5", decimalFormat.format(twoAndHalf));
+		assertEquals("2.5", plainDecimalRepresentation(twoAndHalf));
 	}
 	
 	@Test

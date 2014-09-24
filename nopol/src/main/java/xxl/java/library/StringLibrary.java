@@ -8,11 +8,13 @@ import static xxl.java.library.ObjectLibrary.methodToString;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import xxl.java.support.Function;
@@ -177,11 +179,15 @@ public class StringLibrary {
 		return builder.toString();
 	}
 
+	/**
+	 * Returns a plain representation of {@code number}. If the number is an integer,
+	 * a trailing decimal symbol with a zero is added. The decimal symbol is always the dot. 
+	 */
 	public static String plainDecimalRepresentation(Number number) {
 		double doubleValue = number.doubleValue();
 		BigDecimal decimal = BigDecimal.valueOf(doubleValue);
 		if (doubleValue >  1.0 || doubleValue < -1.0) {
-			DecimalFormat decimalFormat = new DecimalFormat("#0.0");
+			DecimalFormat decimalFormat = new DecimalFormat("#0.0", new DecimalFormatSymbols(Locale.US));
 			return decimalFormat.format(decimal);
 		} else {
 			return decimal.toPlainString();
