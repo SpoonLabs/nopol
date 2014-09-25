@@ -11,6 +11,7 @@ import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isInitializa
 import java.util.Collection;
 
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.declaration.CtClass;
@@ -46,6 +47,11 @@ public class ReachableVariableVisitor extends CtAbstractVisitor {
 	@Override
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
 		/* this method has to be implemented by the non abstract class */
+	}
+	
+	@Override
+	public void visitCtCodeSnippetStatement(CtCodeSnippetStatement statement) {
+		/* ignore any code snippet, only work with what was originally in the code */
 	}
 	
 	@Override

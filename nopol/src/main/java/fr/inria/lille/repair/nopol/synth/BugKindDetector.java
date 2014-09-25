@@ -9,15 +9,18 @@ import static fr.inria.lille.repair.nopol.synth.BugKind.PRECONDITION;
 import java.io.File;
 
 import spoon.processing.AbstractProcessor;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
-import fr.inria.lille.repair.nopol.synth.conditional.SpoonConditionalPredicate;
-import fr.inria.lille.repair.nopol.synth.precondition.SpoonStatementPredicate;
+import xxl.java.library.FileLibrary;
+import fr.inria.lille.repair.nopol.spoon.SpoonConditionalPredicate;
+import fr.inria.lille.repair.nopol.spoon.SpoonStatementPredicate;
 
 final class BugKindDetector extends AbstractProcessor<CtElement> {
 	
-	private BugKind answer = NONE;
-	private final String absolutePath;
+	private CtStatement statement;
+	private BugKind answer;
+	private final File file;
 	private final int line;
 
 	/**
@@ -25,9 +28,10 @@ final class BugKindDetector extends AbstractProcessor<CtElement> {
 	 * @param line
 	 */
 	BugKindDetector(final File file, final int line) {
-		absolutePath = checkNotNull(file).getAbsolutePath();
 		checkArgument(line > 0, "Line should be greater than 0: %s", line);
+		this.file = checkNotNull(file);
 		this.line = line;
+		answer = NONE;
 	}
 
 	/**
@@ -37,32 +41,31 @@ final class BugKindDetector extends AbstractProcessor<CtElement> {
 		return answer;
 	}
 
+	CtStatement statement() {
+		return statement;
+	}
+	
 	/**
 	 * @see spoon.processing.AbstractProcessor#isToBeProcessed(spoon.reflect.declaration.CtElement)
 	 */
 	@Override
 	public boolean isToBeProcessed(final CtElement candidate) {
-		if ( candidate.getPosition() == null )
-			return false;
-		
 		SourcePosition position = candidate.getPosition();
-		boolean isSameLine = position.getLine() == line;
-		boolean isSameFile = false;
-		File f2 = new File(absolutePath);
-		try {
-			isSameFile = position.getFile().getCanonicalFile().getAbsolutePath().equals(f2.getCanonicalFile().getAbsolutePath());
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
+		if (position == null){
+			return false;
 		}
-		boolean hasToBeProc = isSameLine && isSameFile;
-		return hasToBeProc;
+		boolean isSameFile = FileLibrary.isSameFile(file, position.getFile());
+		boolean isSameLine = position.getLine() == this.line;
+		return isSameLine && isSameFile;
 	}
 
 	@Override
 	public void process(final CtElement element) {
 		if (SpoonConditionalPredicate.INSTANCE.apply(element)) {
+			statement = (CtStatement) element;
 			answer = CONDITIONAL;
 		} else if (SpoonStatementPredicate.INSTANCE.apply(element)) {
+			statement = (CtStatement) element;
 			answer = PRECONDITION;
 		}
 	}

@@ -21,7 +21,6 @@ import java.util.List;
 
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
-import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
@@ -32,7 +31,7 @@ import com.google.common.base.Predicate;
  * @author Favio D. DeMarco
  * 
  */
-public final class DelegatingProcessor extends AbstractProcessor<CtStatement> {
+public class DelegatingProcessor extends AbstractProcessor<CtStatement> {
 
 	private final File file;
 	private final int line;
@@ -60,43 +59,28 @@ public final class DelegatingProcessor extends AbstractProcessor<CtStatement> {
 	 */
 	@Override
 	public boolean isToBeProcessed(final CtStatement candidate) {
-		/*
-		 * Avoiding CtBlock because of weird behaviour of GZoltar, can return CtBlock line number
-		 * eg : 
-		 * 1-	if ( condition ){
-		 * 2-		assignment
-		 * 3-	} else {
-		 * 4-		assignment
-		 * 5-	}
-		 * 
-		 * GZoltar can return the line number 3
-		 */
-		if ( candidate instanceof CtBlock<?>){
-			return false;
+		boolean isPracticable =	this.predicate.apply(candidate);
+		if (isPracticable){
+			SourcePosition position = candidate.getPosition();
+			if (position == null){
+				return false;
+			}
+			boolean isSameFile = false;
+			boolean isSameLine = position.getLine() == this.line;
+			try {
+				File f1 = position.getFile().getCanonicalFile().getAbsoluteFile();
+				File f2 = file.getCanonicalFile();
+				isSameFile = f1.getAbsolutePath().equals(f2.getAbsolutePath());
+			} catch (Exception e){
+				throw new IllegalStateException(e);
+			}
+			isPracticable = this.process && isSameLine && isSameFile;
 		}
-		SourcePosition position = candidate.getPosition();
-		File f1;
-		File f2;
-		boolean isNotNullPosition =	position != null;
-		if ( !isNotNullPosition ){
-			return false;
-		}
-		boolean isPraticable =	this.predicate.apply(candidate);
-		boolean isSameLine =	position.getLine() == this.line;
-		boolean isSameFile = false;
-		try {
-			f1 = position.getFile().getCanonicalFile().getAbsoluteFile();
-			f2 = this.file.getCanonicalFile();
-			isSameFile = f1.getAbsolutePath().equals(f2.getAbsolutePath());
-		} catch (Exception e){
-			throw new IllegalStateException(e);
-		}
-		return  this.process && isNotNullPosition &&  isPraticable && isSameLine && isSameFile;
-
+		return isPracticable;
 	}
 
 	@Override
-	public void process(final CtStatement element) {
+	public void process(CtStatement element) {
 		for (Processor processor : this.processors) {
 			processor.process(element);
 		}

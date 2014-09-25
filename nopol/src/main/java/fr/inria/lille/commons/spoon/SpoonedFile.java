@@ -21,7 +21,9 @@ import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.support.JavaOutputProcessor;
 import spoon.support.RuntimeProcessingManager;
+import spoon.support.StandardEnvironment;
 import xxl.java.compiler.BytecodeClassLoader;
 import xxl.java.compiler.BytecodeClassLoaderBuilder;
 import xxl.java.compiler.DynamicClassCompiler;
@@ -46,6 +48,11 @@ public abstract class SpoonedFile {
 		prettyPrinter = new DefaultJavaPrettyPrinter(spoonEnvironment());
 	}
 
+	public void generateOutputFile(File destinationFolder) {
+		Processor<?> writer = new JavaOutputProcessor(destinationFolder, new DefaultJavaPrettyPrinter(new StandardEnvironment()));
+		process(writer);
+	}
+	
 	public Collection<CtPackage> allPackages() {
 		return spoonFactory().Package().getAll();
 	}

@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import spoon.reflect.code.CtWhile;
@@ -24,6 +25,7 @@ import xxl.java.junit.TestCase;
 import fr.inria.lille.commons.spoon.util.SpoonElementLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
+import fr.inria.lille.repair.Main;
 import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.infinitel.loop.While;
 import fr.inria.lille.repair.infinitel.loop.examination.LoopTestResult;
@@ -31,6 +33,17 @@ import fr.inria.lille.repair.infinitel.loop.implant.MonitoringTestExecutor;
 import fr.inria.lille.repair.infinitel.loop.implant.ProjectMonitorImplanter;
 
 public class InfinitelTest {
+	
+	@Ignore
+	@Test
+	public void realProject() {
+		String pwd = "/Users/virtual/Desktop/data/projects/apache-commons/math/";
+		String src = pwd + "src/main/java";
+		String ab = pwd + "target/classes/";
+		String ac = pwd + "target/test-classes/";
+		String ad = pwd + "../_dependencies/easymock-3.2.jar";
+		Main.main(new String[] {"infinitel", src, ac + ":" + ab + ":" + ad, "z3", pwd + "../_solver/z3"});
+	}
 	
 	@Test
 	public void loopNotProcessedInNonVoidReturningMethodLastStatement() {

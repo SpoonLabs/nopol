@@ -56,5 +56,9 @@ public class NopolExampleTest {
 	public void test_10() {
 		assertFalse(new NopolExample().productLowerThan100(8451, 4897));
 	}
-
+	
+	public void test_11() {
+        assertTrue(new NopolExample().productLowerThan100(50, 1));
+        assertFalse(new NopolExample().productLowerThan100(50, 3));
+    }
 }

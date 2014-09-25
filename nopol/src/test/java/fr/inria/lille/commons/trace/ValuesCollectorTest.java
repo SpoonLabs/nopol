@@ -32,7 +32,7 @@ import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
 import fr.inria.lille.repair.nopol.NopolTest;
 
 public class ValuesCollectorTest {
-	
+
 	@Test
 	public final void adding_a_Collection_should_add_the_size_and_if_it_is_empty() {
 		
@@ -194,13 +194,16 @@ public class ValuesCollectorTest {
 	@Test
 	public void reachedVariablesInExample1() {
 		CtElement element = elementInNopolProject(1, "index == 0");
-		testReachedVariableNames(element, "index", "s", "NopolExample.this.index", "NopolExample.s");
+		testReachedVariableNames(element, "s",
+										  "index",
+										  "nopol_examples.nopol_example_1.NopolExample.this.index",
+										  "nopol_examples.nopol_example_1.NopolExample.s");
 	}
 	
 	@Test
 	public void reachedVariablesInExample2() {
 		CtElement element = elementInNopolProject(2, "(b - a) < 0");
-		testReachedVariableNames(element, "b", "a", "NopolExample.this.fieldOfOuterClass");
+		testReachedVariableNames(element, "b", "a", "nopol_examples.nopol_example_2.NopolExample.this.fieldOfOuterClass");
 	}
 	
 	@Test
@@ -219,7 +222,7 @@ public class ValuesCollectorTest {
 	@Test
 	public void reachedVariablesInExample5() {
 		CtElement element = elementInNopolProject(5, "r = -1");
-		testReachedVariableNames(element, "r", "a", "NopolExample.this.unreachableFromInnterStaticClass");
+		testReachedVariableNames(element, "r", "a", "nopol_examples.nopol_example_5.NopolExample.this.unreachableFromInnterStaticClass");
 	}
 	
 	@Test
@@ -237,7 +240,9 @@ public class ValuesCollectorTest {
 	@Test
 	public void reachedVariableOfOuterClass() {
 		CtElement element = elementInNopolProject(2, "int result = 29");
-		testReachedVariableNames(element, "aBoolean", "NopolExample.this.fieldOfOuterClass", "InnerNopolExample.this.fieldOfInnerClass");
+		testReachedVariableNames(element, "aBoolean",
+										  "nopol_examples.nopol_example_2.NopolExample.InnerNopolExample.this.fieldOfInnerClass",
+										  "nopol_examples.nopol_example_2.NopolExample.this.fieldOfOuterClass");
 	}
 	
 	@Test
@@ -269,11 +274,54 @@ public class ValuesCollectorTest {
 	
 	@Test
 	public void fieldsOfParameters() {
-		CtElement element = elementInClassToSpoon("(nested.publicNestedInstanceField) == null");
-		testReachedVariableNames(element, "nested", "nested.protectedNestedInstanceField", "nested.publicNestedInstanceField", "nested.privateNestedInstanceField",
-										  "ClassToSpoon.protectedStaticField", "ClassToSpoon.publicStaticField", "ClassToSpoon.privateStaticField");
+		CtElement element = elementInClassToSpoon("nested2 != null");
+		testReachedVariableNames(element, "comparable",
+										  "nested2",
+										  "comparable.privateNestedInstanceField",
+										  "comparable.publicNestedInstanceField",
+										  "comparable.protectedNestedInstanceField",
+										  "spoon.example.ClassToSpoon.protectedStaticField",
+										  "spoon.example.ClassToSpoon.privateStaticField",
+										  "spoon.example.ClassToSpoon.publicStaticField",
+										  "nested2.privateInstanceField",
+										  "nested2.publicInstanceField",
+										  "nested2.protectedInstanceField",
+										  "spoon.example.ClassToSpoon.this.publicInstanceField",
+										  "spoon.example.ClassToSpoon.this.privateInstanceField",
+										  "spoon.example.ClassToSpoon.this.protectedInstanceField");
 	}
-
+	
+	@Test
+	public void fieldsOfParametersFromNestedClass() {
+		CtElement element = elementInClassToSpoon("nested != null");
+		testReachedVariableNames(element, "comparable",
+										  "nested",
+										  "comparable.privateNestedInstanceField",
+										  "comparable.publicNestedInstanceField",
+										  "comparable.protectedNestedInstanceField",
+										  "spoon.example.ClassToSpoon.protectedStaticField",
+										  "spoon.example.ClassToSpoon.privateStaticField",
+										  "spoon.example.ClassToSpoon.publicStaticField",
+										  "nested.publicInstanceField",
+										  "nested.protectedInstanceField",
+										  "spoon.example.ClassToSpoon.NestedClassToSpoon.this.protectedNestedInstanceField",
+										  "spoon.example.ClassToSpoon.NestedClassToSpoon.this.publicNestedInstanceField",
+										  "spoon.example.ClassToSpoon.NestedClassToSpoon.this.privateNestedInstanceField",
+										  "spoon.example.ClassToSpoon.this.publicInstanceField",
+										  "spoon.example.ClassToSpoon.this.privateInstanceField",
+										  "spoon.example.ClassToSpoon.this.protectedInstanceField");
+	}
+	
+	@Test
+	public void fieldsOfParametersFromAnonymousClass() {
+		CtElement element = elementInClassToSpoon("comparable != null");
+		testReachedVariableNames(element, "comparable",
+										  "this.anonymousField",
+										  "comparable.privateNestedInstanceField",
+										  "comparable.protectedNestedInstanceField",
+										  "comparable.publicNestedInstanceField");
+	}
+	
 	@Test
 	public void replaceQuotationMarksToCollectSubconditions() {
 		RuntimeValues<Boolean> runtimeValues = RuntimeValues.newInstance();
@@ -281,7 +329,7 @@ public class ValuesCollectorTest {
 		String toMatch = "collectInput(\"\\\"aaaa\\\".startsWith(\\\"b\\\")\", \"aaaa\".startsWith(\"b\"))";
 		assertTrue(invocation.endsWith(toMatch));
 	}
-	
+
 	@Test
 	public void collectSubexpressionValues() {
 		CtElement element = elementInNopolProject(8, "(((a * b) < 11) || (productLowerThan100(a, b))) || (!(a < b))");

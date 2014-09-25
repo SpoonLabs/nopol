@@ -4,6 +4,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static xxl.java.library.LoggerLibrary.logDebug;
 import static xxl.java.library.LoggerLibrary.loggerFor;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -38,6 +39,18 @@ public class TestSuiteExecution {
 	public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread, RunListener listener) {
 		return executionResult(new JUnitSingleTestRunner(testCase, listener), classLoaderForTestThread);
 	}
+	
+	public static CompoundResult runTestCases(Collection<TestCase> testCases, ClassLoader classLoaderForTestThread) {
+		return runTestCases(testCases, classLoaderForTestThread, nullRunListener());
+	}
+	
+	public static CompoundResult runTestCases(Collection<TestCase> testCases, ClassLoader classLoaderForTestThread, RunListener listener) {
+		List<Result> results = MetaList.newArrayList(testCases.size());
+		for (TestCase testCase : testCases) {
+			results.add(runTestCase(testCase, classLoaderForTestThread, listener));
+		}
+		return new CompoundResult(results);
+	}
 
 	private static Result executionResult(Callable<Result> callable, ClassLoader classLoaderForTestThread) {
 		ExecutorService executor = Executors.newSingleThreadExecutor(new CustomClassLoaderThreadFactory(classLoaderForTestThread));
@@ -50,6 +63,7 @@ public class TestSuiteExecution {
 			throw new RuntimeException(e);
 		} catch (TimeoutException e) {
 			logDebug(logger(), String.format("Timeout after %d seconds. Infinite loop?", secondsForTimeout()));
+			throw new RuntimeException(e);
 		}
 		executor.shutdownNow();
 		return result;

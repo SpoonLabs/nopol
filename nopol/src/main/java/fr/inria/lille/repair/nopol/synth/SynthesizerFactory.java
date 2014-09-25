@@ -23,14 +23,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.processing.Processor;
+import spoon.reflect.code.CtStatement;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
-import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.repair.nopol.SourceLocation;
-import fr.inria.lille.repair.nopol.synth.conditional.ConditionalReplacer;
-import fr.inria.lille.repair.nopol.synth.conditional.SpoonConditionalPredicate;
-import fr.inria.lille.repair.nopol.synth.precondition.ConditionalAdder;
-import fr.inria.lille.repair.nopol.synth.precondition.SpoonStatementPredicate;
+import fr.inria.lille.repair.nopol.spoon.ConditionalAdder;
+import fr.inria.lille.repair.nopol.spoon.ConditionalLoggingInstrumenter;
+import fr.inria.lille.repair.nopol.spoon.ConditionalProcessor;
+import fr.inria.lille.repair.nopol.spoon.ConditionalReplacer;
 
 /**
  * @author Favio D. DeMarco
@@ -52,42 +52,27 @@ public final class SynthesizerFactory {
 	}
 
 	public Synthesizer getFor(final SourceLocation statement) {
-		DelegatingProcessor processor;
-		BugKind type = getType(statement);
-		RuntimeValues<Boolean> runtimeValues = runtimeValuesInstance;
-		if (NoPol.isOneBuild()) {
-			runtimeValues = RuntimeValues.newInstance();
-		}
-		switch (type) {
-		case CONDITIONAL:
-			processor = new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE,
-					statement.getSourceFile(sourceFolder), statement.getLineNumber());
-			processor.addProcessor((Processor) new ConditionalLoggingInstrumenter(runtimeValues, ConditionalValueHolder.VARIABLE_NAME));
-			processor.addProcessor(new ConditionalReplacer(ConditionalValueHolder.VARIABLE_NAME));
-
-			break;
-		case PRECONDITION:
-			processor = new DelegatingProcessor(SpoonStatementPredicate.INSTANCE,
-					statement.getSourceFile(sourceFolder), statement.getLineNumber());
-			processor.addProcessor((Processor) new ConditionalLoggingInstrumenter(runtimeValues, ConditionalValueHolder.VARIABLE_NAME));
-			processor.addProcessor(new ConditionalAdder(ConditionalValueHolder.VARIABLE_NAME)); 
-			logger.debug("No synthetizer found for {}, trying a precondition.", statement);
-			break;
-		default:
-			logger.debug("No synthetizer found for {}.", statement);
-			return NO_OP_SYNTHESIZER;
-		}
 		nbStatementsAnalysed++;
-		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, runtimeValues, statement, processor, spooner, type);
-		return new DefaultSynthesizer(constraintModelBuilder, statement, type, sourceFolder);
+		ConditionalProcessor conditional = null;
+		RuntimeValues<Boolean> runtimeValues = runtimeValuesInstance;
+		BugKindDetector detector = new BugKindDetector(statement.getSourceFile(sourceFolder), statement.getLineNumber());
+		spooner.processClass(statement.getRootClassName(), detector);
+		switch (detector.getType()) {
+			case CONDITIONAL:
+				conditional = new ConditionalReplacer(detector.statement());
+				break;
+			case PRECONDITION:
+				conditional = new ConditionalAdder(detector.statement());
+				break;
+			default:
+				logger.debug("No synthetizer found for {}.", statement);
+				return NO_OP_SYNTHESIZER;
+		}
+		Processor<CtStatement> processor = new ConditionalLoggingInstrumenter(runtimeValuesInstance, conditional);
+		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, runtimeValues, statement, processor, spooner);
+		return new DefaultSynthesizer(constraintModelBuilder, statement, detector.getType(), sourceFolder, conditional);
 	}
 
-	private BugKind getType(final SourceLocation rc) {
-		BugKindDetector detector = new BugKindDetector(rc.getSourceFile(sourceFolder), rc.getLineNumber());
-		spooner.processClass(rc.getRootClassName(), detector);
-		return detector.getType();
-	}
-	
 	public static int getNbStatementsAnalysed(){
 		return nbStatementsAnalysed;
 	}

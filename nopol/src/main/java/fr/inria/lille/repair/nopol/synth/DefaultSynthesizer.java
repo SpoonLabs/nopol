@@ -23,12 +23,14 @@ import java.util.Collection;
 
 import org.slf4j.LoggerFactory;
 
+import xxl.java.junit.TestCase;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.nopol.patch.Patch;
 import fr.inria.lille.repair.nopol.patch.StringPatch;
+import fr.inria.lille.repair.nopol.spoon.ConditionalProcessor;
 
 /**
  * @author Favio D. DeMarco
@@ -40,12 +42,13 @@ public final class DefaultSynthesizer implements Synthesizer {
 	private final ConstraintModelBuilder constraintModelBuilder;
 	private final BugKind type;
 	private static int nbStatementsWithAngelicValue = 0;
+	private ConditionalProcessor conditionalProcessor;
 
-	public DefaultSynthesizer(final ConstraintModelBuilder constraintModelBuilder, final SourceLocation sourceLocation,
-			final BugKind type, final File outputFolder) {
+	public DefaultSynthesizer(ConstraintModelBuilder constraintModelBuilder, SourceLocation sourceLocation, BugKind type, File outputFolder, ConditionalProcessor processor) {
 		this.constraintModelBuilder = constraintModelBuilder;
 		this.sourceLocation = sourceLocation;
 		this.type = type;
+		conditionalProcessor = processor;
 	}
 
 	/*
@@ -54,8 +57,8 @@ public final class DefaultSynthesizer implements Synthesizer {
 	 * @see fr.inria.lille.jefix.synth.Synthesizer#buildPatch(java.net.URL[], java.lang.String[])
 	 */
 	@Override
-	public Patch buildPatch(final URL[] classpath, final String[] testClasses) {
-		Collection<Specification<Boolean>> data = constraintModelBuilder.buildFor(classpath, testClasses);
+	public Patch buildPatch(URL[] classpath, String[] testClasses, Collection<TestCase> failures) {
+		Collection<Specification<Boolean>> data = constraintModelBuilder.buildFor(classpath, testClasses, failures);
 
 		// XXX FIXME TODO move this
 		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
@@ -83,4 +86,10 @@ public final class DefaultSynthesizer implements Synthesizer {
 	public static int getNbStatementsWithAngelicValue(){
 		return nbStatementsWithAngelicValue;
 	}
+
+	@Override
+	public ConditionalProcessor getConditionalProcessor() {
+		return conditionalProcessor;
+	}
+
 }

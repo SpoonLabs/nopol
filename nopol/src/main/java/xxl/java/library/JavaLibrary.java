@@ -103,6 +103,14 @@ public class JavaLibrary {
 		}
 	}
 
+	public static Class<?> classFromClasspath(URL classpath, String qualifiedName) {
+		Collection<Class<?>> classes = classesFromClasspath(new URL[] { classpath }, asList(qualifiedName));
+		if (classes.isEmpty()) {
+			return null;
+		}
+		return classes.iterator().next();
+	}
+	
 	public static Collection<Class<?>> classesFromClasspath(URL[] classpath, Collection<String> qualifiedNames) {
 		URLClassLoader loader = new URLClassLoader(classpath);
 		Collection<Class<?>> classes = loadedClassesFrom(loader, qualifiedNames);

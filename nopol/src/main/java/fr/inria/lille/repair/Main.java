@@ -46,7 +46,7 @@ public class Main {
     
 	private Main(String[] args, String repairMethod, File sourceFile, URL[] classpaths) {
 		if (repairMethod.equalsIgnoreCase("nopol")) {
-			NoPolLauncher.launch(sourceFile, classpaths, false, Arrays.copyOfRange(args, 5, args.length));
+			NoPolLauncher.launch(sourceFile, classpaths, Arrays.copyOfRange(args, 5, args.length));
 		}
 		else if (repairMethod.equalsIgnoreCase("infinitel")) {
 			Infinitel.run(sourceFile, classpaths);

@@ -25,13 +25,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.processing.Processor;
-import xxl.java.container.classic.MetaSet;
+import xxl.java.junit.CompoundResult;
+import xxl.java.junit.TestCase;
 import xxl.java.junit.TestSuiteExecution;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.commons.trace.SpecificationTestCasesListener;
-import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.repair.nopol.SourceLocation;
 
 /**
@@ -42,54 +42,35 @@ public final class ConstraintModelBuilder {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private boolean viablePatch;
-	private final BugKind type;
-	private final int mapID;
-	
 	private final ClassLoader classLoader;
 	private RuntimeValues<Boolean> runtimeValues;
 	private SourceLocation sourceLocation;
 	
-	public ConstraintModelBuilder(final File sourceFolder, RuntimeValues<Boolean> runtimeValues, final SourceLocation sourceLocation,
-			final Processor<?> processor, SpoonedProject spooner, final BugKind type) {
-		this.type = type;
-		mapID = ConditionalValueHolder.ID_Conditional;
+	public ConstraintModelBuilder(File sourceFolder, RuntimeValues<Boolean> runtimeValues, SourceLocation sourceLocation, Processor<?> processor, SpoonedProject spooner) {
 		this.sourceLocation = sourceLocation;
 		String qualifiedName = sourceLocation.getRootClassName();
-		if ( NoPol.isOneBuild() ){
-			ConditionalValueHolder.ID_Conditional++;
-			classLoader = spooner.processedAndDumpedToClassLoader(qualifiedName, processor);
-		} else {
-			classLoader = spooner.forked(qualifiedName).processedAndDumpedToClassLoader(processor);
-		}
+		classLoader = spooner.forked(qualifiedName).processedAndDumpedToClassLoader(processor);
 		this.runtimeValues = runtimeValues;
 	}
 
 	/**
 	 * @see fr.inria.lille.repair.nopol.synth.ConstraintModelBuilder#buildFor(java.net.URL[], java.lang.String[])
 	 */
-	public Collection<Specification<Boolean>> buildFor(final URL[] classpath, final String[] testClasses) {
-		Collection<Specification<Boolean>> specifications = MetaSet.newHashSet();
-		if (NoPol.isOneBuild()) {
-			ConditionalValueHolder.ID_Conditional = mapID;
-			if (type == BugKind.CONDITIONAL || type == BugKind.PRECONDITION) {
-				ConditionalValueHolder.enableNextCondition();
-			}
-		}
+	public Collection<Specification<Boolean>> buildFor(URL[] classpath, String[] testClasses, Collection<TestCase> failures) {
 		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<Boolean>(runtimeValues);
-		Result firstResult = TestSuiteExecution.runCasesIn(testClasses, classLoader, listener);
-		if (firstResult == null) {
-			return specifications;
+		AngelicExecution.enable();
+		CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, listener);
+		AngelicExecution.flip();
+		CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, listener);
+		AngelicExecution.disable();
+		if (determineViability(firstResult, secondResult)) {
+			/* to collect information for passing tests */
+			TestSuiteExecution.runCasesIn(testClasses, classLoader, listener);
 		}
-		ConditionalValueHolder.flip();
-		Result secondResult = TestSuiteExecution.runCasesIn(testClasses, classLoader, listener);
-		if (secondResult == null || firstResult.getFailureCount()==0 || secondResult.getFailureCount() == 0){
-			return specifications;
-		}
-		determineViability(firstResult, secondResult);
 		return listener.specifications();
 	}
-
-	private void determineViability(final Result firstResult, final Result secondResult) {
+	
+	private boolean determineViability(final Result firstResult, final Result secondResult) {
 		Collection<Description> firstFailures = TestSuiteExecution.collectDescription(firstResult.getFailures());
 		Collection<Description> secondFailures = TestSuiteExecution.collectDescription(secondResult.getFailures());
 		firstFailures.retainAll(secondFailures);
@@ -100,6 +81,7 @@ public final class ConstraintModelBuilder {
 			testsOutput.debug("First set: \n{}", firstResult.getFailures());
 			testsOutput.debug("Second set: \n{}", secondResult.getFailures());
 		}
+		return viablePatch;
 	}
 
 	/**

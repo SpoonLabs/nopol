@@ -4,18 +4,40 @@ import java.util.Collection;
 
 public class ClassToSpoon {
 	
-	static class NestedClassToSpoon {
+	class NestedClassToSpoon {
 		public String publicNestedInstanceField;
 		private String privateNestedInstanceField;
 		protected String protectedNestedInstanceField;
+		
+		public int process(NestedClassToSpoon comparable, ClassToSpoon nested) {
+			if (nested != null) {
+				return 1;
+			}
+			return 0;
+		}
+	}
+
+	public void comparable(final ClassToSpoon nested) {
+		new Comparable<NestedClassToSpoon>() {
+			@Override
+			public int compareTo(NestedClassToSpoon comparable) {
+				if (comparable != null) {
+					return process(comparable, nested);
+				}
+				return 0;
+			}
+			private String anonymousField = "doley";
+		};
 	}
 	
-	public static void process(NestedClassToSpoon nested) {
-		if (nested.publicNestedInstanceField == null) {
-			nested.publicNestedInstanceField = "public";
-			nested.privateNestedInstanceField = "private";
-			nested.protectedNestedInstanceField = "protected";
+	public int process(NestedClassToSpoon comparable, ClassToSpoon nested2) {
+		if (nested2 != null) {
+			if (comparable.publicNestedInstanceField == null) {
+				return 1;
+			}
+			return 2;
 		}
+		return 3;
 	}
 	
 	public String publicInstanceField;

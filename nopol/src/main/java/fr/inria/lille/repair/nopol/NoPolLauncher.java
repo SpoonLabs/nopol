@@ -39,9 +39,8 @@ public class NoPolLauncher {
 		Main.main(new String[] {"nopol", filePath, classpath, solverName, solverPath});
 	}
 	
-	public static void launch(File sourceFile, URL[] classpath, boolean oneBuild, String[] args) {
+	public static void launch(File sourceFile, URL[] classpath, String[] args) {
 		long executionTime = System.currentTimeMillis();
-		NoPol.setOneBuild(oneBuild);
 		NoPol nopol = new NoPol(sourceFile, classpath);
 		List<Patch> patches = null;
 		if (args.length > 0) {

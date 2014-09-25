@@ -89,7 +89,7 @@ public class NopolTest {
 	public void example2Fix() {
 		Collection<String> failedTests = asList("test1", "test2", "test4", "test5", "test6", "test7");
 		Patch patch = test(2, 11, BugKind.CONDITIONAL, failedTests);
-		fixComparison(patch, "(a)<=(b)", "(a)<(b)", "(1)<=((b - a))", "(0)<=((b - a))", "(1)<((b - a))");
+		fixComparison(patch, "(a)<=(b)", "(a)<(b)", "(1)<=((b - a))", "(0)<=((b - a))", "(1)<((b - a))", "(0)<((b - a))");
 	}
 	
 	@Test
@@ -127,7 +127,9 @@ public class NopolTest {
 				"(intermediaire == 0)&&((!(((a)+(-1))<=(1)))||((((a)+(-1))-(-1))==(intermediaire)))",
 				"((1)<=((1)-(a)))||((intermediaire == 0)&&((intermediaire)!=(((1)-(a))+(1))))",
 				"(intermediaire == 0)&&((((1)-((a)+(0)))<(-1))||(((a)+(0))!=((a)+(0))))",
-				"!((((a)+(-1))<=(1))||((0)!=(intermediaire)))");
+				"!((((a)+(-1))<=(1))||((0)!=(intermediaire)))",
+				"(!(((1)==(intermediaire))||(((a)+(-1))<=(1))))&&(!(((1)==(intermediaire))||(((a)+(-1))<=(1))))",
+				"!(((intermediaire)!=(0))||(((1)-(-1))==(a)))");
 	}
 	
 	@Test
@@ -168,11 +170,8 @@ public class NopolTest {
 	
 	private List<Patch> patchFor(ProjectReference project) {
 		clean(project.sourceFile().getParent());
-		boolean originalvalue = NoPol.isOneBuild();
-		NoPol.setOneBuild(false);
 		NoPol nopol = new NoPol(project.sourceFile(), project.classpath());
 		List<Patch> patches = nopol.build(project.testClasses());
-		NoPol.setOneBuild(originalvalue);
 		clean(project.sourceFile().getParent());
 		return patches;
 	}

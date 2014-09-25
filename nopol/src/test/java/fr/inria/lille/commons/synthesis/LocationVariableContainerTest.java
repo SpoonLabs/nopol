@@ -57,6 +57,10 @@ public class LocationVariableContainerTest {
 		assertTrue(MetaList.isPartitionOf(container.operatorsAndParameters(), container.operators(), container.allParameters()));
 		assertTrue(MetaList.isPartitionOf(container.operatorsParametersAndOutput(), container.operatorsAndParameters(), asList(container.outputVariable())));
 		assertTrue(MetaList.isPartitionOf(container.allVariables(), container.inputs(), container.operatorsParametersAndOutput()));
+		
+		assertTrue(3 == container.numberOfInputs());
+		assertTrue(4 == container.numberOfOperators());
+		assertTrue(7 == container.outputVariable().index());
 	}
 
 	private void checkInput(LocationVariableContainer container, Class<?> expectedClass, int inputIndex) {

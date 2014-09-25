@@ -84,7 +84,7 @@ public class LoopInstrumenter {
 	}
 
 	private static void declareEntrancesCounter(Factory factory, CtWhile loop, LoopMonitor loopMonitor, String counterName) {
-		CtLocalVariable<Integer> counterCreation = newLocalVariableDeclaration(factory, "int", counterName, 0, loop.getParent());
+		CtLocalVariable<Integer> counterCreation = newLocalVariableDeclaration(factory, int.class, counterName, 0, loop.getParent());
 		insertBeforeUnderSameParent(counterCreation, loop);
 	}
 

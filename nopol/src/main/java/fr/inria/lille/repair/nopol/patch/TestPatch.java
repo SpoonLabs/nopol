@@ -15,28 +15,16 @@
  */
 package fr.inria.lille.repair.nopol.patch;
 
-import static java.util.Arrays.asList;
-
 import java.io.File;
-import java.util.List;
 
 import org.junit.runner.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spoon.processing.Processor;
-import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
-import spoon.support.JavaOutputProcessor;
-import spoon.support.StandardEnvironment;
 import xxl.java.junit.TestSuiteExecution;
 import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
-import fr.inria.lille.repair.nopol.synth.BugKind;
-import fr.inria.lille.repair.nopol.synth.DelegatingProcessor;
-import fr.inria.lille.repair.nopol.synth.conditional.ConditionalReplacer;
-import fr.inria.lille.repair.nopol.synth.conditional.SpoonConditionalPredicate;
-import fr.inria.lille.repair.nopol.synth.precondition.ConditionalAdder;
-import fr.inria.lille.repair.nopol.synth.precondition.SpoonStatementPredicate;
+import fr.inria.lille.repair.nopol.spoon.ConditionalProcessor;
 
 /**
  * @author Favio D. DeMarco
@@ -60,32 +48,22 @@ public final class TestPatch {
 		return SPOON_DIRECTORY;
 	}
 	
-	public boolean passesAllTests(final Patch patch, final String[] testClasses) {
+	public boolean passesAllTests(Patch patch, String[] testClasses, ConditionalProcessor processor) {
 		logger.info("Applying patch: {}", patch);
 		String qualifiedName = patch.getRootClassName();
 		SpoonedClass spoonedClass = spoonedProject.forked(qualifiedName);
-		List<Processor<?>> processors = asList(null, null);
-		processors.set(0, createProcessor(patch, patch.getFile(sourceFolder)));
-		processors.set(1, new JavaOutputProcessor(new File(sourceFolder, SPOON_DIRECTORY), new DefaultJavaPrettyPrinter(new StandardEnvironment())));
-		ClassLoader loader = spoonedClass.processedAndDumpedToClassLoader(processors);
+		processor.setDefaultCondition(patch.asString());
+		ClassLoader loader = spoonedClass.processedAndDumpedToClassLoader(processor);
 		logger.info("Running test suite to check the patch \"{}\" is working", patch.asString());
 		Result result = TestSuiteExecution.runCasesIn(testClasses, loader);
-		return result.wasSuccessful();
+		if (result.wasSuccessful()) {
+			spoonedClass.generateOutputFile(destinationFolder());
+			return true;
+		}
+		return false;
 	}
 
-	private DelegatingProcessor createProcessor(final Patch patch, final File sourceFile) {
-		BugKind type = patch.getType();
-		String patchAsString = patch.asString();
-		int lineNumber = patch.getLineNumber();
-		switch (type) {
-		case CONDITIONAL:
-			return new DelegatingProcessor(SpoonConditionalPredicate.INSTANCE, sourceFile, lineNumber)
-			.addProcessor(new ConditionalReplacer(patchAsString));
-		case PRECONDITION:
-			return new DelegatingProcessor(SpoonStatementPredicate.INSTANCE, sourceFile, lineNumber)
-			.addProcessor(new ConditionalAdder(patchAsString));
-		default:
-			throw new IllegalStateException("Unknown patch type " + type);
-		}
+	private File destinationFolder() {
+		return new File(sourceFolder, SPOON_DIRECTORY);
 	}
 }

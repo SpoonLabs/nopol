@@ -41,5 +41,5 @@ public class NopolExample {
 		};
 	}
 	
-	private int fieldOfOuterClass;
+	private int fieldOfOuterClass = 12302;
 }

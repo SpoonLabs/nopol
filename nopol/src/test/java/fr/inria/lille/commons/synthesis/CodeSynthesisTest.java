@@ -112,6 +112,23 @@ public class CodeSynthesisTest {
 	}
 	
 	@Test
+	public void goldbachConjectureSynthesis() {
+		Collection<OperatorTheory> theories = (List) asList(new NumberComparisonTheory(), new LinearTheory());
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MetaMap.newHashMap(), theories);
+		Map<String, Object> first = (Map) MetaMap.newHashMap(asList("p", "q", "n"), asList(3, 3, 6));
+		Map<String, Object> second  = (Map) MetaMap.newHashMap(asList("p", "q", "n"), asList(13, 5, 18));
+		Map<String, Object> third = (Map) MetaMap.newHashMap(asList("p", "q", "n"), asList(2, 5, 6));
+		Map<String, Object> fourth = (Map) MetaMap.newHashMap(asList("p", "q", "n"), asList(13, 5, 12));
+		Specification firstS = new Specification<>(first, true);
+		Specification secondS = new Specification<>(second, true);
+		Specification thirdS = new Specification<>(third, false);
+		Specification fourthS = new Specification<>(fourth, false);
+		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Boolean.class, (List) asList(firstS, secondS, thirdS, fourthS));
+		assertTrue(genesis.isSuccessful());
+		assertTrue(asList("((q)+(p))==(n)").contains(genesis.returnStatement()));
+	}
+	
+	@Test
 	public void defaultConstants() {
 		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis();
 		Map<String, Integer> expectedDefaultContants = MetaMap.newHashMap(asList("-1", "0", "1"), asList(-1 , 0, 1));

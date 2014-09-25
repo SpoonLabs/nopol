@@ -67,19 +67,26 @@ public class SpoonModelLibrary {
 		return newLiteral;
 	}
 	
-	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, String classSimpleName, String variableName, T defaultValue, CtElement parent) {
-		CtLocalVariable<T> localVariable = newLocalVariableDeclaration(factory, classSimpleName, variableName, defaultValue);
+	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, Class<T> type, String variableName, T defaultValue, CtElement parent) {
+		CtLocalVariable<T> localVariable = newLocalVariableDeclaration(factory, type, variableName, defaultValue);
 		setParent(parent, localVariable);
 		return localVariable;
 	}
 	
-	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, String classSimpleName, String variableName, T defaultValue) {
+	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, Class<T> type, String variableName, T defaultValue) {
+		return newLocalVariable(factory, type.getSimpleName(), variableName, newLiteral(factory, defaultValue));
+	}
+	
+	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, Class<T> type, String variableName, String defaultValue) {
+		return newLocalVariable(factory, type.getSimpleName(), variableName, newExpressionFromSnippet(factory, defaultValue, type));
+	}
+	
+	public static <T> CtLocalVariable<T> newLocalVariable(Factory factory, String classSimpleName, String variableName, CtExpression<T> defaultValue) {
 		CtTypeReference<T> type = factory.Core().createTypeReference();
 		type.setSimpleName(classSimpleName);
-		CtLiteral<T> defaultExpression = newLiteral(factory, defaultValue);
-		return factory.Code().createLocalVariable(type, variableName, defaultExpression);
+		return factory.Code().createLocalVariable(type, variableName, defaultValue);
 	}
-
+	
 	public static <T> CtExpression<T> newExpressionFromSnippet(Factory factory, String codeSnippet, Class<T> expressionClass, CtElement parent) {
 		CtExpression<T> expression = newExpressionFromSnippet(factory, codeSnippet, expressionClass);
 		setParent(parent, expression);

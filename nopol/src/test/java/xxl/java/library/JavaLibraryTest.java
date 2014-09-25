@@ -1,12 +1,11 @@
 package xxl.java.library;
 
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static xxl.java.library.JavaLibrary.asClasspath;
 import static xxl.java.library.JavaLibrary.asFilePath;
-import static xxl.java.library.JavaLibrary.classesFromClasspath;
+import static xxl.java.library.JavaLibrary.classFromClasspath;
 import static xxl.java.library.JavaLibrary.folderPathSeparator;
 import static xxl.java.library.JavaLibrary.packageName;
 import static xxl.java.library.JavaLibrary.simpleClassName;
@@ -15,11 +14,8 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
 
 import org.junit.Test;
-
-import xxl.java.container.classic.MetaCollection;
 
 public class JavaLibraryTest {
 
@@ -70,9 +66,8 @@ public class JavaLibraryTest {
 	public void loadingClassFromClasspath() throws Exception {
 		String qualifiedName = "xxl.java.library.HelloWorld";
 		URL classpath = FileLibrary.resource("/helloWorld/HelloWorld.jar");
-		Collection<Class<?>> classes = classesFromClasspath(new URL[] { classpath }, asList(qualifiedName));
-		assertEquals(1, classes.size());
-		Class<?> helloWorldClass = MetaCollection.any(classes);
+		Class<?> helloWorldClass = classFromClasspath(classpath, qualifiedName);
+		assertTrue(helloWorldClass != null);
 		Method greet = helloWorldClass.getMethod("greet");
 		assertEquals("Hello, world!", greet.invoke(helloWorldClass.newInstance()));
 	}
