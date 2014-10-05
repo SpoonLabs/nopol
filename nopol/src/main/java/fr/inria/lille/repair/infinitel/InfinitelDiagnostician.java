@@ -78,17 +78,21 @@ public class InfinitelDiagnostician extends Infinitel {
 		int label = 1;
 		Collection<Pair<Integer, Integer>> sortedRanges = MetaCollection.sorted(asMappingBag(testResult.aggregatedExitRecords()).asSet());
 		for (While loop : testResult.loops()) {
+			Bag<Integer> exitRecords = testResult.aggregatedExitRecordsOf(loop);
 			table.put(loop, "label", label++);
 			table.put(loop, "breaks", loop.numberOfBreaks());
 			table.put(loop, "returns", loop.numberOfReturns());
+			table.put(loop, "unbreakable", loop.isUnbreakable());
 			table.put(loop, "iterations", testResult.aggregatedNumberOfIterations(loop));
 			table.put(loop, "invocations", testResult.aggregatedNumberOfRecords(loop));
+			table.put(loop, "invocations-0", exitRecords.repetitionsOf(0));
+			table.put(loop, "invocations-1", exitRecords.repetitionsOf(1));
 			table.put(loop, "conditional-exits", testResult.aggregatedNumberOfConditionalExits(loop));
 			table.put(loop, "break-exits", testResult.aggregatedNumberOfBreakExits(loop));
 			table.put(loop, "return-exits", testResult.aggregatedNumberOfReturnExits(loop));
 			table.put(loop, "tests", testResult.numberOfTestsOf(loop));
 			table.put(loop, "top-record", testResult.aggregatedTopRecord(loop));
-			putRanges(table, loop, "exit", sortedRanges, testResult.aggregatedExitRecordsOf(loop));
+			putRanges(table, loop, "exit", sortedRanges, exitRecords);
 			putRanges(table, loop, "break", sortedRanges, testResult.aggregatedBreakRecordsOf(loop));
 			putRanges(table, loop, "return", sortedRanges, testResult.aggregatedReturnRecordsOf(loop));
 			table.put(loop, "condition", loop.loopingCondition());

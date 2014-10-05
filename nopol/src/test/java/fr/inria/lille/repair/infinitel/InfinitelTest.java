@@ -37,23 +37,30 @@ public class InfinitelTest {
 	@Ignore
 	@Test
 	public void realProject() {
-		String pwd = "/Users/virtual/Desktop/data/projects/apache-commons/math/";
-		String src = pwd + "src/main/java";
+		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+		String pwd = "/Users/virtual/Desktop/piggybank/";
+		String src = pwd + "src/main/java/";
 		String ab = pwd + "target/classes/";
 		String ac = pwd + "target/test-classes/";
-		String ad = pwd + "../_dependencies/easymock-3.2.jar";
-		Main.main(new String[] {"infinitel", src, ac + ":" + ab + ":" + ad, "z3", pwd + "../_solver/z3"});
+		String[] deps = new String[] {"pig-0.12.0-SNAPSHOT-withdependencies.jar", "pig-0.12.0-SNAPSHOT.jar",
+									  "hive-exec-0.8.0.jar", "hsqldb-1.8.0.10.jar", "jetty-util-6.1.26.jar", "json-simple-1.1.jar"};
+		String dependency = "";
+		for (String dep : deps) {
+			dependency += ":" + pwd + "lib/" + dep;
+		}
+		dependency = dependency.substring(1);
+		Main.main(new String[] {"infinitel", src, dependency + ":" + ac + ":" + ab, "z3", pwd + "lib/z3_for_mac"});
 	}
 	
 	@Test
-	public void loopNotProcessedInNonVoidReturningMethodLastStatement() {
+	public void unbreakableLoops() {
 		Infinitel infinitel = infinitel(1);
 		ProjectMonitorImplanter implanter = new ProjectMonitorImplanter(0);
 		Map<String, CtWhile> loops = loopsByMethodIn(infinitel.project().sourceFile(), 4);
-		assertTrue(implanter.isToBeProcessed(loops.get("loopResult")));
-		assertTrue(implanter.isToBeProcessed(loops.get("fixableInfiniteLoop")));
-		assertFalse(implanter.isToBeProcessed(loops.get("unfixableInfiniteLoop")));
-		assertFalse(implanter.isToBeProcessed(loops.get("otherUnfixableInfiniteLoop")));
+		assertFalse(implanter.isUnbreakable(loops.get("loopResult")));
+		assertFalse(implanter.isUnbreakable(loops.get("fixableInfiniteLoop")));
+		assertTrue(implanter.isUnbreakable(loops.get("unfixableInfiniteLoop")));
+		assertTrue(implanter.isUnbreakable(loops.get("otherUnfixableInfiniteLoop")));
 	}
 	
 	@Test
@@ -72,10 +79,10 @@ public class InfinitelTest {
 	public void numberOfReturnsInExample1() {
 		Infinitel infinitel = infinitel(1);
 		MonitoringTestExecutor executor = infinitel.newTestExecutor();
-		Map<Integer, Integer> numberOfReturns = MetaMap.newHashMap(asList(8, 16), asList(0, 2));
+		Map<Integer, Integer> numberOfReturns = MetaMap.newHashMap(asList(8, 16, 26, 37), asList(0, 2, 2, 2));
 		Collection<While> allLoops = executor.monitor().allLoops();
 		assertEquals(numberOfReturns.size(), allLoops.size());
-		assertEquals(1, While.loopsWithReturn(allLoops).size());
+		assertEquals(3, While.loopsWithReturn(allLoops).size());
 		for (While loop : allLoops) {
 			assertEquals(numberOfReturns.get(loop.position().getLine()).intValue(), loop.returnStatements().size());
 		}

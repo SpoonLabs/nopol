@@ -37,17 +37,21 @@ public class LoopInstrumenter {
 		String conditionName = "loopConditionEvaluation_" + monitorID;
 		CtWhile astLoop = loopMonitor.loop().astLoop();
 		Factory factory = astLoop.getFactory();
+		boolean unbreakable = loopMonitor.loop().isUnbreakable();
 		Collection<String> collectables = collectableFinder().findFromWhile(astLoop);
-		CtIf newIf = loopBodyWrapper(factory, astLoop, loopMonitor, counterName, conditionName);
-		appendMonitoredExit(factory, loopMonitor, counterName);
+		CtIf newIf = loopBodyWrapper(factory, astLoop, loopMonitor, counterName, conditionName, unbreakable);
+		appendMonitoredExit(factory, loopMonitor, counterName, unbreakable);
 		declareEntrancesCounter(factory, astLoop, loopMonitor, counterName);
 		appendCounterIncrementation(newIf, loopMonitor, counterName);
 		traceReachableValues(collectables, conditionName, runtimeValues, newIf);
 	}
 	
-	private static CtIf loopBodyWrapper(Factory factory, CtWhile loop, LoopMonitor loopMonitor, String counterName, String conditionName) {
+	private static CtIf loopBodyWrapper(Factory factory, CtWhile loop, LoopMonitor loopMonitor, String counterName, String conditionName, boolean unbreakable) {
 		CtExpression<Boolean> monitoredCondition = newExpressionFromSnippet(factory, conditionName, Boolean.class);
 		CtIf newIf = newIf(factory, monitoredCondition, loop.getBody(), newBreak(factory));
+		if (unbreakable) {
+			newIf.setElseStatement(null);
+		}
 		setLoopBody(loop, newIf);
 		declareConditionEvaluation(factory, loop, loopMonitor, counterName, conditionName, newIf);
 		setLoopingCondition(loop, newLiteral(factory, true));
@@ -61,10 +65,12 @@ public class LoopInstrumenter {
 		insertBeforeUnderSameParent(counterCreation, newIf);
 	}
 	
-	private static void appendMonitoredExit(Factory factory, LoopMonitor loopMonitor, String counterName) {
+	private static void appendMonitoredExit(Factory factory, LoopMonitor loopMonitor, String counterName, boolean unbreakable) {
 		CtWhile astLoop = loopMonitor.loop().astLoop();
-		CtStatement monitoredExit = newStatementFromSnippet(astLoop.getFactory(), loopMonitor.invocationOnFirstStatementAfterLoop(counterName));
-		insertAfterUnderSameParent(monitoredExit, astLoop);
+		if (! unbreakable) {
+			CtStatement monitoredExit = newStatementFromSnippet(astLoop.getFactory(), loopMonitor.invocationOnFirstStatementAfterLoop(counterName));
+			insertAfterUnderSameParent(monitoredExit, astLoop);
+		}
 		appendMonitoredReturnExit(factory, loopMonitor, counterName);
 		appendMonitoredBreakExit(factory, loopMonitor, counterName);
 	}

@@ -34,16 +34,12 @@ public class ProjectMonitorImplanter extends AbstractProcessor<CtWhile> {
 	
 	@Override
 	public boolean isToBeProcessed(CtWhile loopStatement) {
-		CtMethod<?> correspondingMethod = loopStatement.getParent(CtMethod.class);
-		if (SpoonStatementLibrary.isLastStatementOfMethod(loopStatement)) {
-			return SpoonReferenceLibrary.isVoidType(correspondingMethod.getType());
-		}
 		return true;
 	}
 
 	@Override
 	public void process(CtWhile loopStatement) {
-		While loop = new While(loopStatement);
+		While loop = newLoop(loopStatement);
 		LoopMonitor loopMonitor = LoopMonitor.newInstance(loop, threshold());
 		RuntimeValues<Boolean> newRuntimeValues = RuntimeValues.newInstance();
 		submonitors().put(loop, loopMonitor);
@@ -54,6 +50,22 @@ public class ProjectMonitorImplanter extends AbstractProcessor<CtWhile> {
 	public CentralLoopMonitor implant() {
 		CentralLoopMonitor monitor = new CentralLoopMonitor(threshold(), submonitors(), runtimeValues());
 		return monitor;
+	}
+	
+	public boolean isUnbreakable(CtWhile loopStatement) {
+		CtMethod<?> correspondingMethod = loopStatement.getParent(CtMethod.class);
+		if (SpoonStatementLibrary.isLastStatementOfMethod(loopStatement)) {
+			return ! SpoonReferenceLibrary.isVoidType(correspondingMethod.getType());
+		}
+		return false;
+	}
+	
+	protected While newLoop(CtWhile loopStatement) {
+		While loop = new While(loopStatement);
+		if (isUnbreakable(loopStatement)) {
+			loop.setUnbreakable();
+		}
+		return loop;
 	}
 	
 	private int threshold() {

@@ -1,6 +1,8 @@
 package fr.inria.lille.repair.infinitel;
 
 import static java.lang.String.format;
+import static xxl.java.library.LoggerLibrary.logCollection;
+import static xxl.java.library.LoggerLibrary.logDebug;
 import static xxl.java.library.LoggerLibrary.loggerFor;
 
 import java.util.Collection;
@@ -35,6 +37,7 @@ public class InfiniteLoopFixer {
 	}
 	
 	protected CodeGenesis fixInfiniteLoop(While loop) {
+		logDebug(logger(), "Infinite loop:", loop.toString());
 		Map<TestCase, Integer> thresholds = infiniteInvocationThresholds(loop, testResult().nonHaltingTestsOf(loop));
 		Collection<Specification<Boolean>> specifications = testSpecifications(loop, thresholds);
 		return synthesisedFix(specifications);
@@ -46,6 +49,7 @@ public class InfiniteLoopFixer {
 	}
 	
 	protected Map<TestCase, Integer> infiniteInvocationThresholds(While loop, Map<TestCase, Integer> nonHaltingTests) {
+		logCollection(logger(), "Non-halting tests:", nonHaltingTests.keySet());
 		Map<TestCase, Integer> invocationThresholds = MetaMap.newHashMap();
 		for (TestCase testCase : nonHaltingTests.keySet()) {
 			Integer foundThreshold = firstSuccessfulIteration(loop, testCase, nonHaltingTests.get(testCase));
@@ -66,8 +70,9 @@ public class InfiniteLoopFixer {
 	}
 	
 	protected Collection<Specification<Boolean>> testSpecifications(While loop, Map<TestCase, Integer> thresholds) {
-		Collection<Specification<Boolean>> specifications = MetaSet.newHashSet();
 		Collection<TestCase> loopTests = testResult().testsOf(loop);
+		logCollection(logger(), "Tests of infinite loop:", loopTests);
+		Collection<Specification<Boolean>> specifications = MetaSet.newHashSet();
 		for (TestCase testCase : loopTests) {
 			Collection<Specification<Boolean>> testSpecifications;
 			if (thresholds.containsKey(testCase)) {

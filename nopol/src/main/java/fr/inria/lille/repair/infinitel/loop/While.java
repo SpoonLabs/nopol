@@ -62,6 +62,7 @@ public class While {
 		this.breakStatements = breakStatements;
 		this.returnStatements = returnStatements;
 		loopingCondition = astLoop().getLoopingExpression().toString();
+		unbreakable = false;
 	}
 	
 	public boolean hasBodyExit() {
@@ -108,6 +109,14 @@ public class While {
 		return returnStatements().size();
 	}
 	
+	public boolean isUnbreakable() {
+		return unbreakable;
+	}
+	
+	public void setUnbreakable() {
+		unbreakable = true;
+	}
+	
 	public Collection<CtReturn<?>> returnStatements() {
 		return returnStatements;
 	}
@@ -138,6 +147,7 @@ public class While {
 	}
 
 	private CtWhile astLoop;
+	private boolean unbreakable;
 	private String loopingCondition;
 	private Collection<CtBreak> breakStatements; 
 	private Collection<CtReturn<?>> returnStatements;
