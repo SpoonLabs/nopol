@@ -3,6 +3,7 @@ package fr.inria.lille.commons.spoon.util;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isBlock;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isMethod;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isStatement;
+import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isStatementList;
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newBlock;
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.setParent;
 import static xxl.java.library.ClassLibrary.isInstanceOf;
@@ -12,6 +13,7 @@ import java.util.List;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtElement;
 import xxl.java.container.classic.MetaList;
 
@@ -44,10 +46,10 @@ public class SpoonStatementLibrary {
 	
 	public static boolean isLastStatementOfMethod(CtStatement statement) {
 		CtElement statementParent = statement.getParent();
-		if (! isBlock(statementParent)) {
+		if (! isStatementList(statementParent)) {
 			return isLastStatementOfMethod((CtStatement) statementParent);
 		}
-		CtBlock<?> block = (CtBlock<?>) statementParent;
+		CtStatementList block = (CtStatementList) statementParent;
 		if (isLastStatementOf(block, statement)) {
 			CtElement blockParent = block.getParent();
 			if (isStatement(blockParent)) {
@@ -59,7 +61,7 @@ public class SpoonStatementLibrary {
 		return false;
 	}
 	
-	public static boolean isLastStatementOf(CtBlock<?> block, CtStatement statement) {
+	public static boolean isLastStatementOf(CtStatementList block, CtStatement statement) {
 		List<CtStatement> statements = block.getStatements();
 		CtStatement lastStatement = MetaList.last(statements);
 		return lastStatement == statement;

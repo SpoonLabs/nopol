@@ -44,4 +44,23 @@ public class InfinitelExample {
     	else
     		return 0;
     }
+    
+    public double binomialTest(int numberOfTrials, int numberOfSuccesses, char probability) {
+	    switch (probability) {
+	        case '0':
+	            int criticalValueLow = 0;
+	            int criticalValueHigh = numberOfTrials;
+	            double pTotal = 0;
+	            while (true) {
+	                double pLow = numberOfTrials / 0.01;
+	                numberOfTrials = (int) pLow;
+	                if ((criticalValueLow > numberOfSuccesses) || (criticalValueHigh < numberOfSuccesses)) {
+	                    break;
+	                } 
+	            }
+	            return pTotal;
+	        default :
+	            return 1;
+	    }
+	}
 }

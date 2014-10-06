@@ -56,9 +56,10 @@ public class InfinitelTest {
 	public void unbreakableLoops() {
 		Infinitel infinitel = infinitel(1);
 		ProjectMonitorImplanter implanter = new ProjectMonitorImplanter(0);
-		Map<String, CtWhile> loops = loopsByMethodIn(infinitel.project().sourceFile(), 4);
+		Map<String, CtWhile> loops = loopsByMethodIn(infinitel.project().sourceFile(), 5);
 		assertFalse(implanter.isUnbreakable(loops.get("loopResult")));
 		assertFalse(implanter.isUnbreakable(loops.get("fixableInfiniteLoop")));
+		assertFalse(implanter.isUnbreakable(loops.get("binomialTest")));
 		assertTrue(implanter.isUnbreakable(loops.get("unfixableInfiniteLoop")));
 		assertTrue(implanter.isUnbreakable(loops.get("otherUnfixableInfiniteLoop")));
 	}
@@ -79,7 +80,7 @@ public class InfinitelTest {
 	public void numberOfReturnsInExample1() {
 		Infinitel infinitel = infinitel(1);
 		MonitoringTestExecutor executor = infinitel.newTestExecutor();
-		Map<Integer, Integer> numberOfReturns = MetaMap.newHashMap(asList(8, 16, 26, 37), asList(0, 2, 2, 2));
+		Map<Integer, Integer> numberOfReturns = MetaMap.newHashMap(asList(8, 16, 26, 37, 54), asList(0, 2, 2, 2, 0));
 		Collection<While> allLoops = executor.monitor().allLoops();
 		assertEquals(numberOfReturns.size(), allLoops.size());
 		assertEquals(3, While.loopsWithReturn(allLoops).size());

@@ -11,6 +11,7 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
@@ -64,6 +65,10 @@ public class SpoonElementLibrary {
 	
 	public static boolean isBlock(CtElement element) {
 		return isInstanceOf(CtBlock.class, element);
+	}
+	
+	public static boolean isStatementList(CtElement element) {
+		return isInstanceOf(CtStatementList.class, element);
 	}
 	
 	public static boolean isMethod(CtElement element) {
