@@ -6,8 +6,12 @@ import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isField;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isLocalVariable;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isParameter;
 import static java.util.Arrays.asList;
+import static xxl.java.library.LoggerLibrary.*;
+import static xxl.java.library.LoggerLibrary.loggerFor;
 
 import java.util.Collection;
+
+import org.slf4j.Logger;
 
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBlock;
@@ -67,11 +71,16 @@ public class CollectableValueFinder {
 	
 	private void addVisibleFields(Collection<String> names, CtStatement statement, CtVariable<?> variable) {
 		String variableName = nameFor(variable);
-		for (CtFieldReference<?> fieldReference : variable.getType().getAllFields()) {
-			CtField<?> field = fieldReference.getDeclaration();
-			if (field != null && hasVisibilityOf(field, statement)) {
-				names.add(nameForField(field, variableName));
+		try {
+			Collection<CtFieldReference<?>> allFields = variable.getType().getAllFields();
+			for (CtFieldReference<?> fieldReference : allFields) {
+				CtField<?> field = fieldReference.getDeclaration();
+				if (field != null && hasVisibilityOf(field, statement)) {
+					names.add(nameForField(field, variableName));
+				}
 			}
+		} catch (NoClassDefFoundError error) {
+			logWarning(logger(), error.toString());
 		}
 	}
 	
@@ -130,5 +139,9 @@ public class CollectableValueFinder {
 		InBlockFilter<CtAssignment<?,?>> inStatementBlock = new InBlockFilter(CtAssignment.class, asList(statement.getParent(CtBlock.class)));
 		Filter<CtAssignment<?,?>> inBlockFilter = new CompositeFilter(FilteringOperator.UNION, inStatementBlock, inVariableDeclarationBlock);
 		return new CompositeFilter(FilteringOperator.INTERSECTION, variableAssignment, beforeLocation, inBlockFilter);
+	}
+	
+	protected Logger logger() {
+		return loggerFor(this);
 	}
 }
