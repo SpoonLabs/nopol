@@ -16,7 +16,7 @@ public class NopolExample {
 	}
 
 	public boolean subconditionCollection(double a, double b) {
-		if ( a * b < 11 || productLowerThan100(a, b) || ! (a < b) ) {
+		if (( a * b < 11 || productLowerThan100(a, b) || ! (a < b)) || (a = -b) > 0) {
 			return false;
 		}
 		return true;

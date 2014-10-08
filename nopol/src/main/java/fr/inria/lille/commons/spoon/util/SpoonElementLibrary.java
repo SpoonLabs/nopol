@@ -39,6 +39,10 @@ public class SpoonElementLibrary {
 		return Query.getElements(factory, filter);
 	}
 	
+	public static <T extends CtElement> boolean hasChildrenOfType(CtElement rootElement, Class<T> childrenClass) {
+		return ! allChildrenOf(rootElement, childrenClass).isEmpty();
+	}
+	
 	public static boolean hasVisibilityOf(CtField<?> field, CtElement element) {
 		CtTypeReference<?> fieldClass = field.getDeclaringType().getReference();
 		CtTypeReference<?> elementClass = typeOf(element).getReference();

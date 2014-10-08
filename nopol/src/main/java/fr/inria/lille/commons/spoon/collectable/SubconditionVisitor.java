@@ -1,8 +1,11 @@
 package fr.inria.lille.commons.spoon.collectable;
 
+import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.hasChildrenOfType;
+
 import java.util.Collection;
 
 import spoon.reflect.code.BinaryOperatorKind;
+import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
@@ -49,6 +52,12 @@ public class SubconditionVisitor extends CtAbstractVisitor {
 		/* this method has to be implemented by the non abstract class */
 	}
 	
+	@Override
+	public <T, A extends T> void visitCtAssignment(CtAssignment<T, A> assignment) {
+		scan(assignment.getAssigned());
+		scan(assignment.getAssignment());
+	}
+	
 	public Collection<String> subexpressions() {
 		if (subexpressions == null) {
 			subexpressions = MetaSet.newHashSet();
@@ -58,7 +67,9 @@ public class SubconditionVisitor extends CtAbstractVisitor {
 	}
 	
 	private void addFrom(CtElement element) {
-		subexpressions().add(element.toString());
+		if (! hasChildrenOfType(element, CtAssignment.class)) {
+			subexpressions().add(element.toString());
+		}
 	}
 	
 	private CtExpression<Boolean> expression() {

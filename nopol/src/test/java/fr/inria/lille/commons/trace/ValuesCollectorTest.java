@@ -332,16 +332,22 @@ public class ValuesCollectorTest {
 
 	@Test
 	public void collectSubexpressionValues() {
-		CtElement element = elementInNopolProject(8, "(((a * b) < 11) || (productLowerThan100(a, b))) || (!(a < b))");
+		CtElement element = elementInNopolProject(8, "((((a * b) < 11) || (productLowerThan100(a, b))) || (!(a < b))) || ((a = -b) > 0)");
 		CtIf ifStatement = (CtIf) testReachedVariableNames(element, "a", "b");
-		List<String> expected = asList("(productLowerThan100(a, b))", "((a * b) < 11)", "b", "(a * b)", "a", "(!(a < b))", "11", "(a < b)",
-									   "(((a * b) < 11) || (productLowerThan100(a, b)))",
-									   "(((a * b) < 11) || (productLowerThan100(a, b))) || (!(a < b))");
+		List<String> expected = asList("0", "11", "a", "b", "-b",
+									   "(a * b)",
+									   "(a < b)", 
+									   "(!(a < b))", 
+									   "((a * b) < 11)", 
+									   "(productLowerThan100(a, b))",
+									   "(((a * b) < 11) || (productLowerThan100(a, b)))", 
+									   "((((a * b) < 11) || (productLowerThan100(a, b))) || (!(a < b)))");
 		checkFoundFromIf(ifStatement, expected);
 	}
 	
 	private void checkFoundFromIf(CtIf ifStatement, Collection<String> expected) {
 		Collection<String> collectablesFromIf = collectableFinder().findFromIf(ifStatement);
+		System.out.println(collectablesFromIf);
 		assertEquals(expected.size(), collectablesFromIf.size());
 		assertTrue(collectablesFromIf.containsAll(expected));
 	}
