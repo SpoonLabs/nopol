@@ -1,5 +1,6 @@
 package fr.inria.lille.commons.trace;
 
+import static xxl.java.library.LoggerLibrary.logDebug;
 import static xxl.java.library.LoggerLibrary.logWarning;
 
 import java.util.Collection;
@@ -31,6 +32,7 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 	
 	@Override
 	protected void processSuccessfulRun(TestCase testCase) {
+		logDebug(logger(), "Collecting specifications from " + testCase);
 		for (Specification<T> specification : runtimeValues().specifications()) {
 			T output = specification.output();
 			Map<String, Object> inputs = specification.inputs();

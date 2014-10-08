@@ -22,8 +22,12 @@ public class SpoonReferenceLibrary {
 		return reference.box().getActualClass();
 	}
 	
-	public static boolean haveSameClass(CtTypeReference<?> superType, CtTypeReference<?> type) {
-		return superType.getQualifiedName().equals(type.getQualifiedName());
+	public static boolean haveSameClass(CtTypeReference<?> type, CtTypeReference<?> otherType) {
+		return type.getQualifiedName().equals(otherType.getQualifiedName());
+	}
+	
+	public static boolean haveSamePackage(CtTypeReference<?> type, CtTypeReference<?> otherType) {
+		return type.getPackage().getSimpleName().equals(otherType.getPackage().getSimpleName());
 	}
 	
 	public static boolean isSubclassOf(CtTypeReference<?> superType, CtTypeReference<?> type) {
@@ -31,8 +35,8 @@ public class SpoonReferenceLibrary {
 	}
 	
 	public static boolean isNestedIn(CtTypeReference<?> nestingType, CtTypeReference<?> type) {
-		String nestingTypeQualifiedName = nestingType.getQualifiedName();
+		String simpleName = nestingType.getSimpleName();
 		String qualifiedName = type.getQualifiedName();
-		return qualifiedName.contains(nestingTypeQualifiedName);
+		return qualifiedName.contains(simpleName + '$') && haveSamePackage(nestingType, type);
 	}
 }

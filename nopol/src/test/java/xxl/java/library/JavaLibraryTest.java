@@ -19,6 +19,12 @@ import org.junit.Test;
 
 public class JavaLibraryTest {
 
+	public static class Inner {
+		public static class NestedInner {
+			
+		}
+	}
+	
 	@Test
 	public void absolutePath() {
 		File workingDirectory = FileLibrary.openFrom(".");
@@ -52,14 +58,28 @@ public class JavaLibraryTest {
 		assertEquals("HelloWorld", simpleClassName("HelloWorld"));
 		assertEquals("HelloWorld", simpleClassName("java.HelloWorld"));
 		assertEquals("HelloWorld", simpleClassName("java.api.HelloWorld"));
+		assertEquals("Greeting", simpleClassName("HelloWorld$Greeting"));
+		assertEquals("Greeting", simpleClassName("java.api.HelloWorld$Greeting"));
+		assertEquals("Inner", simpleClassName(Inner.class.getName()));
+		assertEquals("Inner", simpleClassName(Inner.class.getSimpleName()));
+		assertEquals("Inner", simpleClassName(Inner.class.getCanonicalName()));
+		assertEquals("NestedInner", simpleClassName(Inner.NestedInner.class.getName()));
+		assertEquals("NestedInner", simpleClassName(Inner.NestedInner.class.getSimpleName()));
+		assertEquals("NestedInner", simpleClassName(Inner.NestedInner.class.getCanonicalName()));
 	}
 	
 	@Test
 	public void packageNameFromQualifiedName() {
 		assertEquals("", packageName(""));
 		assertEquals("", packageName("HelloWorld"));
+		assertEquals("", packageName("HelloWorld$Greeting"));
 		assertEquals("java", packageName("java.HelloWorld"));
 		assertEquals("java.api", packageName("java.api.HelloWorld"));
+		assertEquals("java.api", packageName("java.api.HelloWorld$Greeting"));
+		assertEquals("", packageName(Inner.class.getSimpleName()));
+		assertEquals(getClass().getPackage().toString(), "package " + packageName(Inner.class.getName()));
+		assertEquals("", packageName(Inner.NestedInner.class.getSimpleName()));
+		assertEquals(getClass().getPackage().toString(), "package " + packageName(Inner.NestedInner.class.getName()));
 	}
 	
 	@Test

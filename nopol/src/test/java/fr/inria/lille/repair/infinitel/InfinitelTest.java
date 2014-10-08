@@ -37,13 +37,12 @@ public class InfinitelTest {
 	@Ignore
 	@Test
 	public void realProject() {
-		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
-		String pwd = "/Users/virtual/Desktop/piggybank/";
+		String pwd = "/Users/virtual/Desktop/pdfbox_b10cf48/";
 		String src = pwd + "src/main/java/";
 		String ab = pwd + "target/classes/";
 		String ac = pwd + "target/test-classes/";
-		String[] deps = new String[] {"pig-0.12.0-SNAPSHOT-withdependencies.jar", "pig-0.12.0-SNAPSHOT.jar",
-									  "hive-exec-0.8.0.jar", "hsqldb-1.8.0.10.jar", "jetty-util-6.1.26.jar", "json-simple-1.1.jar"};
+		String[] deps = new String[] {"FontBox-0.2.0-dev.jar", "JempBox-0.2.0.jar", "ant.jar", "bcmail-jdk14-132.jar", "bcprov-jdk13-132.jar",
+									  "bcprov-jdk14-132.jar", "icu4j-4_0.jar", "junit.jar", "lucene-core-2.2.0.jar", "lucene-demos-2.2.0.jar"};
 		String dependency = "";
 		for (String dep : deps) {
 			dependency += ":" + pwd + "lib/" + dep;

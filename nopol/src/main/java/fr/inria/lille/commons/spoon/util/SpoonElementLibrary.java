@@ -42,6 +42,9 @@ public class SpoonElementLibrary {
 	public static boolean hasVisibilityOf(CtField<?> field, CtElement element) {
 		CtTypeReference<?> fieldClass = field.getDeclaringType().getReference();
 		CtTypeReference<?> elementClass = typeOf(element).getReference();
+		if (elementClass.isAnonymous() && haveSamePackage(field, element)) {
+			return true;
+		}
 		if (hasPublicModifier(field) || isNestedIn(elementClass, fieldClass)) {
 			return true;
 		}

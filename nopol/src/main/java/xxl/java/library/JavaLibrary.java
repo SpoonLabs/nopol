@@ -34,11 +34,16 @@ public class JavaLibrary {
 	}
 	
 	public static String simpleClassName(String qualifiedClassName) {
+		String simpleClassName = qualifiedClassName;
 		int lastPackageSeparator = qualifiedClassName.lastIndexOf('.');
 		if (lastPackageSeparator > -1) {
-			return qualifiedClassName.substring(lastPackageSeparator + 1);
+			simpleClassName = qualifiedClassName.substring(lastPackageSeparator + 1);
 		}
-		return qualifiedClassName;
+		int lastNestingSeparator = simpleClassName.lastIndexOf('$');
+		if (lastNestingSeparator > -1) {
+			simpleClassName = simpleClassName.substring(lastNestingSeparator + 1);
+		}
+		return simpleClassName;
 	}
 	
 	public static String packageName(String qualifiedClassName) {

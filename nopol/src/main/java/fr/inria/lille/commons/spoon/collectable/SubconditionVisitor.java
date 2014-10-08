@@ -2,11 +2,11 @@ package fr.inria.lille.commons.spoon.collectable;
 
 import java.util.Collection;
 
+import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtTargetedAccess;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.declaration.CtElement;
@@ -23,7 +23,9 @@ public class SubconditionVisitor extends CtAbstractVisitor {
 	public <T> void visitCtBinaryOperator(CtBinaryOperator<T> operator) {
 		addFrom(operator);
 		scan(operator.getLeftHandOperand());
-		scan(operator.getRightHandOperand());
+		if (! operator.getKind().equals(BinaryOperatorKind.INSTANCEOF)) {
+			scan(operator.getRightHandOperand());
+		}
 	}
 	
 	@Override
