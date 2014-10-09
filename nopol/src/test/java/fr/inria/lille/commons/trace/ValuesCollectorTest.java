@@ -329,7 +329,7 @@ public class ValuesCollectorTest {
 		String toMatch = "collectInput(\"\\\"aaaa\\\".startsWith(\\\"b\\\")\", \"aaaa\".startsWith(\"b\"))";
 		assertTrue(invocation.endsWith(toMatch));
 	}
-
+	
 	@Test
 	public void collectSubexpressionValues() {
 		CtElement element = elementInNopolProject(8, "((((a * b) < 11) || (productLowerThan100(a, b))) || (!(a < b))) || ((a = -b) > 0)");
@@ -338,10 +338,7 @@ public class ValuesCollectorTest {
 									   "(a * b)",
 									   "(a < b)", 
 									   "(!(a < b))", 
-									   "((a * b) < 11)", 
-									   "(productLowerThan100(a, b))",
-									   "(((a * b) < 11) || (productLowerThan100(a, b)))", 
-									   "((((a * b) < 11) || (productLowerThan100(a, b))) || (!(a < b)))");
+									   "((a * b) < 11)");
 		checkFoundFromIf(ifStatement, expected);
 	}
 	

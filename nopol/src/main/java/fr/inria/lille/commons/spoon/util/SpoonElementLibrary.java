@@ -8,6 +8,7 @@ import static xxl.java.library.ClassLibrary.isInstanceOf;
 import java.util.List;
 
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
@@ -100,6 +101,10 @@ public class SpoonElementLibrary {
 	
 	public static boolean isInitializationBlock(CtElement element) {
 		return isInstanceOf(CtAnonymousExecutable.class, element);
+	}
+	
+	public static boolean isInvocation(CtElement element) {
+		return isInstanceOf(CtInvocation.class, element);
 	}
 	
 	public static boolean isAType(CtElement element) {

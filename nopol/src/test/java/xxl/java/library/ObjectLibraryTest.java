@@ -1,9 +1,11 @@
 package xxl.java.library;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static xxl.java.library.ObjectLibrary.methodIdentity;
 import static xxl.java.library.ObjectLibrary.methodToString;
+import static xxl.java.library.ObjectLibrary.methodYourself;
 
 import org.junit.Test;
 
@@ -28,5 +30,12 @@ public class ObjectLibraryTest {
 		assertEquals(Integer.valueOf(3), identity.outputFor(null));
 		assertTrue(null == methodIdentity(three).outputFor("1"));
 		assertTrue(null == methodIdentity(null).outputFor("1"));
+	}
+	
+	@Test
+	public void methodYourselfReturnsArgument() {
+		for (Object object : asList(1, 2, true, "AAA", 'c')) {
+			assertTrue(object == methodYourself().outputFor(object));
+		}
 	}
 }

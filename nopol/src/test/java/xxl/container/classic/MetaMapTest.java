@@ -24,7 +24,7 @@ import static xxl.java.container.classic.MetaMap.putMany;
 import static xxl.java.container.classic.MetaMap.remade;
 import static xxl.java.container.classic.MetaMap.remapped;
 import static xxl.java.container.classic.MetaMap.sameContent;
-import static xxl.java.container.classic.MetaMap.valuesParsedAsInteger;
+import static xxl.java.container.classic.MetaMap.*;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -309,6 +309,17 @@ public class MetaMapTest {
 		assertTrue(1 == remade.get("1").intValue());
 		assertTrue(2 == remade.get("2").intValue());
 		assertTrue(3 == remade.get("3").intValue());
+	}
+	
+	@Test
+	public void autoMapCreation() {
+		assertTrue(autoMap(asList()).isEmpty());
+		Map<Integer, Integer> autoMap = autoMap(asList(1,2,3,4));
+		assertFalse(autoMap.isEmpty());
+		assertTrue(1 == autoMap.get(1));
+		assertTrue(2 == autoMap.get(2));
+		assertTrue(3 == autoMap.get(3));
+		assertTrue(4 == autoMap.get(4));
 	}
 	
 	private Function<Object, Integer> function() {

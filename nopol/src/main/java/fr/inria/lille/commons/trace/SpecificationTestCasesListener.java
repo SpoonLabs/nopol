@@ -32,12 +32,14 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 	
 	@Override
 	protected void processSuccessfulRun(TestCase testCase) {
-		logDebug(logger(), "Collecting specifications from " + testCase);
-		for (Specification<T> specification : runtimeValues().specifications()) {
-			T output = specification.output();
-			Map<String, Object> inputs = specification.inputs();
-			if (consistencyCheck(inputs, output)) {
-				consistentInputs().put(inputs, output);
+		if (! runtimeValues().isEmpty()) {
+			logDebug(logger(), "Collecting specifications from " + testCase);
+			for (Specification<T> specification : runtimeValues().specifications()) {
+				T output = specification.output();
+				Map<String, Object> inputs = specification.inputs();
+				if (consistencyCheck(inputs, output)) {
+					consistentInputs().put(inputs, output);
+				}
 			}
 		}
 	}

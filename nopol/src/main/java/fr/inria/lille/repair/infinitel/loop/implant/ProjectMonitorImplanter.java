@@ -21,8 +21,7 @@ public class ProjectMonitorImplanter extends AbstractProcessor<CtWhile> {
 		SpoonedProject spoonedProject = new SpoonedProject(project.sourceFile(), project.classpath());
 		spoonedProject.process(implanter);
 		ClassLoader classLoader = spoonedProject.dumpedToClassLoader();
-		CentralLoopMonitor loopMonitor = implanter.implant();
-		MonitoringTestExecutor testExecutor = new MonitoringTestExecutor(classLoader, loopMonitor);
+		MonitoringTestExecutor testExecutor = new MonitoringTestExecutor(classLoader, implanter.implant());
 		return testExecutor;
 	}
 	

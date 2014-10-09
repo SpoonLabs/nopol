@@ -386,4 +386,12 @@ public class MetaMap {
 		}
 		return extracted;
 	}
+	
+	public static <K> Map<K, K> autoMap(Collection<K> keys) {
+		Map<K, K> autoMap = newHashMap(keys.size());
+		for (K key : keys) {
+			autoMap.put(key, key);
+		}
+		return autoMap;
+	}
 }

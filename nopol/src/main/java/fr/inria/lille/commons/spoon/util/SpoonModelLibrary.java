@@ -73,6 +73,12 @@ public class SpoonModelLibrary {
 		return localVariable;
 	}
 	
+	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, Class<T> type, String variableName, String defaultValue, CtElement parent) {
+		CtLocalVariable<T> localVariable = newLocalVariableDeclaration(factory, type, variableName, defaultValue);
+		setParent(parent, localVariable);
+		return localVariable;
+	}
+	
 	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, Class<T> type, String variableName, T defaultValue) {
 		return newLocalVariable(factory, type.getSimpleName(), variableName, newLiteral(factory, defaultValue));
 	}

@@ -15,6 +15,7 @@ import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.insertBefo
 import static java.lang.String.format;
 
 import java.util.Collection;
+import java.util.Map;
 
 import spoon.reflect.code.CtBreak;
 import spoon.reflect.code.CtExpression;
@@ -24,6 +25,7 @@ import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.factory.Factory;
+import xxl.java.container.classic.MetaMap;
 import xxl.java.support.Singleton;
 import fr.inria.lille.commons.spoon.collectable.CollectableValueFinder;
 import fr.inria.lille.commons.trace.RuntimeValues;
@@ -35,15 +37,18 @@ public class LoopInstrumenter {
 		int monitorID = loopMonitor.instanceID();
 		String counterName = "loopEntrancesCounter_" + monitorID;
 		String conditionName = "loopConditionEvaluation_" + monitorID;
+		String originalEvaluation = "loopOriginalCondition_" + monitorID;
 		CtWhile astLoop = loopMonitor.loop().astLoop();
 		Factory factory = astLoop.getFactory();
 		boolean unbreakable = loopMonitor.loop().isUnbreakable();
 		Collection<String> collectables = collectableFinder().findFromWhile(astLoop);
 		CtIf newIf = loopBodyWrapper(factory, astLoop, loopMonitor, counterName, conditionName, unbreakable);
+		declareOriginalConditionEvaluation(factory, originalEvaluation, loopMonitor, newIf);
+		declareConditionEvaluation(factory, loopMonitor, conditionName, originalEvaluation, counterName, newIf);
 		appendMonitoredExit(factory, loopMonitor, counterName, unbreakable);
 		declareEntrancesCounter(factory, astLoop, loopMonitor, counterName);
 		appendCounterIncrementation(newIf, loopMonitor, counterName);
-		traceReachableValues(collectables, conditionName, runtimeValues, newIf);
+		traceReachableValues(newIf, originalEvaluation, loopMonitor, collectables, conditionName, runtimeValues);
 	}
 	
 	private static CtIf loopBodyWrapper(Factory factory, CtWhile loop, LoopMonitor loopMonitor, String counterName, String conditionName, boolean unbreakable) {
@@ -53,16 +58,19 @@ public class LoopInstrumenter {
 			newIf.setElseStatement(null);
 		}
 		setLoopBody(loop, newIf);
-		declareConditionEvaluation(factory, loop, loopMonitor, counterName, conditionName, newIf);
 		setLoopingCondition(loop, newLiteral(factory, true));
 		return newIf;
 	}
 	
-	private static void declareConditionEvaluation(Factory factory, CtWhile loop, LoopMonitor loopMonitor, String counterName, String conditionName, CtIf newIf) {
-		String conditionInvocation = loopMonitor.invocationOnLoopConditionEvaluation(loop.getLoopingExpression().toString(), counterName);
-		String declaration = format("boolean %s = %s", conditionName, conditionInvocation);
-		CtStatement counterCreation = newStatementFromSnippet(factory, declaration);
-		insertBeforeUnderSameParent(counterCreation, newIf);
+	private static void declareOriginalConditionEvaluation(Factory factory,String originalCondition, LoopMonitor loopMonitor, CtIf newIf) {
+		CtLocalVariable<Boolean> localVariable = newLocalVariableDeclaration(factory, boolean.class, originalCondition, loopMonitor.loop().loopingCondition());
+		insertBeforeUnderSameParent(localVariable, newIf);;
+	}
+	
+	private static void declareConditionEvaluation(Factory factory, LoopMonitor loopMonitor, String conditionName, String original, String counterName, CtIf newIf) {
+		String conditionInvocation = loopMonitor.invocationOnLoopConditionEvaluation(original, counterName);
+		CtLocalVariable<Boolean> localVariable = newLocalVariableDeclaration(factory, boolean.class, conditionName, conditionInvocation);
+		insertBeforeUnderSameParent(localVariable, newIf);
 	}
 	
 	private static void appendMonitoredExit(Factory factory, LoopMonitor loopMonitor, String counterName, boolean unbreakable) {
@@ -100,8 +108,10 @@ public class LoopInstrumenter {
 		insertBefore(increment, then, then);
 	}
 	
-	private static void traceReachableValues(Collection<String> collectables, String conditionName, RuntimeValues<?> runtimeValues, CtIf newIf) {
-		RuntimeValuesInstrumenter.runtimeCollectionBefore(newIf, collectables, conditionName, runtimeValues);
+	private static void traceReachableValues(CtIf newIf, String original, LoopMonitor monitor, Collection<String> inputs, String output, RuntimeValues<?> runtimeValues) {
+		Map<String, String> inputMap = MetaMap.autoMap(inputs);
+		inputMap.put(monitor.loop().loopingCondition(), original);
+		RuntimeValuesInstrumenter.runtimeCollectionBefore(newIf, inputMap, output, runtimeValues);
 	}
 	
 	private static CollectableValueFinder collectableFinder() {

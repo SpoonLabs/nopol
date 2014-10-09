@@ -32,12 +32,17 @@ public class InfiniteLoopFixer {
 	public void repair() {
 		Collection<While> infiniteLoops = testResult().infiniteLoops();
 		for (While loop : infiniteLoops) {
+			logInfiniteLoop(loop);
 			fixInfiniteLoop(loop);
 		}
 	}
+
+	private void logInfiniteLoop(While loop) {
+		logDebug(logger(), "Infinite loop:", loop.toString());
+		logDebug(logger(), "Instrumented loop:", loop.astLoop().getParent().toString());
+	}
 	
 	protected CodeGenesis fixInfiniteLoop(While loop) {
-		logDebug(logger(), "Infinite loop:", loop.toString());
 		Map<TestCase, Integer> thresholds = infiniteInvocationThresholds(loop, testResult().nonHaltingTestsOf(loop));
 		Collection<Specification<Boolean>> specifications = testSpecifications(loop, thresholds);
 		return synthesisedFix(specifications);

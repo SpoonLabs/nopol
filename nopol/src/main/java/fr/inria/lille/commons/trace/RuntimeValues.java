@@ -34,8 +34,12 @@ public class RuntimeValues<T> extends GlobalToggle {
 	}
 	
 	public String invocationOnCollectionOf(String variableName) {
-		String quoatationSafeName = variableName.replace("\"", "\\\"");
-		return globallyAccessibleName() + format(".collectInput(\"%s\", %s)", quoatationSafeName, variableName);
+		return invocationOnCollectionOf(variableName, variableName);
+	}
+	
+	public String invocationOnCollectionOf(String codeSource, String executableCode) {
+		String quoatationSafeName = codeSource.replace("\"", "\\\"");
+		return globallyAccessibleName() + format(".collectInput(\"%s\", %s)", quoatationSafeName, executableCode);
 	}
 	
 	public String invocationOnOutputCollection(String outputName) {

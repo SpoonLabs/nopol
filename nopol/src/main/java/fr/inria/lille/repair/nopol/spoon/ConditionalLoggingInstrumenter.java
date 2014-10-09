@@ -9,6 +9,7 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
+import xxl.java.container.classic.MetaMap;
 import xxl.java.support.Singleton;
 import fr.inria.lille.commons.spoon.collectable.CollectableValueFinder;
 import fr.inria.lille.commons.trace.RuntimeValues;
@@ -45,7 +46,7 @@ public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtSt
 	public void appendValueCollection(CtStatement element, String outputName) {
 		Collection<String> collectables = collectablesOf(element);
 		collectables.remove(outputName);
-		RuntimeValuesInstrumenter.runtimeCollectionBefore(element, collectables, outputName, runtimeValues());
+		RuntimeValuesInstrumenter.runtimeCollectionBefore(element,  MetaMap.autoMap(collectables), outputName, runtimeValues());
 	}
 	
 	private Collection<String> collectablesOf(CtStatement element) {

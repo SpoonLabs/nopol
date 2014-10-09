@@ -21,4 +21,13 @@ public class ObjectLibrary {
 			}
 		};
 	}
+	
+	public static <T> Function<T, T> methodYourself() {
+		return new Function<T, T>() {
+			@Override
+			public T outputFor(T value) {
+				return value;
+			}
+		};
+	}
 }

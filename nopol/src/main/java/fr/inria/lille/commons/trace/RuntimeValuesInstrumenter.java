@@ -6,8 +6,8 @@ import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newIf;
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newStatementFromSnippet;
 import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.insertBeforeUnderSameParent;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
@@ -17,11 +17,11 @@ import xxl.java.container.classic.MetaList;
 
 public class RuntimeValuesInstrumenter {
 
-	public static <T> CtStatement runtimeCollectionBefore(CtStatement insertionPoint, Collection<String> reachableValues, String outputName, RuntimeValues<T> runtimeValues) {
+	public static <T> CtStatement runtimeCollectionBefore(CtStatement insertionPoint, Map<String, String> inputs, String outputName, RuntimeValues<T> runtimeValues) {
 		Factory factory = insertionPoint.getFactory();
 		List<CtStatement> newStatements = MetaList.newLinkedList();
-		for (String reachableValue : reachableValues) {
-			addCollectionStatementFor(newStatements, factory, runtimeValues.invocationOnCollectionOf(reachableValue));
+		for (String reachableValue : inputs.keySet()) {
+			addCollectionStatementFor(newStatements, factory, runtimeValues.invocationOnCollectionOf(reachableValue, inputs.get(reachableValue)));
 		}
 		addCollectionStatementFor(newStatements, factory, runtimeValues.invocationOnOutputCollection(outputName));
 		addCollectionStatementFor(newStatements, factory, runtimeValues.invocationOnCollectionEnd());

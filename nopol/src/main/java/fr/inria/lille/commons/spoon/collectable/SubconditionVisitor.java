@@ -12,6 +12,7 @@ import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtUnaryOperator;
+import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import xxl.java.container.classic.MetaSet;
@@ -43,8 +44,15 @@ public class SubconditionVisitor extends CtAbstractVisitor {
 	}
 	
 	@Override
+	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
+		addFrom(variableAccess);
+	}
+	
+	@Override
 	public <T> void visitCtInvocation(CtInvocation<T> invocation) {
-		addFrom(invocation);
+		for (CtExpression<?> argument : invocation.getArguments()) {
+			scan(argument);
+		}
 	}
 
 	@Override
@@ -67,7 +75,7 @@ public class SubconditionVisitor extends CtAbstractVisitor {
 	}
 	
 	private void addFrom(CtElement element) {
-		if (! hasChildrenOfType(element, CtAssignment.class)) {
+		if (! (hasChildrenOfType(element, CtAssignment.class) || hasChildrenOfType(element, CtInvocation.class))) {
 			subexpressions().add(element.toString());
 		}
 	}
