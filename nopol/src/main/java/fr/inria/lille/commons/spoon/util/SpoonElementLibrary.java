@@ -65,6 +65,23 @@ public class SpoonElementLibrary {
 		return false;
 	}
 	
+	public static boolean canAccessOthersField(CtField<?> field, CtElement element) {
+		boolean isVisible = hasVisibilityOf(field, element);
+		if (isVisible && hasProtectedModifier(field)) {
+			/* if S subclasses T, we can only access a variable's field if S has the same package as T */
+			isVisible = haveSamePackage(field, element);
+		}
+		return isVisible;
+	}
+	
+	public static <T extends CtElement> T parentOfType(Class<T> parentType, CtElement element) {
+		return element.getParent(parentType);
+	}
+	
+	public static <T extends CtElement> boolean hasParentOfType(Class<T> parentType, CtElement element) {
+		return parentOfType(parentType, element) != null;
+	}
+	
 	public static boolean haveSamePackage(CtElement one, CtElement other) {
 		String onePackage = packageOf(one).getQualifiedName();
 		String otherPackage = packageOf(other).getQualifiedName();
@@ -111,6 +128,10 @@ public class SpoonElementLibrary {
 		return isInstanceOf(CtSimpleType.class, element);
 	}
 	
+	public static boolean isANestedType(CtElement element) {
+		return isAType(element) && hasParentOfType(CtSimpleType.class, element);
+	}
+	
 	public static boolean isField(CtElement element) {
 		return isInstanceOf(CtField.class, element);
 	}
@@ -132,7 +153,10 @@ public class SpoonElementLibrary {
 	}
 	
 	public static CtSimpleType<?> typeOf(CtElement element) {
-		return element.getParent(CtSimpleType.class);
+		if (isAType(element)) {
+			return (CtSimpleType<?>) element;
+		}
+		return parentOfType(CtSimpleType.class, element);
 	}
 	
 	public static boolean hasStaticModifier(CtElement element) {
@@ -157,15 +181,19 @@ public class SpoonElementLibrary {
 	
 	public static boolean hasModifier(CtElement element, ModifierKind kind) {
 		if (allowsModifiers(element)) {
-			return ((CtModifiable) element).getModifiers().contains(kind);
+			return ((CtModifiable) element).hasModifier(kind);
 		}
 		return false;
 	}
 	
 	public static boolean inStaticCode(CtElement element) {
 		if (allowsModifiers(element)) {
-			return hasStaticModifier(element);
+			boolean inStatic = hasStaticModifier(element);
+			if (isANestedType(element)) {
+				inStatic |= inStaticCode(parentOfType(CtSimpleType.class, element));
+			}
+			return inStatic;
 		}
-		return hasStaticModifier(element.getParent(CtModifiable.class)) || hasStaticModifier(element.getParent(CtSimpleType.class));
+		return hasStaticModifier(element.getParent(CtModifiable.class)) || inStaticCode(element.getParent(CtSimpleType.class));
 	}
 }

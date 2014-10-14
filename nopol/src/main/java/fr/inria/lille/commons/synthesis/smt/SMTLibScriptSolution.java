@@ -102,9 +102,7 @@ public class SMTLibScriptSolution implements Enumeration<Map<String, String>> {
 	
 	private ISolver solver() {
 		if (solver == null) {
-			ISolver newSolver = SolverFactory.instance().newSolver();
-			newSolver.start();
-			solver = newSolver;
+			solver = SolverFactory.instance().newSolver();
 		}
 		return solver;
 	}

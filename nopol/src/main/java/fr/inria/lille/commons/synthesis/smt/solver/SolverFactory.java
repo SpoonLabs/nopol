@@ -43,7 +43,9 @@ public abstract class SolverFactory {
 	}
 	
 	public ISolver newSolver() {
-		return newSolver(new SMT().smtConfig);
+		ISolver solver = newSolver(new SMT().smtConfig);
+		solver.start();
+		return solver;
 	}
 	
 	private static SolverFactory solverFactory() {

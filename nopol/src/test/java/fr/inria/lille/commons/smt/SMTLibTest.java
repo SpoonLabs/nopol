@@ -60,7 +60,6 @@ import org.smtlib.IParser.ParserException;
 import org.smtlib.ISort;
 
 import xxl.java.container.classic.MetaSet;
-import fr.inria.lille.commons.synthesis.smt.ObjectToExpr;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.smt.SMTLibScriptSolution;
 
@@ -134,11 +133,11 @@ public class SMTLibTest {
 		ISymbol y = smtlib.symbolFor("y");
 		
 		IExpr YminusX = smtlib.expression(subtraction(), y, x);
-		IExpr equalsMinus6 = smtlib.expression(equality(), YminusX, ObjectToExpr.asIExpr(-6));
+		IExpr equalsMinus6 = smtlib.expression(equality(), YminusX, smtlib.asIExpr(-6));
 		ICommand firstAssertion = smtlib.assertion(equalsMinus6);
 
-		IExpr minus2x = smtlib.expression(multiplication(), x, ObjectToExpr.asIExpr(-2));
-		IExpr minusYminus4 = smtlib.expression(subtraction(), ObjectToExpr.asIExpr(-4), y);
+		IExpr minus2x = smtlib.expression(multiplication(), x, smtlib.asIExpr(-2));
+		IExpr minusYminus4 = smtlib.expression(subtraction(), smtlib.asIExpr(-4), y);
 		IExpr areEqual = smtlib.expression(equality(), minus2x, minusYminus4);
 		ICommand secondAssertion = smtlib.assertion(areEqual);
 		
@@ -475,6 +474,13 @@ public class SMTLibTest {
 	@Test
 	public void positiveExponentialRealConversion() {
 		objectConversion("Real", "2300000000000000000.0", 2.3E18);
+	}
+	
+	@Test
+	public void charAsIntegers() {
+		char a = 'a';
+		int value = (int) a;
+		objectConversion("Int", "" + value, a);
 	}
 	
 	@Test

@@ -13,7 +13,7 @@ import org.smtlib.IExpr;
 import org.smtlib.ISort;
 
 import xxl.java.container.classic.MetaMap;
-import xxl.java.library.ClassLibrary;
+import static xxl.java.library.ClassLibrary.*;
 import xxl.java.library.StringLibrary;
 
 public class ObjectToExpr {
@@ -30,13 +30,16 @@ public class ObjectToExpr {
 	}
 	
 	public static IExpr asIExpr(Object object) {
-		if (ClassLibrary.isInstanceOf(Boolean.class, object)) {
+		if (isInstanceOf(Character.class, object)) {
+			return asIExpr((int) (char) object);
+		}
+		if (isInstanceOf(Boolean.class, object)) {
 			return (Boolean) object ? booleanTrue() : booleanFalse();
 		}
-		if (ClassLibrary.isInstanceOf(Integer.class, object)) {
+		if (isInstanceOf(Integer.class, object)) {
 			return numeral((Integer) object);
 		}
-		if (ClassLibrary.isInstanceOf(Number.class, object)) {
+		if (isInstanceOf(Number.class, object)) {
 			return decimal((Number) object);
 		}
 		throw new UnsupportedOperationException("Could not get corresponding org.smtlib.IExpr for " + object);
@@ -77,6 +80,7 @@ public class ObjectToExpr {
 			classes.put(Long.class, intSort());
 			classes.put(Short.class, intSort());
 			classes.put(Integer.class, intSort());
+			classes.put(Character.class, intSort());
 			classes.put(Float.class, numberSort());
 			classes.put(Double.class, numberSort());
 			classes.put(Number.class, numberSort());

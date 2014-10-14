@@ -1,12 +1,12 @@
 package fr.inria.lille.commons.spoon.collectable;
 
+import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.canAccessOthersField;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.hasStaticModifier;
-import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.hasVisibilityOf;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isField;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isLocalVariable;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isParameter;
 import static java.util.Arrays.asList;
-import static xxl.java.library.LoggerLibrary.*;
+import static xxl.java.library.LoggerLibrary.logWarning;
 import static xxl.java.library.LoggerLibrary.loggerFor;
 
 import java.util.Collection;
@@ -75,7 +75,7 @@ public class CollectableValueFinder {
 			Collection<CtFieldReference<?>> allFields = variable.getType().getAllFields();
 			for (CtFieldReference<?> fieldReference : allFields) {
 				CtField<?> field = fieldReference.getDeclaration();
-				if (field != null && hasVisibilityOf(field, statement)) {
+				if (field != null && canAccessOthersField(field, statement)) {
 					names.add(nameForField(field, variableName));
 				}
 			}

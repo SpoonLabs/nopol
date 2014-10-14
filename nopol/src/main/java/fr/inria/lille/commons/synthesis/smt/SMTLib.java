@@ -155,7 +155,7 @@ public class SMTLib {
 	}
 	
 	public SMTLib()  {
-		solver().start();
+		//
 	}
 	
 	public IBinaryLiteral binary(String binary) {

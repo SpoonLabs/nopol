@@ -42,6 +42,7 @@ public class LoopInstrumenter {
 		Factory factory = astLoop.getFactory();
 		boolean unbreakable = loopMonitor.loop().isUnbreakable();
 		Collection<String> collectables = collectableFinder().findFromWhile(astLoop);
+		collectables.add(counterName);
 		CtIf newIf = loopBodyWrapper(factory, astLoop, loopMonitor, counterName, conditionName, unbreakable);
 		declareOriginalConditionEvaluation(factory, originalEvaluation, loopMonitor, newIf);
 		declareConditionEvaluation(factory, loopMonitor, conditionName, originalEvaluation, counterName, newIf);

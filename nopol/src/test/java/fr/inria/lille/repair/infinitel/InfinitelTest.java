@@ -37,18 +37,17 @@ public class InfinitelTest {
 	@Ignore
 	@Test
 	public void realProject() {
-		String pwd = "/Users/virtual/Desktop/pdfbox_b10cf48/";
-		String src = pwd + "src/main/java/";
+		String pwd = "/Users/virtual/Desktop/data/projects/datenopolset/Nopol_pure/421/";
+		String src = pwd + "src/java/";
 		String ab = pwd + "target/classes/";
 		String ac = pwd + "target/test-classes/";
-		String[] deps = new String[] {"FontBox-0.2.0-dev.jar", "JempBox-0.2.0.jar", "ant.jar", "bcmail-jdk14-132.jar", "bcprov-jdk13-132.jar",
-									  "bcprov-jdk14-132.jar", "icu4j-4_0.jar", "junit.jar", "lucene-core-2.2.0.jar", "lucene-demos-2.2.0.jar"};
-		String dependency = "";
+		String buildPath = ac + ":" + ab;
+		String[] deps = new String[] {};
 		for (String dep : deps) {
-			dependency += ":" + pwd + "lib/" + dep;
+			buildPath += ":" + pwd + "lib/" + dep;
 		}
-		dependency = dependency.substring(1);
-		Main.main(new String[] {"infinitel", src, dependency + ":" + ac + ":" + ab, "z3", pwd + "lib/z3_for_mac"});
+		String z3Path = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/z3-4.3.2/z3_for_mac";
+		Main.main(new String[] {"nopol", src, buildPath, "z3", z3Path, "org.apache.commons.lang.StringEscapeUtilsTest"});
 	}
 	
 	@Test
@@ -189,9 +188,11 @@ public class InfinitelTest {
 		Map<String, Integer> expected = expectedIterationsMap(1, asList("testNegative"), asList(4));
 		CodeGenesis fix = checkInfinitel(1, 8, 4, 1, expected);
 		checkFix(fix, asList("(b != a)&&(((a)<=((1)+(1)))||((b)<(a)))",
+							 "(b != a)&&((((-1)+(a))<=(1))||(!((a)<(b))))",
 							 "((!(((a)-(1))<(b)))||(((a)-(1))<=(1)))&&(b != a)",
 							 "((b != a)&&(((1)+(1))!=((a)-(1))))||((b)<=((a)-(1)))",
-							 "!((((a)+(-1))<(b))&&((((1)-((a)+(-1)))<=(-1))||((a)==(b))))"));
+							 "!((((a)+(-1))<(b))&&((((1)-((a)+(-1)))<=(-1))||((a)==(b))))",
+							 "((b != a)&&((((a)+(a))-(1))<=(loopEntrancesCounter_2)))||((b)<(a))"));
 	}
 	
 	@Test

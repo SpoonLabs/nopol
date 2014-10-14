@@ -90,11 +90,13 @@ public class ConstraintBasedSynthesis {
 		if (Integer.class.isInstance(value)) {
 			value = Double.valueOf((int) value);
 		}
+		if (Character.class.isInstance(value)) {
+			value = Double.valueOf((int) (char) value);
+		}
 		return value;
 	}
 	
 	protected Collection<Expression<?>> inputExpressions(Collection<Map<String, Object>> collectedValues, Expression<?> outputExpression) {
-		// FIXME: what to do when keys of collectedValues do not match; intersection of keys?
 		Collection<Expression<?>> expressions = MetaList.newLinkedList();
 		Map<String, Object> anyValueMap = MetaCollection.any(collectedValues);
 		Collection<String> variableNames = MetaMap.keySetIntersection(collectedValues);
@@ -110,6 +112,8 @@ public class ConstraintBasedSynthesis {
 		if (ClassLibrary.isSubclassOf(Boolean.class, queriedClass)) {
 			return Boolean.class;
 		} else if (ClassLibrary.isSubclassOf(Number.class, queriedClass)) {
+			return Number.class;
+		} else if (ClassLibrary.isSubclassOf(Character.class, queriedClass)) {
 			return Number.class;
 		}
 		throw new IllegalStateException(format("SMT can only use Bool or Real types, the requested type is '%s'.", queriedClass.getName()));

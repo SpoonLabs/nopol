@@ -54,12 +54,12 @@ public class InfiniteLoopFixer {
 	}
 	
 	protected Map<TestCase, Integer> infiniteInvocationThresholds(While loop, Map<TestCase, Integer> nonHaltingTests) {
-		logCollection(logger(), "Non-halting tests:", nonHaltingTests.keySet());
 		Map<TestCase, Integer> invocationThresholds = MetaMap.newHashMap();
 		for (TestCase testCase : nonHaltingTests.keySet()) {
 			Integer foundThreshold = firstSuccessfulIteration(loop, testCase, nonHaltingTests.get(testCase));
 			invocationThresholds.put(testCase, foundThreshold);
 		}
+		logCollection(logger(), "Angelic records for hanging tests:", invocationThresholds.entrySet());
 		return invocationThresholds;
 	}
 

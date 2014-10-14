@@ -129,6 +129,23 @@ public class CodeSynthesisTest {
 	}
 	
 	@Test
+	public void synthesisWithCharactersInSpecifications() {
+		Collection<OperatorTheory> theories = (List) asList(new NumberComparisonTheory(), new LinearTheory());
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MetaMap.newHashMap(), theories);
+		Map<String, Object> first = (Map) MetaMap.newHashMap(asList("value", "letter"), asList((int) 'a', 'a'));
+		Map<String, Object> second  = (Map) MetaMap.newHashMap(asList("value", "letter"), asList((int) 'b', 'b'));
+		Map<String, Object> third = (Map) MetaMap.newHashMap(asList("value", "letter"), asList((int) 'z', 'c'));
+		Map<String, Object> fourth = (Map) MetaMap.newHashMap(asList("value", "letter"), asList((int) 'x', 'd'));
+		Specification firstS = new Specification<>(first, true);
+		Specification secondS = new Specification<>(second, true);
+		Specification thirdS = new Specification<>(third, false);
+		Specification fourthS = new Specification<>(fourth, false);
+		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Boolean.class, (List) asList(firstS, secondS, thirdS, fourthS));
+		assertTrue(genesis.isSuccessful());
+		assertTrue(asList("(letter)==(value)", "(value)==(letter)").contains(genesis.returnStatement()));
+	}
+	
+	@Test
 	public void defaultConstants() {
 		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis();
 		Map<String, Integer> expectedDefaultContants = MetaMap.newHashMap(asList("-1", "0", "1"), asList(-1 , 0, 1));

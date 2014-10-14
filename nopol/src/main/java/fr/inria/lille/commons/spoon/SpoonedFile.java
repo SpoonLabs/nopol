@@ -138,7 +138,8 @@ public abstract class SpoonedFile {
 	protected synchronized String sourceForModelledClass(CtSimpleType<?> modelledClass) {
 		logDebug(logger(), format("[Scanning source code of %s]", modelledClass.getQualifiedName()));
 		prettyPrinter().scan(modelledClass);
-		String sourceCode = modelledClass.getPackage().toString() + JavaLibrary.lineSeparator() +  prettyPrinter().toString();
+		String packageDeclaration = "package " + modelledClass.getPackage().getQualifiedName() + ";";
+		String sourceCode = packageDeclaration + JavaLibrary.lineSeparator() +  prettyPrinter().toString();
 		prettyPrinter().reset();
 		return sourceCode;
 	}

@@ -111,7 +111,9 @@ public class NoPol {
 					}
 				}
 			}
-			catch (RuntimeException re) {}
+			catch (RuntimeException re) {
+				re.printStackTrace();
+			}
 		}
 		return patches;
 	}
