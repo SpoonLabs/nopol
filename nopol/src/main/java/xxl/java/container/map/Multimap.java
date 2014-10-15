@@ -77,6 +77,18 @@ public class Multimap<K, V> extends NeoMap<K, Collection<V>> {
 		}
 	}
 	
+	public void addAll(Map<K, V> map) {
+		for (Entry<K, V> entry : map.entrySet()) {
+			add(entry.getKey(), entry.getValue());
+		}
+	}
+	
+	public void addAll(Collection<Map<K, V>> maps) {
+		for (Map<K, V> map : maps) {
+			addAll(map);
+		}
+	}
+	
 	public boolean add(K key, V value) {
 		return getPutIfAbsent(key, factory()).add(value);
 	}

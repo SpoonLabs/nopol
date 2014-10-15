@@ -8,9 +8,11 @@ import static xxl.java.library.ClassLibrary.isInstanceOf;
 import java.util.List;
 
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
+import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
 import spoon.reflect.declaration.CtAnonymousExecutable;
@@ -22,6 +24,7 @@ import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
@@ -45,21 +48,28 @@ public class SpoonElementLibrary {
 	}
 	
 	public static boolean hasVisibilityOf(CtField<?> field, CtElement element) {
-		CtTypeReference<?> fieldClass = field.getDeclaringType().getReference();
+		return hasVisibilityOf(field, field.getDeclaringType().getReference(), element);
+	}
+	
+	public static boolean hasVisibilityOf(CtMethod<?> method, CtElement element) {
+		return hasVisibilityOf(method, method.getDeclaringType().getReference(), element);
+	}
+	
+	private static boolean hasVisibilityOf(CtModifiable modifiable, CtTypeReference<?> modifiableClass, CtElement element) {
 		CtTypeReference<?> elementClass = typeOf(element).getReference();
-		if (elementClass.isAnonymous() && haveSamePackage(field, element)) {
+		if (elementClass.isAnonymous() && haveSamePackage(modifiable, element)) {
 			return true;
 		}
-		if (hasPublicModifier(field) || isNestedIn(elementClass, fieldClass)) {
+		if (hasPublicModifier(modifiable) || isNestedIn(elementClass, modifiableClass)) {
 			return true;
 		}
-		if (hasProtectedModifier(field) && (isSubclassOf(fieldClass, elementClass) || haveSamePackage(field, element))) {
+		if (hasProtectedModifier(modifiable) && (isSubclassOf(modifiableClass, elementClass) || haveSamePackage(modifiable, element))) {
 			return true;
 		}
-		if (hasNoVisibilityModifier(field) && haveSamePackage(field, element)) {
+		if (hasNoVisibilityModifier(modifiable) && haveSamePackage(modifiable, element)) {
 			return true;
 		}
-		if (hasPrivateModifier(field) && haveSameClass(fieldClass, elementClass)) {
+		if (hasPrivateModifier(modifiable) && haveSameClass(modifiableClass, elementClass)) {
 			return true;
 		}
 		return false;
@@ -124,16 +134,24 @@ public class SpoonElementLibrary {
 		return isInstanceOf(CtInvocation.class, element);
 	}
 	
-	public static boolean isAType(CtElement element) {
+	public static boolean isSimpleType(CtElement element) {
 		return isInstanceOf(CtSimpleType.class, element);
 	}
 	
+	public static boolean isType(CtElement element) {
+		return isInstanceOf(CtType.class, element);
+	}
+	
 	public static boolean isANestedType(CtElement element) {
-		return isAType(element) && hasParentOfType(CtSimpleType.class, element);
+		return isSimpleType(element) && hasParentOfType(CtSimpleType.class, element);
 	}
 	
 	public static boolean isField(CtElement element) {
 		return isInstanceOf(CtField.class, element);
+	}
+	
+	public static boolean isFieldAccess(CtElement element) {
+		return isInstanceOf(CtFieldAccess.class, element);
 	}
 	
 	public static boolean isReference(CtElement element) {
@@ -142,6 +160,10 @@ public class SpoonElementLibrary {
 	
 	public static boolean isStatement(CtElement element) {
 		return isInstanceOf(CtStatement.class, element);
+	}
+	
+	public static boolean isReturnStatement(CtElement element) {
+		return isInstanceOf(CtReturn.class, element);
 	}
 	
 	public static boolean allowsModifiers(CtElement element) {
@@ -153,7 +175,7 @@ public class SpoonElementLibrary {
 	}
 	
 	public static CtSimpleType<?> typeOf(CtElement element) {
-		if (isAType(element)) {
+		if (isSimpleType(element)) {
 			return (CtSimpleType<?>) element;
 		}
 		return parentOfType(CtSimpleType.class, element);

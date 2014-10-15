@@ -4,26 +4,6 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static xxl.java.container.classic.MetaMap.allValuesIn;
-import static xxl.java.container.classic.MetaMap.containsAllKeys;
-import static xxl.java.container.classic.MetaMap.copyOf;
-import static xxl.java.container.classic.MetaMap.extractedWithKeys;
-import static xxl.java.container.classic.MetaMap.frequencies;
-import static xxl.java.container.classic.MetaMap.getIfAbsent;
-import static xxl.java.container.classic.MetaMap.keySetIntersection;
-import static xxl.java.container.classic.MetaMap.keySetUnion;
-import static xxl.java.container.classic.MetaMap.keysWithValue;
-import static xxl.java.container.classic.MetaMap.keysWithValuesIn;
-import static xxl.java.container.classic.MetaMap.methodGet;
-import static xxl.java.container.classic.MetaMap.newHashMap;
-import static xxl.java.container.classic.MetaMap.newIdentityHashMap;
-import static xxl.java.container.classic.MetaMap.newLinkedHashMap;
-import static xxl.java.container.classic.MetaMap.onlyValueIs;
-import static xxl.java.container.classic.MetaMap.putAllFlat;
-import static xxl.java.container.classic.MetaMap.putMany;
-import static xxl.java.container.classic.MetaMap.remade;
-import static xxl.java.container.classic.MetaMap.remapped;
-import static xxl.java.container.classic.MetaMap.sameContent;
 import static xxl.java.container.classic.MetaMap.*;
 
 import java.util.Arrays;
@@ -329,5 +309,20 @@ public class MetaMapTest {
 				return value.toString().length();
 			}
 		};
+	}
+	
+	@Test
+	public void multipleKeyRemoval() {
+		List<Integer> emptyList = asList();
+		Map<Integer, Integer> map = newHashMap();
+		assertTrue(removeKeys(emptyList, map).isEmpty());
+		assertTrue(removeKeys(asList(1,2,3), map).isEmpty());
+		map = newHashMap(asList(1, 2, 3, 4), asList(1, 1, 1, 1));
+		assertTrue(removeKeys(emptyList, map).isEmpty());
+		assertTrue(4 == map.size());
+		assertTrue(removeKeys(asList(1), map).contains(1));
+		assertTrue(3 == map.size());
+		assertTrue(removeKeys(asList(1, 2, 3), map).size()==2);
+		assertTrue(1 == map.size());
 	}
 }

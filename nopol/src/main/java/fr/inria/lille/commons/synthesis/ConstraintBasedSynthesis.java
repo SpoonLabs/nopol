@@ -17,6 +17,7 @@ import org.smtlib.IExpr.ISymbol;
 import xxl.java.container.classic.MetaCollection;
 import xxl.java.container.classic.MetaList;
 import xxl.java.container.classic.MetaMap;
+import xxl.java.container.map.Multimap;
 import xxl.java.library.ClassLibrary;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.operator.Operator;
@@ -74,7 +75,23 @@ public class ConstraintBasedSynthesis {
 			newMap.putAll(constants());
 			synthesisInputs.add(compatibleValuesFrom(newMap));
 		}
+		reduceInputsWithConstants(synthesisInputs);
 		return synthesisInputs;
+	}
+	
+	protected Collection<String> reduceInputsWithConstants(Collection<Map<String, Object>> inputs) {
+		Collection<Integer> constantValues = constants().values();
+		Collection<String> duplicates = MetaList.newLinkedList();
+		Multimap<String, Object> multimap = Multimap.newSetMultimap();
+		multimap.addAll(inputs);
+		for (String key : multimap.keySet()) {
+			Collection<Object> collection = multimap.get(key);
+			if (collection.size() == 1 && constantValues.containsAll(collection)) {
+				duplicates.add(key);
+			}
+		}
+		MetaMap.removeKeysInAll(duplicates, inputs);
+		return duplicates;
 	}
 	
 	private <T> Map<String, Object> compatibleValuesFrom(Map<String, Object> map) {

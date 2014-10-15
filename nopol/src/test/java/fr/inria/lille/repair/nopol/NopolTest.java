@@ -162,7 +162,7 @@ public class NopolTest {
 	}
 	
 	public static ProjectReference projectForExample(int nopolExampleNumber) {
-		String sourceFile = "../test-projects/src/main/java/nopol_examples/nopol_example_" + nopolExampleNumber + "/NopolExample.java";
+		String sourceFile = absolutePathOf(nopolExampleNumber);
 		String classpath = "../test-projects/target/test-classes:../test-projects/target/classes";
 		String[] testClasses = new String[] { "nopol_examples.nopol_example_" + nopolExampleNumber + ".NopolExampleTest" };
 		return new ProjectReference(sourceFile, classpath, testClasses);
@@ -181,5 +181,9 @@ public class NopolTest {
 		if (FileLibrary.isValidPath(path)) {
 			FileLibrary.deleteDirectory(path);
 		}
+	}
+	
+	public static String absolutePathOf(int exampleNumber) {
+		return "../test-projects/src/main/java/nopol_examples/nopol_example_" + exampleNumber + "/NopolExample.java";
 	}
 }

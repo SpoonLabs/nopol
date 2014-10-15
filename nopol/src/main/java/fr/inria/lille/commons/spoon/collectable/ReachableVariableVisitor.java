@@ -2,11 +2,11 @@ package fr.inria.lille.commons.spoon.collectable;
 
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.hasStaticModifier;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.inStaticCode;
-import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isAType;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isAnonymousClass;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isBlock;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isConstructor;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isInitializationBlock;
+import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isSimpleType;
 
 import java.util.Collection;
 
@@ -65,7 +65,7 @@ public class ReachableVariableVisitor extends CtAbstractVisitor {
 	private boolean hasSafelyReachableParent(CtElement element) {
 		CtElement parent = element.getParent();
 		if (parent != null) {
-			return ! (isAnonymousClass(element) || isInitializationBlock(element) || isConstructor(element) || isAType(element) && isBlock(parent));
+			return ! (isAnonymousClass(element) || isInitializationBlock(element) || isConstructor(element) || isSimpleType(element) && isBlock(parent));
 		}
 		return false;
 	}

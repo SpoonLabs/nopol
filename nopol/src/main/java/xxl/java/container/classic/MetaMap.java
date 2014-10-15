@@ -394,4 +394,21 @@ public class MetaMap {
 		}
 		return autoMap;
 	}
+	
+	public static <K, V> Collection<K> removeKeys(Collection<K> keys, Map<K, V> map) {
+		Collection<K> removedKeys = new HashSet<K>();
+		for (K key : keys) {
+			if (map.containsKey(key)) {
+				map.remove(key);
+				removedKeys.add(key);
+			}
+		}
+		return removedKeys;
+	}
+	
+	public static <K, V> void removeKeysInAll(Collection<K> keys, Collection<Map<K , V>> maps) {
+		for (Map<K, V> map : maps) {
+			removeKeys(keys, map);
+		}
+	}
 }

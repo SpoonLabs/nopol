@@ -29,6 +29,7 @@ import fr.inria.lille.commons.spoon.filter.CodeSnippetFilter;
 import fr.inria.lille.commons.spoon.util.SpoonElementLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
+import fr.inria.lille.repair.infinitel.InfinitelTest;
 import fr.inria.lille.repair.nopol.NopolTest;
 
 public class ValuesCollectorTest {
@@ -323,6 +324,15 @@ public class ValuesCollectorTest {
 	}
 	
 	@Test
+	public void gettersOfFields() {
+		CtElement element = elementInInfinitelProject(5, "canKeepConsuming(index, word)");
+		testReachedVariableNames(element, "word", "index",
+										  "infinitel_examples.infinitel_example_5.InfinitelExample.this.consumer",
+										  "infinitel_examples.infinitel_example_5.InfinitelExample.this.consumer.getSize()",
+										  "infinitel_examples.infinitel_example_5.InfinitelExample.this.consumer.getConsumed()");
+	}
+	
+	@Test
 	public void replaceQuotationMarksToCollectSubconditions() {
 		RuntimeValues<Boolean> runtimeValues = RuntimeValues.newInstance();
 		String invocation = runtimeValues.invocationOnCollectionOf("\"aaaa\".startsWith(\"b\")");
@@ -342,13 +352,6 @@ public class ValuesCollectorTest {
 		checkFoundFromIf(ifStatement, expected);
 	}
 	
-	private void checkFoundFromIf(CtIf ifStatement, Collection<String> expected) {
-		Collection<String> collectablesFromIf = collectableFinder().findFromIf(ifStatement);
-		System.out.println(collectablesFromIf);
-		assertEquals(expected.size(), collectablesFromIf.size());
-		assertTrue(collectablesFromIf.containsAll(expected));
-	}
-	
 	private CtStatement testReachedVariableNames(CtElement element, String... expectedReachedVariables) {
 		assertTrue(CtCodeElement.class.isInstance(element));
 		CtStatement statement = SpoonStatementLibrary.statementOf((CtCodeElement) element);
@@ -360,13 +363,21 @@ public class ValuesCollectorTest {
 	}
 	
 	private CtElement elementInNopolProject(int exampleNumber, String codeSnippet) {
-		File sourceFile = NopolTest.projectForExample(exampleNumber).sourceFile();
-		return elementFromSnippet(sourceFile, codeSnippet);
+		return elementInClass(NopolTest.absolutePathOf(exampleNumber), codeSnippet);
+	}
+	
+	private CtElement elementInInfinitelProject(int exampleNumber, String codeSnippet) {
+		return elementInClass(InfinitelTest.absolutePathOf(exampleNumber), codeSnippet);
 	}
 	
 	private CtElement elementInClassToSpoon(String codeSnippet) {
-		File filePath = FileLibrary.fileFrom("src/test/resources/spoon/example/ClassToSpoon.java");
-		return elementFromSnippet(filePath, codeSnippet);
+		String sourcePath = "src/test/resources/spoon/example/ClassToSpoon.java";
+		return elementInClass(sourcePath, codeSnippet);
+	}
+	
+	private CtElement elementInClass(String sourcePath, String codeSnippet) {
+		File file = FileLibrary.fileFrom(sourcePath);
+		return elementFromSnippet(file, codeSnippet);
 	}
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})
@@ -376,6 +387,13 @@ public class ValuesCollectorTest {
 		List<CtElement> elements = SpoonElementLibrary.filteredElements(model, filter);
 		assertEquals(1, elements.size());
 		return elements.get(0);
+	}
+	
+	private void checkFoundFromIf(CtIf ifStatement, Collection<String> expected) {
+		Collection<String> actual = collectableFinder().findFromIf(ifStatement);
+		System.out.println(actual);
+		assertEquals(expected.size(), actual.size());
+		assertTrue(actual.containsAll(expected));
 	}
 	
 	private CollectableValueFinder collectableFinder() {

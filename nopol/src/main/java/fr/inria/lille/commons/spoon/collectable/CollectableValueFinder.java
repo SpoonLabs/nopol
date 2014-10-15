@@ -2,14 +2,17 @@ package fr.inria.lille.commons.spoon.collectable;
 
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.canAccessOthersField;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.hasStaticModifier;
+import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.hasVisibilityOf;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isField;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isLocalVariable;
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.isParameter;
+import static fr.inria.lille.commons.spoon.util.SpoonMethodLibrary.*;
 import static java.util.Arrays.asList;
 import static xxl.java.library.LoggerLibrary.logWarning;
 import static xxl.java.library.LoggerLibrary.loggerFor;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.slf4j.Logger;
 
@@ -20,7 +23,9 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.visitor.Filter;
@@ -61,16 +66,18 @@ public class CollectableValueFinder {
 	protected Collection<String> collectableNames(CtStatement statement, Collection<CtVariable<?>> reachedVariables) {
 		Collection<String> names = MetaSet.newHashSet();
 		for (CtVariable<?> variable : reachedVariables) {
-			names.add(nameFor(variable));
+			String variableName = nameFor(variable);
 			if (isParameter(variable)) {
-				addVisibleFields(names, statement, variable);
+				addVisibleFields(names, statement, variable, variableName);
+			} else if (isField(variable)) {
+				addGetters(names, variable, variableName);
 			}
+			names.add(variableName);
 		}
 		return names;
 	}
 	
-	private void addVisibleFields(Collection<String> names, CtStatement statement, CtVariable<?> variable) {
-		String variableName = nameFor(variable);
+	private void addVisibleFields(Collection<String> names, CtStatement statement, CtVariable<?> variable, String variableName) {
 		try {
 			Collection<CtFieldReference<?>> allFields = variable.getType().getAllFields();
 			for (CtFieldReference<?> fieldReference : allFields) {
@@ -81,6 +88,19 @@ public class CollectableValueFinder {
 			}
 		} catch (NoClassDefFoundError error) {
 			logWarning(logger(), error.toString());
+		}
+	}
+	
+	private void addGetters(Collection<String> names, CtVariable<?> variable, String variableName) {
+		try {
+			Collection<CtMethod<?>> allMethods = methodsOf(variable.getType());
+			for (CtMethod<?> method : allMethods) {
+				if (isGetter(method) && hasVisibilityOf(method, variable)) {
+					names.add(variableName + "." + method.getSimpleName() + "()");
+				}
+			}
+		} catch (Exception e) {
+			logWarning(logger(), e.toString());
 		}
 	}
 	

@@ -6,9 +6,12 @@ import static xxl.java.container.map.Multimap.newIdentityHashListMultimap;
 import static xxl.java.container.map.Multimap.newIdentityLinkedHashSetMultimap;
 import static xxl.java.container.map.Multimap.newLinkedHashSetMultimap;
 import static xxl.java.container.map.Multimap.newListMultimap;
+import static xxl.java.container.map.Multimap.newSetMultimap;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -123,5 +126,20 @@ public class MultimapTest {
 		multimap.add("a", "AA");
 		assertEquals(0, multimap.totalValuesOf("b"));
 		assertEquals(2, multimap.totalValuesOf("a"));
+	}
+	
+	@Test
+	public void addAnotherMap() {
+		Multimap<String, Integer> multimap = newSetMultimap();
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		map.put("a", 1);
+		map.put("b", 2);
+		multimap.addAll(map);
+		assertTrue(multimap.containsKey("a"));
+		assertTrue(multimap.containsKey("b"));
+		assertTrue(multimap.get("a").size() == 1);
+		assertTrue(multimap.get("b").size() == 1);
+		assertTrue( multimap.get("a").contains(1));
+		assertTrue( multimap.get("b").contains(2));
 	}
 }

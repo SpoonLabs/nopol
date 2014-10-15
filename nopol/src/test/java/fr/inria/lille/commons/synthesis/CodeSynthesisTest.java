@@ -2,6 +2,7 @@ package fr.inria.lille.commons.synthesis;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -143,6 +144,22 @@ public class CodeSynthesisTest {
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Boolean.class, (List) asList(firstS, secondS, thirdS, fourthS));
 		assertTrue(genesis.isSuccessful());
 		assertTrue(asList("(letter)==(value)", "(value)==(letter)").contains(genesis.returnStatement()));
+	}
+	
+	@Test
+	public void reduceValuesWithConstants() {
+		Map<String, Integer> constants = MetaMap.newHashMap(asList("one", "two", "three"), asList(1, 2, 3));
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), constants , (List) asList());
+		Map<String, Object> inputA = (Map) MetaMap.newHashMap(asList("v", "w", "x", "y", "z"), asList(0, 1, 'a', 2, 3));
+		Map<String, Object> inputB = (Map) MetaMap.newHashMap(asList("v", "w", "x", "y", "z"), asList(0, 1, 'a', 0, 3));
+		Map<String, Object> inputC = (Map) MetaMap.newHashMap(asList("v", "w", "x", "y", "z"), asList(0, 1, 'a', 2, 3));
+		Collection<Map<String, Object>> maps = asList(inputA, inputB, inputC);
+		Collection<String> duplicates = synthesiser.reduceInputsWithConstants(maps);
+		assertTrue(duplicates.size() == 2);
+		assertTrue(duplicates.containsAll(asList("w", "z")));
+		assertFalse(inputA.containsKey("w") || inputA.containsKey("z"));
+		assertFalse(inputB.containsKey("w") || inputB.containsKey("z"));
+		assertFalse(inputC.containsKey("w") || inputC.containsKey("z"));
 	}
 	
 	@Test

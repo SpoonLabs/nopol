@@ -37,17 +37,17 @@ public class InfinitelTest {
 	@Ignore
 	@Test
 	public void realProject() {
-		String pwd = "/Users/virtual/Desktop/data/projects/datenopolset/Nopol_pure/421/";
-		String src = pwd + "src/java/";
+		String pwd = "/Users/virtual/Desktop/data/projects/dataset-infinitel/pdfbox_e41cbd1/";
+		String src = pwd + "src/main/java/";
 		String ab = pwd + "target/classes/";
 		String ac = pwd + "target/test-classes/";
 		String buildPath = ac + ":" + ab;
-		String[] deps = new String[] {};
+		String[] deps = new String[] { "junit-4.8.1.jar" };
 		for (String dep : deps) {
 			buildPath += ":" + pwd + "lib/" + dep;
 		}
 		String z3Path = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/z3-4.3.2/z3_for_mac";
-		Main.main(new String[] {"nopol", src, buildPath, "z3", z3Path, "org.apache.commons.lang.StringEscapeUtilsTest"});
+		Main.main(new String[] {"infinitel", src, buildPath, "z3", z3Path});
 	}
 	
 	@Test
@@ -191,8 +191,7 @@ public class InfinitelTest {
 							 "(b != a)&&((((-1)+(a))<=(1))||(!((a)<(b))))",
 							 "((!(((a)-(1))<(b)))||(((a)-(1))<=(1)))&&(b != a)",
 							 "((b != a)&&(((1)+(1))!=((a)-(1))))||((b)<=((a)-(1)))",
-							 "!((((a)+(-1))<(b))&&((((1)-((a)+(-1)))<=(-1))||((a)==(b))))",
-							 "((b != a)&&((((a)+(a))-(1))<=(loopEntrancesCounter_2)))||((b)<(a))"));
+							 "!((((a)+(-1))<(b))&&((((1)-((a)+(-1)))<=(-1))||((a)==(b))))"));
 	}
 	
 	@Test
@@ -207,6 +206,14 @@ public class InfinitelTest {
 		Map<String, Integer> expected = expectedIterationsMap(3, asList("doesNotReachZeroReturnCopy"), asList(0));
 		CodeGenesis fix = checkInfinitel(3, 7, 3, 0, expected);
 		checkFix(fix, asList("(-1)<(aCopy)", "(1)<=(a)"));
+	}
+	
+	@Test
+	public void infinitelExample5() {
+		Map<String, Integer> expected = expectedIterationsMap(5, asList("infiniteLoop"), asList(37));
+		CodeGenesis fix = checkInfinitel(5, 11, 2, 1, expected);
+		checkFix(fix, asList("(infinitel_examples.infinitel_example_5.InfinitelExample.this.consumer.getSize())!="+
+								"(infinitel_examples.infinitel_example_5.InfinitelExample.this.consumer.getConsumed())"));
 	}
 	
 	private CodeGenesis checkInfinitel(int infinitelExample, int infiniteLoopLine, int passingTests, int failingTests, Map<String, Integer> testThresholds) {
@@ -238,7 +245,7 @@ public class InfinitelTest {
 	}
 	
 	private Infinitel infinitel(int exampleNumber) {
-		String sourcePath = format("../test-projects/src/main/java/infinitel_examples/infinitel_example_%d/InfinitelExample.java", exampleNumber);
+		String sourcePath = absolutePathOf(exampleNumber);
 		String classPath = "../test-projects/target/classes/:../test-projects/target/test-classes/";
 		String testClass = format("infinitel_examples.infinitel_example_%d.InfinitelExampleTest", exampleNumber);
 		ProjectReference project = new ProjectReference(sourcePath, classPath, new String[] { testClass });
@@ -268,5 +275,9 @@ public class InfinitelTest {
 			}
 		}
 		throw new RuntimeException("Test case not found: " + testName);
+	}
+	
+	public static String absolutePathOf(int exampleNumber) {
+		return format("../test-projects/src/main/java/infinitel_examples/infinitel_example_%d/InfinitelExample.java", exampleNumber);
 	}
 }
