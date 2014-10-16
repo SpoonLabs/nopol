@@ -26,16 +26,12 @@ public class Lockable<T> {
 	private boolean acquiresLock() {
 		boolean acquiredLock = false;
 		synchronized (this) {
-			if (! locked()) {
+			if (! locked) {
 				setLocked(true);
+				acquiredLock = true;
 			}
-			acquiredLock = true;
 		}
 		return acquiredLock;
-	}
-	
-	private boolean locked() {
-		return locked;
 	}
 	
 	private void setLocked(boolean value) {

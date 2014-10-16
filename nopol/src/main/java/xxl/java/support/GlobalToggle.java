@@ -8,6 +8,7 @@ public abstract class GlobalToggle {
 	
 	public GlobalToggle() {
 		disable();
+		lock = new Lockable<GlobalToggle>(this);
 	}
 	
 	public String enableInvocation() {
@@ -43,6 +44,22 @@ public abstract class GlobalToggle {
 		return setEnabled(false);
 	}
 	
+	protected long thread() {
+		return Thread.currentThread().getId();
+	}
+	
+	protected void requestToggle() {
+		lock().waitForLock();
+	}
+	
+	protected void freeToggle() {
+		lock().unlock();
+	}
+	
+	private Lockable<GlobalToggle> lock() {
+		return lock;
+	}
+	
 	private boolean setEnabled(boolean value) {
 		boolean oldValue = enabled;
 		enabled = value;
@@ -50,4 +67,5 @@ public abstract class GlobalToggle {
 	}
 	
 	private boolean enabled;
+	private Lockable<GlobalToggle> lock;
 }

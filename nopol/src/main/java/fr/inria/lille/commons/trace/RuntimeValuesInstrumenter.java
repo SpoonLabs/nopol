@@ -20,6 +20,7 @@ public class RuntimeValuesInstrumenter {
 	public static <T> CtStatement runtimeCollectionBefore(CtStatement insertionPoint, Map<String, String> inputs, String outputName, RuntimeValues<T> runtimeValues) {
 		Factory factory = insertionPoint.getFactory();
 		List<CtStatement> newStatements = MetaList.newLinkedList();
+		addCollectionStatementFor(newStatements, factory, runtimeValues.invocationOnCollectionStart());
 		for (String reachableValue : inputs.keySet()) {
 			addCollectionStatementFor(newStatements, factory, runtimeValues.invocationOnCollectionOf(reachableValue, inputs.get(reachableValue)));
 		}

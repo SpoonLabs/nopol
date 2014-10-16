@@ -37,6 +37,10 @@ public class RuntimeValues<T> extends GlobalToggle {
 		return invocationOnCollectionOf(variableName, variableName);
 	}
 	
+	public String invocationOnCollectionStart() {
+		return globallyAccessibleName() + ".collectionStarts()";
+	}
+	
 	public String invocationOnCollectionOf(String codeSource, String executableCode) {
 		String quoatationSafeName = codeSource.replace("\"", "\\\"");
 		return globallyAccessibleName() + format(".collectInput(\"%s\", %s)", quoatationSafeName, executableCode);
@@ -48,6 +52,10 @@ public class RuntimeValues<T> extends GlobalToggle {
 	
 	public String invocationOnCollectionEnd() {
 		return globallyAccessibleName() + ".collectionEnds()";
+	}
+	
+	public void collectionStarts() {
+		requestToggle();
 	}
 	
 	public void collectInput(String variableName, Object value) {
@@ -62,6 +70,7 @@ public class RuntimeValues<T> extends GlobalToggle {
 	public void collectionEnds() {
 		specifications().add(new Specification<T>(valueBuffer(), (T) outputBuffer()));
 		flush();
+		freeToggle();
 	}
 	
 	public boolean isEmpty() {
