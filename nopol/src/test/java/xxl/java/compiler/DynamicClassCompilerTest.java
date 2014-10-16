@@ -8,8 +8,8 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
@@ -563,16 +563,14 @@ public class DynamicClassCompilerTest {
 		File jarFile = jarFileFor(adHocMap(dependencyName, dependency), "Greet");
 		URL[] classpath = new URL[] { jarFile.toURI().toURL() };
 		
-		DynamicClassCompiler otherCompiler = new DynamicClassCompiler();
-		byte[] otherCompilation = otherCompiler.javaBytecodeFor(qualifiedName, code, classpath);
+		DynamicClassCompiler otherCompiler = new DynamicClassCompiler(classpath);
+		byte[] otherCompilation = otherCompiler.javaBytecodeFor(qualifiedName, code);
 		
-		URLClassLoader loader = new URLClassLoader(classpath);
-		BytecodeClassLoader bytecodeLoader = BytecodeClassLoaderBuilder.loaderWith(qualifiedName, otherCompilation, classpath, loader);
+		BytecodeClassLoader bytecodeLoader = BytecodeClassLoaderBuilder.loaderWith(qualifiedName, otherCompilation, classpath);
 		Class<?> newClass = bytecodeLoader.loadClass(qualifiedName);
 		Object newInstance = newClass.newInstance();
 		assertEquals("Hello my dearest, 1", newClass.getMethod("greet", Object.class).invoke(newInstance, 1));
 		assertEquals("Hello my dearest, true", newClass.getMethod("greet", Object.class).invoke(newInstance, true));
-		loader.close();
 		jarFile.delete();
 	}
 	
@@ -614,9 +612,10 @@ public class DynamicClassCompilerTest {
 				"	}" +
 				"}";
 		
-		DynamicClassCompiler otherCompiler = new DynamicClassCompiler();
-		checkException(true, otherCompiler, qualifiedName, code, adHocMap(dependencyName, firstDependencyVersion), secondVersionJar);
-		byte[] compilation = checkException(false, otherCompiler, qualifiedName, code, adHocMap(dependencyName, secondDependencyVersion), firstVersionJar);
+		DynamicClassCompiler otherCompiler = new DynamicClassCompiler(new URL[] { secondVersionJar.toURI().toURL() });
+		checkException(true, otherCompiler, qualifiedName, code, adHocMap(dependencyName, firstDependencyVersion));
+		otherCompiler = new DynamicClassCompiler(new URL[] { firstVersionJar.toURI().toURL() });
+		byte[] compilation = checkException(false, otherCompiler, qualifiedName, code, adHocMap(dependencyName, secondDependencyVersion));
 
 		URLClassLoader parentLoader = new URLClassLoader(new URL[] { secondVersionJar.toURI().toURL() });
 		BytecodeClassLoader loader = BytecodeClassLoaderBuilder.loaderWith(qualifiedName, compilation, parentLoader);
@@ -629,6 +628,40 @@ public class DynamicClassCompilerTest {
 		parentLoader.close();
 		firstVersionJar.delete();
 		secondVersionJar.delete();
+	}
+	
+	@Test
+	public void resolveClassNameClashesByPackage() throws Exception {
+		String qualifiedNameA = "a.b.c.Clash";
+		String qualifiedNameB = "x.y.z.Clash";
+		String srcClassA = "package a.b.c;" + "public class Clash {}";
+		String srcClassB = "package x.y.z;" + "public class Clash {}";
+		DynamicClassCompiler compiler = new DynamicClassCompiler();
+		byte[] compilationA = compiler.javaBytecodeFor(qualifiedNameA, srcClassA);
+		File jar = jarFileFor(adHocMap(qualifiedNameA, compilationA), "nameClash");
+		URL[] classpath = new URL[] { jar.toURI().toURL() };
+		String qualifiedName = "p.ack.age.Client";
+		String srcClass =
+				"package p.ack.age;" +
+				"import a.b.c.Clash;" +
+				"public class Client {" +
+				"	public Clash field = new Clash();" +
+				"}";
+		DynamicClassCompiler otherCompiler = new DynamicClassCompiler(classpath);
+		otherCompiler.javaBytecodeFor(qualifiedNameB, srcClassB);
+		byte[] compilation = null;
+		try {
+			compilation = otherCompiler.javaBytecodeFor(qualifiedName, srcClass);
+		}
+		catch (Exception e) {
+			jar.delete();
+			fail("Should not happen: compilation failed because of two classes with same simple name but different package");
+		}
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderWith(qualifiedName, compilation, classpath);
+		Class<?> cLass = loader.loadClass(qualifiedName);
+		Field field = cLass.getField("field");
+		jar.delete();
+		assertEquals(qualifiedNameA, field.getType().getName());
 	}
 	
 	private <K, V> Map<K, V> adHocMap(K key, V value) {
@@ -646,15 +679,13 @@ public class DynamicClassCompilerTest {
 		return file;
 	}
 
-	private byte[] checkException(boolean thrown, DynamicClassCompiler compiler, String qualifiedName, String code, Map<String, byte[]> dependencies, File jarDependency) {
+	private byte[] checkException(boolean thrown, DynamicClassCompiler compiler, String qualifiedName, String code, Map<String, byte[]> dependencies) {
 		boolean wasThrown = false;
 		byte[] compilation = null;
 		try {
-			compilation = compiler.javaBytecodeFor(qualifiedName, code, dependencies, new URL[] { jarDependency.toURI().toURL() });
+			compilation = compiler.javaBytecodeFor(qualifiedName, code, dependencies);
 		} catch (DynamicCompilationException dce) {
 			wasThrown = true;
-		} catch (MalformedURLException e) {
-			fail();
 		}
 		assertEquals(thrown, wasThrown);
 		return compilation;

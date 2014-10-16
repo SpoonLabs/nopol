@@ -2,6 +2,7 @@ package xxl.java.compiler;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,21 +56,20 @@ public class VirtualFileObjectManager extends ForwardingJavaFileManager<JavaFile
 		Iterable<JavaFileObject> result = super.list(location, packageName, kinds, recurse);
 		List<JavaFileObject> files = MetaList.newLinkedList();
 		if (location == StandardLocation.CLASS_PATH && kinds.contains(JavaFileObject.Kind.CLASS)) {
-			for (JavaFileObject file : sourceFiles().values()) {
-				if (file.getKind() == Kind.CLASS && file.getName().startsWith(packageName)) {
-					files.add(file);
-				}
-			}
-			files.addAll(classFiles().values());
+			addMatchingFiles(Kind.CLASS, packageName, classFiles().values(), files);
 		} else if (location == StandardLocation.SOURCE_PATH && kinds.contains(JavaFileObject.Kind.SOURCE)) {
-			for (JavaFileObject file : sourceFiles().values()) {
-				if (file.getKind() == Kind.SOURCE && file.getName().startsWith(packageName)) {
-					files.add(file);
-				}
-			}
+			addMatchingFiles(Kind.SOURCE, packageName, sourceFiles().values(), files);
 		}
 		MetaCollection.addAll(files, result);
 		return files;
+	}
+	
+	private void addMatchingFiles(Kind kind, String packageName, Collection<? extends JavaFileObject> files, Collection<JavaFileObject> destination) {
+		for (JavaFileObject file : files) {
+			if (file.getKind() == kind && file.getName().startsWith(packageName)) {
+				destination.add(file);
+			}
+		}
 	}
 
 	protected void addCompiledClasses(Map<String, byte[]> compiledClasses) {

@@ -29,6 +29,11 @@ import xxl.java.library.StringLibrary;
 
 public class DynamicClassCompiler {
 	
+	public DynamicClassCompiler(URL[] classpath) {
+		this();
+		options = optionsWithClasspath(classpath);
+	}
+	
 	public DynamicClassCompiler() {
 		options = asList("-nowarn");
 		compiler = ToolProvider.getSystemJavaCompiler();
@@ -41,44 +46,20 @@ public class DynamicClassCompiler {
 		return javaBytecodeFor(qualifiedName, sourceContent, new HashMap<String, byte[]>());
 	}
 	
-	public synchronized byte[] javaBytecodeFor(String qualifiedName, String sourceContent, URL[] classpath) {
-		return javaBytecodeFor(qualifiedName, sourceContent, new HashMap<String, byte[]>(), classpath);
-	}
-	
 	public synchronized byte[] javaBytecodeFor(String qualifiedName, String sourceContent, Map<String, byte[]> compiledDependencies) {
-		return javaBytecodeFor(qualifiedName, sourceContent, compiledDependencies, options());
-	}
-	
-	public synchronized byte[] javaBytecodeFor(String qualifiedName, String sourceContent, Map<String, byte[]> compiledDependencies, URL[] classpath) {
-		return javaBytecodeFor(qualifiedName, sourceContent, compiledDependencies, optionsWithClasspath(classpath));
-	}
-	
-	public synchronized byte[] javaBytecodeFor(String qualifiedName, String sourceContent, Map<String, byte[]> compiledDependencies, List<String> options) {
 		Map<String, String> adHocMap = MetaMap.newHashMap(qualifiedName, sourceContent);
-		return javaBytecodeFor(adHocMap, compiledDependencies, options).get(qualifiedName);
+		return javaBytecodeFor(adHocMap, compiledDependencies).get(qualifiedName);
 	}
 	
 	public synchronized Map<String, byte[]> javaBytecodeFor(Map<String, String> qualifiedNameAndContent) {
 		return javaBytecodeFor(qualifiedNameAndContent, new HashMap<String, byte[]>());
 	}
 	
-	public synchronized Map<String, byte[]> javaBytecodeFor(Map<String, String> qualifiedNameAndContent, URL[] classpath) {
-		return javaBytecodeFor(qualifiedNameAndContent, new HashMap<String, byte[]>(), classpath);
-	}
-	
 	public synchronized Map<String, byte[]> javaBytecodeFor(Map<String, String> qualifiedNameAndContent, Map<String, byte[]> compiledDependencies) {
-		return javaBytecodeFor(qualifiedNameAndContent, compiledDependencies, options());
-	}
-	
-	public synchronized Map<String, byte[]> javaBytecodeFor(Map<String, String> qualifiedNameAndContent, Map<String, byte[]> compiledDependencies, URL[] classpath) {
-		return javaBytecodeFor(qualifiedNameAndContent, compiledDependencies, optionsWithClasspath(classpath));
-	}
-	
-	public synchronized Map<String, byte[]> javaBytecodeFor(Map<String, String> qualifiedNameAndContent, Map<String, byte[]> compiledDependencies, List<String> options) {
 		logDebug(logger(), format("[Compiling %d source files]", qualifiedNameAndContent.size()));
 		Collection<JavaFileObject> units = addCompilationUnits(qualifiedNameAndContent);
 		fileManager().addCompiledClasses(compiledDependencies);
-		CompilationTask task = compiler().getTask(null, fileManager(), diagnostics(), options, null, units);
+		CompilationTask task = compiler().getTask(null, fileManager(), diagnostics(), options(), null, units);
 		runCompilationTask(task);
 		Map<String, byte[]> bytecodes = collectBytecodes(qualifiedNameAndContent);
 		logDebug(logger(), format("[Compilation finished successfully (%d classes)]", bytecodes.size()));

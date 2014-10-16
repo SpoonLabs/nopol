@@ -38,11 +38,11 @@ public abstract class SpoonedFile {
 	protected abstract Collection<? extends CtSimpleType<?>> modelledClasses();
 	
 	public SpoonedFile(File sourceFile, URL[] projectClasspath) {
+		logDebug(logger(), format("[Building Spoon model from %s]", sourceFile));
 		this.sourceFile = sourceFile;
 		this.projectClasspath = projectClasspath;
-		logDebug(logger(), format("[Building Spoon model from %s]", sourceFile()));
 		factory = SpoonModelLibrary.modelFor(sourceFile, projectClasspath());
-		compiler = new DynamicClassCompiler();
+		compiler = new DynamicClassCompiler(compilationClasspath());
 		manager = new RuntimeProcessingManager(spoonFactory());
 		compiledClasses = MetaMap.newHashMap();
 		prettyPrinter = new DefaultJavaPrettyPrinter(spoonEnvironment());
@@ -153,7 +153,7 @@ public abstract class SpoonedFile {
 	}
 	
 	protected Map<String, byte[]> compilationFor(Map<String, String> processedSources) {
-		return compiler().javaBytecodeFor(processedSources, compiledClasses(), compilationClasspath());
+		return compiler().javaBytecodeFor(processedSources, compiledClasses());
 	}
 	
 	protected BytecodeClassLoader newBytecodeClassloader(Map<String, byte[]> compiledClasses) {

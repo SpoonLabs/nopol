@@ -28,8 +28,6 @@ import spoon.reflect.reference.CtTypeReference;
 import xxl.java.container.classic.MetaList;
 import xxl.java.library.JavaLibrary;
 
-import com.martiansoftware.jsap.JSAPException;
-
 public class SpoonModelLibrary {
 
 	public static Factory modelFor(File sourceFile) {
@@ -194,11 +192,7 @@ public class SpoonModelLibrary {
 	
 	private static Launcher launcher() {
 		if (launcher == null) {
-			try {
-				launcher = new Launcher();
-			} catch (JSAPException e) {
-				e.printStackTrace();
-			}
+			launcher = new Launcher();
 		}
 		return launcher;
 	}
