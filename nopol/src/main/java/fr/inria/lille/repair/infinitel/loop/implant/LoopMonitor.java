@@ -1,6 +1,7 @@
 package fr.inria.lille.repair.infinitel.loop.implant;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class LoopMonitor extends GlobalToggle {
 	protected void reset() {
 		setInfiniteInvocation(null);
 		exitRecords().clear();
+		errorRecords().clear();
 		breakRecords().clear();
 		returnRecords().clear();
 	}
@@ -35,23 +37,27 @@ public class LoopMonitor extends GlobalToggle {
 		return format("%s.instance(%d)", getClass().getName(), instanceID());
 	}
 	
-	public String invocationOnLoopConditionEvaluation(String originalCondition, String counterName) {
-		return  globallyAccessibleName() + format(".canEnterLoop(%s, %s)", originalCondition, counterName);
+	public String invocationOnMonitoringEnd(String counterName) {
+		return invocationMessageFor("recordExit", asList(int.class), asList(counterName));
 	}
 	
+	public String invocationOnLoopConditionEvaluation(String originalCondition, String counterName) {
+		return invocationMessageFor("canEnterLoop", asList(boolean.class, int.class), asList(originalCondition, counterName));
+	}
+	
+	public String invocationOnLoopError(String counterName) {
+		return invocationMessageFor("recordErrorExit", asList(int.class), asList(counterName));
+	}
+
 	public String invocationOnLoopBreak(String counterName) {
-		return globallyAccessibleName() + format(".recordBreakExit(%s)", counterName);
+		return invocationMessageFor("recordBreakExit", asList(int.class), asList(counterName));
 	}
 	
 	public String invocationOnLoopReturn(String counterName) {
-		return globallyAccessibleName() + format(".recordReturnExit(%s)", counterName);
+		return invocationMessageFor("recordReturnExit", asList(int.class), asList(counterName));
 	}
 	
-	public String invocationOnFirstStatementAfterLoop(String counterName) {
-		return globallyAccessibleName() + format(".recordEntrancesToExit(%s)", counterName);
-	}
-
-	public synchronized boolean canEnterLoop(boolean originalCondition, int completedIterations) {
+	public boolean canEnterLoop(boolean originalCondition, int completedIterations) {
 		boolean canEnterLoop = doorkeeper().canEnterLoop(originalCondition, completedIterations, invocationNumber());
 		if (originalCondition && ! canEnterLoop && infiniteInvocation() == null) {
 			setInfiniteInvocation(invocationNumber());
@@ -59,17 +65,22 @@ public class LoopMonitor extends GlobalToggle {
 		return canEnterLoop;
 	}
 	
-	public synchronized void recordEntrancesToExit(int loopEntrances) {
+	public void recordExit(int loopEntrances) {
 		exitRecords().add(loopEntrances);
 	}
 	
-	public synchronized void recordBreakExit(int loopEntrances) {
+	public void recordBreakExit(int loopEntrances) {
 		breakRecords().add(loopEntrances);
 	}
 	
-	public synchronized void recordReturnExit(int loopEntrances) {
+	public void recordErrorExit(int loopEntrances) {
+		errorRecords().add(loopEntrances);
+		recordExit(loopEntrances);
+	}
+	
+	public void recordReturnExit(int loopEntrances) {
 		returnRecords().add(loopEntrances);
-		recordEntrancesToExit(loopEntrances);
+		recordExit(loopEntrances);
 	}
 	
 	private int invocationNumber() {
@@ -79,6 +90,7 @@ public class LoopMonitor extends GlobalToggle {
 	public LoopStatistics asExportable() {
 		LoopStatistics stats = new LoopStatistics();
 		stats.setExitRecords(exitRecords().copy());
+		stats.setErrorRecords(errorRecords().copy());
 		stats.setBreakRecords(breakRecords().copy());
 		stats.setReturnRecords(returnRecords().copy());
 		stats.setInfiniteInvocation(infiniteInvocation());
@@ -90,6 +102,7 @@ public class LoopMonitor extends GlobalToggle {
 		this.loop = loop;
 		this.instanceID = instanceID;
 		exitRecords = Bag.newHashBag();
+		errorRecords = Bag.newHashBag();
 		breakRecords = Bag.newHashBag();
 		returnRecords = Bag.newHashBag();
 		doorkeeper = new LoopDoorkeeper(threshold);
@@ -123,6 +136,10 @@ public class LoopMonitor extends GlobalToggle {
 		return exitRecords;
 	}
 	
+	private Bag<Integer> errorRecords() {
+		return errorRecords;
+	}
+	
 	private Bag<Integer> breakRecords() {
 		return breakRecords;
 	}
@@ -154,11 +171,11 @@ public class LoopMonitor extends GlobalToggle {
 	private While loop;
 	private int instanceID;
 	private Bag<Integer> exitRecords;
+	private Bag<Integer> errorRecords;
 	private Bag<Integer> breakRecords;
 	private Bag<Integer> returnRecords;
 	private LoopDoorkeeper doorkeeper;
 	private Integer infiniteInvocation;
 	
-	/** XXX This causes memory leaks **/
 	private static List<LoopMonitor> allInstances;
 }

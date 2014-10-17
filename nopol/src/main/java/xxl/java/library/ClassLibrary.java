@@ -41,6 +41,19 @@ public class ClassLibrary {
 			method.setAccessible(oldValue);
 		}
 	}
+	
+	public static boolean hasMethod(Class<?> aClass, String methodName, List<? extends Class<?>> parameterTypes) {
+		boolean hasMethod;
+		try {
+			aClass.getMethod(methodName, parameterTypes.toArray(new Class[parameterTypes.size()]));
+			hasMethod = true;
+		} catch (NoSuchMethodException e) {
+			hasMethod = false;
+		} catch (SecurityException e) {
+			hasMethod = true;
+		}
+		return hasMethod;
+	}
 
 	public static Method method(String methodName, Class<?> aClass, Collection<Class<?>> argumentClasses) {
 		return method(methodName, aClass, argumentClasses.toArray(new Class[argumentClasses.size()]));

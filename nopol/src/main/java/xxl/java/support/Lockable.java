@@ -5,17 +5,17 @@ import static java.lang.String.format;
 public class Lockable<T> {
 
 	public Lockable(T object) {
-		setLocked(false);
 		this.object = object;
+		setLocked(false);
 	}
 	
-	public void waitForLock() {
+	public void acquire() {
 		while (! acquiresLock()) { 
 			/* busy-waiting */
 		}
 	}
 	
-	public void unlock() {
+	public void release() {
 		setLocked(false);
 	}
 	
@@ -34,8 +34,8 @@ public class Lockable<T> {
 		return acquiredLock;
 	}
 	
-	private void setLocked(boolean value) {
-		locked = value;
+	private void setLocked(boolean locked) {
+		this.locked = locked;
 	}
 	
 	@Override

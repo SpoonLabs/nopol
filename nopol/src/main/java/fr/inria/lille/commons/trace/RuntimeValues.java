@@ -1,6 +1,7 @@
 package fr.inria.lille.commons.trace;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 
 import java.util.Collection;
 import java.util.Map;
@@ -38,24 +39,24 @@ public class RuntimeValues<T> extends GlobalToggle {
 	}
 	
 	public String invocationOnCollectionStart() {
-		return globallyAccessibleName() + ".collectionStarts()";
+		return invocationMessageFor("collectionStarts");
 	}
 	
 	public String invocationOnCollectionOf(String codeSource, String executableCode) {
-		String quoatationSafeName = codeSource.replace("\"", "\\\"");
-		return globallyAccessibleName() + format(".collectInput(\"%s\", %s)", quoatationSafeName, executableCode);
+		String quoatationSafeName = "\"" + codeSource.replace("\"", "\\\"") + "\"";
+		return invocationMessageFor("collectInput", asList(String.class, Object.class), asList(quoatationSafeName, executableCode));
 	}
 	
 	public String invocationOnOutputCollection(String outputName) {
-		return globallyAccessibleName() + format(".collectOutput(%s)", outputName, outputName);
+		return invocationMessageFor("collectOutput", asList(Object.class), asList(outputName));
 	}
 	
 	public String invocationOnCollectionEnd() {
-		return globallyAccessibleName() + ".collectionEnds()";
+		return invocationMessageFor("collectionEnds");
 	}
 	
 	public void collectionStarts() {
-		requestToggle();
+		acquireToggle();
 	}
 	
 	public void collectInput(String variableName, Object value) {
@@ -70,7 +71,7 @@ public class RuntimeValues<T> extends GlobalToggle {
 	public void collectionEnds() {
 		specifications().add(new Specification<T>(valueBuffer(), (T) outputBuffer()));
 		flush();
-		freeToggle();
+		releaseToggle();
 	}
 	
 	public boolean isEmpty() {

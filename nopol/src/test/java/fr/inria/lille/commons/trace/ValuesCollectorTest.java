@@ -336,7 +336,7 @@ public class ValuesCollectorTest {
 	public void replaceQuotationMarksToCollectSubconditions() {
 		RuntimeValues<Boolean> runtimeValues = RuntimeValues.newInstance();
 		String invocation = runtimeValues.invocationOnCollectionOf("\"aaaa\".startsWith(\"b\")");
-		String toMatch = "collectInput(\"\\\"aaaa\\\".startsWith(\\\"b\\\")\", \"aaaa\".startsWith(\"b\"))";
+		String toMatch = "collectInput(\"\\\"aaaa\\\".startsWith(\\\"b\\\")\",\"aaaa\".startsWith(\"b\"))";
 		assertTrue(invocation.endsWith(toMatch));
 	}
 	

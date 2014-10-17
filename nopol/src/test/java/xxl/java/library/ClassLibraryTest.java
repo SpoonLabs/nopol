@@ -4,15 +4,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static xxl.java.library.ClassLibrary.asClasses;
-import static xxl.java.library.ClassLibrary.invoke;
-import static xxl.java.library.ClassLibrary.invokeTrespassing;
-import static xxl.java.library.ClassLibrary.isGreaterThan;
-import static xxl.java.library.ClassLibrary.isLessThan;
-import static xxl.java.library.ClassLibrary.isSubclassOf;
-import static xxl.java.library.ClassLibrary.isSuperclassOf;
-import static xxl.java.library.ClassLibrary.method;
-import static xxl.java.library.ClassLibrary.newInstance;
+import static xxl.java.library.ClassLibrary.*;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -26,6 +18,14 @@ public class ClassLibraryTest {
 		List<? extends Class<?>> classes = asList(String.class, ClassLibraryTest.class, OtherClass.class);
 		List<? extends Object> objects = asList("p", new ClassLibraryTest(), new OtherClass());
 		assertEquals(classes, asClasses(objects));
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Test
+	public void hasMethodCheck() {
+		assertTrue(hasMethod(Class.class, "getMethod", (List) asList(String.class, Class[].class)));
+		assertTrue(hasMethod(String.class, "replaceAll", (List) asList(String.class, String.class)));
+		assertFalse(hasMethod(String.class, "replaceWithARegexOrDie", (List) asList(String.class)));
 	}
 	
 	@Test

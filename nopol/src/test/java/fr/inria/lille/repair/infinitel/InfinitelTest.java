@@ -37,7 +37,7 @@ public class InfinitelTest {
 	@Ignore
 	@Test
 	public void realProject() {
-		String pwd = "/Users/virtual/Desktop/tika_1b694e7/";
+		String pwd = "/Users/virtual/Desktop/data/projects/dataset-infinitel/tika_1b694e7/";
 		String src = pwd + "src/main/java/";
 		String ab = pwd + "target/classes/";
 		String ac = pwd + "target/test-classes/";

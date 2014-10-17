@@ -1,5 +1,13 @@
 package xxl.java.support;
 
+import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertTrue;
+import static xxl.java.library.ClassLibrary.hasMethod;
+import static xxl.java.library.StringLibrary.join;
+
+import java.util.List;
+
 public abstract class GlobalToggle {
 
 	protected abstract void reset();
@@ -11,20 +19,31 @@ public abstract class GlobalToggle {
 		lock = new Lockable<GlobalToggle>(this);
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected String invocationMessageFor(String methodName) {
+		return invocationMessageFor(methodName, (List) asList(), (List) asList());
+	}
+	
+	protected String invocationMessageFor(String methodName, List<? extends Class<?>> parameterTypes, List<String> parameterNames) {
+		assertTrue("Nonexistent method: " + methodName, hasMethod(getClass(), methodName, parameterTypes));
+		String message = format("%s(%s)", methodName, join(parameterNames, ','));
+		return globallyAccessibleName() + '.' + message;
+	}
+	
 	public String enableInvocation() {
-		return globallyAccessibleName() + ".enable()";
+		return invocationMessageFor("enable");
 	}
 	
 	public String disableInvocation() {
-		return globallyAccessibleName() + ".disable()";
+		return invocationMessageFor("disable");
 	}
 	
 	public String isEnabledInquiry() {
-		return globallyAccessibleName() + ".isEnabled()";
+		return invocationMessageFor("isEnabled");
 	}
 	
 	public String isDisabledInquiry() {
-		return globallyAccessibleName() + ".isDisabled()";
+		return invocationMessageFor("isDisabled");
 	}
 	
 	public boolean isEnabled() {
@@ -44,16 +63,12 @@ public abstract class GlobalToggle {
 		return setEnabled(false);
 	}
 	
-	protected long thread() {
-		return Thread.currentThread().getId();
+	protected void acquireToggle() {
+		lock().acquire();
 	}
 	
-	protected void requestToggle() {
-		lock().waitForLock();
-	}
-	
-	protected void freeToggle() {
-		lock().unlock();
+	protected void releaseToggle() {
+		lock().release();
 	}
 	
 	private Lockable<GlobalToggle> lock() {

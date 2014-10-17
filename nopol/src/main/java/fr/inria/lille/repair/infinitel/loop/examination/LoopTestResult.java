@@ -113,6 +113,10 @@ public class LoopTestResult {
 		return sumInts(numberOfNonConditionalExitsByTestIn(loop).values());
 	}
 	
+	public Object aggregatedNumberOfErrorExits(While loop) {
+		return sumInts(numberOfErrorExitsByTestIn(loop).values());
+	}
+	
 	public int aggregatedNumberOfBreakExits(While loop) {
 		return sumInts(numberOfBreakExitsByTestIn(loop).values());
 	}
@@ -131,6 +135,10 @@ public class LoopTestResult {
 	
 	public Bag<Integer> aggregatedConditionalRecordsOf(While loop) {
 		return Bag.flatBag(conditionalRecordsByTestIn(loop).values());
+	}
+	
+	public Bag<Integer> aggregatedErrorRecordsOf(While loop) {
+		return Bag.flatBag(errorRecordsByTestIn(loop).values());
 	}
 	
 	public Bag<Integer> aggregatedBreakRecordsOf(While loop) {
@@ -161,6 +169,14 @@ public class LoopTestResult {
 		Bag<Integer> exitRecords = Bag.newHashBag();
 		for (While loop : loops()) {
 			exitRecords.addAll(aggregatedConditionalRecordsOf(loop));
+		}
+		return exitRecords;
+	}
+	
+	public Bag<Integer> aggregatedErrorRecords() {
+		Bag<Integer> exitRecords = Bag.newHashBag();
+		for (While loop : loops()) {
+			exitRecords.addAll(aggregatedErrorRecordsOf(loop));
 		}
 		return exitRecords;
 	}
@@ -292,6 +308,10 @@ public class LoopTestResult {
 		return byTest(loop, testsOf(loop), LoopStatistics.methodNumberOfNonConditionalExits());
 	}
 	
+	private Map<TestCase, Integer> numberOfErrorExitsByTestIn(While loop) {
+		return byTest(loop, testsOf(loop), LoopStatistics.methodNumberOfErrorExits());
+	}
+	
 	public Map<TestCase, Integer> numberOfBreakExitsByTestIn(While loop) {
 		return byTest(loop, testsOf(loop), LoopStatistics.methodNumberOfBreakExits());
 	}
@@ -306,6 +326,10 @@ public class LoopTestResult {
 	
 	public Map<TestCase, Bag<Integer>> conditionalRecordsByTestIn(While loop) {
 		return byTest(loop, testsOf(loop), LoopStatistics.methodConditionalRecords());
+	}
+	
+	public Map<TestCase, Bag<Integer>> errorRecordsByTestIn(While loop) {
+		return byTest(loop, testsOf(loop), LoopStatistics.methodErrorRecords());
 	}
 	
 	public Map<TestCase, Bag<Integer>> breakRecordsByTestIn(While loop) {

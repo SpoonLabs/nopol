@@ -33,6 +33,15 @@ public class LoopStatistics {
 		};
 	}
 	
+	public static Function<LoopStatistics, Integer> methodNumberOfErrorExits() {
+		return new Function<LoopStatistics, Integer>() {
+			@Override
+			public Integer outputFor(LoopStatistics stats) {
+				return stats.numberOfErrorExits();
+			}
+		};
+	}	
+	
 	public static Function<LoopStatistics, Integer> methodNumberOfBreakExits() {
 		return new Function<LoopStatistics, Integer>() {
 			@Override
@@ -119,6 +128,15 @@ public class LoopStatistics {
 			@Override
 			public Bag<Integer> outputFor(LoopStatistics stats) {
 				return stats.conditionalRecords();
+			}
+		};
+	}
+	
+	public static Function<LoopStatistics, Bag<Integer>> methodErrorRecords() {
+		return new Function<LoopStatistics, Bag<Integer>>() {
+			@Override
+			public Bag<Integer> outputFor(LoopStatistics stats) {
+				return stats.errorRecords();
 			}
 		};
 	}
@@ -215,6 +233,10 @@ public class LoopStatistics {
 		return exitRecords().size();
 	}
 	
+	public int numberOfErrorExits() {
+		return errorRecords().size();
+	}
+	
 	public int numberOfBreakExits() {
 		return breakRecords().size();
 	}
@@ -228,7 +250,7 @@ public class LoopStatistics {
 	}
 	
 	public int numberOfNonConditionalExits() {
-		return numberOfBreakExits() + numberOfReturnExits();
+		return numberOfErrorExits() + numberOfBreakExits() + numberOfReturnExits();
 	}
 	
 	public long numberOfIterations() {
@@ -255,6 +277,10 @@ public class LoopStatistics {
 		return exitRecords;
 	}
 	
+	public Bag<Integer> errorRecords() {
+		return errorRecords;
+	}
+	
 	public Bag<Integer> breakRecords() {
 		return breakRecords;
 	}
@@ -265,6 +291,7 @@ public class LoopStatistics {
 	
 	public Bag<Integer> conditionalRecords() {
 		Bag<Integer> conditionalRecords = exitRecords().copy();
+		conditionalRecords.remove(errorRecords());
 		conditionalRecords.remove(breakRecords());
 		conditionalRecords.remove(returnRecords());
 		return conditionalRecords;
@@ -276,6 +303,10 @@ public class LoopStatistics {
 	
 	protected void setExitRecords(Bag<Integer> exitRecords) {
 		this.exitRecords = exitRecords;
+	}
+	
+	protected void setErrorRecords(Bag<Integer> errorRecords) {
+		this.errorRecords = errorRecords;
 	}
 	
 	protected void setBreakRecords(Bag<Integer> breakRecords) {
@@ -292,6 +323,7 @@ public class LoopStatistics {
 	}
 	
 	private Bag<Integer> exitRecords;
+	private Bag<Integer> errorRecords;
 	private Bag<Integer> breakRecords;
 	private Bag<Integer> returnRecords;
 	private Integer infiniteInvocation;

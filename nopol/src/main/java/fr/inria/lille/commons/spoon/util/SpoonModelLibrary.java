@@ -1,6 +1,7 @@
 package fr.inria.lille.commons.spoon.util;
 
 import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.asBlock;
+import static java.util.Arrays.asList;
 
 import java.io.File;
 import java.net.URL;
@@ -14,11 +15,14 @@ import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtBreak;
+import spoon.reflect.code.CtCatch;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.CtThrow;
+import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.CodeFactory;
@@ -78,17 +82,24 @@ public class SpoonModelLibrary {
 	}
 	
 	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, Class<T> type, String variableName, T defaultValue) {
-		return newLocalVariable(factory, type.getSimpleName(), variableName, newLiteral(factory, defaultValue));
+		return newLocalVariable(factory, type, variableName, newLiteral(factory, defaultValue));
 	}
 	
 	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, Class<T> type, String variableName, String defaultValue) {
-		return newLocalVariable(factory, type.getSimpleName(), variableName, newExpressionFromSnippet(factory, defaultValue, type));
+		return newLocalVariable(factory, type, variableName, newExpressionFromSnippet(factory, defaultValue, type));
 	}
 	
-	public static <T> CtLocalVariable<T> newLocalVariable(Factory factory, String classSimpleName, String variableName, CtExpression<T> defaultValue) {
-		CtTypeReference<T> type = factory.Core().createTypeReference();
-		type.setSimpleName(classSimpleName);
-		return factory.Code().createLocalVariable(type, variableName, defaultValue);
+	public static <T> CtLocalVariable<T> newLocalVariable(Factory factory, Class<T> aClass, String variableName, CtExpression<T> defaultValue) {
+		CtLocalVariable<T> variable = newLocalVariable(factory, aClass, variableName);
+		variable.setDefaultExpression(defaultValue);
+		return variable;
+	}
+	
+	public static <T> CtLocalVariable<T> newLocalVariable(Factory factory, Class<T> aClass, String variableName) {
+		CtLocalVariable<T> variable = factory.Core().createLocalVariable();
+		variable.setType(newTypeReference(factory, aClass));
+		variable.setSimpleName(variableName);
+		return variable;
 	}
 	
 	public static <T> CtExpression<T> newExpressionFromSnippet(Factory factory, String codeSnippet, Class<T> expressionClass, CtElement parent) {
@@ -115,10 +126,10 @@ public class SpoonModelLibrary {
 		return newBlock(factory, MetaList.newArrayList(statements));
 	}
 	
-	public static CtBlock<CtStatement> newBlock(Factory factory, List<CtStatement> blockStatements) {
+	public static CtBlock<CtStatement> newBlock(Factory factory, List<CtStatement> statements) {
 		CtBlock<CtStatement> newBlock = factory.Core().createBlock();
-		setParent(newBlock, blockStatements);
-		newBlock.setStatements(blockStatements);
+		newBlock.setStatements(statements);
+		setParent(newBlock, statements);
 		return newBlock;
 	}
 	
@@ -138,7 +149,7 @@ public class SpoonModelLibrary {
 	
 	public static CtIf newIf(Factory factory, CtExpression<Boolean> condition, CtStatement thenBranch) {
 		CtIf newIf = factory.Core().createIf();
-		thenBranch = asBlock(thenBranch);
+		thenBranch = asBlock(thenBranch, newIf);
 		setParent(newIf, condition, thenBranch);
 		newIf.setCondition(condition);
 		newIf.setThenStatement(thenBranch);
@@ -147,12 +158,47 @@ public class SpoonModelLibrary {
 	
 	public static CtIf newIf(Factory factory, CtExpression<Boolean> condition, CtStatement thenBranch, CtStatement elseBranch) {
 		CtIf newIf = newIf(factory, condition, thenBranch);
-		elseBranch = asBlock(elseBranch);
+		elseBranch = asBlock(elseBranch, newIf);
 		setParent(newIf, elseBranch);
 		newIf.setElseStatement(elseBranch);
 		return newIf;
 	}
-
+	
+	public static <E extends Throwable> CtTry newTryCatch(Factory factory, CtStatement tryBlock, Class<E> exception, String catchName, CtStatement catchBlock, CtElement parent) {
+		CtCatch newCatch = newCatch(factory, exception, catchName, catchBlock);
+		return newTryCatch(factory, tryBlock, asList(newCatch), parent);
+	}
+	
+	public static CtTry newTryCatch(Factory factory, CtStatement tryBlock, List<CtCatch> catchers, CtElement parent) {
+		CtTry tryCatch = factory.Core().createTry();
+		tryCatch.setBody(asBlock(tryBlock, tryCatch));
+		tryCatch.setCatchers(catchers);
+		setParent(tryCatch, catchers);
+		setParent(parent, tryCatch);
+		return tryCatch;
+	}
+	
+	public static <E extends Throwable> CtCatch newCatch(Factory factory, Class<E> throwableClass, String catchName, CtStatement catchBlock) {
+		CtCatch aCatch = factory.Core().createCatch();
+		aCatch.setParameter(newLocalVariable(factory, throwableClass, catchName));
+		aCatch.setBody(asBlock(catchBlock, aCatch));
+		return aCatch;
+	}
+	
+	public static <E extends Throwable> CtThrow newThrow(Factory factory, Class<E> throwableClass, String thrownExpression) {
+		return newThrow(factory, newExpressionFromSnippet(factory, thrownExpression, throwableClass));
+	}
+	
+	public static <E extends Throwable> CtThrow newThrow(Factory factory, CtExpression<E> thrownExpression) {
+		CtThrow aThrow = factory.Core().createThrow();
+		aThrow.setThrownExpression(thrownExpression);
+		return aThrow;
+	}
+	
+	public static <E> CtTypeReference<E> newTypeReference(Factory factory, Class<E> aClass) {
+		return factory.Type().createReference(aClass);
+	}
+	
 	public static void setParent(CtElement parent, Collection<? extends CtElement> children) {
 		setParent(parent, children.toArray(new CtElement[children.size()]));
 	}
@@ -164,8 +210,7 @@ public class SpoonModelLibrary {
 	}
 	
 	public static void setLoopBody(CtWhile loop, CtStatement loopBody) {
-		loopBody = asBlock(loopBody);
-		setParent(loop, loopBody);
+		loopBody = asBlock(loopBody, loop);
 		loop.setBody(loopBody);
 	}
 	

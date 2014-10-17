@@ -19,29 +19,41 @@ import xxl.java.container.classic.MetaList;
 
 public class SpoonStatementLibrary {
 
-	public static CtBlock<?> asBlock(CtStatement statement) {
+	public static CtBlock<?> asBlock(CtStatement statement, CtElement parent) {
+		CtBlock<?> block;
 		if (isBlock(statement)) {
-			return (CtBlock<?>) statement;
+			block = (CtBlock<?>) statement;
+		} else {
+			block = newBlock(statement.getFactory(), statement);
 		}
-		return newBlock(statement.getFactory(), statement);
+		setParent(parent, block);
+		return block;
 	}
 	
 	public static void insertBeforeUnderSameParent(CtStatement toBeInserted, CtStatement insertionPoint) {
-		insertBefore(toBeInserted, insertionPoint.getParent(), insertionPoint);
-	}
-	
-	public static void insertBefore(CtStatement toBeInserted, CtElement newParent, CtStatement insertionPoint) {
-		insertionPoint.insertBefore(toBeInserted);
-		setParent(newParent, toBeInserted);
+		CtElement parent;
+		if (isBlock(insertionPoint)) {
+			CtBlock<?> block = (CtBlock<?>) insertionPoint;
+			block.insertBegin(toBeInserted);
+			parent = block;
+		} else {
+			insertionPoint.insertBefore(toBeInserted);
+			parent = insertionPoint.getParent();
+		}
+		setParent(parent, toBeInserted);
 	}
 	
 	public static void insertAfterUnderSameParent(CtStatement toBeInserted, CtStatement insertionPoint) {
-		insertAfter(toBeInserted, insertionPoint.getParent(), insertionPoint);
-	}
-	
-	public static void insertAfter(CtStatement toBeInserted, CtElement newParent, CtStatement insertionPoint) {
-		insertionPoint.insertAfter(toBeInserted);
-		setParent(newParent, toBeInserted);
+		CtElement parent;
+		if (isBlock(insertionPoint)) {
+			CtBlock<?> block = (CtBlock<?>) insertionPoint;
+			block.insertEnd(toBeInserted);
+			parent = block;
+		} else {
+			insertionPoint.insertAfter(toBeInserted);
+			parent = insertionPoint.getParent();
+		}
+		setParent(parent, toBeInserted);
 	}
 	
 	public static boolean isLastStatementOfMethod(CtStatement statement) {
