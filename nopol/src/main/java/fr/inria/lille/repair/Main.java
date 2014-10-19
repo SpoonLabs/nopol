@@ -25,7 +25,7 @@ import java.util.Arrays;
 import xxl.java.library.FileLibrary;
 import xxl.java.library.JavaLibrary;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
-import fr.inria.lille.repair.infinitel.Infinitel;
+import fr.inria.lille.repair.infinitel.InfinitelLauncher;
 import fr.inria.lille.repair.nopol.NoPolLauncher;
 
 public class Main {
@@ -44,12 +44,13 @@ public class Main {
     	}
     }
     
-	private Main(String[] args, String repairMethod, File sourceFile, URL[] classpaths) {
+	private Main(String[] args, String repairMethod, File sourceFile, URL[] classpath) {
+		String[] remainder = Arrays.copyOfRange(args, 5, args.length);
 		if (repairMethod.equalsIgnoreCase("nopol")) {
-			NoPolLauncher.launch(sourceFile, classpaths, Arrays.copyOfRange(args, 5, args.length));
+			NoPolLauncher.launch(sourceFile, classpath, remainder);
 		}
 		else if (repairMethod.equalsIgnoreCase("infinitel")) {
-			Infinitel.run(sourceFile, classpaths);
+			InfinitelLauncher.launch(sourceFile, classpath, remainder);
 		} else {
 			throw new RuntimeException("Invalid repair method: " + repairMethod);
 		}

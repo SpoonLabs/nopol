@@ -1,5 +1,6 @@
 package fr.inria.lille.repair.infinitel.loop.examination;
 
+import static fr.inria.lille.repair.infinitel.loop.implant.LoopStatistics.meanOf;
 import static java.lang.String.format;
 import static xxl.java.container.classic.MetaCollection.maximum;
 import static xxl.java.library.NumberLibrary.sumInts;
@@ -93,8 +94,8 @@ public class LoopTestResult {
 		return statistics(loop, testCase).iterationsRatio();
 	}
 	
-	public double iterationsMedianIn(While loop, TestCase testCase) {
-		return statistics(loop, testCase).iterationsMedian();
+	public double iterationMedianIn(While loop, TestCase testCase) {
+		return statistics(loop, testCase).iterationMedian();
 	}
 	
 	public int aggregatedTopRecord(While loop) {
@@ -123,6 +124,10 @@ public class LoopTestResult {
 	
 	public int aggregatedNumberOfReturnExits(While loop) {
 		return sumInts(numberOfReturnExitsByTestIn(loop).values());
+	}
+	
+	public double aggregatedIterationMedian(While loop) {
+		return meanOf(aggregatedExitRecordsOf(loop));
 	}
 	
 	public long aggregatedNumberOfIterations(While loop) {

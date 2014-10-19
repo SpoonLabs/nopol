@@ -10,32 +10,32 @@ public class Lockable<T> {
 	}
 	
 	public void acquire() {
-		while (! acquiresLock()) { 
-			/* busy-waiting */
-		}
-	}
-	
-	public void release() {
-		setLocked(false);
+		do { /* nothing */ } while (! acquiresLock());
 	}
 	
 	public T object() {
 		return object;
 	}
 	
-	private boolean acquiresLock() {
+	private synchronized boolean acquiresLock() {
 		boolean acquiredLock = false;
-		synchronized (this) {
-			if (! locked) {
-				setLocked(true);
-				acquiredLock = true;
-			}
+		if (! locked()) {
+			setLocked(true);
+			acquiredLock = true;
 		}
 		return acquiredLock;
 	}
 	
+	public synchronized void release() {
+		setLocked(false);
+	}
+	
 	private void setLocked(boolean locked) {
 		this.locked = locked;
+	}
+	
+	private boolean locked() {
+		return locked;
 	}
 	
 	@Override

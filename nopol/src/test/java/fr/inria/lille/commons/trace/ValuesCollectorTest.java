@@ -6,7 +6,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -21,9 +20,9 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
 import xxl.java.container.classic.MetaMap;
+import xxl.java.container.map.Multimap;
 import xxl.java.junit.TestCase;
 import xxl.java.library.FileLibrary;
-import xxl.java.support.Singleton;
 import fr.inria.lille.commons.spoon.collectable.CollectableValueFinder;
 import fr.inria.lille.commons.spoon.filter.CodeSnippetFilter;
 import fr.inria.lille.commons.spoon.util.SpoonElementLibrary;
@@ -264,7 +263,7 @@ public class ValuesCollectorTest {
 	public void unreachedVariableInInnerStaticClass() {
 		elementInNopolProject(5, "private java.lang.Integer unreachableFromInnterStaticClass;");
 		CtElement element = elementInNopolProject(5, "!(stringParameter.isEmpty())");
-		testReachedVariableNames(element, "stringParameter");	
+		testReachedVariableNames(element, "stringParameter");
 	}
 	
 	@Test
@@ -305,6 +304,7 @@ public class ValuesCollectorTest {
 										  "spoon.example.ClassToSpoon.publicStaticField",
 										  "nested.publicInstanceField",
 										  "nested.protectedInstanceField",
+										  "nested.privateInstanceField",
 										  "spoon.example.ClassToSpoon.NestedClassToSpoon.this.protectedNestedInstanceField",
 										  "spoon.example.ClassToSpoon.NestedClassToSpoon.this.publicNestedInstanceField",
 										  "spoon.example.ClassToSpoon.NestedClassToSpoon.this.privateNestedInstanceField",
@@ -326,10 +326,11 @@ public class ValuesCollectorTest {
 	@Test
 	public void gettersOfFields() {
 		CtElement element = elementInInfinitelProject(5, "canKeepConsuming(index, word)");
-		testReachedVariableNames(element, "word", "index",
-										  "infinitel_examples.infinitel_example_5.InfinitelExample.this.consumer",
-										  "infinitel_examples.infinitel_example_5.InfinitelExample.this.consumer.getSize()",
-										  "infinitel_examples.infinitel_example_5.InfinitelExample.this.consumer.getConsumed()");
+		Collection<String> expectedNames = asList("word", "index", "infinitel_examples.infinitel_example_5.InfinitelExample.this.consumer");
+		String field = "infinitel_examples.infinitel_example_5.InfinitelExample.this.consumer";
+		Multimap<String, String> expectedGetters = Multimap.newSetMultimap();
+		expectedGetters.addAll(field, asList("getSize", "getConsumed"));
+		testReachedVariableNames(element, expectedNames, expectedGetters);
 	}
 	
 	@Test
@@ -340,6 +341,7 @@ public class ValuesCollectorTest {
 		assertTrue(invocation.endsWith(toMatch));
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	public void collectSubexpressionValues() {
 		CtElement element = elementInNopolProject(8, "((((a * b) < 11) || (productLowerThan100(a, b))) || (!(a < b))) || ((a = -b) > 0)");
@@ -349,16 +351,19 @@ public class ValuesCollectorTest {
 									   "(a < b)", 
 									   "(!(a < b))", 
 									   "((a * b) < 11)");
-		checkFoundFromIf(ifStatement, expected);
+		checkFoundFromIf(ifStatement, expected, (Multimap) Multimap.newSetMultimap());
 	}
 	
-	private CtStatement testReachedVariableNames(CtElement element, String... expectedReachedVariables) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private CtStatement testReachedVariableNames(CtElement element, String... expectedNames) {
+		return testReachedVariableNames(element, asList(expectedNames), (Multimap) Multimap.newSetMultimap());
+	}
+	
+	private CtStatement testReachedVariableNames(CtElement element, Collection<String> expectedNames, Multimap<String, String> expectedGetters) {
 		assertTrue(CtCodeElement.class.isInstance(element));
 		CtStatement statement = SpoonStatementLibrary.statementOf((CtCodeElement) element);
-		Collection<String> reachedVariables = collectableFinder().findFromStatement(statement);
-		System.out.println(reachedVariables);
-		assertEquals(expectedReachedVariables.length, reachedVariables.size());
-		assertTrue(reachedVariables.containsAll(Arrays.asList(expectedReachedVariables)));
+		CollectableValueFinder finder = CollectableValueFinder.valueFinderFrom(statement);
+		checkFoundInFinder(finder, expectedNames, expectedGetters);
 		return statement;
 	}
 	
@@ -389,14 +394,18 @@ public class ValuesCollectorTest {
 		return elements.get(0);
 	}
 	
-	private void checkFoundFromIf(CtIf ifStatement, Collection<String> expected) {
-		Collection<String> actual = collectableFinder().findFromIf(ifStatement);
-		System.out.println(actual);
-		assertEquals(expected.size(), actual.size());
-		assertTrue(actual.containsAll(expected));
+	private void checkFoundFromIf(CtIf ifStatement, Collection<String> expectedNames, Multimap<String, String> expectedGetters) {
+		CollectableValueFinder finder = CollectableValueFinder.valueFinderFromIf(ifStatement);
+		checkFoundInFinder(finder, expectedNames, expectedGetters);
 	}
 	
-	private CollectableValueFinder collectableFinder() {
-		return Singleton.of(CollectableValueFinder.class);
+	private void checkFoundInFinder(CollectableValueFinder finder, Collection<String> expectedNames, Multimap<String, String> expectedGetters) {
+		Collection<String> variables = finder.reachableVariables();
+		System.out.println(variables);
+		assertEquals(expectedNames.size(), variables.size());
+		assertTrue(variables.containsAll(expectedNames));
+		Multimap<String, String> getters = finder.accessibleGetters();
+		System.out.println(getters);
+		assertEquals(expectedGetters, getters);
 	}
 }

@@ -91,7 +91,7 @@ public class LoopStatistics {
 		return new Function<LoopStatistics, Double>() {
 			@Override
 			public Double outputFor(LoopStatistics stats) {
-				return stats.iterationsMedian();
+				return stats.iterationMedian();
 			}
 		};
 	}
@@ -261,7 +261,7 @@ public class LoopStatistics {
 		return meanOf(exitRecords());
 	}
 	
-	public double iterationsMedian() {
+	public double iterationMedian() {
 		return medianOf(exitRecords());
 	}
 	

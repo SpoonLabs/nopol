@@ -2,6 +2,7 @@ package fr.inria.lille.commons.trace;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static xxl.java.library.StringLibrary.quoted;
 
 import java.util.Collection;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class RuntimeValues<T> extends GlobalToggle {
 	}
 	
 	public String invocationOnCollectionOf(String codeSource, String executableCode) {
-		String quoatationSafeName = "\"" + codeSource.replace("\"", "\\\"") + "\"";
+		String quoatationSafeName = quoted(codeSource.replace("\"", "\\\""));
 		return invocationMessageFor("collectInput", asList(String.class, Object.class), asList(quoatationSafeName, executableCode));
 	}
 	

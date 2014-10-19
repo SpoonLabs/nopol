@@ -37,19 +37,17 @@ public class InfinitelTest {
 	@Ignore
 	@Test
 	public void realProject() {
-		String pwd = "/Users/virtual/Desktop/data/projects/dataset-infinitel/tika_1b694e7/";
+		InfinitelConfiguration.setIterationsThreshold((int) 1E6);
+		String pwd = "/Users/virtual/Desktop/data/projects/dataset-infinitel/fop_13984cc/";
 		String src = pwd + "src/main/java/";
 		String ab = pwd + "target/classes/";
 		String ac = pwd + "target/test-classes/";
 		String buildPath = ac + ":" + ab;
-		String[] deps = new String[] { "apache-mime4j-core-0.7.2.jar", "apache-mime4j-dom-0.7.2.jar", "asm-debug-all-4.1.jar",
-									   "bcmail-jdk15-1.45.jar", "bcprov-jdk15-1.45.jar", "boilerpipe-1.1.0.jar", "commons-codec-1.5.jar",
-									   "commons-compress-1.5.jar", "geronimo-stax-api_1.0_spec-1.0.1.jar", "isoparser-1.0-RC-1.jar",
-									   "junit-4.8.1.jar", "juniversalchardet-1.0.3.jar", "metadata-extractor-2.6.2.jar", "mockito-all-1.8.2.jar",
-									   "netcdf-4.2-min.jar", "org.apache.felix.scr.annotations-1.6.0.jar", "org.osgi.core-4.0.0.jar",
-									   "pdfbox-1.8.3.jar", "poi-3.10-beta2.jar", "poi-ooxml-3.10-beta2.jar", "rome-0.9.jar",
-									   "slf4j-log4j12-1.5.6.jar", "tagsoup-1.2.1.jar", "tika-app-1.5-SNAPSHOT.jar", "tika-core-1.5.jar",
-									   "vorbis-java-core-0.1.jar", "vorbis-java-tika-0.1.jar" };
+		String[] deps = new String[] { "ant-1.8.2.jar", "asm-3.1.jar", "avalon-framework-4.2.0.jar", "batik-all-trunk.jar", "commons-io-1.3.1.jar",
+				"commons-logging-1.0.4.jar", "fontbox-1.8.4-patched.jar", "hamcrest.core-1.1.0.jar", "jaxen-1.1.1.jar", "junit-4.8.1.jar",
+				"mockito-core-1.8.5.jar", "objenesis-1.0.0.jar", "pmd-4.2.5.jar", "qdox-1.12.jar", "serializer-2.7.0.jar", "servlet-2.2.jar",
+				"xalan-2.7.0.jar", "xercesImpl-2.7.1.jar", "xml-apis-1.3.04.jar", "xml-apis-ext-1.3.04.jar", "xmlgraphics-commons-svn-trunk.jar",
+				"xmlunit-1.2.jar", "../ant/fop-13984cc.jar" };
 		for (String dep : deps) {
 			buildPath += ":" + pwd + "lib/" + dep;
 		}

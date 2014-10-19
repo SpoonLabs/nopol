@@ -10,7 +10,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import xxl.java.container.classic.MetaMap;
-import xxl.java.support.Singleton;
+import xxl.java.container.map.Multimap;
 import fr.inria.lille.commons.spoon.collectable.CollectableValueFinder;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.RuntimeValuesInstrumenter;
@@ -21,7 +21,6 @@ public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtSt
 	public ConditionalLoggingInstrumenter(RuntimeValues<Boolean> runtimeValues, ConditionalProcessor subprocessor) {
 		this.subprocessor = subprocessor;
 		this.runtimeValues = runtimeValues;
-		this.collectableFinder = Singleton.of(CollectableValueFinder.class);
 	}
 	
 	@Override
@@ -44,23 +43,16 @@ public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtSt
 	}
 	
 	public void appendValueCollection(CtStatement element, String outputName) {
-		Collection<String> collectables = collectablesOf(element);
-		collectables.remove(outputName);
-		RuntimeValuesInstrumenter.runtimeCollectionBefore(element,  MetaMap.autoMap(collectables), outputName, runtimeValues());
-	}
-	
-	private Collection<String> collectablesOf(CtStatement element) {
-		Collection<String> collectables;
+		CollectableValueFinder finder;
 		if (CtIf.class.isInstance(element)) {
-			collectables = collectableFinder().findFromIf((CtIf) element);
+			finder = CollectableValueFinder.valueFinderFromIf((CtIf) element);
 		} else {
-			collectables = collectableFinder().findFromStatement(element);
+			finder = CollectableValueFinder.valueFinderFrom(element);
 		}
-		return collectables;
-	}
-	
-	private CollectableValueFinder collectableFinder() {
-		return collectableFinder;
+		Collection<String> collectables = finder.reachableVariables();
+		Multimap<String, String> getters = finder.accessibleGetters();
+		collectables.remove(outputName);
+		RuntimeValuesInstrumenter.runtimeCollectionBefore(element,  MetaMap.autoMap(collectables), getters, outputName, runtimeValues());
 	}
 	
 	private RuntimeValues<Boolean> runtimeValues() {
@@ -73,5 +65,4 @@ public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtSt
 	
 	private ConditionalProcessor subprocessor;
 	private RuntimeValues<Boolean> runtimeValues;
-	private CollectableValueFinder collectableFinder;
 }

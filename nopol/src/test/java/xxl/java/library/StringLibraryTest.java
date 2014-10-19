@@ -13,6 +13,7 @@ import static xxl.java.library.StringLibrary.mapWithStringKeys;
 import static xxl.java.library.StringLibrary.mapWithStringValues;
 import static xxl.java.library.StringLibrary.maximumToStringLength;
 import static xxl.java.library.StringLibrary.plainDecimalRepresentation;
+import static xxl.java.library.StringLibrary.quoted;
 import static xxl.java.library.StringLibrary.repeated;
 import static xxl.java.library.StringLibrary.reversed;
 import static xxl.java.library.StringLibrary.rightFilled;
@@ -276,5 +277,11 @@ public class StringLibraryTest {
 		assertTrue(a == unique(a));
 		assertTrue(a == unique(b));
 		assertTrue(a == unique(c));
+	}
+	
+	@Test
+	public void quotationOfString() {
+		assertEquals("\"\"", quoted(""));
+		assertEquals("\"a\"", quoted("a"));
 	}
 }

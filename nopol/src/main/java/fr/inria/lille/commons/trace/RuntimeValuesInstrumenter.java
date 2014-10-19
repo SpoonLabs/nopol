@@ -8,25 +8,48 @@ import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.insertBefo
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.factory.Factory;
 import xxl.java.container.classic.MetaList;
+import xxl.java.container.map.Multimap;
 
 public class RuntimeValuesInstrumenter {
 
-	public static <T> CtStatement runtimeCollectionBefore(CtStatement insertionPoint, Map<String, String> inputs, String outputName, RuntimeValues<T> runtimeValues) {
-		Factory factory = insertionPoint.getFactory();
+	public static <T> CtStatement runtimeCollectionBefore(CtStatement location, Map<String, String> inputs, Multimap<String, String> getters, String output, RuntimeValues<T> runtime) {
+		Factory factory = location.getFactory();
 		List<CtStatement> newStatements = MetaList.newLinkedList();
-		addCollectionStatementFor(newStatements, factory, runtimeValues.invocationOnCollectionStart());
-		for (String reachableValue : inputs.keySet()) {
-			addCollectionStatementFor(newStatements, factory, runtimeValues.invocationOnCollectionOf(reachableValue, inputs.get(reachableValue)));
+		addCollectionStatementFor(newStatements, factory, runtime.invocationOnCollectionStart());
+		addVariableCollection(inputs, runtime, factory, newStatements);
+		addGetterCollection(getters, runtime, factory, newStatements);
+		addCollectionStatementFor(newStatements, factory, runtime.invocationOnOutputCollection(output));
+		addCollectionStatementFor(newStatements, factory, runtime.invocationOnCollectionEnd());
+		return collectionWrappingIf(newStatements, runtime, location);
+	}
+
+	private static <T> void addVariableCollection(Map<String, String> inputs, RuntimeValues<T> runtime, Factory factory, List<CtStatement> newStatements) {
+		String variableName;
+		String executableCode;
+		for (Entry<String, String> entry : inputs.entrySet()) {
+			variableName = entry.getKey();
+			executableCode = entry.getValue();
+			addCollectionStatementFor(newStatements, factory, runtime.invocationOnCollectionOf(variableName, executableCode));
 		}
-		addCollectionStatementFor(newStatements, factory, runtimeValues.invocationOnOutputCollection(outputName));
-		addCollectionStatementFor(newStatements, factory, runtimeValues.invocationOnCollectionEnd());
-		return collectionWrappingIf(newStatements, runtimeValues, insertionPoint);
+	}
+	
+	private static <T> void addGetterCollection(Multimap<String, String> getters, RuntimeValues<T> runtime, Factory factory, List<CtStatement> newStatements) {
+		String invocation;
+		for (String receiver : getters.keySet()) {
+			List<CtStatement> invocations = MetaList.newLinkedList(); 
+			for (String getterName : getters.get(receiver)) {
+				invocation = receiver + '.' + getterName + "()";
+				addCollectionStatementFor(invocations, factory, runtime.invocationOnCollectionOf(invocation));
+			}
+			newStatements.add(newIf(factory, newExpressionFromSnippet(factory, receiver + "!=null", Boolean.class), newBlock(factory, invocations)));
+		}
 	}
 	
 	private static <T> void addCollectionStatementFor(List<CtStatement> statements, Factory factory, String codeSnippet) {

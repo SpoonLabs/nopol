@@ -7,10 +7,18 @@ public class InfinitelConfiguration {
 		return new InfinitelConfiguration();
 	}
 	
+	public static void setIterationsThreshold(int iterationsThreshold) {
+		InfinitelConfiguration.iterationsThreshold = iterationsThreshold;
+	}
+	
 	protected InfinitelConfiguration() {}
 	
 	public int iterationsThreshold() {
-		return (int) 1E6;
+		if (iterationsThreshold == null) {
+			iterationsThreshold = (int) 1E6;
+		}
+		return iterationsThreshold;
 	}
 
+	public static Integer iterationsThreshold;
 }

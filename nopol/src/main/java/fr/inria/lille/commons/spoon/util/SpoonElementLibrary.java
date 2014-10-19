@@ -1,30 +1,31 @@
 package fr.inria.lille.commons.spoon.util;
 
-import static fr.inria.lille.commons.spoon.util.SpoonReferenceLibrary.haveSameClass;
-import static fr.inria.lille.commons.spoon.util.SpoonReferenceLibrary.isNestedIn;
-import static fr.inria.lille.commons.spoon.util.SpoonReferenceLibrary.isSubclassOf;
 import static xxl.java.library.ClassLibrary.isInstanceOf;
 
 import java.util.List;
 
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtStatementList;
+import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtAnonymousExecutable;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
+import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
@@ -47,43 +48,6 @@ public class SpoonElementLibrary {
 		return ! allChildrenOf(rootElement, childrenClass).isEmpty();
 	}
 	
-	public static boolean hasVisibilityOf(CtField<?> field, CtElement element) {
-		return hasVisibilityOf(field, field.getDeclaringType().getReference(), element);
-	}
-	
-	public static boolean hasVisibilityOf(CtMethod<?> method, CtElement element) {
-		return hasVisibilityOf(method, method.getDeclaringType().getReference(), element);
-	}
-	
-	private static boolean hasVisibilityOf(CtModifiable modifiable, CtTypeReference<?> modifiableClass, CtElement element) {
-		CtTypeReference<?> elementClass = typeOf(element).getReference();
-		if (elementClass.isAnonymous() && haveSamePackage(modifiable, element)) {
-			return true;
-		}
-		if (hasPublicModifier(modifiable) || isNestedIn(elementClass, modifiableClass)) {
-			return true;
-		}
-		if (hasProtectedModifier(modifiable) && (isSubclassOf(modifiableClass, elementClass) || haveSamePackage(modifiable, element))) {
-			return true;
-		}
-		if (hasNoVisibilityModifier(modifiable) && haveSamePackage(modifiable, element)) {
-			return true;
-		}
-		if (hasPrivateModifier(modifiable) && haveSameClass(modifiableClass, elementClass)) {
-			return true;
-		}
-		return false;
-	}
-	
-	public static boolean canAccessOthersField(CtField<?> field, CtElement element) {
-		boolean isVisible = hasVisibilityOf(field, element);
-		if (isVisible && hasProtectedModifier(field)) {
-			/* if S subclasses T, we can only access a variable's field if S has the same package as T */
-			isVisible = haveSamePackage(field, element);
-		}
-		return isVisible;
-	}
-	
 	public static <T extends CtElement> T parentOfType(Class<T> parentType, CtElement element) {
 		return element.getParent(parentType);
 	}
@@ -104,6 +68,14 @@ public class SpoonElementLibrary {
 	
 	public static boolean isStatementList(CtElement element) {
 		return isInstanceOf(CtStatementList.class, element);
+	}
+	
+	public static boolean isIf(CtElement element) {
+		return isInstanceOf(CtIf.class, element);
+	}
+	
+	public static boolean isWhile(CtElement element) {
+		return isInstanceOf(CtWhile.class, element);
 	}
 	
 	public static boolean isMethod(CtElement element) {
@@ -142,8 +114,16 @@ public class SpoonElementLibrary {
 		return isInstanceOf(CtType.class, element);
 	}
 	
+	public static boolean isInterface(CtElement element) {
+		return isInstanceOf(CtInterface.class, element);
+	}
+	
 	public static boolean isANestedType(CtElement element) {
 		return isSimpleType(element) && hasParentOfType(CtSimpleType.class, element);
+	}
+	
+	public static boolean isTypedElement(CtElement element) {
+		return isInstanceOf(CtTypedElement.class, element);
 	}
 	
 	public static boolean isField(CtElement element) {
@@ -174,11 +154,14 @@ public class SpoonElementLibrary {
 		return element.getParent(CtPackage.class);
 	}
 	
-	public static CtSimpleType<?> typeOf(CtElement element) {
+	public static CtTypeReference<?> typeOf(CtElement element) {
 		if (isSimpleType(element)) {
-			return (CtSimpleType<?>) element;
+			return ((CtSimpleType<?>) element).getReference();
 		}
-		return parentOfType(CtSimpleType.class, element);
+		if (isTypedElement(element)) {
+			return ((CtTypedElement<?>) element).getType();
+		}
+		return typeOf(parentOfType(CtSimpleType.class, element));
 	}
 	
 	public static boolean hasStaticModifier(CtElement element) {

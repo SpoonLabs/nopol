@@ -29,7 +29,7 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.factory.Factory;
 import xxl.java.container.classic.MetaMap;
-import xxl.java.support.Singleton;
+import xxl.java.container.map.Multimap;
 import fr.inria.lille.commons.spoon.collectable.CollectableValueFinder;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.RuntimeValuesInstrumenter;
@@ -41,13 +41,13 @@ public class LoopInstrumenter {
 		While loop = monitor.loop();
 		CtWhile astLoop = loop.astLoop();
 		Factory factory = astLoop.getFactory();
-		Collection<String> collectables = collectableFinder().findFromWhile(astLoop);
+		CollectableValueFinder finder = CollectableValueFinder.valueFinderFromWhile(astLoop);
 		CtStatement catchCallback = appendMonitorCallbacks(factory, monitor, loop, astLoop);
 		CtIf newIf = loopBodyWrapper(factory, monitor, loop, astLoop, catchCallback);
 		declareOriginalConditionEvaluation(factory, monitor, loop, newIf);
 		declareConditionEvaluation(factory, monitor, loop, newIf);
 		declareEntrancesCounter(factory, monitor, astLoop);
-		traceReachableValues(monitor, loop, newIf, collectables, runtimeValues);
+		traceReachableValues(monitor, loop, newIf, finder, runtimeValues);
 	}
 
 	private static CtStatement appendMonitorCallbacks(Factory factory, LoopMonitor monitor, While loop, CtWhile astLoop) {
@@ -112,14 +112,12 @@ public class LoopInstrumenter {
 		insertBeforeUnderSameParent(counterCreation, astLoop);
 	}
 
-	private static void traceReachableValues(LoopMonitor monitor, While loop, CtIf newIf, Collection<String> inputs, RuntimeValues<?> runtimeValues) {
-		Map<String, String> inputMap = MetaMap.autoMap(inputs);
+	private static void traceReachableValues(LoopMonitor monitor, While loop, CtIf newIf, CollectableValueFinder finder, RuntimeValues<?> runtimeValues) {
+		Multimap<String, String> getters = finder.accessibleGetters();
+		Collection<String> reachableVariables = finder.reachableVariables();
+		Map<String, String> inputMap = MetaMap.autoMap(reachableVariables);
 		inputMap.put(loop.loopingCondition(), originalConditionName(monitor));
-		RuntimeValuesInstrumenter.runtimeCollectionBefore(newIf, inputMap, conditionName(monitor), runtimeValues);
-	}
-	
-	private static CollectableValueFinder collectableFinder() {
-		return Singleton.of(CollectableValueFinder.class);
+		RuntimeValuesInstrumenter.runtimeCollectionBefore(newIf, inputMap, getters, conditionName(monitor), runtimeValues);
 	}
 	
 	private static String counterName(LoopMonitor monitor) {

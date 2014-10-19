@@ -25,6 +25,10 @@ public class StringLibrary {
 		return string.intern();
 	}
 	
+	public static String quoted(String string) {
+		return '\"' + string + '\"';
+	}
+	
 	public static List<String> split(String chainedStrings, Character character) {
 		return split(chainedStrings, format("[%c]", character));
 	}
