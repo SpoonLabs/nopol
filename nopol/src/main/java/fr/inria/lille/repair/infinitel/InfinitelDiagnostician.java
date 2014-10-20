@@ -124,8 +124,7 @@ public class InfinitelDiagnostician extends Infinitel {
 	private void logAllExitRecords(LoopTestResult testResult) {
 		int label = 1;
 		for (While loop : testResult.loops()) {
-			double median = testResult.aggregatedIterationMedian(loop);
-			logPlainRecords(format("loop %d %.2f%n", label++, median), testResult.aggregatedExitRecordsOf(loop));
+			logPlainRecords("loop " + label++, testResult.aggregatedExitRecordsOf(loop));
 		}
 	}
 	

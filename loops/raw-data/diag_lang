@@ -1,94 +1,94 @@
-label ¨ breaks ¨ returns ¨ unbreakable ¨ iterations ¨ invocations ¨ invocations-0 ¨ invocations-1 ¨ conditional-exits ¨ break-exits ¨ return-exits ¨ tests ¨ top-record ¨ exit-[0, 5) ¨ exit-[5, 10) ¨ exit-[10, 50) ¨ exit-[50, 100) ¨ exit-[100, 10000000) ¨ break-[0, 5) ¨ break-[5, 10) ¨ break-[10, 50) ¨ break-[50, 100) ¨ break-[100, 10000000) ¨ return-[0, 5) ¨ return-[5, 10) ¨ return-[10, 50) ¨ return-[50, 100) ¨ return-[100, 10000000) ¨ condition ¨ location
-1 ¨ 0 ¨ 0 ¨ false ¨ 7 ¨ 16 ¨ 15 ¨ 0 ¨ 16 ¨ 0 ¨ 0 ¨ 5 ¨ 7 ¨ 15 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ ((index + i) < (input.length())) && ((input.charAt((index + i))) == 'u') ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/translate/UnicodeUnescaper.java:40)
-2 ¨ 0 ¨ 0 ¨ false ¨ 11300 ¨ 1035 ¨ 4 ¨ 99 ¨ 1035 ¨ 0 ¨ 0 ¨ 34 ¨ 55 ¨ 205 ¨ 458 ¨ 371 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ pos < bufEnd ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrSubstitutor.java:763)
-3 ¨ 0 ¨ 0 ¨ false ¨ 90099 ¨ 90081 ¨ 0 ¨ 90063 ¨ 90081 ¨ 0 ¨ 0 ¨ 10 ¨ 2 ¨ 90081 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (set = indices.nextSetBit(srcIndex)) != (-1) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:6076)
-4 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 5 ¨ 0 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1755)
-5 ¨ 0 ¨ 0 ¨ false ¨ 176 ¨ 53 ¨ 2 ¨ 3 ¨ 53 ¨ 0 ¨ 0 ¨ 2 ¨ 6 ¨ 42 ¨ 11 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (end.get(java.util.Calendar.DAY_OF_WEEK)) != endCutoff ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DateUtils.java:1223)
-6 ¨ 0 ¨ 0 ¨ false ¨ 202 ¨ 62 ¨ 0 ¨ 6 ¨ 62 ¨ 0 ¨ 0 ¨ 50 ¨ 8 ¨ 53 ¨ 9 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (pos >= 0) && (pos < count) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrTokenizer.java:644)
-7 ¨ 1 ¨ 0 ¨ false ¨ 367 ¨ 101 ¨ 0 ¨ 1 ¨ 0 ¨ 101 ¨ 0 ¨ 2 ¨ 5 ¨ 74 ¨ 27 ¨ 0 ¨ 0 ¨ 0 ¨ 74 ¨ 27 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ true ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:455)
-8 ¨ 0 ¨ 0 ¨ false ¨ 166 ¨ 100 ¨ 0 ¨ 56 ¨ 100 ¨ 0 ¨ 0 ¨ 21 ¨ 4 ¨ 100 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ pos < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/CharSet.java:180)
-9 ¨ 1 ¨ 0 ¨ false ¨ 12 ¨ 12 ¨ 0 ¨ 12 ¨ 0 ¨ 12 ¨ 0 ¨ 5 ¨ 1 ¨ 12 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 12 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ true ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/reflect/TypeUtils.java:1691)
-10 ¨ 0 ¨ 0 ¨ false ¨ 36 ¨ 56 ¨ 32 ¨ 12 ¨ 56 ¨ 0 ¨ 0 ¨ 6 ¨ 2 ¨ 56 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ className.startsWith("[") ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ClassUtils.java:1114)
-11 ¨ 0 ¨ 0 ¨ false ¨ 17810243 ¨ 90115 ¨ 0 ¨ 10036 ¨ 90115 ¨ 0 ¨ 0 ¨ 11 ¨ 1000 ¨ 10113 ¨ 2 ¨ 30000 ¨ 10000 ¨ 40000 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (--i) >= 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:6020)
-12 ¨ 2 ¨ 0 ¨ false ¨ 17 ¨ 9 ¨ 0 ¨ 4 ¨ 2 ¨ 7 ¨ 0 ¨ 1 ¨ 3 ¨ 9 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 7 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ pos < (strLen - closeLen) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:2528)
-13 ¨ 0 ¨ 0 ¨ false ¨ 7 ¨ 3 ¨ 1 ¨ 0 ¨ 3 ¨ 0 ¨ 0 ¨ 1 ¨ 4 ¨ 3 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (idx = org.apache.commons.lang3.CharSequenceUtils.indexOf(str, sub, idx)) != (org.apache.commons.lang3.StringUtils.INDEX_NOT_FOUND) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:5818)
-14 ¨ 0 ¨ 2 ¨ false ¨ 25 ¨ 11 ¨ 0 ¨ 4 ¨ 7 ¨ 0 ¨ 4 ¨ 3 ¨ 3 ¨ 11 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 4 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (tmpLen--) > 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/CharSequenceUtils.java:195)
-15 ¨ 0 ¨ 0 ¨ false ¨ 77 ¨ 79 ¨ 11 ¨ 59 ¨ 79 ¨ 0 ¨ 0 ¨ 47 ¨ 2 ¨ 79 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ ((clazz.getSuperclass()) != null) && (clazz != (getUpToClass())) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/builder/ReflectionToStringBuilder.java:689)
-16 ¨ 0 ¨ 0 ¨ false ¨ 33 ¨ 13 ¨ 0 ¨ 1 ¨ 13 ¨ 0 ¨ 0 ¨ 2 ¨ 10 ¨ 12 ¨ 0 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ textIndex != (-1) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:4767)
-17 ¨ 0 ¨ 0 ¨ false ¨ 126 ¨ 1495 ¨ 1369 ¨ 126 ¨ 1495 ¨ 0 ¨ 0 ¨ 8 ¨ 1 ¨ 1495 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ months < 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:333)
-18 ¨ 0 ¨ 0 ¨ false ¨ 228 ¨ 6 ¨ 0 ¨ 0 ¨ 6 ¨ 0 ¨ 0 ¨ 3 ¨ 38 ¨ 0 ¨ 0 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (causeFrameIndex >= 0) && (wrapperFrameIndex >= 0) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/exception/ExceptionUtils.java:556)
-19 ¨ 0 ¨ 0 ¨ false ¨ 144314 ¨ 65972 ¨ 17 ¨ 86 ¨ 65972 ¨ 0 ¨ 0 ¨ 44 ¨ 5279 ¨ 65676 ¨ 41 ¨ 253 ¨ 1 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ pos < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/translate/CharSequenceTranslator.java:84)
-20 ¨ 0 ¨ 0 ¨ false ¨ 240 ¨ 23 ¨ 2 ¨ 0 ¨ 23 ¨ 0 ¨ 0 ¨ 6 ¨ 26 ¨ 11 ¨ 5 ¨ 7 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (start != strLen) && (java.lang.Character.isWhitespace(str.charAt(start))) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:623)
-21 ¨ 0 ¨ 0 ¨ false ¨ 121 ¨ 81 ¨ 0 ¨ 41 ¨ 81 ¨ 0 ¨ 0 ¨ 8 ¨ 2 ¨ 81 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ ((clazz.getSuperclass()) != null) && (clazz != reflectUpToClass) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/builder/HashCodeBuilder.java:342)
-22 ¨ 0 ¨ 0 ¨ false ¨ 20753 ¨ 522 ¨ 0 ¨ 0 ¨ 522 ¨ 0 ¨ 0 ¨ 8 ¨ 4875 ¨ 1 ¨ 100 ¨ 311 ¨ 75 ¨ 35 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (count--) != 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/RandomStringUtils.java:254)
-23 ¨ 0 ¨ 0 ¨ false ¨ 46972 ¨ 9392 ¨ 0 ¨ 0 ¨ 9392 ¨ 0 ¨ 0 ¨ 2 ¨ 10 ¨ 4694 ¨ 4697 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ i < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:3111)
-24 ¨ 0 ¨ 5 ¨ false ¨ 147 ¨ 40 ¨ 4 ¨ 4 ¨ 31 ¨ 0 ¨ 9 ¨ 2 ¨ 8 ¨ 22 ¨ 18 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 7 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ (i < sz) || (((i < (sz + 1)) && allowSigns) && (!foundDigit)) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/math/NumberUtils.java:1400)
-25 ¨ 0 ¨ 0 ¨ false ¨ 162 ¨ 85 ¨ 0 ¨ 46 ¨ 85 ¨ 0 ¨ 0 ¨ 12 ¨ 3 ¨ 85 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ cls != null ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ClassUtils.java:370)
-26 ¨ 0 ¨ 0 ¨ false ¨ 1 ¨ 95235 ¨ 95234 ¨ 1 ¨ 95235 ¨ 0 ¨ 0 ¨ 9 ¨ 1 ¨ 95235 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ hours < 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:321)
-27 ¨ 0 ¨ 0 ¨ false ¨ 266 ¨ 101 ¨ 1 ¨ 22 ¨ 101 ¨ 0 ¨ 0 ¨ 2 ¨ 4 ¨ 101 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (read = r.read(buffer, size, ((buffer.length) - (size)))) != (-1) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:444)
-28 ¨ 1 ¨ 0 ¨ false ¨ 14667 ¨ 6444 ¨ 344 ¨ 2771 ¨ 722 ¨ 5722 ¨ 0 ¨ 59 ¨ 4 ¨ 6444 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 5722 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (i + 1) < length ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/FastDatePrinter.java:318)
-29 ¨ 0 ¨ 0 ¨ false ¨ 21 ¨ 54 ¨ 33 ¨ 21 ¨ 54 ¨ 0 ¨ 0 ¨ 6 ¨ 1 ¨ 54 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1790)
-30 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 2 ¨ 0 ¨ 0 ¨ 2 ¨ 0 ¨ 0 ¨ 2 ¨ 3 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ hierarchy.hasNext() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/reflect/MethodUtils.java:527)
-31 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 5 ¨ 0 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1720)
-32 ¨ 1 ¨ 0 ¨ false ¨ 473 ¨ 12 ¨ 0 ¨ 0 ¨ 6 ¨ 6 ¨ 0 ¨ 3 ¨ 40 ¨ 0 ¨ 0 ¨ 12 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ frames.hasMoreTokens() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/exception/ExceptionUtils.java:646)
-33 ¨ 0 ¨ 0 ¨ false ¨ 24 ¨ 12 ¨ 0 ¨ 4 ¨ 12 ¨ 0 ¨ 0 ¨ 4 ¨ 3 ¨ 12 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ currentClass != null ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/reflect/FieldUtils.java:216)
-34 ¨ 0 ¨ 0 ¨ false ¨ 3 ¨ 2 ¨ 1 ¨ 0 ¨ 2 ¨ 0 ¨ 0 ¨ 1 ¨ 3 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ it.hasNext() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:1157)
-35 ¨ 1 ¨ 0 ¨ false ¨ 67 ¨ 41 ¨ 0 ¨ 17 ¨ 39 ¨ 2 ¨ 0 ¨ 5 ¨ 3 ¨ 41 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (srcClass != null) && (!(destClass.equals(srcClass))) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/reflect/MemberUtils.java:137)
-36 ¨ 0 ¨ 0 ¨ false ¨ 40 ¨ 29 ¨ 0 ¨ 19 ¨ 29 ¨ 0 ¨ 0 ¨ 5 ¨ 3 ¨ 29 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ className.endsWith("[]") ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ClassUtils.java:965)
-37 ¨ 0 ¨ 0 ¨ false ¨ 96 ¨ 18 ¨ 0 ¨ 0 ¨ 18 ¨ 0 ¨ 0 ¨ 3 ¨ 7 ¨ 5 ¨ 13 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ i < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:2960)
-38 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 5 ¨ 0 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1685)
-39 ¨ 0 ¨ 0 ¨ false ¨ 19 ¨ 13 ¨ 0 ¨ 10 ¨ 13 ¨ 0 ¨ 0 ¨ 1 ¨ 4 ¨ 13 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (className.charAt(0)) == '[' ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ClassUtils.java:203)
-40 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 5 ¨ 0 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1650)
-41 ¨ 0 ¨ 0 ¨ false ¨ 4 ¨ 54 ¨ 50 ¨ 4 ¨ 54 ¨ 0 ¨ 0 ¨ 4 ¨ 1 ¨ 54 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (result = reference.get()) == null ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/concurrent/AtomicSafeInitializer.java:76)
-42 ¨ 0 ¨ 0 ¨ false ¨ 31 ¨ 14 ¨ 5 ¨ 0 ¨ 14 ¨ 0 ¨ 0 ¨ 4 ¨ 8 ¨ 13 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (end != 0) && ((stripChars.indexOf(str.charAt((end - 1)))) != (org.apache.commons.lang3.StringUtils.INDEX_NOT_FOUND)) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:674)
-43 ¨ 0 ¨ 0 ¨ false ¨ 68 ¨ 19 ¨ 3 ¨ 2 ¨ 19 ¨ 0 ¨ 0 ¨ 1 ¨ 7 ¨ 11 ¨ 8 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (bit_pattern & 1) == 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/BitField.java:92)
-44 ¨ 0 ¨ 0 ¨ false ¨ 11196 ¨ 93737 ¨ 88193 ¨ 1833 ¨ 93737 ¨ 0 ¨ 0 ¨ 4 ¨ 4 ¨ 93737 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (start.get(java.util.Calendar.YEAR)) != target ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:354)
-45 ¨ 0 ¨ 0 ¨ false ¨ 177 ¨ 114 ¨ 0 ¨ 51 ¨ 114 ¨ 0 ¨ 0 ¨ 4 ¨ 2 ¨ 114 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ ((lhsClazz.getSuperclass()) != null) && (lhsClazz != reflectUpToClass) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/builder/CompareToBuilder.java:287)
-46 ¨ 0 ¨ 0 ¨ false ¨ 40479 ¨ 93740 ¨ 87008 ¨ 603 ¨ 93740 ¨ 0 ¨ 0 ¨ 4 ¨ 11 ¨ 89443 ¨ 3063 ¨ 1234 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (start.get(java.util.Calendar.MONTH)) != (end.get(java.util.Calendar.MONTH)) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:372)
-47 ¨ 0 ¨ 0 ¨ false ¨ 10 ¨ 1495 ¨ 1485 ¨ 10 ¨ 1495 ¨ 0 ¨ 0 ¨ 8 ¨ 1 ¨ 1495 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ days < 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:327)
-48 ¨ 0 ¨ 0 ¨ false ¨ 57 ¨ 1 ¨ 0 ¨ 0 ¨ 1 ¨ 0 ¨ 0 ¨ 1 ¨ 57 ¨ 0 ¨ 0 ¨ 0 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ propNames.hasMoreElements() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrSubstitutor.java:215)
-49 ¨ 1 ¨ 0 ¨ false ¨ 266 ¨ 202 ¨ 0 ¨ 170 ¨ 5 ¨ 197 ¨ 0 ¨ 50 ¨ 8 ¨ 198 ¨ 4 ¨ 0 ¨ 0 ¨ 0 ¨ 193 ¨ 4 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ start < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrTokenizer.java:688)
-50 ¨ 0 ¨ 0 ¨ false ¨ 1498661 ¨ 1805091 ¨ 995208 ¨ 432949 ¨ 1805091 ¨ 0 ¨ 0 ¨ 9 ¨ 29 ¨ 1769867 ¨ 34815 ¨ 409 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (t & 1) == 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/math/Fraction.java:609)
-51 ¨ 0 ¨ 0 ¨ false ¨ 0 ¨ 95235 ¨ 95235 ¨ 0 ¨ 95235 ¨ 0 ¨ 0 ¨ 9 ¨ 0 ¨ 95235 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ seconds < 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:313)
-52 ¨ 0 ¨ 0 ¨ false ¨ 4 ¨ 2 ¨ 0 ¨ 0 ¨ 2 ¨ 0 ¨ 0 ¨ 2 ¨ 2 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ superclass != null ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ClassUtils.java:332)
-53 ¨ 0 ¨ 0 ¨ false ¨ 60 ¨ 12 ¨ 0 ¨ 0 ¨ 12 ¨ 0 ¨ 0 ¨ 2 ¨ 7 ¨ 6 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ i < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:3131)
-54 ¨ 0 ¨ 0 ¨ false ¨ 156 ¨ 17 ¨ 2 ¨ 0 ¨ 17 ¨ 0 ¨ 0 ¨ 6 ¨ 26 ¨ 11 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (end != 0) && (java.lang.Character.isWhitespace(str.charAt((end - 1)))) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:668)
-55 ¨ 0 ¨ 0 ¨ false ¨ 0 ¨ 95235 ¨ 95235 ¨ 0 ¨ 95235 ¨ 0 ¨ 0 ¨ 9 ¨ 0 ¨ 95235 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ minutes < 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:317)
-56 ¨ 1 ¨ 0 ¨ false ¨ 128 ¨ 31 ¨ 8 ¨ 0 ¨ 12 ¨ 19 ¨ 0 ¨ 2 ¨ 34 ¨ 27 ¨ 3 ¨ 1 ¨ 0 ¨ 0 ¨ 15 ¨ 3 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ offset < inputLineLength ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/WordUtils.java:186)
-57 ¨ 0 ¨ 0 ¨ false ¨ 9 ¨ 5 ¨ 2 ¨ 0 ¨ 5 ¨ 0 ¨ 0 ¨ 1 ¨ 3 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (pos < len) && ((buf[pos]) <= ' ') ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:2092)
-58 ¨ 0 ¨ 0 ¨ false ¨ 0 ¨ 95235 ¨ 95235 ¨ 0 ¨ 95235 ¨ 0 ¨ 0 ¨ 9 ¨ 0 ¨ 95235 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ milliseconds < 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:309)
-59 ¨ 0 ¨ 0 ¨ false ¨ 4035 ¨ 323 ¨ 0 ¨ 157 ¨ 323 ¨ 0 ¨ 0 ¨ 6 ¨ 24 ¨ 157 ¨ 0 ¨ 166 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (pos.getIndex()) < (pattern.length()) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/ExtendedMessageFormat.java:157)
-60 ¨ 0 ¨ 0 ¨ false ¨ 28 ¨ 13 ¨ 5 ¨ 0 ¨ 13 ¨ 0 ¨ 0 ¨ 3 ¨ 8 ¨ 11 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (start != strLen) && ((stripChars.indexOf(str.charAt(start))) != (org.apache.commons.lang3.StringUtils.INDEX_NOT_FOUND)) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:629)
-61 ¨ 0 ¨ 0 ¨ false ¨ 163 ¨ 81 ¨ 5 ¨ 24 ¨ 81 ¨ 0 ¨ 0 ¨ 22 ¨ 3 ¨ 81 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (throwable != null) && ((list.contains(throwable)) == false) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/exception/ExceptionUtils.java:282)
-62 ¨ 0 ¨ 0 ¨ false ¨ 18 ¨ 48 ¨ 36 ¨ 9 ¨ 48 ¨ 0 ¨ 0 ¨ 6 ¨ 4 ¨ 48 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (className.charAt(0)) == '[' ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ClassUtils.java:302)
-63 ¨ 0 ¨ 0 ¨ false ¨ 12 ¨ 7 ¨ 2 ¨ 0 ¨ 7 ¨ 0 ¨ 0 ¨ 2 ¨ 3 ¨ 7 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ index >= 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:1790)
-64 ¨ 0 ¨ 0 ¨ false ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ frames.hasMoreTokens() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/exception/ExceptionUtils.java:622)
-65 ¨ 0 ¨ 0 ¨ false ¨ 8872 ¨ 323 ¨ 0 ¨ 0 ¨ 323 ¨ 0 ¨ 0 ¨ 6 ¨ 56 ¨ 157 ¨ 0 ¨ 21 ¨ 145 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (pos.getIndex()) < (pattern.length()) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/ExtendedMessageFormat.java:412)
-66 ¨ 0 ¨ 0 ¨ false ¨ 12 ¨ 6 ¨ 0 ¨ 0 ¨ 6 ¨ 0 ¨ 0 ¨ 2 ¨ 2 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ iterator.hasNext() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:4101)
-67 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 5 ¨ 0 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1860)
-68 ¨ 0 ¨ 0 ¨ false ¨ 1 ¨ 1 ¨ 0 ¨ 1 ¨ 1 ¨ 0 ¨ 0 ¨ 1 ¨ 1 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (length--) > 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ObjectUtils.java:618)
-69 ¨ 1 ¨ 0 ¨ false ¨ 6 ¨ 5 ¨ 1 ¨ 2 ¨ 2 ¨ 3 ¨ 0 ¨ 1 ¨ 2 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 3 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (++i) < (size) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:1750)
-70 ¨ 0 ¨ 0 ¨ false ¨ 0 ¨ 93740 ¨ 93740 ¨ 0 ¨ 93740 ¨ 0 ¨ 0 ¨ 4 ¨ 0 ¨ 93740 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ days < 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:379)
-71 ¨ 0 ¨ 0 ¨ false ¨ 142 ¨ 53 ¨ 9 ¨ 2 ¨ 53 ¨ 0 ¨ 0 ¨ 2 ¨ 6 ¨ 48 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (start.get(java.util.Calendar.DAY_OF_WEEK)) != startCutoff ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DateUtils.java:1220)
-72 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 5 ¨ 0 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1580)
-73 ¨ 0 ¨ 0 ¨ false ¨ 10 ¨ 6 ¨ 1 ¨ 0 ¨ 6 ¨ 0 ¨ 0 ¨ 1 ¨ 2 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ index >= 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:1938)
-74 ¨ 0 ¨ 1 ¨ false ¨ 93 ¨ 49 ¨ 0 ¨ 5 ¨ 46 ¨ 0 ¨ 3 ¨ 6 ¨ 2 ¨ 49 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 3 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ cls != null ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/reflect/ConstructorUtils.java:291)
-75 ¨ 0 ¨ 0 ¨ false ¨ 515596 ¨ 131087 ¨ 3 ¨ 31 ¨ 131087 ¨ 0 ¨ 0 ¨ 6 ¨ 6 ¨ 131082 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (end < seqEnd) && (((((input.charAt(end)) >= '0') && ((input.charAt(end)) <= '9')) || (((input.charAt(end)) >= 'a') && ((input.charAt(end)) <= 'f'))) || (((input.charAt(end)) >= 'A') && ((input.charAt(end)) <= 'F'))) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/translate/NumericEntityUnescaper.java:98)
-76 ¨ 0 ¨ 0 ¨ false ¨ 8 ¨ 10 ¨ 3 ¨ 6 ¨ 10 ¨ 0 ¨ 0 ¨ 3 ¨ 2 ¨ 10 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1825)
-77 ¨ 0 ¨ 0 ¨ false ¨ 1725 ¨ 198549 ¨ 197255 ¨ 969 ¨ 198549 ¨ 0 ¨ 0 ¨ 9 ¨ 6 ¨ 198543 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (((u & 1) == 0) && ((v & 1) == 0)) && (k < 31) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/math/Fraction.java:593)
-78 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 5 ¨ 0 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1615)
-79 ¨ 0 ¨ 1 ¨ false ¨ 445 ¨ 179 ¨ 0 ¨ 38 ¨ 45 ¨ 0 ¨ 134 ¨ 50 ¨ 23 ¨ 162 ¨ 14 ¨ 3 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 119 ¨ 12 ¨ 3 ¨ 0 ¨ 0 ¨ pos < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrTokenizer.java:744)
-80 ¨ 0 ¨ 0 ¨ false ¨ 215 ¨ 133 ¨ 0 ¨ 69 ¨ 133 ¨ 0 ¨ 0 ¨ 32 ¨ 4 ¨ 133 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ ((testClass.getSuperclass()) != null) && (testClass != reflectUpToClass) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/builder/EqualsBuilder.java:361)
-81 ¨ 0 ¨ 0 ¨ false ¨ 47037 ¨ 9380 ¨ 0 ¨ 0 ¨ 9380 ¨ 0 ¨ 0 ¨ 7 ¨ 59 ¨ 4683 ¨ 4693 ¨ 2 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ i < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:3090)
-82 ¨ 0 ¨ 0 ¨ false ¨ 4 ¨ 2 ¨ 0 ¨ 0 ¨ 2 ¨ 0 ¨ 0 ¨ 2 ¨ 2 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ iterator.hasNext() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:4055)
-83 ¨ 0 ¨ 0 ¨ false ¨ 27 ¨ 6 ¨ 0 ¨ 0 ¨ 6 ¨ 0 ¨ 0 ¨ 3 ¨ 10 ¨ 4 ¨ 1 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ end < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:2826)
-84 ¨ 0 ¨ 0 ¨ false ¨ 18 ¨ 7 ¨ 1 ¨ 0 ¨ 7 ¨ 0 ¨ 0 ¨ 3 ¨ 3 ¨ 7 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ it.hasNext() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:1203)
-85 ¨ 1 ¨ 0 ¨ false ¨ 104 ¨ 82 ¨ 0 ¨ 72 ¨ 11 ¨ 71 ¨ 0 ¨ 11 ¨ 4 ¨ 82 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 71 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ end != (org.apache.commons.lang3.StringUtils.INDEX_NOT_FOUND) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:4531)
-86 ¨ 1 ¨ 0 ¨ false ¨ 7878 ¨ 781 ¨ 2 ¨ 21 ¨ 4 ¨ 777 ¨ 0 ¨ 31 ¨ 41 ¨ 75 ¨ 493 ¨ 213 ¨ 0 ¨ 0 ¨ 71 ¨ 493 ¨ 213 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ pos < bufEnd ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrSubstitutor.java:783)
-87 ¨ 0 ¨ 0 ¨ false ¨ 6 ¨ 5 ¨ 3 ¨ 0 ¨ 5 ¨ 0 ¨ 0 ¨ 1 ¨ 3 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (pos < len) && ((buf[(len - 1)]) <= ' ') ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:2095)
-88 ¨ 0 ¨ 2 ¨ false ¨ 2 ¨ 2 ¨ 0 ¨ 2 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 1 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ parentClass != null ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/reflect/MethodUtils.java:394)
-89 ¨ 0 ¨ 0 ¨ false ¨ 1456 ¨ 1456 ¨ 0 ¨ 1456 ¨ 1456 ¨ 0 ¨ 0 ¨ 3 ¨ 1 ¨ 1456 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ years != 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:339)
-90 ¨ 0 ¨ 0 ¨ false ¨ 9 ¨ 4 ¨ 1 ¨ 0 ¨ 4 ¨ 0 ¨ 0 ¨ 1 ¨ 3 ¨ 4 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ it.hasNext() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:1227)
+label ¨ breaks ¨ returns ¨ unbreakable ¨ iterations ¨ invocations-0 ¨ invocations-1 ¨ invocations ¨ conditional-exits ¨ error-exits ¨ break-exits ¨ return-exits ¨ tests ¨ top-record ¨ exit-[0, 5) ¨ exit-[5, 10) ¨ exit-[10, 50) ¨ exit-[50, 100) ¨ exit-[100, 10000000) ¨ error-[0, 5) ¨ error-[5, 10) ¨ error-[10, 50) ¨ error-[50, 100) ¨ error-[100, 10000000) ¨ break-[0, 5) ¨ break-[5, 10) ¨ break-[10, 50) ¨ break-[50, 100) ¨ break-[100, 10000000) ¨ return-[0, 5) ¨ return-[5, 10) ¨ return-[10, 50) ¨ return-[50, 100) ¨ return-[100, 10000000) ¨ condition ¨ location
+1 ¨ 0 ¨ 0 ¨ false ¨ 7 ¨ 15 ¨ 0 ¨ 16 ¨ 16 ¨ 0 ¨ 0 ¨ 0 ¨ 5 ¨ 7 ¨ 15 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ ((index + i) < (input.length())) && ((input.charAt((index + i))) == 'u') ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/translate/UnicodeUnescaper.java:40)
+2 ¨ 0 ¨ 0 ¨ false ¨ 11324 ¨ 4 ¨ 103 ¨ 1043 ¨ 1035 ¨ 8 ¨ 0 ¨ 0 ¨ 34 ¨ 55 ¨ 209 ¨ 462 ¨ 371 ¨ 1 ¨ 0 ¨ 4 ¨ 4 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ pos < bufEnd ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrSubstitutor.java:763)
+3 ¨ 0 ¨ 0 ¨ false ¨ 90099 ¨ 0 ¨ 90063 ¨ 90081 ¨ 90081 ¨ 0 ¨ 0 ¨ 0 ¨ 10 ¨ 2 ¨ 90081 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (set = indices.nextSetBit(srcIndex)) != (-1) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:6076)
+4 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 0 ¨ 5 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1755)
+5 ¨ 0 ¨ 0 ¨ false ¨ 176 ¨ 2 ¨ 3 ¨ 53 ¨ 53 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 6 ¨ 42 ¨ 11 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (end.get(java.util.Calendar.DAY_OF_WEEK)) != endCutoff ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DateUtils.java:1223)
+6 ¨ 0 ¨ 0 ¨ false ¨ 202 ¨ 0 ¨ 6 ¨ 62 ¨ 62 ¨ 0 ¨ 0 ¨ 0 ¨ 50 ¨ 8 ¨ 53 ¨ 9 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (pos >= 0) && (pos < count) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrTokenizer.java:644)
+7 ¨ 1 ¨ 0 ¨ false ¨ 367 ¨ 0 ¨ 1 ¨ 101 ¨ 0 ¨ 0 ¨ 101 ¨ 0 ¨ 2 ¨ 5 ¨ 74 ¨ 27 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 74 ¨ 27 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ true ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:455)
+8 ¨ 0 ¨ 0 ¨ false ¨ 166 ¨ 0 ¨ 56 ¨ 100 ¨ 100 ¨ 0 ¨ 0 ¨ 0 ¨ 21 ¨ 4 ¨ 100 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ pos < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/CharSet.java:180)
+9 ¨ 1 ¨ 0 ¨ false ¨ 12 ¨ 0 ¨ 12 ¨ 12 ¨ 0 ¨ 0 ¨ 12 ¨ 0 ¨ 5 ¨ 1 ¨ 12 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 12 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ true ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/reflect/TypeUtils.java:1691)
+10 ¨ 0 ¨ 0 ¨ false ¨ 36 ¨ 32 ¨ 12 ¨ 56 ¨ 56 ¨ 0 ¨ 0 ¨ 0 ¨ 6 ¨ 2 ¨ 56 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ className.startsWith("[") ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ClassUtils.java:1114)
+11 ¨ 0 ¨ 0 ¨ false ¨ 17810270 ¨ 0 ¨ 10061 ¨ 90141 ¨ 90115 ¨ 26 ¨ 0 ¨ 0 ¨ 37 ¨ 1000 ¨ 10139 ¨ 2 ¨ 30000 ¨ 10000 ¨ 40000 ¨ 26 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (--i) >= 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:6020)
+12 ¨ 2 ¨ 0 ¨ false ¨ 17 ¨ 0 ¨ 4 ¨ 9 ¨ 2 ¨ 0 ¨ 7 ¨ 0 ¨ 1 ¨ 3 ¨ 9 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 7 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ pos < (strLen - closeLen) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:2528)
+13 ¨ 0 ¨ 0 ¨ false ¨ 7 ¨ 1 ¨ 0 ¨ 3 ¨ 3 ¨ 0 ¨ 0 ¨ 0 ¨ 1 ¨ 4 ¨ 3 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (idx = org.apache.commons.lang3.CharSequenceUtils.indexOf(str, sub, idx)) != (org.apache.commons.lang3.StringUtils.INDEX_NOT_FOUND) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:5818)
+14 ¨ 0 ¨ 2 ¨ false ¨ 25 ¨ 0 ¨ 4 ¨ 11 ¨ 7 ¨ 0 ¨ 0 ¨ 4 ¨ 3 ¨ 3 ¨ 11 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 4 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (tmpLen--) > 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/CharSequenceUtils.java:195)
+15 ¨ 0 ¨ 0 ¨ false ¨ 77 ¨ 11 ¨ 59 ¨ 79 ¨ 79 ¨ 0 ¨ 0 ¨ 0 ¨ 47 ¨ 2 ¨ 79 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ ((clazz.getSuperclass()) != null) && (clazz != (getUpToClass())) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/builder/ReflectionToStringBuilder.java:689)
+16 ¨ 0 ¨ 0 ¨ false ¨ 33 ¨ 0 ¨ 1 ¨ 13 ¨ 13 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 10 ¨ 12 ¨ 0 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ textIndex != (-1) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:4767)
+17 ¨ 0 ¨ 0 ¨ false ¨ 126 ¨ 1369 ¨ 126 ¨ 1495 ¨ 1495 ¨ 0 ¨ 0 ¨ 0 ¨ 8 ¨ 1 ¨ 1495 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ months < 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:333)
+18 ¨ 0 ¨ 0 ¨ false ¨ 228 ¨ 0 ¨ 0 ¨ 6 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 3 ¨ 38 ¨ 0 ¨ 0 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (causeFrameIndex >= 0) && (wrapperFrameIndex >= 0) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/exception/ExceptionUtils.java:556)
+19 ¨ 0 ¨ 0 ¨ false ¨ 144327 ¨ 17 ¨ 87 ¨ 65975 ¨ 65972 ¨ 3 ¨ 0 ¨ 0 ¨ 45 ¨ 5279 ¨ 65677 ¨ 43 ¨ 253 ¨ 1 ¨ 1 ¨ 1 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ pos < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/translate/CharSequenceTranslator.java:84)
+20 ¨ 0 ¨ 0 ¨ false ¨ 240 ¨ 2 ¨ 0 ¨ 23 ¨ 23 ¨ 0 ¨ 0 ¨ 0 ¨ 6 ¨ 26 ¨ 11 ¨ 5 ¨ 7 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (start != strLen) && (java.lang.Character.isWhitespace(str.charAt(start))) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:623)
+21 ¨ 0 ¨ 0 ¨ false ¨ 121 ¨ 0 ¨ 41 ¨ 81 ¨ 81 ¨ 0 ¨ 0 ¨ 0 ¨ 8 ¨ 2 ¨ 81 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ ((clazz.getSuperclass()) != null) && (clazz != reflectUpToClass) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/builder/HashCodeBuilder.java:342)
+22 ¨ 0 ¨ 0 ¨ false ¨ 20464 ¨ 0 ¨ 0 ¨ 522 ¨ 522 ¨ 0 ¨ 0 ¨ 0 ¨ 8 ¨ 4863 ¨ 1 ¨ 100 ¨ 305 ¨ 76 ¨ 40 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (count--) != 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/RandomStringUtils.java:254)
+23 ¨ 0 ¨ 0 ¨ false ¨ 46972 ¨ 0 ¨ 0 ¨ 9392 ¨ 9392 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 10 ¨ 4694 ¨ 4697 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ i < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:3111)
+24 ¨ 0 ¨ 5 ¨ false ¨ 147 ¨ 4 ¨ 4 ¨ 40 ¨ 31 ¨ 0 ¨ 0 ¨ 9 ¨ 2 ¨ 8 ¨ 22 ¨ 18 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 7 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ (i < sz) || (((i < (sz + 1)) && allowSigns) && (!foundDigit)) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/math/NumberUtils.java:1400)
+25 ¨ 0 ¨ 0 ¨ false ¨ 162 ¨ 0 ¨ 46 ¨ 85 ¨ 85 ¨ 0 ¨ 0 ¨ 0 ¨ 12 ¨ 3 ¨ 85 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ cls != null ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ClassUtils.java:370)
+26 ¨ 0 ¨ 0 ¨ false ¨ 1 ¨ 95234 ¨ 1 ¨ 95235 ¨ 95235 ¨ 0 ¨ 0 ¨ 0 ¨ 9 ¨ 1 ¨ 95235 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ hours < 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:321)
+27 ¨ 0 ¨ 0 ¨ false ¨ 266 ¨ 1 ¨ 22 ¨ 101 ¨ 101 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 4 ¨ 101 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (read = r.read(buffer, size, ((buffer.length) - (size)))) != (-1) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:444)
+28 ¨ 1 ¨ 0 ¨ false ¨ 14667 ¨ 344 ¨ 2771 ¨ 6444 ¨ 722 ¨ 0 ¨ 5722 ¨ 0 ¨ 59 ¨ 4 ¨ 6444 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 5722 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (i + 1) < length ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/FastDatePrinter.java:318)
+29 ¨ 0 ¨ 0 ¨ false ¨ 21 ¨ 33 ¨ 21 ¨ 54 ¨ 54 ¨ 0 ¨ 0 ¨ 0 ¨ 6 ¨ 1 ¨ 54 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1790)
+30 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 0 ¨ 0 ¨ 2 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 3 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ hierarchy.hasNext() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/reflect/MethodUtils.java:527)
+31 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 0 ¨ 5 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1720)
+32 ¨ 1 ¨ 0 ¨ false ¨ 473 ¨ 0 ¨ 0 ¨ 12 ¨ 6 ¨ 0 ¨ 6 ¨ 0 ¨ 3 ¨ 40 ¨ 0 ¨ 0 ¨ 12 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ frames.hasMoreTokens() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/exception/ExceptionUtils.java:646)
+33 ¨ 0 ¨ 0 ¨ false ¨ 24 ¨ 0 ¨ 4 ¨ 12 ¨ 12 ¨ 0 ¨ 0 ¨ 0 ¨ 4 ¨ 3 ¨ 12 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ currentClass != null ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/reflect/FieldUtils.java:216)
+34 ¨ 0 ¨ 0 ¨ false ¨ 3 ¨ 1 ¨ 0 ¨ 2 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 1 ¨ 3 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ it.hasNext() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:1157)
+35 ¨ 1 ¨ 0 ¨ false ¨ 67 ¨ 0 ¨ 17 ¨ 41 ¨ 39 ¨ 0 ¨ 2 ¨ 0 ¨ 5 ¨ 3 ¨ 41 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (srcClass != null) && (!(destClass.equals(srcClass))) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/reflect/MemberUtils.java:137)
+36 ¨ 0 ¨ 0 ¨ false ¨ 40 ¨ 0 ¨ 19 ¨ 29 ¨ 29 ¨ 0 ¨ 0 ¨ 0 ¨ 5 ¨ 3 ¨ 29 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ className.endsWith("[]") ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ClassUtils.java:965)
+37 ¨ 0 ¨ 0 ¨ false ¨ 96 ¨ 0 ¨ 0 ¨ 18 ¨ 18 ¨ 0 ¨ 0 ¨ 0 ¨ 3 ¨ 7 ¨ 5 ¨ 13 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ i < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:2960)
+38 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 0 ¨ 5 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1685)
+39 ¨ 0 ¨ 0 ¨ false ¨ 19 ¨ 0 ¨ 10 ¨ 13 ¨ 13 ¨ 0 ¨ 0 ¨ 0 ¨ 1 ¨ 4 ¨ 13 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (className.charAt(0)) == '[' ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ClassUtils.java:203)
+40 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 0 ¨ 5 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1650)
+41 ¨ 0 ¨ 0 ¨ false ¨ 4 ¨ 50 ¨ 4 ¨ 54 ¨ 54 ¨ 0 ¨ 0 ¨ 0 ¨ 4 ¨ 1 ¨ 54 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (result = reference.get()) == null ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/concurrent/AtomicSafeInitializer.java:76)
+42 ¨ 0 ¨ 0 ¨ false ¨ 31 ¨ 5 ¨ 0 ¨ 14 ¨ 14 ¨ 0 ¨ 0 ¨ 0 ¨ 4 ¨ 8 ¨ 13 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (end != 0) && ((stripChars.indexOf(str.charAt((end - 1)))) != (org.apache.commons.lang3.StringUtils.INDEX_NOT_FOUND)) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:674)
+43 ¨ 0 ¨ 0 ¨ false ¨ 68 ¨ 3 ¨ 2 ¨ 19 ¨ 19 ¨ 0 ¨ 0 ¨ 0 ¨ 1 ¨ 7 ¨ 11 ¨ 8 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (bit_pattern & 1) == 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/BitField.java:92)
+44 ¨ 0 ¨ 0 ¨ false ¨ 11196 ¨ 88193 ¨ 1833 ¨ 93737 ¨ 93737 ¨ 0 ¨ 0 ¨ 0 ¨ 4 ¨ 4 ¨ 93737 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (start.get(java.util.Calendar.YEAR)) != target ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:354)
+45 ¨ 0 ¨ 0 ¨ false ¨ 177 ¨ 0 ¨ 51 ¨ 114 ¨ 114 ¨ 0 ¨ 0 ¨ 0 ¨ 4 ¨ 2 ¨ 114 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ ((lhsClazz.getSuperclass()) != null) && (lhsClazz != reflectUpToClass) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/builder/CompareToBuilder.java:287)
+46 ¨ 0 ¨ 0 ¨ false ¨ 40479 ¨ 87008 ¨ 603 ¨ 93740 ¨ 93740 ¨ 0 ¨ 0 ¨ 0 ¨ 4 ¨ 11 ¨ 89443 ¨ 3063 ¨ 1234 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (start.get(java.util.Calendar.MONTH)) != (end.get(java.util.Calendar.MONTH)) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:372)
+47 ¨ 0 ¨ 0 ¨ false ¨ 10 ¨ 1485 ¨ 10 ¨ 1495 ¨ 1495 ¨ 0 ¨ 0 ¨ 0 ¨ 8 ¨ 1 ¨ 1495 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ days < 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:327)
+48 ¨ 0 ¨ 0 ¨ false ¨ 57 ¨ 0 ¨ 0 ¨ 1 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 1 ¨ 57 ¨ 0 ¨ 0 ¨ 0 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ propNames.hasMoreElements() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrSubstitutor.java:215)
+49 ¨ 1 ¨ 0 ¨ false ¨ 266 ¨ 0 ¨ 170 ¨ 202 ¨ 5 ¨ 0 ¨ 197 ¨ 0 ¨ 50 ¨ 8 ¨ 198 ¨ 4 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 193 ¨ 4 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ start < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrTokenizer.java:688)
+50 ¨ 0 ¨ 0 ¨ false ¨ 1498661 ¨ 995208 ¨ 432949 ¨ 1805091 ¨ 1805091 ¨ 0 ¨ 0 ¨ 0 ¨ 9 ¨ 29 ¨ 1769867 ¨ 34815 ¨ 409 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (t & 1) == 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/math/Fraction.java:609)
+51 ¨ 0 ¨ 0 ¨ false ¨ 0 ¨ 95235 ¨ 0 ¨ 95235 ¨ 95235 ¨ 0 ¨ 0 ¨ 0 ¨ 9 ¨ 0 ¨ 95235 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ seconds < 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:313)
+52 ¨ 0 ¨ 0 ¨ false ¨ 4 ¨ 0 ¨ 0 ¨ 2 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 2 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ superclass != null ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ClassUtils.java:332)
+53 ¨ 0 ¨ 0 ¨ false ¨ 60 ¨ 0 ¨ 0 ¨ 12 ¨ 12 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 7 ¨ 6 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ i < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:3131)
+54 ¨ 0 ¨ 0 ¨ false ¨ 156 ¨ 2 ¨ 0 ¨ 17 ¨ 17 ¨ 0 ¨ 0 ¨ 0 ¨ 6 ¨ 26 ¨ 11 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (end != 0) && (java.lang.Character.isWhitespace(str.charAt((end - 1)))) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:668)
+55 ¨ 0 ¨ 0 ¨ false ¨ 0 ¨ 95235 ¨ 0 ¨ 95235 ¨ 95235 ¨ 0 ¨ 0 ¨ 0 ¨ 9 ¨ 0 ¨ 95235 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ minutes < 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:317)
+56 ¨ 1 ¨ 0 ¨ false ¨ 128 ¨ 8 ¨ 0 ¨ 31 ¨ 12 ¨ 0 ¨ 19 ¨ 0 ¨ 2 ¨ 34 ¨ 27 ¨ 3 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 15 ¨ 3 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ offset < inputLineLength ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/WordUtils.java:186)
+57 ¨ 0 ¨ 0 ¨ false ¨ 9 ¨ 2 ¨ 0 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 1 ¨ 3 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (pos < len) && ((buf[pos]) <= ' ') ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:2092)
+58 ¨ 0 ¨ 0 ¨ false ¨ 0 ¨ 95235 ¨ 0 ¨ 95235 ¨ 95235 ¨ 0 ¨ 0 ¨ 0 ¨ 9 ¨ 0 ¨ 95235 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ milliseconds < 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:309)
+59 ¨ 0 ¨ 0 ¨ false ¨ 4035 ¨ 0 ¨ 157 ¨ 323 ¨ 323 ¨ 0 ¨ 0 ¨ 0 ¨ 6 ¨ 24 ¨ 157 ¨ 0 ¨ 166 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (pos.getIndex()) < (pattern.length()) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/ExtendedMessageFormat.java:157)
+60 ¨ 0 ¨ 0 ¨ false ¨ 28 ¨ 5 ¨ 0 ¨ 13 ¨ 13 ¨ 0 ¨ 0 ¨ 0 ¨ 3 ¨ 8 ¨ 11 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (start != strLen) && ((stripChars.indexOf(str.charAt(start))) != (org.apache.commons.lang3.StringUtils.INDEX_NOT_FOUND)) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:629)
+61 ¨ 0 ¨ 0 ¨ false ¨ 163 ¨ 5 ¨ 24 ¨ 81 ¨ 81 ¨ 0 ¨ 0 ¨ 0 ¨ 22 ¨ 3 ¨ 81 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (throwable != null) && ((list.contains(throwable)) == false) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/exception/ExceptionUtils.java:282)
+62 ¨ 0 ¨ 0 ¨ false ¨ 18 ¨ 36 ¨ 9 ¨ 48 ¨ 48 ¨ 0 ¨ 0 ¨ 0 ¨ 6 ¨ 4 ¨ 48 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (className.charAt(0)) == '[' ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ClassUtils.java:302)
+63 ¨ 0 ¨ 0 ¨ false ¨ 12 ¨ 2 ¨ 0 ¨ 7 ¨ 7 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 3 ¨ 7 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ index >= 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:1790)
+64 ¨ 0 ¨ 0 ¨ false ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ frames.hasMoreTokens() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/exception/ExceptionUtils.java:622)
+65 ¨ 0 ¨ 0 ¨ false ¨ 8872 ¨ 0 ¨ 0 ¨ 323 ¨ 323 ¨ 0 ¨ 0 ¨ 0 ¨ 6 ¨ 56 ¨ 157 ¨ 0 ¨ 21 ¨ 145 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (pos.getIndex()) < (pattern.length()) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/ExtendedMessageFormat.java:412)
+66 ¨ 0 ¨ 0 ¨ false ¨ 12 ¨ 0 ¨ 0 ¨ 6 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 2 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ iterator.hasNext() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:4101)
+67 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 0 ¨ 5 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1860)
+68 ¨ 0 ¨ 0 ¨ false ¨ 1 ¨ 0 ¨ 1 ¨ 1 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 1 ¨ 1 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (length--) > 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ObjectUtils.java:618)
+69 ¨ 1 ¨ 0 ¨ false ¨ 6 ¨ 1 ¨ 2 ¨ 5 ¨ 2 ¨ 0 ¨ 3 ¨ 0 ¨ 1 ¨ 2 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 3 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (++i) < (size) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:1750)
+70 ¨ 0 ¨ 0 ¨ false ¨ 0 ¨ 93740 ¨ 0 ¨ 93740 ¨ 93740 ¨ 0 ¨ 0 ¨ 0 ¨ 4 ¨ 0 ¨ 93740 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ days < 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:379)
+71 ¨ 0 ¨ 0 ¨ false ¨ 142 ¨ 9 ¨ 2 ¨ 53 ¨ 53 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 6 ¨ 48 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (start.get(java.util.Calendar.DAY_OF_WEEK)) != startCutoff ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DateUtils.java:1220)
+72 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 0 ¨ 5 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1580)
+73 ¨ 0 ¨ 0 ¨ false ¨ 10 ¨ 1 ¨ 0 ¨ 6 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 1 ¨ 2 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ index >= 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:1938)
+74 ¨ 0 ¨ 1 ¨ false ¨ 93 ¨ 0 ¨ 5 ¨ 49 ¨ 46 ¨ 0 ¨ 0 ¨ 3 ¨ 6 ¨ 2 ¨ 49 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 3 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ cls != null ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/reflect/ConstructorUtils.java:291)
+75 ¨ 0 ¨ 0 ¨ false ¨ 515596 ¨ 3 ¨ 31 ¨ 131087 ¨ 131087 ¨ 0 ¨ 0 ¨ 0 ¨ 6 ¨ 6 ¨ 131082 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (end < seqEnd) && (((((input.charAt(end)) >= '0') && ((input.charAt(end)) <= '9')) || (((input.charAt(end)) >= 'a') && ((input.charAt(end)) <= 'f'))) || (((input.charAt(end)) >= 'A') && ((input.charAt(end)) <= 'F'))) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/translate/NumericEntityUnescaper.java:98)
+76 ¨ 0 ¨ 0 ¨ false ¨ 8 ¨ 3 ¨ 6 ¨ 10 ¨ 10 ¨ 0 ¨ 0 ¨ 0 ¨ 3 ¨ 2 ¨ 10 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1825)
+77 ¨ 0 ¨ 0 ¨ false ¨ 1725 ¨ 197255 ¨ 969 ¨ 198549 ¨ 198549 ¨ 0 ¨ 0 ¨ 0 ¨ 9 ¨ 6 ¨ 198543 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (((u & 1) == 0) && ((v & 1) == 0)) && (k < 31) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/math/Fraction.java:593)
+78 ¨ 0 ¨ 0 ¨ false ¨ 5 ¨ 0 ¨ 5 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ j > i ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/ArrayUtils.java:1615)
+79 ¨ 0 ¨ 1 ¨ false ¨ 445 ¨ 0 ¨ 38 ¨ 179 ¨ 45 ¨ 0 ¨ 0 ¨ 134 ¨ 50 ¨ 23 ¨ 162 ¨ 14 ¨ 3 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 119 ¨ 12 ¨ 3 ¨ 0 ¨ 0 ¨ pos < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrTokenizer.java:744)
+80 ¨ 0 ¨ 0 ¨ false ¨ 215 ¨ 0 ¨ 69 ¨ 133 ¨ 133 ¨ 0 ¨ 0 ¨ 0 ¨ 32 ¨ 4 ¨ 133 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ ((testClass.getSuperclass()) != null) && (testClass != reflectUpToClass) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/builder/EqualsBuilder.java:361)
+81 ¨ 0 ¨ 0 ¨ false ¨ 47037 ¨ 0 ¨ 0 ¨ 9380 ¨ 9380 ¨ 0 ¨ 0 ¨ 0 ¨ 7 ¨ 59 ¨ 4683 ¨ 4693 ¨ 2 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ i < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:3090)
+82 ¨ 0 ¨ 0 ¨ false ¨ 4 ¨ 0 ¨ 0 ¨ 2 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 2 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ iterator.hasNext() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:4055)
+83 ¨ 0 ¨ 0 ¨ false ¨ 27 ¨ 0 ¨ 0 ¨ 6 ¨ 6 ¨ 0 ¨ 0 ¨ 0 ¨ 3 ¨ 10 ¨ 4 ¨ 1 ¨ 1 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ end < len ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:2826)
+84 ¨ 0 ¨ 0 ¨ false ¨ 18 ¨ 1 ¨ 0 ¨ 7 ¨ 7 ¨ 0 ¨ 0 ¨ 0 ¨ 3 ¨ 3 ¨ 7 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ it.hasNext() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:1203)
+85 ¨ 1 ¨ 0 ¨ false ¨ 104 ¨ 0 ¨ 72 ¨ 82 ¨ 11 ¨ 0 ¨ 71 ¨ 0 ¨ 11 ¨ 4 ¨ 82 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 71 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ end != (org.apache.commons.lang3.StringUtils.INDEX_NOT_FOUND) ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/StringUtils.java:4531)
+86 ¨ 1 ¨ 0 ¨ false ¨ 7951 ¨ 2 ¨ 21 ¨ 789 ¨ 4 ¨ 8 ¨ 777 ¨ 0 ¨ 31 ¨ 41 ¨ 75 ¨ 498 ¨ 216 ¨ 0 ¨ 0 ¨ 0 ¨ 5 ¨ 3 ¨ 0 ¨ 0 ¨ 71 ¨ 493 ¨ 213 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ pos < bufEnd ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrSubstitutor.java:783)
+87 ¨ 0 ¨ 0 ¨ false ¨ 6 ¨ 3 ¨ 0 ¨ 5 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 1 ¨ 3 ¨ 5 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ (pos < len) && ((buf[(len - 1)]) <= ' ') ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:2095)
+88 ¨ 0 ¨ 2 ¨ false ¨ 2 ¨ 0 ¨ 2 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 1 ¨ 1 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 2 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ parentClass != null ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/reflect/MethodUtils.java:394)
+89 ¨ 0 ¨ 0 ¨ false ¨ 1456 ¨ 0 ¨ 1456 ¨ 1456 ¨ 1456 ¨ 0 ¨ 0 ¨ 0 ¨ 3 ¨ 1 ¨ 1456 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ years != 0 ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/time/DurationFormatUtils.java:339)
+90 ¨ 0 ¨ 0 ¨ false ¨ 9 ¨ 1 ¨ 0 ¨ 4 ¨ 4 ¨ 0 ¨ 0 ¨ 0 ¨ 1 ¨ 3 ¨ 4 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ 0 ¨ it.hasNext() ¨ (/Users/virtual/Desktop/data/projects/apache-commons/lang/src/main/java/org/apache/commons/lang3/text/StrBuilder.java:1227)
 name ¨ loops ¨ passed
 org.apache.commons.lang3.AnnotationUtilsTest#testOneArgNull ¨ 0 ¨ true
 org.apache.commons.lang3.AnnotationUtilsTest#testToString ¨ 1 ¨ true
@@ -114,58 +114,58 @@ org.apache.commons.lang3.ArrayUtilsAddTest#testAddObjectArrayBoolean ¨ 0 ¨ tru
 org.apache.commons.lang3.ArrayUtilsAddTest#testAddObjectArrayDouble ¨ 0 ¨ true
 org.apache.commons.lang3.ArrayUtilsAddTest#testAddObjectArrayObject ¨ 0 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllBooleanArray ¨ 1 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullShortArray ¨ 0 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullShortArray ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveElementsObjectArray ¨ 1 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllFloatArrayNegativeIndex ¨ 0 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllFloatArrayNegativeIndex ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllByteArrayRemoveNone ¨ 0 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllIntArrayRemoveNone ¨ 0 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllLongArrayOutOfBoundsIndex ¨ 0 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllShortArrayNegativeIndex ¨ 0 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllObjectArrayOutOfBoundsIndex ¨ 0 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllLongArrayOutOfBoundsIndex ¨ 1 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllShortArrayNegativeIndex ¨ 1 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllObjectArrayOutOfBoundsIndex ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllDoubleArrayRemoveNone ¨ 0 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullByteArray ¨ 0 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullByteArray ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveElementLongArray ¨ 1 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullDoubleArray ¨ 0 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllDoubleArrayOutOfBoundsIndex ¨ 0 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullDoubleArray ¨ 1 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllDoubleArrayOutOfBoundsIndex ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullObjectArray ¨ 0 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllCharArrayRemoveNone ¨ 0 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllLongArrayRemoveNone ¨ 0 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllObjectArrayNegativeIndex ¨ 0 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllShortArrayOutOfBoundsIndex ¨ 0 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllObjectArrayNegativeIndex ¨ 1 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllShortArrayOutOfBoundsIndex ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveElementBooleanArray ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllShortArrayRemoveNone ¨ 0 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNumberArray ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllCharArray ¨ 1 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllFloatArrayOutOfBoundsIndex ¨ 0 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllFloatArrayOutOfBoundsIndex ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllShortArray ¨ 1 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullBooleanArray ¨ 0 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullIntArray ¨ 0 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullBooleanArray ¨ 1 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullIntArray ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveElementFloatArray ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllFloatArrayRemoveNone ¨ 0 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveElementIntArray ¨ 1 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullFloatArray ¨ 0 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllBooleanArrayOutOfBoundsIndex ¨ 0 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllByteArrayOutOfBoundsIndex ¨ 0 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullFloatArray ¨ 1 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllBooleanArrayOutOfBoundsIndex ¨ 1 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllByteArrayOutOfBoundsIndex ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllByteArray ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveElementCharArray ¨ 1 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllCharArrayOutOfBoundsIndex ¨ 0 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllLongArrayNegativeIndex ¨ 0 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllCharArrayNegativeIndex ¨ 0 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllCharArrayOutOfBoundsIndex ¨ 1 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllLongArrayNegativeIndex ¨ 1 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllCharArrayNegativeIndex ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllIntArray ¨ 1 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllByteArrayNegativeIndex ¨ 0 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullLongArray ¨ 0 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllIntArrayOutOfBoundsIndex ¨ 0 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllByteArrayNegativeIndex ¨ 1 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullLongArray ¨ 1 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllIntArrayOutOfBoundsIndex ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveElementByteArray ¨ 1 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllBooleanArrayNegativeIndex ¨ 0 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllBooleanArrayNegativeIndex ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllObjectArrayRemoveNone ¨ 0 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllDoubleArray ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllBooleanArrayRemoveNone ¨ 0 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllFloatArray ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllObjectArray ¨ 1 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllIntArrayNegativeIndex ¨ 0 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllDoubleArrayNegativeIndex ¨ 0 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllIntArrayNegativeIndex ¨ 1 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllDoubleArrayNegativeIndex ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveElementDoubleArray ¨ 1 ¨ true
-org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullCharArray ¨ 0 ¨ true
+org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllNullCharArray ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveElementShortArray ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveMultipleTest#testRemoveAllLongArray ¨ 1 ¨ true
 org.apache.commons.lang3.ArrayUtilsRemoveTest#testRemoveElementObjectArray ¨ 0 ¨ true
@@ -2335,7 +2335,7 @@ org.apache.commons.lang3.text.translate.UnicodeEscaperTest#testBelow ¨ 1 ¨ tru
 org.apache.commons.lang3.text.translate.UnicodeEscaperTest#testBetween ¨ 1 ¨ true
 org.apache.commons.lang3.text.translate.UnicodeUnescaperTest#testUPlus ¨ 2 ¨ true
 org.apache.commons.lang3.text.translate.UnicodeUnescaperTest#testUuuuu ¨ 2 ¨ true
-org.apache.commons.lang3.text.translate.UnicodeUnescaperTest#testLessThanFour ¨ 1 ¨ true
+org.apache.commons.lang3.text.translate.UnicodeUnescaperTest#testLessThanFour ¨ 2 ¨ true
 org.apache.commons.lang3.text.translate.UnicodeUnpairedSurrogateRemoverTest#testValidCharacters ¨ 0 ¨ true
 org.apache.commons.lang3.text.translate.UnicodeUnpairedSurrogateRemoverTest#testInvalidCharacters ¨ 0 ¨ true
 org.apache.commons.lang3.time.DateFormatUtilsTest#testFormatUTC ¨ 1 ¨ true
@@ -2646,503 +2646,994 @@ org.apache.commons.lang3.tuple.TripleTest#testComparable4 ¨ 0 ¨ true
 org.apache.commons.lang3.tuple.TripleTest#testToString ¨ 0 ¨ true
 org.apache.commons.lang3.tuple.TripleTest#testCompatibilityBetweenTriples ¨ 0 ¨ true
 org.apache.commons.lang3.tuple.TripleTest#testToStringCustom ¨ 0 ¨ true
-loop 1 ¨ 0 ¨ 15
-loop 1 ¨ 7 ¨ 1
-loop 2 ¨ 0 ¨ 4
-loop 2 ¨ 1 ¨ 99
-loop 2 ¨ 2 ¨ 16
-loop 2 ¨ 3 ¨ 50
-loop 2 ¨ 4 ¨ 36
-loop 2 ¨ 5 ¨ 168
-loop 2 ¨ 6 ¨ 46
-loop 2 ¨ 7 ¨ 15
-loop 2 ¨ 8 ¨ 225
-loop 2 ¨ 9 ¨ 4
-loop 2 ¨ 10 ¨ 57
-loop 2 ¨ 11 ¨ 1
-loop 2 ¨ 12 ¨ 10
-loop 2 ¨ 14 ¨ 1
-loop 2 ¨ 15 ¨ 61
-loop 2 ¨ 18 ¨ 1
-loop 2 ¨ 19 ¨ 1
-loop 2 ¨ 20 ¨ 2
-loop 2 ¨ 21 ¨ 49
-loop 2 ¨ 23 ¨ 61
-loop 2 ¨ 24 ¨ 10
-loop 2 ¨ 25 ¨ 8
-loop 2 ¨ 26 ¨ 17
-loop 2 ¨ 27 ¨ 17
-loop 2 ¨ 28 ¨ 17
-loop 2 ¨ 29 ¨ 9
-loop 2 ¨ 30 ¨ 17
-loop 2 ¨ 31 ¨ 6
-loop 2 ¨ 32 ¨ 17
-loop 2 ¨ 34 ¨ 9
-loop 2 ¨ 55 ¨ 1
-loop 3 ¨ 1 ¨ 90063
-loop 3 ¨ 2 ¨ 18
-loop 4 ¨ 1 ¨ 5
-loop 5 ¨ 0 ¨ 2
-loop 5 ¨ 1 ¨ 3
-loop 5 ¨ 2 ¨ 4
-loop 5 ¨ 3 ¨ 31
-loop 5 ¨ 4 ¨ 2
-loop 5 ¨ 5 ¨ 2
-loop 5 ¨ 6 ¨ 9
-loop 6 ¨ 1 ¨ 6
-loop 6 ¨ 2 ¨ 14
-loop 6 ¨ 3 ¨ 26
-loop 6 ¨ 4 ¨ 7
-loop 6 ¨ 5 ¨ 1
-loop 6 ¨ 7 ¨ 7
-loop 6 ¨ 8 ¨ 1
-loop 7 ¨ 1 ¨ 1
-loop 7 ¨ 2 ¨ 22
-loop 7 ¨ 3 ¨ 17
-loop 7 ¨ 4 ¨ 34
-loop 7 ¨ 5 ¨ 27
-loop 8 ¨ 1 ¨ 56
-loop 8 ¨ 2 ¨ 27
-loop 8 ¨ 3 ¨ 12
-loop 8 ¨ 4 ¨ 5
-loop 9 ¨ 1 ¨ 12
-loop 10 ¨ 0 ¨ 32
-loop 10 ¨ 1 ¨ 12
-loop 10 ¨ 2 ¨ 12
-loop 11 ¨ 1 ¨ 10036
-loop 11 ¨ 2 ¨ 47
-loop 11 ¨ 3 ¨ 21
-loop 11 ¨ 4 ¨ 9
-loop 11 ¨ 6 ¨ 1
-loop 11 ¨ 8 ¨ 1
-loop 11 ¨ 10 ¨ 30000
-loop 11 ¨ 50 ¨ 10000
-loop 11 ¨ 100 ¨ 20000
-loop 11 ¨ 500 ¨ 10000
-loop 11 ¨ 1000 ¨ 10000
-loop 12 ¨ 1 ¨ 4
-loop 12 ¨ 2 ¨ 2
-loop 12 ¨ 3 ¨ 3
-loop 13 ¨ 0 ¨ 1
-loop 13 ¨ 3 ¨ 1
-loop 13 ¨ 4 ¨ 1
-loop 14 ¨ 1 ¨ 4
-loop 14 ¨ 3 ¨ 7
-loop 15 ¨ 0 ¨ 11
-loop 15 ¨ 1 ¨ 59
-loop 15 ¨ 2 ¨ 9
-loop 16 ¨ 1 ¨ 1
-loop 16 ¨ 2 ¨ 11
-loop 16 ¨ 10 ¨ 1
-loop 17 ¨ 0 ¨ 1369
-loop 17 ¨ 1 ¨ 126
-loop 18 ¨ 38 ¨ 6
-loop 19 ¨ 0 ¨ 17
-loop 19 ¨ 1 ¨ 86
-loop 19 ¨ 2 ¨ 65556
-loop 19 ¨ 3 ¨ 8
-loop 19 ¨ 4 ¨ 9
-loop 19 ¨ 5 ¨ 17
-loop 19 ¨ 6 ¨ 7
-loop 19 ¨ 7 ¨ 5
-loop 19 ¨ 8 ¨ 8
-loop 19 ¨ 9 ¨ 4
-loop 19 ¨ 10 ¨ 12
-loop 19 ¨ 11 ¨ 6
-loop 19 ¨ 12 ¨ 5
-loop 19 ¨ 13 ¨ 1
-loop 19 ¨ 14 ¨ 10
-loop 19 ¨ 15 ¨ 1
-loop 19 ¨ 16 ¨ 4
-loop 19 ¨ 17 ¨ 14
-loop 19 ¨ 19 ¨ 19
-loop 19 ¨ 22 ¨ 4
-loop 19 ¨ 23 ¨ 14
-loop 19 ¨ 24 ¨ 14
-loop 19 ¨ 28 ¨ 2
-loop 19 ¨ 29 ¨ 1
-loop 19 ¨ 30 ¨ 5
-loop 19 ¨ 32 ¨ 28
-loop 19 ¨ 34 ¨ 28
-loop 19 ¨ 36 ¨ 1
-loop 19 ¨ 40 ¨ 28
-loop 19 ¨ 42 ¨ 42
-loop 19 ¨ 44 ¨ 14
-loop 19 ¨ 73 ¨ 1
-loop 19 ¨ 5279 ¨ 1
-loop 20 ¨ 0 ¨ 2
-loop 20 ¨ 2 ¨ 9
-loop 20 ¨ 8 ¨ 5
-loop 20 ¨ 26 ¨ 7
-loop 21 ¨ 1 ¨ 41
-loop 21 ¨ 2 ¨ 40
-loop 22 ¨ 3 ¨ 1
-loop 22 ¨ 6 ¨ 100
-loop 22 ¨ 10 ¨ 102
-loop 22 ¨ 11 ¨ 8
-loop 22 ¨ 12 ¨ 10
-loop 22 ¨ 13 ¨ 20
-loop 22 ¨ 14 ¨ 32
-loop 22 ¨ 15 ¨ 20
-loop 22 ¨ 16 ¨ 22
-loop 22 ¨ 17 ¨ 25
-loop 22 ¨ 18 ¨ 22
-loop 22 ¨ 19 ¨ 12
-loop 22 ¨ 20 ¨ 7
-loop 22 ¨ 21 ¨ 10
-loop 22 ¨ 22 ¨ 5
-loop 22 ¨ 23 ¨ 2
-loop 22 ¨ 24 ¨ 2
-loop 22 ¨ 28 ¨ 1
-loop 22 ¨ 39 ¨ 1
-loop 22 ¨ 42 ¨ 1
-loop 22 ¨ 45 ¨ 2
-loop 22 ¨ 46 ¨ 1
-loop 22 ¨ 47 ¨ 1
-loop 22 ¨ 48 ¨ 2
-loop 22 ¨ 49 ¨ 3
-loop 22 ¨ 50 ¨ 7
-loop 22 ¨ 53 ¨ 1
-loop 22 ¨ 57 ¨ 1
-loop 22 ¨ 58 ¨ 3
-loop 22 ¨ 60 ¨ 3
-loop 22 ¨ 63 ¨ 1
-loop 22 ¨ 64 ¨ 1
-loop 22 ¨ 66 ¨ 3
-loop 22 ¨ 69 ¨ 2
-loop 22 ¨ 70 ¨ 3
-loop 22 ¨ 71 ¨ 2
-loop 22 ¨ 72 ¨ 2
-loop 22 ¨ 73 ¨ 3
-loop 22 ¨ 74 ¨ 1
-loop 22 ¨ 75 ¨ 2
-loop 22 ¨ 76 ¨ 1
-loop 22 ¨ 77 ¨ 3
-loop 22 ¨ 78 ¨ 1
-loop 22 ¨ 79 ¨ 4
-loop 22 ¨ 81 ¨ 2
-loop 22 ¨ 82 ¨ 4
-loop 22 ¨ 83 ¨ 2
-loop 22 ¨ 84 ¨ 2
-loop 22 ¨ 86 ¨ 1
-loop 22 ¨ 87 ¨ 1
-loop 22 ¨ 88 ¨ 1
-loop 22 ¨ 89 ¨ 2
-loop 22 ¨ 90 ¨ 2
-loop 22 ¨ 91 ¨ 1
-loop 22 ¨ 92 ¨ 1
-loop 22 ¨ 93 ¨ 1
-loop 22 ¨ 94 ¨ 4
-loop 22 ¨ 95 ¨ 2
-loop 22 ¨ 96 ¨ 1
-loop 22 ¨ 97 ¨ 2
-loop 22 ¨ 98 ¨ 1
-loop 22 ¨ 99 ¨ 1
-loop 22 ¨ 100 ¨ 1
-loop 22 ¨ 102 ¨ 2
-loop 22 ¨ 105 ¨ 2
-loop 22 ¨ 106 ¨ 1
-loop 22 ¨ 107 ¨ 1
-loop 22 ¨ 109 ¨ 1
-loop 22 ¨ 111 ¨ 1
-loop 22 ¨ 112 ¨ 1
-loop 22 ¨ 113 ¨ 1
-loop 22 ¨ 115 ¨ 1
-loop 22 ¨ 116 ¨ 2
-loop 22 ¨ 118 ¨ 3
-loop 22 ¨ 119 ¨ 1
-loop 22 ¨ 121 ¨ 1
-loop 22 ¨ 124 ¨ 2
-loop 22 ¨ 130 ¨ 1
-loop 22 ¨ 132 ¨ 1
-loop 22 ¨ 133 ¨ 1
-loop 22 ¨ 134 ¨ 1
-loop 22 ¨ 140 ¨ 1
-loop 22 ¨ 150 ¨ 1
-loop 22 ¨ 152 ¨ 1
-loop 22 ¨ 153 ¨ 1
-loop 22 ¨ 157 ¨ 1
-loop 22 ¨ 167 ¨ 1
-loop 22 ¨ 170 ¨ 1
-loop 22 ¨ 426 ¨ 1
-loop 22 ¨ 455 ¨ 1
-loop 22 ¨ 4875 ¨ 1
-loop 23 ¨ 2 ¨ 1564
-loop 23 ¨ 3 ¨ 1564
-loop 23 ¨ 4 ¨ 1566
-loop 23 ¨ 5 ¨ 1
-loop 23 ¨ 6 ¨ 2
-loop 23 ¨ 7 ¨ 4692
-loop 23 ¨ 8 ¨ 1
-loop 23 ¨ 9 ¨ 1
-loop 23 ¨ 10 ¨ 1
-loop 24 ¨ 0 ¨ 4
-loop 24 ¨ 1 ¨ 4
-loop 24 ¨ 2 ¨ 5
-loop 24 ¨ 3 ¨ 6
-loop 24 ¨ 4 ¨ 3
-loop 24 ¨ 5 ¨ 8
-loop 24 ¨ 6 ¨ 8
-loop 24 ¨ 7 ¨ 1
-loop 24 ¨ 8 ¨ 1
-loop 25 ¨ 1 ¨ 46
-loop 25 ¨ 2 ¨ 1
-loop 25 ¨ 3 ¨ 38
-loop 26 ¨ 0 ¨ 95234
-loop 26 ¨ 1 ¨ 1
-loop 27 ¨ 0 ¨ 1
-loop 27 ¨ 1 ¨ 22
-loop 27 ¨ 2 ¨ 17
-loop 27 ¨ 3 ¨ 34
-loop 27 ¨ 4 ¨ 27
-loop 28 ¨ 0 ¨ 344
-loop 28 ¨ 1 ¨ 2771
-loop 28 ¨ 2 ¨ 529
-loop 28 ¨ 3 ¨ 362
-loop 28 ¨ 4 ¨ 2438
-loop 29 ¨ 0 ¨ 33
-loop 29 ¨ 1 ¨ 21
-loop 30 ¨ 2 ¨ 1
-loop 30 ¨ 3 ¨ 1
-loop 31 ¨ 1 ¨ 5
-loop 32 ¨ 37 ¨ 1
-loop 32 ¨ 38 ¨ 2
-loop 32 ¨ 40 ¨ 9
-loop 33 ¨ 1 ¨ 4
-loop 33 ¨ 2 ¨ 4
-loop 33 ¨ 3 ¨ 4
-loop 34 ¨ 0 ¨ 1
-loop 34 ¨ 3 ¨ 1
-loop 35 ¨ 1 ¨ 17
-loop 35 ¨ 2 ¨ 22
-loop 35 ¨ 3 ¨ 2
-loop 36 ¨ 1 ¨ 19
-loop 36 ¨ 2 ¨ 9
-loop 36 ¨ 3 ¨ 1
-loop 37 ¨ 3 ¨ 3
-loop 37 ¨ 4 ¨ 2
-loop 37 ¨ 5 ¨ 4
-loop 37 ¨ 6 ¨ 4
-loop 37 ¨ 7 ¨ 5
-loop 38 ¨ 1 ¨ 5
-loop 39 ¨ 1 ¨ 10
-loop 39 ¨ 2 ¨ 1
-loop 39 ¨ 3 ¨ 1
-loop 39 ¨ 4 ¨ 1
-loop 40 ¨ 1 ¨ 5
-loop 41 ¨ 0 ¨ 50
-loop 41 ¨ 1 ¨ 4
-loop 42 ¨ 0 ¨ 5
-loop 42 ¨ 2 ¨ 4
-loop 42 ¨ 3 ¨ 1
-loop 42 ¨ 4 ¨ 3
-loop 42 ¨ 8 ¨ 1
-loop 43 ¨ 0 ¨ 3
-loop 43 ¨ 1 ¨ 2
-loop 43 ¨ 2 ¨ 2
-loop 43 ¨ 3 ¨ 2
-loop 43 ¨ 4 ¨ 2
-loop 43 ¨ 5 ¨ 2
-loop 43 ¨ 6 ¨ 4
-loop 43 ¨ 7 ¨ 2
-loop 44 ¨ 0 ¨ 88193
-loop 44 ¨ 1 ¨ 1833
-loop 44 ¨ 2 ¨ 1828
-loop 44 ¨ 3 ¨ 1825
-loop 44 ¨ 4 ¨ 58
-loop 45 ¨ 1 ¨ 51
-loop 45 ¨ 2 ¨ 63
-loop 46 ¨ 0 ¨ 87008
-loop 46 ¨ 1 ¨ 603
-loop 46 ¨ 2 ¨ 609
-loop 46 ¨ 3 ¨ 614
-loop 46 ¨ 4 ¨ 609
-loop 46 ¨ 5 ¨ 615
-loop 46 ¨ 6 ¨ 620
-loop 46 ¨ 7 ¨ 608
-loop 46 ¨ 8 ¨ 612
-loop 46 ¨ 9 ¨ 608
-loop 46 ¨ 10 ¨ 613
-loop 46 ¨ 11 ¨ 621
-loop 47 ¨ 0 ¨ 1485
-loop 47 ¨ 1 ¨ 10
-loop 48 ¨ 57 ¨ 1
-loop 49 ¨ 1 ¨ 170
-loop 49 ¨ 2 ¨ 22
-loop 49 ¨ 3 ¨ 2
-loop 49 ¨ 4 ¨ 4
-loop 49 ¨ 7 ¨ 2
-loop 49 ¨ 8 ¨ 2
-loop 50 ¨ 0 ¨ 995208
-loop 50 ¨ 1 ¨ 432949
-loop 50 ¨ 2 ¨ 203920
-loop 50 ¨ 3 ¨ 95292
-loop 50 ¨ 4 ¨ 42498
-loop 50 ¨ 5 ¨ 20243
-loop 50 ¨ 6 ¨ 8556
-loop 50 ¨ 7 ¨ 3736
-loop 50 ¨ 8 ¨ 1572
-loop 50 ¨ 9 ¨ 708
-loop 50 ¨ 10 ¨ 248
-loop 50 ¨ 11 ¨ 120
-loop 50 ¨ 12 ¨ 34
-loop 50 ¨ 14 ¨ 2
-loop 50 ¨ 15 ¨ 2
-loop 50 ¨ 29 ¨ 3
-loop 51 ¨ 0 ¨ 95235
-loop 52 ¨ 2 ¨ 2
-loop 53 ¨ 2 ¨ 2
-loop 53 ¨ 3 ¨ 2
-loop 53 ¨ 4 ¨ 2
-loop 53 ¨ 7 ¨ 6
-loop 54 ¨ 0 ¨ 2
-loop 54 ¨ 2 ¨ 9
-loop 54 ¨ 8 ¨ 1
-loop 54 ¨ 26 ¨ 5
-loop 55 ¨ 0 ¨ 95235
-loop 56 ¨ 0 ¨ 8
-loop 56 ¨ 3 ¨ 1
-loop 56 ¨ 4 ¨ 18
-loop 56 ¨ 5 ¨ 1
-loop 56 ¨ 7 ¨ 2
-loop 56 ¨ 34 ¨ 1
-loop 57 ¨ 0 ¨ 2
-loop 57 ¨ 3 ¨ 3
-loop 58 ¨ 0 ¨ 95235
-loop 59 ¨ 1 ¨ 157
-loop 59 ¨ 10 ¨ 5
-loop 59 ¨ 11 ¨ 1
-loop 59 ¨ 15 ¨ 1
-loop 59 ¨ 17 ¨ 2
-loop 59 ¨ 24 ¨ 157
-loop 60 ¨ 0 ¨ 5
-loop 60 ¨ 2 ¨ 6
-loop 60 ¨ 8 ¨ 2
-loop 61 ¨ 0 ¨ 5
-loop 61 ¨ 1 ¨ 24
-loop 61 ¨ 2 ¨ 17
-loop 61 ¨ 3 ¨ 35
-loop 62 ¨ 0 ¨ 36
-loop 62 ¨ 1 ¨ 9
-loop 62 ¨ 2 ¨ 1
-loop 62 ¨ 3 ¨ 1
-loop 62 ¨ 4 ¨ 1
-loop 63 ¨ 0 ¨ 2
-loop 63 ¨ 2 ¨ 3
-loop 63 ¨ 3 ¨ 2
-loop 65 ¨ 2 ¨ 157
-loop 65 ¨ 11 ¨ 5
-loop 65 ¨ 12 ¨ 1
-loop 65 ¨ 16 ¨ 1
-loop 65 ¨ 19 ¨ 1
-loop 65 ¨ 48 ¨ 13
-loop 65 ¨ 54 ¨ 144
-loop 65 ¨ 56 ¨ 1
-loop 66 ¨ 2 ¨ 6
-loop 67 ¨ 1 ¨ 5
-loop 68 ¨ 1 ¨ 1
-loop 69 ¨ 0 ¨ 1
-loop 69 ¨ 1 ¨ 2
-loop 69 ¨ 2 ¨ 2
-loop 70 ¨ 0 ¨ 93740
-loop 71 ¨ 0 ¨ 9
-loop 71 ¨ 1 ¨ 2
-loop 71 ¨ 2 ¨ 2
-loop 71 ¨ 3 ¨ 31
-loop 71 ¨ 4 ¨ 4
-loop 71 ¨ 5 ¨ 3
-loop 71 ¨ 6 ¨ 2
-loop 72 ¨ 1 ¨ 5
-loop 73 ¨ 0 ¨ 1
-loop 73 ¨ 2 ¨ 5
-loop 74 ¨ 1 ¨ 5
-loop 74 ¨ 2 ¨ 44
-loop 75 ¨ 0 ¨ 3
-loop 75 ¨ 1 ¨ 31
-loop 75 ¨ 2 ¨ 487
-loop 75 ¨ 3 ¨ 7681
-loop 75 ¨ 4 ¨ 122880
-loop 75 ¨ 5 ¨ 2
-loop 75 ¨ 6 ¨ 3
-loop 76 ¨ 0 ¨ 3
-loop 76 ¨ 1 ¨ 6
-loop 76 ¨ 2 ¨ 1
-loop 77 ¨ 0 ¨ 197255
-loop 77 ¨ 1 ¨ 969
-loop 77 ¨ 2 ¨ 247
-loop 77 ¨ 3 ¨ 57
-loop 77 ¨ 4 ¨ 15
-loop 77 ¨ 5 ¨ 5
-loop 77 ¨ 6 ¨ 1
-loop 78 ¨ 1 ¨ 5
-loop 79 ¨ 1 ¨ 38
-loop 79 ¨ 2 ¨ 106
-loop 79 ¨ 3 ¨ 13
-loop 79 ¨ 4 ¨ 5
-loop 79 ¨ 5 ¨ 4
-loop 79 ¨ 6 ¨ 6
-loop 79 ¨ 7 ¨ 2
-loop 79 ¨ 8 ¨ 2
-loop 79 ¨ 10 ¨ 1
-loop 79 ¨ 17 ¨ 1
-loop 79 ¨ 23 ¨ 1
-loop 80 ¨ 1 ¨ 69
-loop 80 ¨ 2 ¨ 51
-loop 80 ¨ 3 ¨ 8
-loop 80 ¨ 4 ¨ 5
-loop 81 ¨ 2 ¨ 1560
-loop 81 ¨ 3 ¨ 1561
-loop 81 ¨ 4 ¨ 1562
-loop 81 ¨ 5 ¨ 3
-loop 81 ¨ 6 ¨ 2
-loop 81 ¨ 7 ¨ 4683
-loop 81 ¨ 8 ¨ 5
-loop 81 ¨ 10 ¨ 2
-loop 81 ¨ 59 ¨ 2
-loop 82 ¨ 2 ¨ 2
-loop 83 ¨ 2 ¨ 2
-loop 83 ¨ 4 ¨ 2
-loop 83 ¨ 5 ¨ 1
-loop 83 ¨ 10 ¨ 1
-loop 84 ¨ 0 ¨ 1
-loop 84 ¨ 3 ¨ 6
-loop 85 ¨ 1 ¨ 72
-loop 85 ¨ 2 ¨ 2
-loop 85 ¨ 3 ¨ 4
-loop 85 ¨ 4 ¨ 4
-loop 86 ¨ 0 ¨ 2
-loop 86 ¨ 1 ¨ 21
-loop 86 ¨ 2 ¨ 10
-loop 86 ¨ 3 ¨ 4
-loop 86 ¨ 4 ¨ 38
-loop 86 ¨ 5 ¨ 12
-loop 86 ¨ 6 ¨ 20
-loop 86 ¨ 7 ¨ 406
-loop 86 ¨ 8 ¨ 37
-loop 86 ¨ 9 ¨ 18
-loop 86 ¨ 10 ¨ 2
-loop 86 ¨ 12 ¨ 35
-loop 86 ¨ 13 ¨ 72
-loop 86 ¨ 15 ¨ 1
-loop 86 ¨ 16 ¨ 1
-loop 86 ¨ 17 ¨ 3
-loop 86 ¨ 18 ¨ 17
-loop 86 ¨ 19 ¨ 1
-loop 86 ¨ 20 ¨ 2
-loop 86 ¨ 24 ¨ 1
-loop 86 ¨ 25 ¨ 1
-loop 86 ¨ 28 ¨ 3
-loop 86 ¨ 29 ¨ 37
-loop 86 ¨ 30 ¨ 1
-loop 86 ¨ 31 ¨ 34
-loop 86 ¨ 39 ¨ 1
-loop 86 ¨ 41 ¨ 1
-loop 87 ¨ 0 ¨ 3
-loop 87 ¨ 3 ¨ 2
-loop 88 ¨ 1 ¨ 2
-loop 89 ¨ 1 ¨ 1456
-loop 90 ¨ 0 ¨ 1
-loop 90 ¨ 3 ¨ 3
+loop 1 0.44
+ ¨ 0 ¨ 15
+loop 1 0.44
+ ¨ 7 ¨ 1
+loop 2 10.86
+ ¨ 0 ¨ 4
+loop 2 10.86
+ ¨ 1 ¨ 103
+loop 2 10.86
+ ¨ 2 ¨ 16
+loop 2 10.86
+ ¨ 3 ¨ 50
+loop 2 10.86
+ ¨ 4 ¨ 36
+loop 2 10.86
+ ¨ 5 ¨ 172
+loop 2 10.86
+ ¨ 6 ¨ 46
+loop 2 10.86
+ ¨ 7 ¨ 15
+loop 2 10.86
+ ¨ 8 ¨ 225
+loop 2 10.86
+ ¨ 9 ¨ 4
+loop 2 10.86
+ ¨ 10 ¨ 57
+loop 2 10.86
+ ¨ 11 ¨ 1
+loop 2 10.86
+ ¨ 12 ¨ 10
+loop 2 10.86
+ ¨ 14 ¨ 1
+loop 2 10.86
+ ¨ 15 ¨ 61
+loop 2 10.86
+ ¨ 18 ¨ 1
+loop 2 10.86
+ ¨ 19 ¨ 1
+loop 2 10.86
+ ¨ 20 ¨ 2
+loop 2 10.86
+ ¨ 21 ¨ 49
+loop 2 10.86
+ ¨ 23 ¨ 61
+loop 2 10.86
+ ¨ 24 ¨ 10
+loop 2 10.86
+ ¨ 25 ¨ 8
+loop 2 10.86
+ ¨ 26 ¨ 17
+loop 2 10.86
+ ¨ 27 ¨ 17
+loop 2 10.86
+ ¨ 28 ¨ 17
+loop 2 10.86
+ ¨ 29 ¨ 9
+loop 2 10.86
+ ¨ 30 ¨ 17
+loop 2 10.86
+ ¨ 31 ¨ 6
+loop 2 10.86
+ ¨ 32 ¨ 17
+loop 2 10.86
+ ¨ 34 ¨ 9
+loop 2 10.86
+ ¨ 55 ¨ 1
+loop 3 1.00
+ ¨ 1 ¨ 90063
+loop 3 1.00
+ ¨ 2 ¨ 18
+loop 4 1.00
+ ¨ 1 ¨ 5
+loop 5 3.32
+ ¨ 0 ¨ 2
+loop 5 3.32
+ ¨ 1 ¨ 3
+loop 5 3.32
+ ¨ 2 ¨ 4
+loop 5 3.32
+ ¨ 3 ¨ 31
+loop 5 3.32
+ ¨ 4 ¨ 2
+loop 5 3.32
+ ¨ 5 ¨ 2
+loop 5 3.32
+ ¨ 6 ¨ 9
+loop 6 3.26
+ ¨ 1 ¨ 6
+loop 6 3.26
+ ¨ 2 ¨ 14
+loop 6 3.26
+ ¨ 3 ¨ 26
+loop 6 3.26
+ ¨ 4 ¨ 7
+loop 6 3.26
+ ¨ 5 ¨ 1
+loop 6 3.26
+ ¨ 7 ¨ 7
+loop 6 3.26
+ ¨ 8 ¨ 1
+loop 7 3.63
+ ¨ 1 ¨ 1
+loop 7 3.63
+ ¨ 2 ¨ 22
+loop 7 3.63
+ ¨ 3 ¨ 17
+loop 7 3.63
+ ¨ 4 ¨ 34
+loop 7 3.63
+ ¨ 5 ¨ 27
+loop 8 1.66
+ ¨ 1 ¨ 56
+loop 8 1.66
+ ¨ 2 ¨ 27
+loop 8 1.66
+ ¨ 3 ¨ 12
+loop 8 1.66
+ ¨ 4 ¨ 5
+loop 9 1.00
+ ¨ 1 ¨ 12
+loop 10 0.64
+ ¨ 0 ¨ 32
+loop 10 0.64
+ ¨ 1 ¨ 12
+loop 10 0.64
+ ¨ 2 ¨ 12
+loop 11 197.58
+ ¨ 1 ¨ 10061
+loop 11 197.58
+ ¨ 2 ¨ 48
+loop 11 197.58
+ ¨ 3 ¨ 21
+loop 11 197.58
+ ¨ 4 ¨ 9
+loop 11 197.58
+ ¨ 6 ¨ 1
+loop 11 197.58
+ ¨ 8 ¨ 1
+loop 11 197.58
+ ¨ 10 ¨ 30000
+loop 11 197.58
+ ¨ 50 ¨ 10000
+loop 11 197.58
+ ¨ 100 ¨ 20000
+loop 11 197.58
+ ¨ 500 ¨ 10000
+loop 11 197.58
+ ¨ 1000 ¨ 10000
+loop 12 1.89
+ ¨ 1 ¨ 4
+loop 12 1.89
+ ¨ 2 ¨ 2
+loop 12 1.89
+ ¨ 3 ¨ 3
+loop 13 2.33
+ ¨ 0 ¨ 1
+loop 13 2.33
+ ¨ 3 ¨ 1
+loop 13 2.33
+ ¨ 4 ¨ 1
+loop 14 2.27
+ ¨ 1 ¨ 4
+loop 14 2.27
+ ¨ 3 ¨ 7
+loop 15 0.97
+ ¨ 0 ¨ 11
+loop 15 0.97
+ ¨ 1 ¨ 59
+loop 15 0.97
+ ¨ 2 ¨ 9
+loop 16 2.54
+ ¨ 1 ¨ 1
+loop 16 2.54
+ ¨ 2 ¨ 11
+loop 16 2.54
+ ¨ 10 ¨ 1
+loop 17 0.08
+ ¨ 0 ¨ 1369
+loop 17 0.08
+ ¨ 1 ¨ 126
+loop 18 38.00
+ ¨ 38 ¨ 6
+loop 19 2.19
+ ¨ 0 ¨ 17
+loop 19 2.19
+ ¨ 1 ¨ 87
+loop 19 2.19
+ ¨ 2 ¨ 65556
+loop 19 2.19
+ ¨ 3 ¨ 8
+loop 19 2.19
+ ¨ 4 ¨ 9
+loop 19 2.19
+ ¨ 5 ¨ 17
+loop 19 2.19
+ ¨ 6 ¨ 9
+loop 19 2.19
+ ¨ 7 ¨ 5
+loop 19 2.19
+ ¨ 8 ¨ 8
+loop 19 2.19
+ ¨ 9 ¨ 4
+loop 19 2.19
+ ¨ 10 ¨ 12
+loop 19 2.19
+ ¨ 11 ¨ 6
+loop 19 2.19
+ ¨ 12 ¨ 5
+loop 19 2.19
+ ¨ 13 ¨ 1
+loop 19 2.19
+ ¨ 14 ¨ 10
+loop 19 2.19
+ ¨ 15 ¨ 1
+loop 19 2.19
+ ¨ 16 ¨ 4
+loop 19 2.19
+ ¨ 17 ¨ 14
+loop 19 2.19
+ ¨ 19 ¨ 19
+loop 19 2.19
+ ¨ 22 ¨ 4
+loop 19 2.19
+ ¨ 23 ¨ 14
+loop 19 2.19
+ ¨ 24 ¨ 14
+loop 19 2.19
+ ¨ 28 ¨ 2
+loop 19 2.19
+ ¨ 29 ¨ 1
+loop 19 2.19
+ ¨ 30 ¨ 5
+loop 19 2.19
+ ¨ 32 ¨ 28
+loop 19 2.19
+ ¨ 34 ¨ 28
+loop 19 2.19
+ ¨ 36 ¨ 1
+loop 19 2.19
+ ¨ 40 ¨ 28
+loop 19 2.19
+ ¨ 42 ¨ 42
+loop 19 2.19
+ ¨ 44 ¨ 14
+loop 19 2.19
+ ¨ 73 ¨ 1
+loop 19 2.19
+ ¨ 5279 ¨ 1
+loop 20 10.43
+ ¨ 0 ¨ 2
+loop 20 10.43
+ ¨ 2 ¨ 9
+loop 20 10.43
+ ¨ 8 ¨ 5
+loop 20 10.43
+ ¨ 26 ¨ 7
+loop 21 1.49
+ ¨ 1 ¨ 41
+loop 21 1.49
+ ¨ 2 ¨ 40
+loop 22 39.20
+ ¨ 3 ¨ 1
+loop 22 39.20
+ ¨ 6 ¨ 100
+loop 22 39.20
+ ¨ 10 ¨ 106
+loop 22 39.20
+ ¨ 11 ¨ 10
+loop 22 39.20
+ ¨ 12 ¨ 19
+loop 22 39.20
+ ¨ 13 ¨ 15
+loop 22 39.20
+ ¨ 14 ¨ 24
+loop 22 39.20
+ ¨ 15 ¨ 33
+loop 22 39.20
+ ¨ 16 ¨ 22
+loop 22 39.20
+ ¨ 17 ¨ 14
+loop 22 39.20
+ ¨ 18 ¨ 11
+loop 22 39.20
+ ¨ 19 ¨ 14
+loop 22 39.20
+ ¨ 20 ¨ 6
+loop 22 39.20
+ ¨ 21 ¨ 6
+loop 22 39.20
+ ¨ 22 ¨ 7
+loop 22 39.20
+ ¨ 23 ¨ 5
+loop 22 39.20
+ ¨ 24 ¨ 3
+loop 22 39.20
+ ¨ 25 ¨ 1
+loop 22 39.20
+ ¨ 26 ¨ 1
+loop 22 39.20
+ ¨ 27 ¨ 2
+loop 22 39.20
+ ¨ 30 ¨ 1
+loop 22 39.20
+ ¨ 33 ¨ 1
+loop 22 39.20
+ ¨ 41 ¨ 1
+loop 22 39.20
+ ¨ 48 ¨ 1
+loop 22 39.20
+ ¨ 49 ¨ 2
+loop 22 39.20
+ ¨ 50 ¨ 9
+loop 22 39.20
+ ¨ 51 ¨ 2
+loop 22 39.20
+ ¨ 52 ¨ 1
+loop 22 39.20
+ ¨ 53 ¨ 3
+loop 22 39.20
+ ¨ 54 ¨ 1
+loop 22 39.20
+ ¨ 55 ¨ 3
+loop 22 39.20
+ ¨ 58 ¨ 1
+loop 22 39.20
+ ¨ 59 ¨ 1
+loop 22 39.20
+ ¨ 60 ¨ 1
+loop 22 39.20
+ ¨ 62 ¨ 1
+loop 22 39.20
+ ¨ 63 ¨ 2
+loop 22 39.20
+ ¨ 64 ¨ 1
+loop 22 39.20
+ ¨ 65 ¨ 3
+loop 22 39.20
+ ¨ 66 ¨ 2
+loop 22 39.20
+ ¨ 67 ¨ 1
+loop 22 39.20
+ ¨ 68 ¨ 1
+loop 22 39.20
+ ¨ 69 ¨ 1
+loop 22 39.20
+ ¨ 70 ¨ 1
+loop 22 39.20
+ ¨ 72 ¨ 3
+loop 22 39.20
+ ¨ 73 ¨ 1
+loop 22 39.20
+ ¨ 74 ¨ 1
+loop 22 39.20
+ ¨ 75 ¨ 3
+loop 22 39.20
+ ¨ 76 ¨ 3
+loop 22 39.20
+ ¨ 77 ¨ 2
+loop 22 39.20
+ ¨ 78 ¨ 2
+loop 22 39.20
+ ¨ 80 ¨ 1
+loop 22 39.20
+ ¨ 81 ¨ 3
+loop 22 39.20
+ ¨ 82 ¨ 1
+loop 22 39.20
+ ¨ 86 ¨ 3
+loop 22 39.20
+ ¨ 87 ¨ 1
+loop 22 39.20
+ ¨ 88 ¨ 3
+loop 22 39.20
+ ¨ 89 ¨ 1
+loop 22 39.20
+ ¨ 90 ¨ 2
+loop 22 39.20
+ ¨ 91 ¨ 3
+loop 22 39.20
+ ¨ 93 ¨ 1
+loop 22 39.20
+ ¨ 94 ¨ 2
+loop 22 39.20
+ ¨ 97 ¨ 1
+loop 22 39.20
+ ¨ 98 ¨ 4
+loop 22 39.20
+ ¨ 100 ¨ 3
+loop 22 39.20
+ ¨ 101 ¨ 4
+loop 22 39.20
+ ¨ 104 ¨ 1
+loop 22 39.20
+ ¨ 105 ¨ 4
+loop 22 39.20
+ ¨ 106 ¨ 1
+loop 22 39.20
+ ¨ 108 ¨ 2
+loop 22 39.20
+ ¨ 109 ¨ 2
+loop 22 39.20
+ ¨ 111 ¨ 1
+loop 22 39.20
+ ¨ 115 ¨ 1
+loop 22 39.20
+ ¨ 116 ¨ 4
+loop 22 39.20
+ ¨ 118 ¨ 1
+loop 22 39.20
+ ¨ 120 ¨ 1
+loop 22 39.20
+ ¨ 121 ¨ 2
+loop 22 39.20
+ ¨ 122 ¨ 2
+loop 22 39.20
+ ¨ 123 ¨ 1
+loop 22 39.20
+ ¨ 124 ¨ 1
+loop 22 39.20
+ ¨ 125 ¨ 1
+loop 22 39.20
+ ¨ 129 ¨ 1
+loop 22 39.20
+ ¨ 130 ¨ 1
+loop 22 39.20
+ ¨ 133 ¨ 1
+loop 22 39.20
+ ¨ 140 ¨ 1
+loop 22 39.20
+ ¨ 143 ¨ 1
+loop 22 39.20
+ ¨ 377 ¨ 1
+loop 22 39.20
+ ¨ 508 ¨ 1
+loop 22 39.20
+ ¨ 4863 ¨ 1
+loop 23 5.00
+ ¨ 2 ¨ 1564
+loop 23 5.00
+ ¨ 3 ¨ 1564
+loop 23 5.00
+ ¨ 4 ¨ 1566
+loop 23 5.00
+ ¨ 5 ¨ 1
+loop 23 5.00
+ ¨ 6 ¨ 2
+loop 23 5.00
+ ¨ 7 ¨ 4692
+loop 23 5.00
+ ¨ 8 ¨ 1
+loop 23 5.00
+ ¨ 9 ¨ 1
+loop 23 5.00
+ ¨ 10 ¨ 1
+loop 24 3.68
+ ¨ 0 ¨ 4
+loop 24 3.68
+ ¨ 1 ¨ 4
+loop 24 3.68
+ ¨ 2 ¨ 5
+loop 24 3.68
+ ¨ 3 ¨ 6
+loop 24 3.68
+ ¨ 4 ¨ 3
+loop 24 3.68
+ ¨ 5 ¨ 8
+loop 24 3.68
+ ¨ 6 ¨ 8
+loop 24 3.68
+ ¨ 7 ¨ 1
+loop 24 3.68
+ ¨ 8 ¨ 1
+loop 25 1.91
+ ¨ 1 ¨ 46
+loop 25 1.91
+ ¨ 2 ¨ 1
+loop 25 1.91
+ ¨ 3 ¨ 38
+loop 26 0.00
+ ¨ 0 ¨ 95234
+loop 26 0.00
+ ¨ 1 ¨ 1
+loop 27 2.63
+ ¨ 0 ¨ 1
+loop 27 2.63
+ ¨ 1 ¨ 22
+loop 27 2.63
+ ¨ 2 ¨ 17
+loop 27 2.63
+ ¨ 3 ¨ 34
+loop 27 2.63
+ ¨ 4 ¨ 27
+loop 28 2.28
+ ¨ 0 ¨ 344
+loop 28 2.28
+ ¨ 1 ¨ 2771
+loop 28 2.28
+ ¨ 2 ¨ 529
+loop 28 2.28
+ ¨ 3 ¨ 362
+loop 28 2.28
+ ¨ 4 ¨ 2438
+loop 29 0.39
+ ¨ 0 ¨ 33
+loop 29 0.39
+ ¨ 1 ¨ 21
+loop 30 2.50
+ ¨ 2 ¨ 1
+loop 30 2.50
+ ¨ 3 ¨ 1
+loop 31 1.00
+ ¨ 1 ¨ 5
+loop 32 39.42
+ ¨ 37 ¨ 1
+loop 32 39.42
+ ¨ 38 ¨ 2
+loop 32 39.42
+ ¨ 40 ¨ 9
+loop 33 2.00
+ ¨ 1 ¨ 4
+loop 33 2.00
+ ¨ 2 ¨ 4
+loop 33 2.00
+ ¨ 3 ¨ 4
+loop 34 1.50
+ ¨ 0 ¨ 1
+loop 34 1.50
+ ¨ 3 ¨ 1
+loop 35 1.63
+ ¨ 1 ¨ 17
+loop 35 1.63
+ ¨ 2 ¨ 22
+loop 35 1.63
+ ¨ 3 ¨ 2
+loop 36 1.38
+ ¨ 1 ¨ 19
+loop 36 1.38
+ ¨ 2 ¨ 9
+loop 36 1.38
+ ¨ 3 ¨ 1
+loop 37 5.33
+ ¨ 3 ¨ 3
+loop 37 5.33
+ ¨ 4 ¨ 2
+loop 37 5.33
+ ¨ 5 ¨ 4
+loop 37 5.33
+ ¨ 6 ¨ 4
+loop 37 5.33
+ ¨ 7 ¨ 5
+loop 38 1.00
+ ¨ 1 ¨ 5
+loop 39 1.46
+ ¨ 1 ¨ 10
+loop 39 1.46
+ ¨ 2 ¨ 1
+loop 39 1.46
+ ¨ 3 ¨ 1
+loop 39 1.46
+ ¨ 4 ¨ 1
+loop 40 1.00
+ ¨ 1 ¨ 5
+loop 41 0.07
+ ¨ 0 ¨ 50
+loop 41 0.07
+ ¨ 1 ¨ 4
+loop 42 2.21
+ ¨ 0 ¨ 5
+loop 42 2.21
+ ¨ 2 ¨ 4
+loop 42 2.21
+ ¨ 3 ¨ 1
+loop 42 2.21
+ ¨ 4 ¨ 3
+loop 42 2.21
+ ¨ 8 ¨ 1
+loop 43 3.58
+ ¨ 0 ¨ 3
+loop 43 3.58
+ ¨ 1 ¨ 2
+loop 43 3.58
+ ¨ 2 ¨ 2
+loop 43 3.58
+ ¨ 3 ¨ 2
+loop 43 3.58
+ ¨ 4 ¨ 2
+loop 43 3.58
+ ¨ 5 ¨ 2
+loop 43 3.58
+ ¨ 6 ¨ 4
+loop 43 3.58
+ ¨ 7 ¨ 2
+loop 44 0.12
+ ¨ 0 ¨ 88193
+loop 44 0.12
+ ¨ 1 ¨ 1833
+loop 44 0.12
+ ¨ 2 ¨ 1828
+loop 44 0.12
+ ¨ 3 ¨ 1825
+loop 44 0.12
+ ¨ 4 ¨ 58
+loop 45 1.55
+ ¨ 1 ¨ 51
+loop 45 1.55
+ ¨ 2 ¨ 63
+loop 46 0.43
+ ¨ 0 ¨ 87008
+loop 46 0.43
+ ¨ 1 ¨ 603
+loop 46 0.43
+ ¨ 2 ¨ 609
+loop 46 0.43
+ ¨ 3 ¨ 614
+loop 46 0.43
+ ¨ 4 ¨ 609
+loop 46 0.43
+ ¨ 5 ¨ 615
+loop 46 0.43
+ ¨ 6 ¨ 620
+loop 46 0.43
+ ¨ 7 ¨ 608
+loop 46 0.43
+ ¨ 8 ¨ 612
+loop 46 0.43
+ ¨ 9 ¨ 608
+loop 46 0.43
+ ¨ 10 ¨ 613
+loop 46 0.43
+ ¨ 11 ¨ 621
+loop 47 0.01
+ ¨ 0 ¨ 1485
+loop 47 0.01
+ ¨ 1 ¨ 10
+loop 48 57.00
+ ¨ 57 ¨ 1
+loop 49 1.32
+ ¨ 1 ¨ 170
+loop 49 1.32
+ ¨ 2 ¨ 22
+loop 49 1.32
+ ¨ 3 ¨ 2
+loop 49 1.32
+ ¨ 4 ¨ 4
+loop 49 1.32
+ ¨ 7 ¨ 2
+loop 49 1.32
+ ¨ 8 ¨ 2
+loop 50 0.83
+ ¨ 0 ¨ 995208
+loop 50 0.83
+ ¨ 1 ¨ 432949
+loop 50 0.83
+ ¨ 2 ¨ 203920
+loop 50 0.83
+ ¨ 3 ¨ 95292
+loop 50 0.83
+ ¨ 4 ¨ 42498
+loop 50 0.83
+ ¨ 5 ¨ 20243
+loop 50 0.83
+ ¨ 6 ¨ 8556
+loop 50 0.83
+ ¨ 7 ¨ 3736
+loop 50 0.83
+ ¨ 8 ¨ 1572
+loop 50 0.83
+ ¨ 9 ¨ 708
+loop 50 0.83
+ ¨ 10 ¨ 248
+loop 50 0.83
+ ¨ 11 ¨ 120
+loop 50 0.83
+ ¨ 12 ¨ 34
+loop 50 0.83
+ ¨ 14 ¨ 2
+loop 50 0.83
+ ¨ 15 ¨ 2
+loop 50 0.83
+ ¨ 29 ¨ 3
+loop 51 0.00
+ ¨ 0 ¨ 95235
+loop 52 2.00
+ ¨ 2 ¨ 2
+loop 53 5.00
+ ¨ 2 ¨ 2
+loop 53 5.00
+ ¨ 3 ¨ 2
+loop 53 5.00
+ ¨ 4 ¨ 2
+loop 53 5.00
+ ¨ 7 ¨ 6
+loop 54 9.18
+ ¨ 0 ¨ 2
+loop 54 9.18
+ ¨ 2 ¨ 9
+loop 54 9.18
+ ¨ 8 ¨ 1
+loop 54 9.18
+ ¨ 26 ¨ 5
+loop 55 0.00
+ ¨ 0 ¨ 95235
+loop 56 4.13
+ ¨ 0 ¨ 8
+loop 56 4.13
+ ¨ 3 ¨ 1
+loop 56 4.13
+ ¨ 4 ¨ 18
+loop 56 4.13
+ ¨ 5 ¨ 1
+loop 56 4.13
+ ¨ 7 ¨ 2
+loop 56 4.13
+ ¨ 34 ¨ 1
+loop 57 1.80
+ ¨ 0 ¨ 2
+loop 57 1.80
+ ¨ 3 ¨ 3
+loop 58 0.00
+ ¨ 0 ¨ 95235
+loop 59 12.49
+ ¨ 1 ¨ 157
+loop 59 12.49
+ ¨ 10 ¨ 5
+loop 59 12.49
+ ¨ 11 ¨ 1
+loop 59 12.49
+ ¨ 15 ¨ 1
+loop 59 12.49
+ ¨ 17 ¨ 2
+loop 59 12.49
+ ¨ 24 ¨ 157
+loop 60 2.15
+ ¨ 0 ¨ 5
+loop 60 2.15
+ ¨ 2 ¨ 6
+loop 60 2.15
+ ¨ 8 ¨ 2
+loop 61 2.01
+ ¨ 0 ¨ 5
+loop 61 2.01
+ ¨ 1 ¨ 24
+loop 61 2.01
+ ¨ 2 ¨ 17
+loop 61 2.01
+ ¨ 3 ¨ 35
+loop 62 0.38
+ ¨ 0 ¨ 36
+loop 62 0.38
+ ¨ 1 ¨ 9
+loop 62 0.38
+ ¨ 2 ¨ 1
+loop 62 0.38
+ ¨ 3 ¨ 1
+loop 62 0.38
+ ¨ 4 ¨ 1
+loop 63 1.71
+ ¨ 0 ¨ 2
+loop 63 1.71
+ ¨ 2 ¨ 3
+loop 63 1.71
+ ¨ 3 ¨ 2
+loop 65 27.47
+ ¨ 2 ¨ 157
+loop 65 27.47
+ ¨ 11 ¨ 5
+loop 65 27.47
+ ¨ 12 ¨ 1
+loop 65 27.47
+ ¨ 16 ¨ 1
+loop 65 27.47
+ ¨ 19 ¨ 1
+loop 65 27.47
+ ¨ 48 ¨ 13
+loop 65 27.47
+ ¨ 54 ¨ 144
+loop 65 27.47
+ ¨ 56 ¨ 1
+loop 66 2.00
+ ¨ 2 ¨ 6
+loop 67 1.00
+ ¨ 1 ¨ 5
+loop 68 1.00
+ ¨ 1 ¨ 1
+loop 69 1.20
+ ¨ 0 ¨ 1
+loop 69 1.20
+ ¨ 1 ¨ 2
+loop 69 1.20
+ ¨ 2 ¨ 2
+loop 70 0.00
+ ¨ 0 ¨ 93740
+loop 71 2.68
+ ¨ 0 ¨ 9
+loop 71 2.68
+ ¨ 1 ¨ 2
+loop 71 2.68
+ ¨ 2 ¨ 2
+loop 71 2.68
+ ¨ 3 ¨ 31
+loop 71 2.68
+ ¨ 4 ¨ 4
+loop 71 2.68
+ ¨ 5 ¨ 3
+loop 71 2.68
+ ¨ 6 ¨ 2
+loop 72 1.00
+ ¨ 1 ¨ 5
+loop 73 1.67
+ ¨ 0 ¨ 1
+loop 73 1.67
+ ¨ 2 ¨ 5
+loop 74 1.90
+ ¨ 1 ¨ 5
+loop 74 1.90
+ ¨ 2 ¨ 44
+loop 75 3.93
+ ¨ 0 ¨ 3
+loop 75 3.93
+ ¨ 1 ¨ 31
+loop 75 3.93
+ ¨ 2 ¨ 487
+loop 75 3.93
+ ¨ 3 ¨ 7681
+loop 75 3.93
+ ¨ 4 ¨ 122880
+loop 75 3.93
+ ¨ 5 ¨ 2
+loop 75 3.93
+ ¨ 6 ¨ 3
+loop 76 0.80
+ ¨ 0 ¨ 3
+loop 76 0.80
+ ¨ 1 ¨ 6
+loop 76 0.80
+ ¨ 2 ¨ 1
+loop 77 0.01
+ ¨ 0 ¨ 197255
+loop 77 0.01
+ ¨ 1 ¨ 969
+loop 77 0.01
+ ¨ 2 ¨ 247
+loop 77 0.01
+ ¨ 3 ¨ 57
+loop 77 0.01
+ ¨ 4 ¨ 15
+loop 77 0.01
+ ¨ 5 ¨ 5
+loop 77 0.01
+ ¨ 6 ¨ 1
+loop 78 1.00
+ ¨ 1 ¨ 5
+loop 79 2.49
+ ¨ 1 ¨ 38
+loop 79 2.49
+ ¨ 2 ¨ 106
+loop 79 2.49
+ ¨ 3 ¨ 13
+loop 79 2.49
+ ¨ 4 ¨ 5
+loop 79 2.49
+ ¨ 5 ¨ 4
+loop 79 2.49
+ ¨ 6 ¨ 6
+loop 79 2.49
+ ¨ 7 ¨ 2
+loop 79 2.49
+ ¨ 8 ¨ 2
+loop 79 2.49
+ ¨ 10 ¨ 1
+loop 79 2.49
+ ¨ 17 ¨ 1
+loop 79 2.49
+ ¨ 23 ¨ 1
+loop 80 1.62
+ ¨ 1 ¨ 69
+loop 80 1.62
+ ¨ 2 ¨ 51
+loop 80 1.62
+ ¨ 3 ¨ 8
+loop 80 1.62
+ ¨ 4 ¨ 5
+loop 81 5.01
+ ¨ 2 ¨ 1560
+loop 81 5.01
+ ¨ 3 ¨ 1561
+loop 81 5.01
+ ¨ 4 ¨ 1562
+loop 81 5.01
+ ¨ 5 ¨ 3
+loop 81 5.01
+ ¨ 6 ¨ 2
+loop 81 5.01
+ ¨ 7 ¨ 4683
+loop 81 5.01
+ ¨ 8 ¨ 5
+loop 81 5.01
+ ¨ 10 ¨ 2
+loop 81 5.01
+ ¨ 59 ¨ 2
+loop 82 2.00
+ ¨ 2 ¨ 2
+loop 83 4.50
+ ¨ 2 ¨ 2
+loop 83 4.50
+ ¨ 4 ¨ 2
+loop 83 4.50
+ ¨ 5 ¨ 1
+loop 83 4.50
+ ¨ 10 ¨ 1
+loop 84 2.57
+ ¨ 0 ¨ 1
+loop 84 2.57
+ ¨ 3 ¨ 6
+loop 85 1.27
+ ¨ 1 ¨ 72
+loop 85 1.27
+ ¨ 2 ¨ 2
+loop 85 1.27
+ ¨ 3 ¨ 4
+loop 85 1.27
+ ¨ 4 ¨ 4
+loop 86 10.08
+ ¨ 0 ¨ 2
+loop 86 10.08
+ ¨ 1 ¨ 21
+loop 86 10.08
+ ¨ 2 ¨ 10
+loop 86 10.08
+ ¨ 3 ¨ 4
+loop 86 10.08
+ ¨ 4 ¨ 38
+loop 86 10.08
+ ¨ 5 ¨ 12
+loop 86 10.08
+ ¨ 6 ¨ 20
+loop 86 10.08
+ ¨ 7 ¨ 409
+loop 86 10.08
+ ¨ 8 ¨ 39
+loop 86 10.08
+ ¨ 9 ¨ 18
+loop 86 10.08
+ ¨ 10 ¨ 2
+loop 86 10.08
+ ¨ 12 ¨ 38
+loop 86 10.08
+ ¨ 13 ¨ 72
+loop 86 10.08
+ ¨ 15 ¨ 1
+loop 86 10.08
+ ¨ 16 ¨ 1
+loop 86 10.08
+ ¨ 17 ¨ 3
+loop 86 10.08
+ ¨ 18 ¨ 17
+loop 86 10.08
+ ¨ 19 ¨ 1
+loop 86 10.08
+ ¨ 20 ¨ 2
+loop 86 10.08
+ ¨ 24 ¨ 1
+loop 86 10.08
+ ¨ 25 ¨ 1
+loop 86 10.08
+ ¨ 28 ¨ 3
+loop 86 10.08
+ ¨ 29 ¨ 37
+loop 86 10.08
+ ¨ 30 ¨ 1
+loop 86 10.08
+ ¨ 31 ¨ 34
+loop 86 10.08
+ ¨ 39 ¨ 1
+loop 86 10.08
+ ¨ 41 ¨ 1
+loop 87 1.20
+ ¨ 0 ¨ 3
+loop 87 1.20
+ ¨ 3 ¨ 2
+loop 88 1.00
+ ¨ 1 ¨ 2
+loop 89 1.00
+ ¨ 1 ¨ 1456
+loop 90 2.25
+ ¨ 0 ¨ 1
+loop 90 2.25
+ ¨ 3 ¨ 3
 conditional ¨ 0 ¨ 1845806
 conditional ¨ 1 ¨ 539032
 conditional ¨ 2 ¨ 276422
@@ -3153,115 +3644,115 @@ conditional ¨ 6 ¨ 9363
 conditional ¨ 7 ¨ 13762
 conditional ¨ 8 ¨ 2435
 conditional ¨ 9 ¨ 1325
-conditional ¨ 10 ¨ 31042
-conditional ¨ 11 ¨ 762
-conditional ¨ 12 ¨ 60
-conditional ¨ 13 ¨ 21
-conditional ¨ 14 ¨ 45
-conditional ¨ 15 ¨ 85
+conditional ¨ 10 ¨ 31046
+conditional ¨ 11 ¨ 764
+conditional ¨ 12 ¨ 69
+conditional ¨ 13 ¨ 16
+conditional ¨ 14 ¨ 37
+conditional ¨ 15 ¨ 98
 conditional ¨ 16 ¨ 27
-conditional ¨ 17 ¨ 41
-conditional ¨ 18 ¨ 23
-conditional ¨ 19 ¨ 33
-conditional ¨ 20 ¨ 9
-conditional ¨ 21 ¨ 59
-conditional ¨ 22 ¨ 9
-conditional ¨ 23 ¨ 77
-conditional ¨ 24 ¨ 183
-conditional ¨ 25 ¨ 8
-conditional ¨ 26 ¨ 29
-conditional ¨ 27 ¨ 17
-conditional ¨ 28 ¨ 20
+conditional ¨ 17 ¨ 30
+conditional ¨ 18 ¨ 12
+conditional ¨ 19 ¨ 35
+conditional ¨ 20 ¨ 8
+conditional ¨ 21 ¨ 55
+conditional ¨ 22 ¨ 11
+conditional ¨ 23 ¨ 80
+conditional ¨ 24 ¨ 184
+conditional ¨ 25 ¨ 9
+conditional ¨ 26 ¨ 30
+conditional ¨ 27 ¨ 19
+conditional ¨ 28 ¨ 19
 conditional ¨ 29 ¨ 13
-conditional ¨ 30 ¨ 22
+conditional ¨ 30 ¨ 23
 conditional ¨ 31 ¨ 6
 conditional ¨ 32 ¨ 45
+conditional ¨ 33 ¨ 1
 conditional ¨ 34 ¨ 37
 conditional ¨ 36 ¨ 1
 conditional ¨ 37 ¨ 1
 conditional ¨ 38 ¨ 8
-conditional ¨ 39 ¨ 1
 conditional ¨ 40 ¨ 31
-conditional ¨ 42 ¨ 43
+conditional ¨ 41 ¨ 1
+conditional ¨ 42 ¨ 42
 conditional ¨ 44 ¨ 14
-conditional ¨ 45 ¨ 2
-conditional ¨ 46 ¨ 1
-conditional ¨ 47 ¨ 1
-conditional ¨ 48 ¨ 15
-conditional ¨ 49 ¨ 3
-conditional ¨ 50 ¨ 10007
-conditional ¨ 53 ¨ 1
-conditional ¨ 54 ¨ 144
-conditional ¨ 55 ¨ 1
+conditional ¨ 48 ¨ 14
+conditional ¨ 49 ¨ 2
+conditional ¨ 50 ¨ 10009
+conditional ¨ 51 ¨ 2
+conditional ¨ 52 ¨ 1
+conditional ¨ 53 ¨ 3
+conditional ¨ 54 ¨ 145
+conditional ¨ 55 ¨ 4
 conditional ¨ 56 ¨ 1
-conditional ¨ 57 ¨ 2
-conditional ¨ 58 ¨ 3
-conditional ¨ 59 ¨ 2
-conditional ¨ 60 ¨ 3
-conditional ¨ 63 ¨ 1
+conditional ¨ 57 ¨ 1
+conditional ¨ 58 ¨ 1
+conditional ¨ 59 ¨ 3
+conditional ¨ 60 ¨ 1
+conditional ¨ 62 ¨ 1
+conditional ¨ 63 ¨ 2
 conditional ¨ 64 ¨ 1
-conditional ¨ 66 ¨ 3
-conditional ¨ 69 ¨ 2
-conditional ¨ 70 ¨ 3
-conditional ¨ 71 ¨ 2
-conditional ¨ 72 ¨ 2
-conditional ¨ 73 ¨ 4
+conditional ¨ 65 ¨ 3
+conditional ¨ 66 ¨ 2
+conditional ¨ 67 ¨ 1
+conditional ¨ 68 ¨ 1
+conditional ¨ 69 ¨ 1
+conditional ¨ 70 ¨ 1
+conditional ¨ 72 ¨ 3
+conditional ¨ 73 ¨ 2
 conditional ¨ 74 ¨ 1
-conditional ¨ 75 ¨ 2
-conditional ¨ 76 ¨ 1
-conditional ¨ 77 ¨ 3
-conditional ¨ 78 ¨ 1
-conditional ¨ 79 ¨ 4
-conditional ¨ 81 ¨ 2
-conditional ¨ 82 ¨ 4
-conditional ¨ 83 ¨ 2
-conditional ¨ 84 ¨ 2
-conditional ¨ 86 ¨ 1
+conditional ¨ 75 ¨ 3
+conditional ¨ 76 ¨ 3
+conditional ¨ 77 ¨ 2
+conditional ¨ 78 ¨ 2
+conditional ¨ 80 ¨ 1
+conditional ¨ 81 ¨ 3
+conditional ¨ 82 ¨ 1
+conditional ¨ 86 ¨ 3
 conditional ¨ 87 ¨ 1
-conditional ¨ 88 ¨ 1
-conditional ¨ 89 ¨ 2
+conditional ¨ 88 ¨ 3
+conditional ¨ 89 ¨ 1
 conditional ¨ 90 ¨ 2
-conditional ¨ 91 ¨ 1
-conditional ¨ 92 ¨ 1
+conditional ¨ 91 ¨ 3
 conditional ¨ 93 ¨ 1
-conditional ¨ 94 ¨ 4
-conditional ¨ 95 ¨ 2
-conditional ¨ 96 ¨ 1
-conditional ¨ 97 ¨ 2
-conditional ¨ 98 ¨ 1
-conditional ¨ 99 ¨ 1
-conditional ¨ 100 ¨ 20001
-conditional ¨ 102 ¨ 2
-conditional ¨ 105 ¨ 2
+conditional ¨ 94 ¨ 2
+conditional ¨ 97 ¨ 1
+conditional ¨ 98 ¨ 4
+conditional ¨ 100 ¨ 20003
+conditional ¨ 101 ¨ 4
+conditional ¨ 104 ¨ 1
+conditional ¨ 105 ¨ 4
 conditional ¨ 106 ¨ 1
-conditional ¨ 107 ¨ 1
-conditional ¨ 109 ¨ 1
+conditional ¨ 108 ¨ 2
+conditional ¨ 109 ¨ 2
 conditional ¨ 111 ¨ 1
-conditional ¨ 112 ¨ 1
-conditional ¨ 113 ¨ 1
 conditional ¨ 115 ¨ 1
-conditional ¨ 116 ¨ 2
-conditional ¨ 118 ¨ 3
-conditional ¨ 119 ¨ 1
-conditional ¨ 121 ¨ 1
-conditional ¨ 124 ¨ 2
+conditional ¨ 116 ¨ 4
+conditional ¨ 118 ¨ 1
+conditional ¨ 120 ¨ 1
+conditional ¨ 121 ¨ 2
+conditional ¨ 122 ¨ 2
+conditional ¨ 123 ¨ 1
+conditional ¨ 124 ¨ 1
+conditional ¨ 125 ¨ 1
+conditional ¨ 129 ¨ 1
 conditional ¨ 130 ¨ 1
-conditional ¨ 132 ¨ 1
 conditional ¨ 133 ¨ 1
-conditional ¨ 134 ¨ 1
 conditional ¨ 140 ¨ 1
-conditional ¨ 150 ¨ 1
-conditional ¨ 152 ¨ 1
-conditional ¨ 153 ¨ 1
-conditional ¨ 157 ¨ 1
-conditional ¨ 167 ¨ 1
-conditional ¨ 170 ¨ 1
-conditional ¨ 426 ¨ 1
-conditional ¨ 455 ¨ 1
+conditional ¨ 143 ¨ 1
+conditional ¨ 377 ¨ 1
 conditional ¨ 500 ¨ 10000
+conditional ¨ 508 ¨ 1
 conditional ¨ 1000 ¨ 10000
-conditional ¨ 4875 ¨ 1
+conditional ¨ 4863 ¨ 1
 conditional ¨ 5279 ¨ 1
+error ¨ 1 ¨ 30
+error ¨ 2 ¨ 1
+error ¨ 5 ¨ 4
+error ¨ 6 ¨ 2
+error ¨ 7 ¨ 3
+error ¨ 8 ¨ 2
+error ¨ 12 ¨ 3
 breaks ¨ 1 ¨ 3003
 breaks ¨ 2 ¨ 582
 breaks ¨ 3 ¨ 56
@@ -3307,9 +3798,10 @@ loop 1 ¨ 9 ¨ 1
 loop 2 ¨ 1 ¨ 2
 loop 2 ¨ 2 ¨ 7
 loop 2 ¨ 3 ¨ 3
-loop 2 ¨ 4 ¨ 4
+loop 2 ¨ 4 ¨ 3
 loop 2 ¨ 5 ¨ 1
 loop 2 ¨ 9 ¨ 1
+loop 2 ¨ 12 ¨ 1
 loop 2 ¨ 18 ¨ 2
 loop 2 ¨ 21 ¨ 1
 loop 2 ¨ 22 ¨ 1
@@ -3343,6 +3835,7 @@ loop 9 ¨ 2 ¨ 2
 loop 9 ¨ 6 ¨ 1
 loop 10 ¨ 8 ¨ 4
 loop 10 ¨ 12 ¨ 2
+loop 11 ¨ 1 ¨ 26
 loop 11 ¨ 6 ¨ 1
 loop 11 ¨ 11 ¨ 1
 loop 11 ¨ 12 ¨ 7
@@ -3366,8 +3859,9 @@ loop 17 ¨ 11 ¨ 1
 loop 17 ¨ 15 ¨ 1
 loop 17 ¨ 1461 ¨ 1
 loop 18 ¨ 2 ¨ 3
-loop 19 ¨ 1 ¨ 15
-loop 19 ¨ 2 ¨ 10
+loop 19 ¨ 1 ¨ 16
+loop 19 ¨ 2 ¨ 9
+loop 19 ¨ 3 ¨ 1
 loop 19 ¨ 4 ¨ 2
 loop 19 ¨ 6 ¨ 2
 loop 19 ¨ 7 ¨ 5
@@ -3376,7 +3870,7 @@ loop 19 ¨ 12 ¨ 2
 loop 19 ¨ 20 ¨ 1
 loop 19 ¨ 25 ¨ 1
 loop 19 ¨ 28 ¨ 1
-loop 19 ¨ 36 ¨ 1
+loop 19 ¨ 37 ¨ 1
 loop 19 ¨ 196 ¨ 1
 loop 19 ¨ 65537 ¨ 1
 loop 20 ¨ 3 ¨ 3
@@ -3622,9 +4116,10 @@ loop 85 ¨ 48 ¨ 1
 loop 86 ¨ 1 ¨ 7
 loop 86 ¨ 2 ¨ 4
 loop 86 ¨ 3 ¨ 2
-loop 86 ¨ 4 ¨ 2
+loop 86 ¨ 4 ¨ 1
 loop 86 ¨ 8 ¨ 1
 loop 86 ¨ 9 ¨ 2
+loop 86 ¨ 12 ¨ 1
 loop 86 ¨ 17 ¨ 4
 loop 86 ¨ 18 ¨ 1
 loop 86 ¨ 28 ¨ 1
