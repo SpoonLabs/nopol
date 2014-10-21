@@ -88,7 +88,7 @@ public class InfinitelDiagnostician extends Infinitel {
 			table.put(loop, "invocations-1", exitRecords.repetitionsOf(1));
 			table.put(loop, "invocations", testResult.aggregatedNumberOfRecords(loop));
 			table.put(loop, "conditional-exits", testResult.aggregatedNumberOfConditionalExits(loop));
-			table.put(loop, "error-exits", testResult.aggregatedNumberOfErrorExits(loop));
+			table.put(loop, "throw-exits", testResult.aggregatedNumberOfErrorExits(loop));
 			table.put(loop, "break-exits", testResult.aggregatedNumberOfBreakExits(loop));
 			table.put(loop, "return-exits", testResult.aggregatedNumberOfReturnExits(loop));
 			table.put(loop, "tests", testResult.numberOfTestsOf(loop));
@@ -130,8 +130,8 @@ public class InfinitelDiagnostician extends Infinitel {
 	
 	private void logRecordComparison(LoopTestResult testResult) {
 		logPlainRecords("conditional", testResult.aggregatedConditionalRecords());
-		logPlainRecords("error", testResult.aggregatedErrorRecords());
-		logPlainRecords("breaks", testResult.aggregatedBreakRecords());
+		logPlainRecords("throw", testResult.aggregatedErrorRecords());
+		logPlainRecords("break", testResult.aggregatedBreakRecords());
 		logPlainRecords("return", testResult.aggregatedReturnRecords());
 	}
 	
