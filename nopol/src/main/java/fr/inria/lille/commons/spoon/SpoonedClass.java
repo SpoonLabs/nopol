@@ -10,6 +10,7 @@ public class SpoonedClass extends SpoonedFile {
 
 	public SpoonedClass(SpoonedProject parentProject, CtSimpleType<?> modelledClass) {
 		super(modelledClass.getPosition().getFile(), parentProject.projectClasspath());
+		this.simpleType = modelledClass;
 		this.parentProject = parentProject;
 		qualifiedClassName = modelledClass.getQualifiedName();
 		compiledClasses().putAll(parentProject().compiledClasses());
@@ -28,6 +29,10 @@ public class SpoonedClass extends SpoonedFile {
 		return super.sourceForModelledClass(modelledClass());
 	}
 	
+	public CtSimpleType<?> getSimpleType() {
+		return simpleType;
+	}
+	
 	protected CtSimpleType<?> modelledClass() {
 		return typeFactory().get(qualifiedClassName());
 	}
@@ -38,4 +43,5 @@ public class SpoonedClass extends SpoonedFile {
 	
 	private String qualifiedClassName;
 	private SpoonedProject parentProject;
+	private CtSimpleType<?> simpleType;
 }

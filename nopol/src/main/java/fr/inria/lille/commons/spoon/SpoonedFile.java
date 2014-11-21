@@ -6,8 +6,12 @@ import static xxl.java.library.LoggerLibrary.logDebug;
 import static xxl.java.library.LoggerLibrary.loggerFor;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +55,21 @@ public abstract class SpoonedFile {
 	public void generateOutputFile(File destinationFolder) {
 		Processor<?> writer = new JavaOutputProcessor(destinationFolder, new DefaultJavaPrettyPrinter(new StandardEnvironment()));
 		process(writer);
+	}
+	
+	public void generateOutputCompiledFile(File destinationFolder) throws IOException {
+ 		Iterator<String> it = this.compiledClasses.keySet().iterator();
+		while (it.hasNext()) {
+			String className = (String) it.next();
+			String fileName = className.replace(".", "/") + ".class";
+			File classFile = new File(destinationFolder.getAbsolutePath() + "/" + fileName);
+			if(!classFile.exists()) {
+				classFile.getParentFile().mkdirs();
+			}
+			FileOutputStream fos = new FileOutputStream(classFile);
+			fos.write(this.compiledClasses.get(className));
+			fos.close();
+		}
 	}
 	
 	public Collection<CtPackage> allPackages() {
@@ -177,7 +196,7 @@ public abstract class SpoonedFile {
 		return compilationClasspath;
 	}
 	
-	protected Factory spoonFactory() {
+	public Factory spoonFactory() {
 		return factory;
 	}
 

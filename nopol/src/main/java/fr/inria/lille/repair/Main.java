@@ -27,6 +27,7 @@ import xxl.java.library.JavaLibrary;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.infinitel.InfinitelLauncher;
 import fr.inria.lille.repair.nopol.NoPolLauncher;
+import fr.inria.lille.repair.symbolic.SymbolicLauncher;
 
 public class Main {
 
@@ -51,6 +52,9 @@ public class Main {
 		}
 		else if (repairMethod.equalsIgnoreCase("infinitel")) {
 			InfinitelLauncher.launch(sourceFile, classpath, remainder);
+		} 
+		else if (repairMethod.equalsIgnoreCase("symbolic")) {
+			SymbolicLauncher.launch(sourceFile, classpath, remainder);
 		} else {
 			throw new RuntimeException("Invalid repair method: " + repairMethod);
 		}
