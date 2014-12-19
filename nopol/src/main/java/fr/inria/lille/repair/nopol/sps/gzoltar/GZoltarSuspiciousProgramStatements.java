@@ -116,6 +116,10 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		return sortByDescendingOrder(statements);
 	}
 	
+	public GZoltar getGzoltar() {
+		return gzoltar;
+	}
+	
 	private List<SuspiciousStatement> sortByDescendingOrder(List<SuspiciousStatement> statements) {
 		List<SuspiciousStatement> tmp = new ArrayList<>(statements);
 		Collections.sort(tmp, new Comparator<SuspiciousStatement>() {

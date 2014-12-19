@@ -34,7 +34,6 @@ import sacha.finder.processor.Processor;
 import xxl.java.container.classic.MetaList;
 import xxl.java.junit.CustomClassLoaderThreadFactory;
 
-
 /**
  * @author Favio D. DeMarco
  * 
@@ -45,12 +44,13 @@ public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
 
 	public Collection<Class<?>> call() throws Exception {
 
-		Class<?>[] classes = new Processor(new ClassloaderFinder((URLClassLoader) Thread.currentThread()
-				.getContextClassLoader()), new TestFilter()).process();
+		Class<?>[] classes = new Processor(
+				new ClassloaderFinder((URLClassLoader) Thread.currentThread()
+						.getContextClassLoader()), new TestFilter()).process();
 
 		return MetaList.newArrayList(classes);
 	}
-	
+
 	protected String[] namesFrom(Collection<Class<?>> classes) {
 		String[] names = new String[classes.size()];
 		int index = 0;
@@ -61,14 +61,15 @@ public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
 		return names;
 	}
 
-	public String[] findIn(final URL[] classpath, boolean acceptTestSuite) {
-
-		ExecutorService executor = Executors.newSingleThreadExecutor(new CustomClassLoaderThreadFactory(
-				new URLClassLoader(classpath)));
-
+	public String[] findIn(ClassLoader dumpedToClassLoader,
+			boolean acceptTestSuite) {
+		ExecutorService executor = Executors
+				.newSingleThreadExecutor(new CustomClassLoaderThreadFactory(
+						dumpedToClassLoader));
 		String[] testClasses;
 		try {
-			testClasses = namesFrom(executor.submit(new TestClassesFinder()).get());
+			testClasses = namesFrom(executor.submit(new TestClassesFinder())
+					.get());
 		} catch (InterruptedException ie) {
 			throw new RuntimeException(ie);
 		} catch (ExecutionException ee) {
@@ -76,11 +77,11 @@ public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
 		} finally {
 			executor.shutdown();
 		}
-		
-		if ( !acceptTestSuite ){
+
+		if (!acceptTestSuite) {
 			testClasses = removeTestSuite(testClasses);
 		}
-		
+
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Test clasess:");
 			for (String testClass : testClasses) {
@@ -90,14 +91,19 @@ public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
 
 		return testClasses;
 	}
-	
-	public String[] removeTestSuite(String[] totalTest){
+
+	public String[] findIn(final URL[] classpath, boolean acceptTestSuite) {
+		return findIn(new URLClassLoader(classpath), acceptTestSuite);
+	}
+
+	public String[] removeTestSuite(String[] totalTest) {
 		List<String> tests = new ArrayList<String>();
-		for ( int i = 0 ; i < totalTest.length ; i++ ){
-			if ( !totalTest[i].endsWith("Suite") ){
+		for (int i = 0; i < totalTest.length; i++) {
+			if (!totalTest[i].endsWith("Suite")) {
 				tests.add(totalTest[i]);
 			}
 		}
-		return tests.toArray(new String[tests.size()]);	
+		return tests.toArray(new String[tests.size()]);
 	}
+
 }
