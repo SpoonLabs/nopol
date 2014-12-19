@@ -40,6 +40,9 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 		if ( parent == null ){
 			return false;
 		}
+		if(input.toString().startsWith("super(")){
+			return false;
+		}
 		boolean isCtStamement = input instanceof CtStatement && !(input instanceof CtBlock);
 		boolean isCtReturn = input instanceof CtReturn;
 		boolean isInsideIf = parent.getParent() instanceof CtIf; // Checking parent isn't enough, parent will be CtBlock and grandpa will be CtIf
