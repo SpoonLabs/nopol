@@ -35,7 +35,11 @@ public class SpoonedProject extends SpoonedFile {
 	}
 	
 	public SpoonedClass forked(String qualifiedName) {
-		return new SpoonedClass(this, modelledClass(qualifiedName));
+		CtSimpleType<?> modelledClass = modelledClass(qualifiedName);
+		if(modelledClass == null) {
+			return null;
+		}
+		return new SpoonedClass(this, modelledClass);
 	}
 	
 	public ClassLoader processedAndDumpedToClassLoader(String qualifiedName, Processor<?> processor) {
