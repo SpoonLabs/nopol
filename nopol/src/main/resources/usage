@@ -15,6 +15,10 @@ Execution:
 	$ java -jar <nopol-jar-file> infinitel <source path> <class path> z3|cvc4 <solver-path> [iteration-limit]
 
 	$ java -jar <nopol-jar-file> nopol <source path> <class path> z3|cvc4 <solver-path> [<test-class-name>...]
+	
+	$ java -jar <nopol-jar-file> symbolic <source path> <class path> z3|cvc4 <solver-path> [<test-class-name>...]
+	
+	$ java -jar <nopol-jar-file> ranking <source path> <class path> z3|cvc4 <solver-path> [<test-class-name>...]
 
 
 References:

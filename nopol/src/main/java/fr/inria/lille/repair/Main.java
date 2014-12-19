@@ -27,39 +27,41 @@ import xxl.java.library.JavaLibrary;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.infinitel.InfinitelLauncher;
 import fr.inria.lille.repair.nopol.NoPolLauncher;
+import fr.inria.lille.repair.ranking.Ranking;
 import fr.inria.lille.repair.symbolic.SymbolicLauncher;
 
 public class Main {
 
 	public static void main(String[] args) {
-    	try {
-    		String repairMethod = args[0];
-    		File sourceFile = FileLibrary.openFrom(args[1]);
-    		URL[] classpath = JavaLibrary.classpathFrom(args[2]);
-    		SolverFactory.setSolver(args[3], args[4]);
-    		new Main(args, repairMethod, sourceFile, classpath);
-    	}
-    	catch (Exception e) {
-    		e.printStackTrace();
-    		showUsage();
-    	}
-    }
-    
-	private Main(String[] args, String repairMethod, File sourceFile, URL[] classpath) {
+		try {
+			String repairMethod = args[0];
+			File sourceFile = FileLibrary.openFrom(args[1]);
+			URL[] classpath = JavaLibrary.classpathFrom(args[2]);
+			SolverFactory.setSolver(args[3], args[4]);
+			new Main(args, repairMethod, sourceFile, classpath);
+		} catch (Exception e) {
+			e.printStackTrace();
+			showUsage();
+		}
+	}
+
+	private Main(String[] args, String repairMethod, File sourceFile,
+			URL[] classpath) {
 		String[] remainder = Arrays.copyOfRange(args, 5, args.length);
 		if (repairMethod.equalsIgnoreCase("nopol")) {
 			NoPolLauncher.launch(sourceFile, classpath, remainder);
-		}
-		else if (repairMethod.equalsIgnoreCase("infinitel")) {
+		} else if (repairMethod.equalsIgnoreCase("infinitel")) {
 			InfinitelLauncher.launch(sourceFile, classpath, remainder);
-		} 
-		else if (repairMethod.equalsIgnoreCase("symbolic")) {
+		} else if (repairMethod.equalsIgnoreCase("symbolic")) {
 			SymbolicLauncher.launch(sourceFile, classpath, remainder);
+		} else if (repairMethod.equalsIgnoreCase("ranking")) {
+			Ranking ranking = new Ranking(sourceFile, classpath, remainder);
+			System.out.println(ranking.summary());
 		} else {
 			throw new RuntimeException("Invalid repair method: " + repairMethod);
 		}
 	}
-	
+
 	private static void showUsage() {
 		try {
 			InputStream usageDeatil = FileLibrary.resource("/usage").openStream();
