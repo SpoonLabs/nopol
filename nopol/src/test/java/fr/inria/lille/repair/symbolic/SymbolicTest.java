@@ -26,13 +26,15 @@ public class SymbolicTest {
 
 	@Ignore
 	@Test
-	public void math309() { 
+	public void math309() {
 		String rootFolder = "/Users/virtual/Desktop/data/projects/dataset-nopol/309/";
 		String srcFolder = rootFolder + "src/main/java";
-		String classpath = rootFolder + "target/test-classes/" + ":" + rootFolder + "target/classes/";
+		String classpath = rootFolder + "target/test-classes/" + ":"
+				+ rootFolder + "target/classes/";
 		String solver = "cvc4";
 		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/cvc4-1.4.2/cvc4_for_mac";
-		Main.main(new String[] {"symbolic", srcFolder, classpath, solver, solverPath });
+		Main.main(new String[] { "symbolic", srcFolder, classpath, solver,
+				solverPath });
 		/* PATCH: CONDITIONAL (mean)<=(0) */
 	}
 
@@ -47,13 +49,14 @@ public class SymbolicTest {
 		String solver = "z3";
 		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/z3-4.3.2/z3_for_mac";
 		String testClass = "org.apache.commons.lang.StringUtilsSubstringTest";
-		Main.main(new String[] {"symbolic", srcFolder, classpath, solver, solverPath, testClass });
+		Main.main(new String[] { "symbolic", srcFolder, classpath, solver,
+				solverPath, testClass });
 		/* PATCH: CONDITIONAL (pos > (str.length()))||((len)<=(0)) */
 	}
-	
+
 	@Ignore
 	@Test
-	public void percentile() { 
+	public void percentile() {
 		String rootFolder = "/Users/virtual/Desktop/data/projects/dataset-nopol/Percentile/";
 		String srcFolder = rootFolder + "src/";
 		String binFolder = rootFolder + "bin/";
@@ -63,68 +66,219 @@ public class SymbolicTest {
 		String dependencyD = rootFolder + "lib/commons-lang-2.1.jar";
 		String dependencyE = rootFolder + "lib/commons-logging-1.1.1.jar";
 		String dependencyF = rootFolder + "lib/junit-3.8.jar";
-		String classpath = binFolder + ":" + dependencyA + ":" + dependencyB + ":" + dependencyC + ":" + dependencyD + ":" + dependencyE + ":" + dependencyF;
+		String classpath = binFolder + ":" + dependencyA + ":" + dependencyB
+				+ ":" + dependencyC + ":" + dependencyD + ":" + dependencyE
+				+ ":" + dependencyF;
 		String solver = "z3";
 		String solverPath = "/Users/virtual/Desktop/data/projects/nopol/nopol/lib/z3-4.3.2/z3_for_mac";
-		Main.main(new String[] {"symbolic", srcFolder, classpath, solver, solverPath });
+		Main.main(new String[] { "symbolic", srcFolder, classpath, solver,
+				solverPath,
+				"org.apache.commons.math3.stat.descriptive.rank.PercentileTest" });
 		/* PATCH: CONDITIONAL (intPos)==(sorted.length), (fpos)==(n) */
 	}
+
+	@Test
+	public void CM1() {
+		String rootFolder = "../../Nopol_dataset/cm1/";
+		String srcFolder = rootFolder + "src/";
+		String binFolder = rootFolder + "bin/";
+		String libFolder = rootFolder + "lib/";
+
+		String dependencyA = "/Users/thomas/github/nopol/nopol/misc/nopol-example/junit-4.11.jar";
+		String dependencyB = libFolder + "commons-beanutils-1.7.0.jar";
+		String dependencyC = libFolder + "commons-collections-2.0.jar";
+		String dependencyD = libFolder + "commons-discovery-0.4.jar";
+		String dependencyE = libFolder + "commons-lang-2.1.jar";
+		String dependencyF = libFolder + "commons-logging-1.1.1.jar";
+
+		String classpath = binFolder + ":" + dependencyA + ":" + dependencyB
+				+ ":" + dependencyC + ":" + dependencyD + ":" + dependencyE
+				+ ":" + dependencyF;
+		String solver = "z3";
+		String solverPath = "/Users/thomas/github/nopol/nopol/lib/z3-4.3.2/z3_for_mac";
+		Main.main(new String[] { "symbolic", srcFolder, classpath, solver,
+				solverPath,
+				"org.apache.commons.math.stat.univariate.rank.PercentileTest" });
+		/* PATCH: CONDITIONAL (intPos)==(sorted.length), (fpos)==(n) */
+	}
+
+	@Test
+	public void CM2() {
+		String rootFolder = "../../Nopol_dataset/cm2/";
+		String srcFolder = rootFolder + "src/";
+		String binFolder = rootFolder + "bin/";
+		String libFolder = rootFolder + "lib/";
+
+		String dependencyA = "/Users/thomas/github/nopol/nopol/misc/nopol-example/junit-4.11.jar";
+		String dependencyB = libFolder + "commons-beanutils-1.5.jar";
+		String dependencyC = libFolder + "commons-collections-3.0.jar";
+		String dependencyD = libFolder + "commons-discovery-SNAPSHOT.jar";
+		String dependencyE = libFolder + "commons-lang-2.0.jar";
+		String dependencyF = libFolder + "commons-logging-1.0.3.jar";
+
+		String classpath = binFolder + ":" + dependencyA + ":" + dependencyB
+				+ ":" + dependencyC + ":" + dependencyD + ":" + dependencyE
+				+ ":" + dependencyF;
+		String solver = "z3";
+		String solverPath = "/Users/thomas/github/nopol/nopol/lib/z3-4.3.2/z3_for_mac";
+		Main.main(new String[] { "symbolic", srcFolder, classpath, solver,
+				solverPath, "org.apache.commons.math.util.MathUtilsTest" });
+		/* PATCH: PRECONDITIONAL (ZB)!=(n) */
+	}
+
+	@Test
+	public void CM3() {
+		String rootFolder = "../../Nopol_dataset/cm3/";
+		String srcFolder = rootFolder + "src/";
+		String binFolder = rootFolder + "bin/";
+		String libFolder = rootFolder + "lib/";
+
+		String dependencyA = "/Users/thomas/github/nopol/nopol/misc/nopol-example/junit-4.11.jar";
+		String dependencyB = libFolder + "commons-discovery-SNAPSHOT.jar";
+		String dependencyC = libFolder + "commons-logging-1.0.3.jar";
+
+		String classpath = binFolder + ":" + dependencyA + ":" + dependencyB
+				+ ":" + dependencyC;
+		String solver = "z3";
+		String solverPath = "/Users/thomas/github/nopol/nopol/lib/z3-4.3.2/z3_for_mac";
+		Main.main(new String[] { "nopol", srcFolder, classpath, solver,
+				solverPath, "org.apache.commons.math.util.MathUtilsTest" });
+		/* PATCH: PRECONDITIONAL (ns)==(n) */
+	}
+
+	@Test
+	public void CM4() {
+		String rootFolder = "../../Nopol_dataset/cm4/";
+		String srcFolder = rootFolder + "src/";
+		String binFolder = rootFolder + "bin/";
+		String libFolder = rootFolder + "lib/";
+
+		String dependencyA = "/Users/thomas/github/nopol/nopol/misc/nopol-example/junit-4.11.jar";
+		String dependencyB = libFolder + "commons-discovery-SNAPSHOT.jar";
+		String dependencyC = libFolder + "commons-logging-1.0.3.jar";
+
+		String classpath = binFolder + ":" + dependencyA + ":" + dependencyB
+				+ ":" + dependencyC;
+		String solver = "z3";
+		String solverPath = "/Users/thomas/github/nopol/nopol/lib/z3-4.3.2/z3_for_mac";
+		Main.main(new String[] { "nopol", srcFolder, classpath, solver,
+				solverPath
+		// , "org.apache.commons.math.util.MathUtilsTest"
+		});
+		/* PATCH: PRECONDITIONAL (ZB)!=(n) */
+	}
+
+	@Test
+	public void CM5() {
+		String rootFolder = "../../Nopol_dataset/cm5/";
+		String srcFolder = rootFolder + "src/";
+		String binFolder = rootFolder + "target/";
+
+		String dependencyA = "/Users/thomas/github/nopol/nopol/misc/nopol-example/junit-4.11.jar";
+
+		String classpath = binFolder + ":" + dependencyA;
+		String solver = "z3";
+		String solverPath = "/Users/thomas/github/nopol/nopol/lib/z3-4.3.2/z3_for_mac";
+		Main.main(new String[] { "nopol", srcFolder, classpath, solver,
+				solverPath, "org.apache.commons.math.util.MathUtilsTest" });
+		/* PATCH: PRECONDITIONAL (ns)==(n) */
+	}
 	
+	@Test
+	public void CL1() {
+		String rootFolder = "../../Nopol_dataset/cl1/";
+		String srcFolder = rootFolder + "src/";
+		String binFolder = rootFolder + "bin/";
+
+		String dependencyA = "/Users/thomas/github/nopol/nopol/misc/nopol-example/junit-4.11.jar";
+
+		String classpath = binFolder + ":" + dependencyA;
+		String solver = "z3";
+		String solverPath = "/Users/thomas/github/nopol/nopol/lib/z3-4.3.2/z3_for_mac";
+		Main.main(new String[] { "symbolic", srcFolder, classpath, solver,
+				solverPath, "org.apache.commons.lang.StringUtilsTest" });
+		/* PATCH: PRECONDITIONAL (ns)==(n) */
+	}
+	
+	@Test
+	public void PM2() {
+		String rootFolder = "../../Nopol_dataset/pm2/";
+		String srcFolder = rootFolder + "src/";
+		String binFolder = rootFolder + "target/";
+
+		String dependencyA = "/Users/thomas/github/nopol/nopol/misc/nopol-example/junit-4.11.jar";
+
+		String classpath = binFolder + "classes"+ ":" + binFolder + "test-classes" + ":" + dependencyA;
+		String solver = "z3";
+		String solverPath = "/Users/thomas/github/nopol/nopol/lib/z3-4.3.2/z3_for_mac";
+		Main.main(new String[] { "symbolic", srcFolder, classpath, solver,
+				solverPath, "org.apache.commons.math.exception.util.MessageFactoryTest" });
+		/* PATCH: PRECONDITIONAL (ns)==(n) */
+	}
+
 	@Test
 	public void exampleNopolMain() {
 		SolverFactory solverFactory = SolverFactory.instance();
 		String solverName = solverFactory.solverName();
 		String solverPath = solverFactory.solverPath();
-		
-		//NoPolLauncher.main(new String[] { solverName, solverPath });
+
+		// NoPolLauncher.main(new String[] { solverName, solverPath });
 	}
-	
+
 	@Test
 	public void example1Fix() {
 		Collection<String> failedTests = asList("test5", "test6");
 		Patch patch = test(1, 12, StatementType.CONDITIONAL, failedTests);
 		fixComparison(patch, "(index)<=(0)", "(index)<(1)", "(index)<=(-1)");
 	}
-	
+
 	@Test
 	public void example2Fix() {
-		Collection<String> failedTests = asList("test1", "test2", "test4", "test5", "test6", "test7");
+		Collection<String> failedTests = asList("test1", "test2", "test4",
+				"test5", "test6", "test7");
 		Patch patch = test(2, 11, StatementType.CONDITIONAL, failedTests);
-		fixComparison(patch, "(a)<=(b)", "(a)<(b)", "(1)<=((b - a))", "(0)<=((b - a))", "(1)<((b - a))", "(0)<((b - a))");
+		fixComparison(patch, "(a)<=(b)", "(a)<(b)", "(1)<=((b - a))",
+				"(0)<=((b - a))", "(1)<((b - a))", "(0)<((b - a))");
 	}
-	
+
 	@Test
 	public void example3Fix() {
-		Collection<String> failedTests = asList("test1", "test2", "test3", "test4", "test5", "test6", "test7", "test8", "test9");
+		Collection<String> failedTests = asList("test1", "test2", "test3",
+				"test4", "test5", "test6", "test7", "test8", "test9");
 		Patch patch = test(3, 11, StatementType.CONDITIONAL, failedTests);
 		fixComparison(patch, "(tmp)==(0)", "(0)==(tmp)");
 	}
-	
+
 	@Test
 	public void example4Fix() {
 		Collection<String> failedTests = asList("test5");
-		test(4, 23, StatementType.PRECONDITION, failedTests);
+		Patch patch = test(4, 23, StatementType.PRECONDITION, failedTests);
+		fixComparison(patch, "(-1)<=(a)");
 	}
-	
+
 	@Test
 	public void example5Fix() {
 		Collection<String> failedTests = asList("test4", "test5");
 		Patch patch = test(5, 20, StatementType.PRECONDITION, failedTests);
-		fixComparison(patch, "(-1)<=(a)", "(1)<=(a)", "(r)<=(a)", "(-1)<(a)", "(0)<=(a)");
+		fixComparison(patch, "(-1)<=(a)", "(1)<=(a)", "(r)<=(a)", "(-1)<(a)",
+				"(0)<=(a)");
 	}
-	
+
 	@Test
 	public void example6Fix() {
-		Collection<String> failedTests = asList("test1", "test2", "test3", "test4", "test6");
+		Collection<String> failedTests = asList("test1", "test2", "test3",
+				"test4", "test6");
 		Patch patch = test(6, 7, StatementType.CONDITIONAL, failedTests);
 		fixComparison(patch, "(a)<(b)", "(a)<=(b)");
 	}
-	
+
 	@Test
 	public void example7Fix() {
 		Collection<String> failedTests = asList("test1");
 		Patch patch = test(7, 21, StatementType.CONDITIONAL, failedTests);
-		fixComparison(patch, "(intermediaire == 0)&&((1)<=((-1)+((a)-(1))))", 
+		fixComparison(
+				patch,
+				"(intermediaire == 0)&&((1)<=((-1)+((a)-(1))))",
 				"(intermediaire == 0)&&((!(((a)+(-1))<=(1)))||((((a)+(-1))-(-1))==(intermediaire)))",
 				"((1)<=((1)-(a)))||((intermediaire == 0)&&((intermediaire)!=(((1)-(a))+(1))))",
 				"(intermediaire == 0)&&((((1)-((a)+(0)))<(-1))||(((a)+(0))!=((a)+(0))))",
@@ -132,27 +286,51 @@ public class SymbolicTest {
 				"(!(((1)==(intermediaire))||(((a)+(-1))<=(1))))&&(!(((1)==(intermediaire))||(((a)+(-1))<=(1))))",
 				"!(((intermediaire)!=(0))||(((1)-(-1))==(a)))");
 	}
-	
+
 	@Test
 	public void example8Fix() {
 		Collection<String> failedTests = asList("test_2");
 		Patch patch = test(8, 12, StatementType.CONDITIONAL, failedTests);
 		fixComparison(patch, "((a * b))<=(100)");
 	}
-	
+
 	@Test
 	public void example9Fix() {
-		Collection<String> failedTests = asList("test_g", "test3_h", "test_f", "test3_i");
-		Patch patch = test(9, 16, StatementType.CONDITIONAL, failedTests);
-		fixComparison(patch, "x * 3");
+		Collection<String> failedTests = asList("test_f");
+		Patch patch = test(9, 11, StatementType.INTEGER_LITERAL, failedTests);
+		fixComparison(patch, "x + 2", "(x)-((-1)+(-1))");
 	}
-	
-	private Patch test(int projectNumber, int linePosition, StatementType type, Collection<String> expectedFailedTests) {
+
+	@Test
+	public void example10Fix() {
+		Collection<String> failedTests = asList("test_g");
+		Patch patch = test(10, 29, StatementType.INTEGER_LITERAL, failedTests);
+		fixComparison(patch, "x * 3", "(x) * (3)");
+	}
+
+	@Test
+	public void example11Fix() {
+		Collection<String> failedTests = asList("test3_h");
+		Patch patch = test(11, 10, StatementType.INTEGER_LITERAL, failedTests);
+		fixComparison(patch, "x % 5");
+	}
+
+	@Test
+	public void example12Fix() {
+		Collection<String> failedTests = asList("test3_i");
+		Patch patch = test(12, 28, StatementType.INTEGER_LITERAL, failedTests);
+		fixComparison(patch, "(x)+((1)-(-1))");
+	}
+
+	private Patch test(int projectNumber, int linePosition, StatementType type,
+			Collection<String> expectedFailedTests) {
 		ProjectReference project = projectForExample(projectNumber);
 		TestCasesListener listener = new TestCasesListener();
 		URLClassLoader classLoader = new URLClassLoader(project.classpath());
-		TestSuiteExecution.runCasesIn(project.testClasses(), classLoader, listener);
-		Collection<String> failedTests = TestCase.testNames(listener.failedTests());
+		TestSuiteExecution.runCasesIn(project.testClasses(), classLoader,
+				listener);
+		Collection<String> failedTests = TestCase.testNames(listener
+				.failedTests());
 		assertEquals(expectedFailedTests.size(), failedTests.size());
 		assertTrue(expectedFailedTests.containsAll(failedTests));
 		List<Patch> patches = patchFor(project);
@@ -160,29 +338,32 @@ public class SymbolicTest {
 		Patch patch = patches.get(0);
 		assertEquals(patch.getType(), type);
 		assertEquals(linePosition, patch.getLineNumber());
-		System.out.println(String.format("Patch for nopol example %d: %s", projectNumber, patch.asString()));
+		System.out.println(String.format("Patch for nopol example %d: %s",
+				projectNumber, patch.asString()));
 		return patch;
 	}
-	
+
 	private void fixComparison(Patch foundPatch, String... expectedFixes) {
 		Collection<String> possibleFixes = MetaSet.newHashSet(expectedFixes);
-		assertTrue(foundPatch + "is not a valid patch", possibleFixes.contains(foundPatch.asString()));
+		assertTrue(foundPatch + "is not a valid patch",
+				possibleFixes.contains(foundPatch.asString()));
 	}
-	
+
 	public static ProjectReference projectForExample(int nopolExampleNumber) {
 		String sourceFile = "../test-projects/src/";
 		String classpath = "../test-projects/target/test-classes:../test-projects/target/classes";
-		String[] testClasses = new String[] { "symbolic_examples.symbolic_example_" + nopolExampleNumber + ".NopolExampleTest" };
+		String[] testClasses = new String[] { "symbolic_examples.symbolic_example_"
+				+ nopolExampleNumber + ".NopolExampleTest" };
 		return new ProjectReference(sourceFile, classpath, testClasses);
 	}
-	
+
 	private List<Patch> patchFor(ProjectReference project) {
 		clean(project.sourceFile().getParent());
 		List<Patch> patches = SymbolicLauncher.run(project);
 		clean(project.sourceFile().getParent());
 		return patches;
 	}
-	
+
 	private void clean(String folderPath) {
 		String path = folderPath + "/spooned";
 		if (FileLibrary.isValidPath(path)) {
