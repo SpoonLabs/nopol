@@ -45,8 +45,7 @@ public class Ranking {
 
 		// get all test classes of the current project
 		if (this.testClasses.length == 0) {
-			this.testClasses = new TestClassesFinder().findIn(
-					jpfSpoonedProject.dumpedToClassLoader(), true);
+			this.testClasses = new TestClassesFinder().findIn(classpath, true);
 		}
 
 		// init gzolor
@@ -55,24 +54,11 @@ public class Ranking {
 	}
 
 	public String summary() {
-		Collection<TestCase> sucesssTests = this.getExecutedTests()
-				.successfulTests();
-		Collection<TestCase> failedTests = this.getExecutedTests()
-				.failedTests();
-		String output = "";
-		// Tests
-		output += "/************************/\n";
-		output += "/******** Tests *********/\n";
-		output += "/************************/\n";
-		output += "Executed tests:   "
-				+ (sucesssTests.size() + failedTests.size()) + "\n";
-		output += "Successful tests: " + sucesssTests.size() + "\n";
-		output += "Failed tests:     " + failedTests.size() + "\n\n";
-
-		output += "/************************/\n";
-		output += "/* Suspicious statement */\n";
-		output += "/************************/\n";
-
+		TestCasesListener executedTests = this.getExecutedTests();
+		Collection<TestCase> sucesssTests = executedTests.successfulTests();
+		Collection<TestCase> failedTests = executedTests.failedTests();
+		int successfulTests = 0;
+		int totalTest = 0;
 		Collection<SuspiciousStatement> suspicousStatements = this
 				.getSuspisiousStatements();
 		List<TestResult> gzoloarTestResults = this.gZoltar.getGzoltar()
@@ -80,13 +66,16 @@ public class Ranking {
 		Map<String, Integer> executedAndPassed = new HashMap<String, Integer>();
 		Map<String, Integer> executedAndFailed = new HashMap<String, Integer>();
 		for (TestResult testResult : gzoloarTestResults) {
+			totalTest++;
+			if (testResult.wasSuccessful()) {
+				successfulTests++;
+			}
 			List<Component> components = testResult.getCoveredComponents();
-			for (Iterator<?> iterator = components.iterator(); iterator
-					.hasNext();) {
+			for (Iterator<?> iterator = components.iterator(); iterator.hasNext();) {
 				Statement component = (Statement) iterator.next();
 				String key = component.getMethod().getParent().getLabel() + ":"
 						+ component.getLineNumber();
-
+				System.out.println(component.getMethod());
 				if (testResult.wasSuccessful()) {
 					if (!executedAndPassed.containsKey(key)) {
 						executedAndPassed.put(key, 0);
@@ -100,6 +89,17 @@ public class Ranking {
 				}
 			}
 		}
+		String output = "";
+		output += "/************************/\n";
+		output += "/******** Tests *********/\n";
+		output += "/************************/\n";
+		output += "Executed tests:   " + (totalTest) + "\n";
+		output += "Successful tests: " + successfulTests + "\n";
+		output += "Failed tests:     " + (totalTest - successfulTests) + "\n\n";
+
+		output += "/************************/\n";
+		output += "/* Suspicious statement */\n";
+		output += "/************************/\n";
 		for (SuspiciousStatement suspiciousStatement : suspicousStatements) {
 			SourceLocation location = suspiciousStatement.getSourceLocation();
 			String key = location.getContainingClassName() + ":"
