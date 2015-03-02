@@ -6,16 +6,16 @@ import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.CtElement;
 
 public class ConditionalReplacer extends SymbolicProcessor {
 
 	public ConditionalReplacer(CtStatement target) {
 		super(target);
 		super.defaultValue = ((CtIf) target).getCondition().toString();
+		super.setType(Boolean.class);
 	}
 
-	public static CtExpression<Boolean> getCondition(CtElement element) {
+	public static CtExpression<Boolean> getCondition(CtStatement element) {
 		CtExpression<Boolean> condition;
 		if (element instanceof CtIf) {
 			condition = ((CtIf) element).getCondition();

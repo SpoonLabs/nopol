@@ -11,6 +11,7 @@ public class ConditionalAdder extends SymbolicProcessor {
 	public ConditionalAdder(CtStatement target) {
 		super(target);
 		super.defaultValue = "true";
+		super.setType(Boolean.class);
 	}
 	
 	public void process(CtStatement element) {
