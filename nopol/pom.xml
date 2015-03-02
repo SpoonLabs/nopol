@@ -69,6 +69,27 @@
 			<version>0.0.8</version>
 		</dependency>
 		<dependency>
+			<groupId>gov.nasa.jpf</groupId>
+			<artifactId>jpf</artifactId>
+			<version>1154</version>
+			<scope>system</scope>
+            <systemPath>${basedir}/lib/jpf/jpf.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>gov.nasa.jpf</groupId>
+			<artifactId>jpf-symbc</artifactId>
+			<version>576</version>
+			<scope>system</scope>
+            <systemPath>${basedir}/lib/jpf/jpf.all.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>com.microsoft.z3</groupId>
+			<artifactId>z3</artifactId>
+			<version>0.0.1</version>
+			<scope>system</scope>
+            <systemPath>${basedir}/lib/com.microsoft.z3.jar</systemPath>
+		</dependency>
+		<dependency>
 			<groupId>fr.inria.gforge.spoon</groupId>
 			<artifactId>spoon-core</artifactId>
 			<version>3.1</version>
