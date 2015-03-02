@@ -15,11 +15,12 @@ import fr.inria.lille.commons.spoon.collectable.CollectableValueFinder;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.RuntimeValuesInstrumenter;
 
-public final class LoggingInstrumenter extends AbstractProcessor<CtStatement> {
+public final class LoggingInstrumenter<T> extends
+		AbstractProcessor<CtStatement> {
 
 	private static Object value;
 
-	public LoggingInstrumenter(RuntimeValues<Boolean> runtimeValues,
+	public LoggingInstrumenter(RuntimeValues<T> runtimeValues,
 			SymbolicProcessor subprocessor) {
 		this.subprocessor = subprocessor;
 		this.runtimeValues = runtimeValues;
@@ -49,14 +50,11 @@ public final class LoggingInstrumenter extends AbstractProcessor<CtStatement> {
 	public void process(CtStatement statement) {
 		String evaluationAccess = "runtimeAngelicValue";
 		// create the angelic value
-		String type = boolean.class.getCanonicalName();
-		if (value != null) {
-			type = value.getClass().getCanonicalName();
-		}
-		CtLocalVariable<Boolean> evaluation = newLocalVariableDeclaration(
-				statement.getFactory(), boolean.class, evaluationAccess, "("
-						+ type + ")" + this.getClass().getCanonicalName()
-						+ ".getValue(" + subprocessor.getDefaultValue() + ")");
+		String type = subprocessor.getType().getCanonicalName();
+		CtLocalVariable<?> evaluation = newLocalVariableDeclaration(
+				statement.getFactory(), subprocessor.getType(), evaluationAccess, "(" + type + ")"
+						+ this.getClass().getCanonicalName() + ".getValue("
+						+ subprocessor.getDefaultValue() + ")");
 		// insert angelic value before the statement
 		insertBeforeUnderSameParent(evaluation, statement);
 		// collect values of the statement
@@ -90,5 +88,5 @@ public final class LoggingInstrumenter extends AbstractProcessor<CtStatement> {
 	}
 
 	private SymbolicProcessor subprocessor;
-	private RuntimeValues<?> runtimeValues;
+	private RuntimeValues<T> runtimeValues;
 }

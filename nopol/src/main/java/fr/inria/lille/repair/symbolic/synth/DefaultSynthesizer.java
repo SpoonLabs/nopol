@@ -36,14 +36,16 @@ import fr.inria.lille.repair.symbolic.spoon.SymbolicProcessor;
  * @author Favio D. DeMarco
  * 
  */
-public final class DefaultSynthesizer implements Synthesizer {
+public final class DefaultSynthesizer<T> implements Synthesizer {
 
 	private final SourceLocation sourceLocation;
-	private final JPFRunner constraintModelBuilder;
+	private final JPFRunner<T> constraintModelBuilder;
 	private final StatementType type;
 	private final SymbolicProcessor processor;
 
-	public DefaultSynthesizer(JPFRunner constraintModelBuilder, SourceLocation sourceLocation, StatementType type, SymbolicProcessor processor) {
+	public DefaultSynthesizer(JPFRunner<T> constraintModelBuilder,
+			SourceLocation sourceLocation, StatementType type,
+			SymbolicProcessor processor) {
 		this.constraintModelBuilder = constraintModelBuilder;
 		this.sourceLocation = sourceLocation;
 		this.type = type;
@@ -53,29 +55,39 @@ public final class DefaultSynthesizer implements Synthesizer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see fr.inria.lille.jefix.synth.Synthesizer#buildPatch(java.net.URL[], java.lang.String[])
+	 * @see fr.inria.lille.jefix.synth.Synthesizer#buildPatch(java.net.URL[],
+	 * java.lang.String[])
 	 */
 	@Override
-	public Patch buildPatch(URL[] classpath, String[] testClasses, Collection<TestCase> failures, SpoonedProject cleanSpoon, String mainClass) {
-		Collection<Specification<Boolean>> data = constraintModelBuilder.buildFor(classpath, testClasses, failures,cleanSpoon, mainClass);
+	public Patch buildPatch(URL[] classpath, String[] testClasses,
+			Collection<TestCase> failures, SpoonedProject cleanSpoon,
+			String mainClass) {
+		Collection<Specification<T>> data = constraintModelBuilder.buildFor(
+				classpath, testClasses, failures, cleanSpoon, mainClass);
 
 		// XXX FIXME TODO move this
-		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
+		// there should be at least two sets of values, otherwise the patch
+		// would be "true" or "false"
 		int dataSize = data.size();
-		if (dataSize < 2) {
-			LoggerFactory.getLogger(this.getClass()).info("{} input values set(s). There are not enough tests for {} otherwise the patch would be \"true\" or \"false\"",
-					dataSize, sourceLocation);
+
+		if (dataSize < 1) {
+			LoggerFactory
+					.getLogger(this.getClass())
+					.info("{} input values set(s). There are not enough tests for {} otherwise the patch would be \"true\" or \"false\"",
+							dataSize, sourceLocation);
 			return NO_PATCH;
 		}
-
 		// and it should be a viable patch, ie. fix the bug
 		if (!constraintModelBuilder.isAViablePatch()) {
-			LoggerFactory.getLogger(this.getClass()).info("Changing only this statement does not solve the bug. {}", sourceLocation);
+			LoggerFactory.getLogger(this.getClass()).info(
+					"Changing only this statement does not solve the bug. {}",
+					sourceLocation);
 			return NO_PATCH;
 		}
 		ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis();
-		CodeGenesis genesis = synthesis.codesSynthesisedFrom(Boolean.class, data);
-		if (! genesis.isSuccessful()) {
+		CodeGenesis genesis = synthesis.<T> codesSynthesisedFrom(
+				(Class<T>) (type.getType()), data);
+		if (!genesis.isSuccessful()) {
 			return NO_PATCH;
 		}
 		return new StringPatch(genesis.returnStatement(), sourceLocation, type);
