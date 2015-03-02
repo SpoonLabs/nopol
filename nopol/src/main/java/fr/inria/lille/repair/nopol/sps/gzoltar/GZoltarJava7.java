@@ -104,12 +104,12 @@ public final class GZoltarJava7 extends GZoltar {
 			message.setTestParameters(this.getTestParameters());
 			String uuid = UUID.randomUUID().toString();
 			RegistrySingleton.register(uuid, message);
-			StringBuilder classpath = new StringBuilder(System.getProperty("java.class.path")).append(PATH_SEPARATOR)
-					.append(this.getWorkingDirectory());
+			StringBuilder classpath = new StringBuilder();
 			Iterable<String> classPaths = this.getClasspaths();
 			for (String path : classPaths) {
 				classpath.append(PATH_SEPARATOR + path);
 			}
+			classpath.append(PATH_SEPARATOR).append(System.getProperty("java.class.path")).append(PATH_SEPARATOR).append(this.getWorkingDirectory());
 
 			List<String> parameters = new ArrayList<>();
 			if (System.getProperty("os.name").toLowerCase().contains("windows")) {
