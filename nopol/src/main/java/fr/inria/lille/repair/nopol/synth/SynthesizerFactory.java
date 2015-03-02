@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import spoon.processing.Processor;
 import spoon.reflect.code.CtStatement;
+import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.repair.nopol.SourceLocation;
@@ -31,6 +32,7 @@ import fr.inria.lille.repair.nopol.spoon.ConditionalAdder;
 import fr.inria.lille.repair.nopol.spoon.ConditionalLoggingInstrumenter;
 import fr.inria.lille.repair.nopol.spoon.ConditionalProcessor;
 import fr.inria.lille.repair.nopol.spoon.ConditionalReplacer;
+import fr.inria.lille.repair.symbolic.synth.StatementType;
 
 /**
  * @author Favio D. DeMarco
@@ -41,22 +43,28 @@ public final class SynthesizerFactory {
 	private final File sourceFolder;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final SpoonedProject spooner;
+	private StatementType type;
 	private static int nbStatementsAnalysed = 0;
 	private static RuntimeValues<Boolean> runtimeValuesInstance = RuntimeValues.newInstance();
+	
 	/**
+	 * @param type 
 	 * 
 	 */
-	public SynthesizerFactory(final File sourceFolder, final SpoonedProject spooner) {
+	public SynthesizerFactory(final File sourceFolder, final SpoonedProject spooner, StatementType type) {
 		this.sourceFolder = sourceFolder;
 		this.spooner = spooner;
+		this.type = type;
 	}
 
 	public Synthesizer getFor(final SourceLocation statement) {
 		nbStatementsAnalysed++;
 		ConditionalProcessor conditional = null;
 		RuntimeValues<Boolean> runtimeValues = runtimeValuesInstance;
-		BugKindDetector detector = new BugKindDetector(statement.getSourceFile(sourceFolder), statement.getLineNumber());
-		spooner.processClass(statement.getRootClassName(), detector);
+		SpoonedClass spoonCl = spooner.forked(statement.getRootClassName());
+
+		BugKindDetector detector = new BugKindDetector(spoonCl.getSimpleType().getPosition().getFile(), statement.getLineNumber(), type);
+		spoonCl.process(detector);
 		switch (detector.getType()) {
 			case CONDITIONAL:
 				conditional = new ConditionalReplacer(detector.statement());

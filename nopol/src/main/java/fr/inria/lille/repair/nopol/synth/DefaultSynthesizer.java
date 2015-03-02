@@ -31,6 +31,7 @@ import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.nopol.patch.Patch;
 import fr.inria.lille.repair.nopol.patch.StringPatch;
 import fr.inria.lille.repair.nopol.spoon.ConditionalProcessor;
+import fr.inria.lille.repair.symbolic.synth.StatementType;
 
 /**
  * @author Favio D. DeMarco
@@ -40,11 +41,11 @@ public final class DefaultSynthesizer implements Synthesizer {
 
 	private final SourceLocation sourceLocation;
 	private final ConstraintModelBuilder constraintModelBuilder;
-	private final BugKind type;
+	private final StatementType type;
 	private static int nbStatementsWithAngelicValue = 0;
 	private ConditionalProcessor conditionalProcessor;
 
-	public DefaultSynthesizer(ConstraintModelBuilder constraintModelBuilder, SourceLocation sourceLocation, BugKind type, File outputFolder, ConditionalProcessor processor) {
+	public DefaultSynthesizer(ConstraintModelBuilder constraintModelBuilder, SourceLocation sourceLocation, StatementType type, File outputFolder, ConditionalProcessor processor) {
 		this.constraintModelBuilder = constraintModelBuilder;
 		this.sourceLocation = sourceLocation;
 		this.type = type;

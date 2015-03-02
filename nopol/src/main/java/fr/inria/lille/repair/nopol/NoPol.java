@@ -26,7 +26,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import xxl.java.compiler.DynamicCompilationException;
 import xxl.java.junit.TestCase;
 import xxl.java.junit.TestCasesListener;
 import xxl.java.junit.TestSuiteExecution;
@@ -39,6 +38,7 @@ import fr.inria.lille.repair.nopol.sps.SuspiciousStatement;
 import fr.inria.lille.repair.nopol.sps.gzoltar.GZoltarSuspiciousProgramStatements;
 import fr.inria.lille.repair.nopol.synth.Synthesizer;
 import fr.inria.lille.repair.nopol.synth.SynthesizerFactory;
+import fr.inria.lille.repair.symbolic.synth.StatementType;
 
 /**
  * @author Favio D. DeMarco
@@ -52,16 +52,19 @@ public class NoPol {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final SpoonedProject spooner;
 	private final File sourceFile;
+	private final StatementType type;
 	private static boolean singlePatch = true;
 
 	/**
 	 * @param rootPackage
 	 * @param sourceFolder
 	 * @param classpath
+	 * @param type 
 	 */
-	public NoPol(final File sourceFile, final URL[] classpath) {
+	public NoPol(final File sourceFile, final URL[] classpath, StatementType type) {
 		this.classpath = classpath;
 		this.sourceFile = sourceFile;
+		this.type = type;
 		spooner = new SpoonedProject(sourceFile, classpath);
 		testPatch = new TestPatch(sourceFile, spooner);
 		gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath, spooner.topPackageNames());
@@ -99,7 +102,7 @@ public class NoPol {
 			try {
 				if ( !statement.getSourceLocation().getContainingClassName().contains("Test")){ // Avoid modification on test cases
 					logger.debug("Analysing {}", statement);
-					Synthesizer synth = new SynthesizerFactory(sourceFile, spooner).getFor(statement.getSourceLocation());
+					Synthesizer synth = new SynthesizerFactory(sourceFile, spooner, type).getFor(statement.getSourceLocation());
 					Patch patch = synth.buildPatch(classpath, testClasses, failures);
 					if (isOk(patch, testClasses, synth.getConditionalProcessor())) {
 						patches.add(patch);

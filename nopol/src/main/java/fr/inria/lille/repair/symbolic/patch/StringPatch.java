@@ -18,7 +18,6 @@ package fr.inria.lille.repair.symbolic.patch;
 import java.io.File;
 
 import fr.inria.lille.repair.nopol.SourceLocation;
-import fr.inria.lille.repair.nopol.synth.BugKind;
 import fr.inria.lille.repair.symbolic.synth.StatementType;
 
 /**

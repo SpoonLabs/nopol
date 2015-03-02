@@ -17,7 +17,7 @@ package fr.inria.lille.repair.nopol.patch;
 
 import java.io.File;
 
-import fr.inria.lille.repair.nopol.synth.BugKind;
+import fr.inria.lille.repair.symbolic.synth.StatementType;
 
 /**
  * @author Favio D. DeMarco
@@ -55,7 +55,7 @@ public interface Patch {
 		}
 
 		@Override
-		public BugKind getType() {
+		public StatementType getType() {
 			throw new UnsupportedOperationException(toString());
 		}
 
@@ -84,5 +84,5 @@ public interface Patch {
 
 	int getLineNumber();
 
-	BugKind getType();
+	StatementType getType();
 }

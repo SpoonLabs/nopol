@@ -18,7 +18,7 @@ package fr.inria.lille.repair.nopol.patch;
 import java.io.File;
 
 import fr.inria.lille.repair.nopol.SourceLocation;
-import fr.inria.lille.repair.nopol.synth.BugKind;
+import fr.inria.lille.repair.symbolic.synth.StatementType;
 
 /**
  * @author Favio D. DeMarco
@@ -28,14 +28,14 @@ public class StringPatch implements Patch {
 
 	private final SourceLocation location;
 	private final String repair;
-	private final BugKind type;
+	private final StatementType type;
 
 	/**
 	 * @param repair
 	 * @param location
 	 * @param type
 	 */
-	public StringPatch(final String repair, final SourceLocation location, final BugKind type) {
+	public StringPatch(final String repair, final SourceLocation location, final StatementType type) {
 		this.repair = repair;
 		this.location = location;
 		this.type = type;
@@ -74,7 +74,7 @@ public class StringPatch implements Patch {
 	}
 
 	@Override
-	public BugKind getType() {
+	public StatementType getType() {
 		return type;
 	}
 

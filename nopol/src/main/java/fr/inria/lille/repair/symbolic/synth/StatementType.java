@@ -1,7 +1,12 @@
 package fr.inria.lille.repair.symbolic.synth;
 
 public enum StatementType {
-	CONDITIONAL(Boolean.class), PRECONDITION(Boolean.class), INTEGER_LITERAL(Integer.class), BOOLEAN_LITERAL(Boolean.class) , NONE(null);
+	CONDITIONAL(Boolean.class),
+	PRECONDITION(Boolean.class),
+	INTEGER_LITERAL(Integer.class),
+	DOUBLE_LITERAL(Double.class),
+	BOOLEAN_LITERAL(Boolean.class),
+	NONE(null);
 	
 	private Class<?> type;
 

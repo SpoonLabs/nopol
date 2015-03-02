@@ -25,6 +25,7 @@ import fr.inria.lille.repair.Main;
 import fr.inria.lille.repair.nopol.patch.Patch;
 import fr.inria.lille.repair.nopol.synth.DefaultSynthesizer;
 import fr.inria.lille.repair.nopol.synth.SynthesizerFactory;
+import fr.inria.lille.repair.symbolic.synth.StatementType;
 
 public class NoPolLauncher {
 	
@@ -33,15 +34,16 @@ public class NoPolLauncher {
 		String binFolder = "misc/nopol-example/bin/";
 		String junitJar = "misc/nopol-example/junit-4.11.jar";
 		String classpath = binFolder + File.pathSeparatorChar + junitJar;
-		String solverName = args[0];
-		String solverPath = args[1];
+		String type = args[0];
+		String solverName = args[1];
+		String solverPath = args[2];
 		System.out.println(format("args:\n\t%s\n\t%s\n\t%s\n\t%s", filePath, classpath, solverName, solverPath));
-		Main.main(new String[] {"nopol", filePath, classpath, solverName, solverPath});
+		Main.main(new String[] {"repair", type, "angelic", filePath, classpath, solverName, solverPath});
 	}
 	
-	public static void launch(File sourceFile, URL[] classpath, String[] args) {
+	public static List<Patch> launch(File sourceFile, URL[] classpath, StatementType type, String[] args) {
 		long executionTime = System.currentTimeMillis();
-		NoPol nopol = new NoPol(sourceFile, classpath);
+		NoPol nopol = new NoPol(sourceFile, classpath, type);
 		List<Patch> patches = null;
 		if (args.length > 0) {
 			patches = nopol.build(args);
@@ -50,6 +52,7 @@ public class NoPolLauncher {
 		}
 		executionTime = System.currentTimeMillis() - executionTime;
 		displayResult(patches, executionTime);
+		return patches;
 	}
 	
 	private static void displayResult(List<Patch> patches, long executionTime){
