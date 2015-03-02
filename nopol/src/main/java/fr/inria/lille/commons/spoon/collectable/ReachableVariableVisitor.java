@@ -20,6 +20,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import xxl.java.container.classic.MetaSet;
 import fr.inria.lille.commons.spoon.filter.BeforeLocationFilter;
@@ -90,6 +91,12 @@ public class ReachableVariableVisitor extends CtAbstractVisitor {
 		if (isReachable(localVariable)) {
 			reachedVariables().add(localVariable);
 		}
+	}
+	
+	@Override
+	public <T> void visitCtCatchVariableReference(
+			CtCatchVariableReference<T> localVariable) {
+		/* Ignore catch variable */
 	}
 	
 	@Override

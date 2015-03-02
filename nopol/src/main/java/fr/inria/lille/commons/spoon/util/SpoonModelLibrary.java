@@ -180,7 +180,7 @@ public class SpoonModelLibrary {
 	
 	public static <E extends Throwable> CtCatch newCatch(Factory factory, Class<E> throwableClass, String catchName, CtStatement catchBlock) {
 		CtCatch aCatch = factory.Core().createCatch();
-		aCatch.setParameter(newLocalVariable(factory, throwableClass, catchName));
+		aCatch.setParameter(factory.Code().createCatchVariable(newTypeReference(factory, throwableClass), catchName));
 		aCatch.setBody(asBlock(catchBlock, aCatch));
 		return aCatch;
 	}

@@ -14,6 +14,7 @@ import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import xxl.java.container.classic.MetaSet;
 
@@ -55,6 +56,12 @@ public class SubconditionVisitor extends CtAbstractVisitor {
 		}
 	}
 
+	@Override
+	public <T> void visitCtCatchVariableReference(
+			CtCatchVariableReference<T> localVariable) {
+		/* Ignore catch variable */
+	}
+	
 	@Override
 	public <T> void visitCtThisAccess(CtThisAccess<T> thisAccess) {
 		/* this method has to be implemented by the non abstract class */
