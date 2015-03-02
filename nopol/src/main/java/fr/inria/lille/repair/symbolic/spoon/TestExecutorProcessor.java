@@ -40,7 +40,7 @@ public class TestExecutorProcessor {
 				.createCodeSnippetStatement(
 						"for (String method : methods) {\n\t\t"
 								+ "String[] split = method.split(\"\\\\.\");\n\t\t"
-								+ "Class.forName(method.replace(\".\" + split[split.length - 1], \"\")).getMethod(\"runTest\", String[].class).invoke(null, new Object[] { new String[] { split[split.length - 1] }});}"));
+								+ "Class.forName(method.replace(\".\" + split[split.length - 1], \"\")).getMethod(\"runJPFTest\", String[].class).invoke(null, new Object[] { new String[] { split[split.length - 1] }});}"));
 
 		CtMethod<?> method = spooner
 				.spoonFactory()
