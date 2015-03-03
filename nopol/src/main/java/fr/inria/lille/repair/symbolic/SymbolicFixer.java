@@ -1,6 +1,6 @@
 package fr.inria.lille.repair.symbolic;
 
-import static fr.inria.lille.repair.symbolic.patch.Patch.NO_PATCH;
+import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,19 +30,19 @@ import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.TestClassesFinder;
 import fr.inria.lille.repair.nopol.sps.SuspiciousStatement;
 import fr.inria.lille.repair.nopol.sps.gzoltar.GZoltarSuspiciousProgramStatements;
-import fr.inria.lille.repair.symbolic.patch.Patch;
+import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.symbolic.spoon.AssertReplacer;
 import fr.inria.lille.repair.symbolic.spoon.SymbolicProcessor;
 import fr.inria.lille.repair.symbolic.spoon.TestExecutorProcessor;
-import fr.inria.lille.repair.symbolic.synth.StatementType;
+import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.symbolic.synth.Synthesizer;
 import fr.inria.lille.repair.symbolic.synth.SynthesizerFactory;
 
 public class SymbolicFixer {
 
 	private String mainClass;
-	private SpoonedProject spoonProject;
-	private StatementType type;
+	private final SpoonedProject spoonProject;
+	private final StatementType type;
 
 	public SymbolicFixer(final File sourceFile, final URL[] classpath,
 			StatementType type) {
@@ -159,7 +159,7 @@ public class SymbolicFixer {
 	/**
 	 * Remove temporary file
 	 */
-	public void cleanUp() {
+	protected void cleanUp() {
 		logger.info("remove temp file");
 		try {
 			FileUtils.deleteDirectory(outputCompiledFile);

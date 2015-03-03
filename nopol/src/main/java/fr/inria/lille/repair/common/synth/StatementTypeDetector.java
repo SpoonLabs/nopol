@@ -1,4 +1,4 @@
-package fr.inria.lille.repair.symbolic.synth;
+package fr.inria.lille.repair.common.synth;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -27,7 +27,7 @@ public class StatementTypeDetector extends AbstractProcessor<CtStatement> {
 	 * @param file
 	 * @param line
 	 */
-	StatementTypeDetector(final File file, final int line,
+	public StatementTypeDetector(final File file, final int line,
 			final StatementType type) {
 		checkArgument(line > 0, "Line should be greater than 0: %s", line);
 		this.file = checkNotNull(file);
@@ -39,11 +39,11 @@ public class StatementTypeDetector extends AbstractProcessor<CtStatement> {
 	/**
 	 * @return the answer
 	 */
-	StatementType getType() {
+	public StatementType getType() {
 		return answer;
 	}
 
-	CtStatement statement() {
+    public CtStatement statement() {
 		return statement;
 	}
 

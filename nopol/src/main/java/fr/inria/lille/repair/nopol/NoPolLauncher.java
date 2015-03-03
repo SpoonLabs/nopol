@@ -22,10 +22,10 @@ import java.net.URL;
 import java.util.List;
 
 import fr.inria.lille.repair.Main;
-import fr.inria.lille.repair.nopol.patch.Patch;
+import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.synth.DefaultSynthesizer;
 import fr.inria.lille.repair.nopol.synth.SynthesizerFactory;
-import fr.inria.lille.repair.symbolic.synth.StatementType;
+import fr.inria.lille.repair.common.synth.StatementType;
 
 public class NoPolLauncher {
 	

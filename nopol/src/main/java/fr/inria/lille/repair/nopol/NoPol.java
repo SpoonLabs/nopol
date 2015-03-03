@@ -15,7 +15,7 @@
  */
 package fr.inria.lille.repair.nopol;
 
-import static fr.inria.lille.repair.nopol.patch.Patch.NO_PATCH;
+import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
 
 import java.io.File;
 import java.net.URL;
@@ -31,14 +31,14 @@ import xxl.java.junit.TestCasesListener;
 import xxl.java.junit.TestSuiteExecution;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.repair.TestClassesFinder;
-import fr.inria.lille.repair.nopol.patch.Patch;
+import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.patch.TestPatch;
 import fr.inria.lille.repair.nopol.spoon.ConditionalProcessor;
 import fr.inria.lille.repair.nopol.sps.SuspiciousStatement;
 import fr.inria.lille.repair.nopol.sps.gzoltar.GZoltarSuspiciousProgramStatements;
 import fr.inria.lille.repair.nopol.synth.Synthesizer;
 import fr.inria.lille.repair.nopol.synth.SynthesizerFactory;
-import fr.inria.lille.repair.symbolic.synth.StatementType;
+import fr.inria.lille.repair.common.synth.StatementType;
 
 /**
  * @author Favio D. DeMarco

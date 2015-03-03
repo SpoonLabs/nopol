@@ -33,16 +33,16 @@ public class ConditionalReplacer extends SymbolicProcessor {
 		String oldStatement = element.toString();
 		CtCodeSnippetExpression<Boolean> snippet = null;
 		if (getValue() != null) {
-			if(getValue().equals("1")) {
-				snippet = element.getFactory().Code()
-					.createCodeSnippetExpression("true");
-			} else if(getValue().equals("0")) {
-				snippet = element.getFactory().Code()
-						.createCodeSnippetExpression("false");
-			} else {
-				snippet = element.getFactory().Code()
-						.createCodeSnippetExpression(getValue());
-			}
+            if(getValue().equals("1")) {
+                snippet = element.getFactory().Code()
+                        .createCodeSnippetExpression("true");
+            } else if(getValue().equals("0")) {
+                snippet = element.getFactory().Code()
+                        .createCodeSnippetExpression("false");
+            } else {
+                snippet = element.getFactory().Code()
+                        .createCodeSnippetExpression(getValue());
+            }
 		} else {
 			snippet = element
 					.getFactory()

@@ -15,7 +15,7 @@
  */
 package fr.inria.lille.repair.nopol.synth;
 
-import static fr.inria.lille.repair.nopol.patch.Patch.NO_PATCH;
+import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
 
 import java.io.File;
 import java.net.URL;
@@ -28,10 +28,10 @@ import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.repair.nopol.SourceLocation;
-import fr.inria.lille.repair.nopol.patch.Patch;
-import fr.inria.lille.repair.nopol.patch.StringPatch;
+import fr.inria.lille.repair.common.patch.Patch;
+import fr.inria.lille.repair.common.patch.StringPatch;
 import fr.inria.lille.repair.nopol.spoon.ConditionalProcessor;
-import fr.inria.lille.repair.symbolic.synth.StatementType;
+import fr.inria.lille.repair.common.synth.StatementType;
 
 /**
  * @author Favio D. DeMarco

@@ -2,11 +2,9 @@ package fr.inria.lille.repair.symbolic.spoon;
 
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newLocalVariableDeclaration;
 
-import java.io.File;
 import java.util.List;
 
 import fr.inria.lille.commons.spoon.SpoonedClass;
-import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import spoon.processing.AbstractProcessor;
@@ -23,12 +21,11 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import spoon.support.reflect.code.CtUnaryOperatorImpl;
-import xxl.java.library.FileLibrary;
 
 public class ToJPFReplacer extends AbstractProcessor<CtStatement> {
 
-	private String className;
-	private int lineNumber;
+	private final String className;
+	private final int lineNumber;
 
 	public ToJPFReplacer(String className, int lineNumber) {
 		super();
@@ -41,7 +38,7 @@ public class ToJPFReplacer extends AbstractProcessor<CtStatement> {
 		while (parent != null && !(parent instanceof CtClass<?>)) {
 			parent = parent.getParent();
 		}
-		if (parent != null && parent instanceof CtClass<?>) {
+		if (parent != null) {
 			return ((CtClass<?>) parent).getActualClass();
 		}
 		return null;
@@ -115,9 +112,7 @@ public class ToJPFReplacer extends AbstractProcessor<CtStatement> {
 		if (!(ctStatement instanceof CtLocalVariable<?>) && !(ctStatement instanceof CtAssignment<?,?>))
 			return;
 
-		CtStatement ctLocalVariable =  ctStatement;
-
-		List<CtElement> elements = ctLocalVariable
+		List<CtElement> elements = ctStatement
 				.getElements(new AbstractFilter<CtElement>(Object.class) {
 
 					@Override

@@ -20,16 +20,19 @@ public class ConditionalAdder extends SymbolicProcessor {
 		CtIf newIf = element.getFactory().Core().createIf();
 		CtCodeSnippetExpression<Boolean> condition = null;
 		if (getValue() != null) {
-			if(getValue().equals("1")) {
-				condition = element.getFactory().Code()
-					.createCodeSnippetExpression("true");
-			} else if(getValue().equals("0")) {
-				condition = element.getFactory().Code()
-						.createCodeSnippetExpression("false");
-			} else {
-				condition = element.getFactory().Code()
-						.createCodeSnippetExpression(getValue());
-			}
+            switch (getValue()) {
+                case "1":
+                    condition = element.getFactory().Code()
+                            .createCodeSnippetExpression("true");
+                    break;
+                case "0":
+                    condition = element.getFactory().Code()
+                            .createCodeSnippetExpression("false");
+                    break;
+                default:
+                    condition = element.getFactory().Code()
+                            .createCodeSnippetExpression(getValue());
+            }
 		} else {
 			condition = element
 					.getFactory()
@@ -44,7 +47,7 @@ public class ConditionalAdder extends SymbolicProcessor {
 		element.replace(newIf);
 		// this should be after the replace to avoid an StackOverflowException caused by the circular reference.
 		// see SpoonStatementPredicate
-		newIf.setThenStatement((CtStatement) element);
+		newIf.setThenStatement(element);
 		// Fix : warning: ignoring inconsistent parent for [CtElem1] ( [CtElem2] != [CtElem3] )
 		newIf.getThenStatement().setParent(newIf);
 		logger.debug("##### {} ##### After:\n{}", element, element.getParent().getParent());

@@ -19,6 +19,7 @@ import static fr.inria.lille.repair.nopol.synth.Synthesizer.NO_OP_SYNTHESIZER;
 
 import java.io.File;
 
+import fr.inria.lille.repair.common.synth.StatementTypeDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,7 @@ import fr.inria.lille.repair.nopol.spoon.ConditionalAdder;
 import fr.inria.lille.repair.nopol.spoon.ConditionalLoggingInstrumenter;
 import fr.inria.lille.repair.nopol.spoon.ConditionalProcessor;
 import fr.inria.lille.repair.nopol.spoon.ConditionalReplacer;
-import fr.inria.lille.repair.symbolic.synth.StatementType;
+import fr.inria.lille.repair.common.synth.StatementType;
 
 /**
  * @author Favio D. DeMarco
@@ -63,8 +64,9 @@ public final class SynthesizerFactory {
 		RuntimeValues<Boolean> runtimeValues = runtimeValuesInstance;
 		SpoonedClass spoonCl = spooner.forked(statement.getRootClassName());
 
-		BugKindDetector detector = new BugKindDetector(spoonCl.getSimpleType().getPosition().getFile(), statement.getLineNumber(), type);
+        StatementTypeDetector detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), statement.getLineNumber(), type);
 		spoonCl.process(detector);
+
 		switch (detector.getType()) {
 			case CONDITIONAL:
 				conditional = new ConditionalReplacer(detector.statement());

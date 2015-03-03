@@ -38,7 +38,7 @@ import xxl.java.junit.TestCase;
 public class AssertReplacer extends AbstractProcessor<CtInvocation<?>> {
 
 	private static int exceptionCount = 0;
-	private Collection<TestCase> faillingTest;
+	private final Collection<TestCase> faillingTest;
 
 	public AssertReplacer(Collection<TestCase> faillingTest) {
 		this.faillingTest = faillingTest;
@@ -101,7 +101,7 @@ public class AssertReplacer extends AbstractProcessor<CtInvocation<?>> {
 				String.format("\"%s\"",
 						ctInvocation.toString().replaceAll("\"", "'"))));
 
-		thenStatement.addStatement((CtStatement) ctAssert);
+		thenStatement.addStatement(ctAssert);
 
 		return thenStatement;
 	}
@@ -126,43 +126,40 @@ public class AssertReplacer extends AbstractProcessor<CtInvocation<?>> {
 			elem1 = arguments.get(1);
 			elem2 = arguments.get(2);
 		}
-		if (elem1 instanceof CtTypedElement<?>) {
 
-			boolean isNull = false;
-			Class<?> classArg1 = null;
-			if (elem1.toString().equals("null")) {
-				isNull = true;
-			} else {
-				try {
-					classArg1 = ((CtTypedElement<?>) elem1).getType()
-							.getActualClass();
-				} catch (SpoonException e) {
-					e.printStackTrace();
-				}
-			}
-			if (isNull
-					|| (classArg1 != null && (classArg1.equals(int.class)
-							|| classArg1.equals(Integer.class)
-							|| classArg1.equals(boolean.class)
-							|| classArg1.equals(Boolean.class)
-							|| classArg1.equals(byte.class)
-							|| classArg1.equals(Byte.class)
-							|| classArg1.equals(long.class)
-							|| classArg1.equals(Long.class)
-							|| classArg1.equals(double.class)
-							|| classArg1.equals(Double.class)
-							|| classArg1.equals(float.class)
-							|| classArg1.equals(Float.class)
-							|| classArg1.equals(short.class)
-							|| classArg1.equals(Short.class)
-							|| classArg1.equals(char.class) || classArg1
-								.equals(Character.class)))) {
-				condition.setValue("" + elem1 + " == " + elem2 + "");
-			} else {
-				condition.setValue("(" + elem1 + ".equals(" + elem2 + "))");
-			}
-
-		}
+        boolean isNull = false;
+        Class<?> classArg1 = null;
+        if (elem1.toString().equals("null")) {
+            isNull = true;
+        } else {
+            try {
+                classArg1 = ((CtTypedElement<?>) elem1).getType()
+                        .getActualClass();
+            } catch (SpoonException e) {
+                e.printStackTrace();
+            }
+        }
+        if (isNull
+                || (classArg1 != null && (classArg1.equals(int.class)
+                        || classArg1.equals(Integer.class)
+                        || classArg1.equals(boolean.class)
+                        || classArg1.equals(Boolean.class)
+                        || classArg1.equals(byte.class)
+                        || classArg1.equals(Byte.class)
+                        || classArg1.equals(long.class)
+                        || classArg1.equals(Long.class)
+                        || classArg1.equals(double.class)
+                        || classArg1.equals(Double.class)
+                        || classArg1.equals(float.class)
+                        || classArg1.equals(Float.class)
+                        || classArg1.equals(short.class)
+                        || classArg1.equals(Short.class)
+                        || classArg1.equals(char.class) || classArg1
+                            .equals(Character.class)))) {
+            condition.setValue("" + elem1 + " == " + elem2 + "");
+        } else {
+            condition.setValue("(" + elem1 + ".equals(" + elem2 + "))");
+        }
 		newIf.setCondition(condition);
 		// newIf.setThenStatement(getFactory().Code().createCodeSnippetStatement(
 		// Debug.class.getCanonicalName() + ".printPC(\"Path Condition: \")"));
@@ -259,7 +256,7 @@ public class AssertReplacer extends AbstractProcessor<CtInvocation<?>> {
 					.getFactory()
 					.Code()
 					.createCodeSnippetExpression(
-							"!(" + (CtExpression<Boolean>) elem1 + ")");
+							"!(" + elem1 + ")");
 			newIf.setCondition(condition);
 		} else {
 			newIf.setCondition((CtExpression<Boolean>) elem1);

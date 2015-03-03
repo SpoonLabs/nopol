@@ -1,5 +1,7 @@
 package fr.inria.lille.repair.symbolic.synth;
 
+import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.StatementTypeDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +57,7 @@ public final class SynthesizerFactory {
 
 		if (Boolean.class.equals(detector.getType().getType())) {
 			RuntimeValues<Boolean> runtimeValuesInstance = RuntimeValues
-					.<Boolean> newInstance();
+					.newInstance();
 			JPFRunner<Boolean> constraintModelBuilder = new JPFRunner<Boolean>(
 					runtimeValuesInstance, statement, processor, spooner);
 			return new DefaultSynthesizer<Boolean>(constraintModelBuilder,
@@ -63,14 +65,14 @@ public final class SynthesizerFactory {
 		}
 		if (Integer.class.equals(detector.getType().getType())) {
 			RuntimeValues<Integer> runtimeValuesInstance = RuntimeValues
-					.<Integer> newInstance();
+					.newInstance();
 			JPFRunner<Integer> constraintModelBuilder = new JPFRunner<Integer>(
 					runtimeValuesInstance, statement, processor, spooner);
 			return new DefaultSynthesizer<Integer>(constraintModelBuilder,
 					statement, detector.getType(), processor);
 		} else if (Double.class.equals(detector.getType().getType())) {
 			RuntimeValues<Double> runtimeValuesInstance = RuntimeValues
-					.<Double> newInstance();
+					.newInstance();
 			JPFRunner<Double> constraintModelBuilder = new JPFRunner<Double>(
 					runtimeValuesInstance, statement, processor, spooner);
 			return new DefaultSynthesizer<Double>(constraintModelBuilder,

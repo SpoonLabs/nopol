@@ -49,6 +49,6 @@ public abstract class SymbolicProcessor extends AbstractProcessor<CtStatement> {
 	private Class<?> type;
 	protected String defaultValue;
 	private String value;
-	private CtStatement target;
-	protected Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final CtStatement target;
+	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 }

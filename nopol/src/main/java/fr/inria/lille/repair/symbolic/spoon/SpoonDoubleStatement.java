@@ -36,7 +36,7 @@ public enum SpoonDoubleStatement implements Predicate<CtElement> {
 		while (parent != null && !(parent instanceof CtClass<?>)) {
 			parent = parent.getParent();
 		}
-		if (parent != null && parent instanceof CtClass<?>) {
+		if (parent != null) {
 			return ((CtClass<?>) parent).getActualClass();
 		}
 		return null;

@@ -1,12 +1,12 @@
 package fr.inria.lille.repair.nopol.synth;
 
-import static fr.inria.lille.repair.nopol.patch.Patch.NO_PATCH;
+import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
 
 import java.net.URL;
 import java.util.Collection;
 
 import xxl.java.junit.TestCase;
-import fr.inria.lille.repair.nopol.patch.Patch;
+import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.spoon.ConditionalProcessor;
 
 public interface Synthesizer {

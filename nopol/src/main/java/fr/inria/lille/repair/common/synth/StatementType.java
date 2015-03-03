@@ -1,4 +1,4 @@
-package fr.inria.lille.repair.symbolic.synth;
+package fr.inria.lille.repair.common.synth;
 
 public enum StatementType {
 	CONDITIONAL(Boolean.class),

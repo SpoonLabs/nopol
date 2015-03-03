@@ -13,12 +13,12 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.repair.symbolic.patch;
+package fr.inria.lille.repair.common.patch;
 
 import java.io.File;
 
 import fr.inria.lille.repair.nopol.SourceLocation;
-import fr.inria.lille.repair.symbolic.synth.StatementType;
+import fr.inria.lille.repair.common.synth.StatementType;
 
 /**
  * @author Favio D. DeMarco

@@ -87,6 +87,6 @@ public final class LoggingInstrumenter<T> extends
 		return subprocessor;
 	}
 
-	private SymbolicProcessor subprocessor;
-	private RuntimeValues<T> runtimeValues;
+	private final SymbolicProcessor subprocessor;
+	private final RuntimeValues<T> runtimeValues;
 }

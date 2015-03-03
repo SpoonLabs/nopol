@@ -134,16 +134,16 @@ public class LiteralReplacer extends SymbolicProcessor {
 			ctElement.replace(getFactory().Code().createCodeSnippetExpression(
 					"guess_fix"));
 		} else {
-			if (getValue().equals("1")) {
-				ctElement.replace(getFactory().Code()
-						.createCodeSnippetExpression("true"));
-			} else if (getValue().equals("0")) {
-				ctElement.replace(getFactory().Code()
-						.createCodeSnippetExpression("false"));
-			} else {
-				ctElement.replace(getFactory().Code()
-						.createCodeSnippetExpression(getValue()));
-			}
+            if(getValue().equals("1")) {
+                ctElement.replace(getFactory().Code()
+                        .createCodeSnippetExpression("true"));
+            } else if(getValue().equals("0")) {
+                ctElement.replace(getFactory().Code()
+                        .createCodeSnippetExpression("false"));
+            } else {
+                ctElement.replace(getFactory().Code()
+                        .createCodeSnippetExpression(getValue()));
+            }
 		}
 	}
 }

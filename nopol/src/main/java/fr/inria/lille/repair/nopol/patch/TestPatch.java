@@ -17,6 +17,7 @@ package fr.inria.lille.repair.nopol.patch;
 
 import java.io.File;
 
+import fr.inria.lille.repair.common.patch.Patch;
 import org.junit.runner.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

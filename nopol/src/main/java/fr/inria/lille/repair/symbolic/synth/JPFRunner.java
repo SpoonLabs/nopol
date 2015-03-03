@@ -65,10 +65,10 @@ import gov.nasa.jpf.vm.VM;
 public final class JPFRunner<T> {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private RuntimeValues<T> runtimeValues;
-	private SourceLocation sourceLocation;
-	private SpoonedFile spoon;
-	private SymbolicProcessor processor;
+	private final RuntimeValues<T> runtimeValues;
+	private final SourceLocation sourceLocation;
+	private final SpoonedFile spoon;
+	private final SymbolicProcessor processor;
 
 	private final File outputSourceFile = new File("src-gen");
 	private final File outputCompiledFile = new File("target-gen");
@@ -147,7 +147,6 @@ public final class JPFRunner<T> {
 			});
 
 			executor.shutdown();
-
 			try {
 				future.get(60, TimeUnit.SECONDS);
 			} catch (InterruptedException e) {

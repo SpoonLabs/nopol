@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 
 import xxl.java.support.Singleton;
 import fr.inria.lille.repair.ProjectReference;
-import fr.inria.lille.repair.symbolic.patch.Patch;
-import fr.inria.lille.repair.symbolic.synth.StatementType;
+import fr.inria.lille.repair.common.patch.Patch;
+import fr.inria.lille.repair.common.synth.StatementType;
 
 public class SymbolicLauncher {
 	public static List<Patch> launch(File sourceFile, URL[] classpath,
@@ -69,10 +69,6 @@ public class SymbolicLauncher {
 		return symbolicFixer.repair();
 	}
 
-	protected SymbolicConfiguration configuration() {
-		return Singleton.of(SymbolicConfiguration.class);
-	}
-
 	protected Logger logger() {
 		return loggerFor(this);
 	}
@@ -89,6 +85,6 @@ public class SymbolicLauncher {
 		}
 	}
 
-	private ProjectReference project;
-	private StatementType type;
+	private final ProjectReference project;
+	private final StatementType type;
 }

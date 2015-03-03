@@ -15,11 +15,12 @@
  */
 package fr.inria.lille.repair.symbolic.synth;
 
-import static fr.inria.lille.repair.symbolic.patch.Patch.NO_PATCH;
+import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
 
 import java.net.URL;
 import java.util.Collection;
 
+import fr.inria.lille.repair.common.synth.StatementType;
 import org.slf4j.LoggerFactory;
 
 import xxl.java.junit.TestCase;
@@ -28,8 +29,8 @@ import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.repair.nopol.SourceLocation;
-import fr.inria.lille.repair.symbolic.patch.Patch;
-import fr.inria.lille.repair.symbolic.patch.StringPatch;
+import fr.inria.lille.repair.common.patch.Patch;
+import fr.inria.lille.repair.common.patch.StringPatch;
 import fr.inria.lille.repair.symbolic.spoon.SymbolicProcessor;
 
 /**
@@ -85,8 +86,8 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
 			return NO_PATCH;
 		}
 		ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis();
-		CodeGenesis genesis = synthesis.<T> codesSynthesisedFrom(
-				(Class<T>) (type.getType()), data);
+		CodeGenesis genesis = synthesis.codesSynthesisedFrom(
+                (Class<T>) (type.getType()), data);
 		if (!genesis.isSuccessful()) {
 			return NO_PATCH;
 		}
