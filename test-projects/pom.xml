@@ -4,6 +4,13 @@
   <artifactId>test-projects</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>test-projects</name>
+
+  <properties>
+    <default.encoding>UTF-8</default.encoding>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
+  </properties>
+
   <dependencies>
   	<dependency>
   		<groupId>junit</groupId>
