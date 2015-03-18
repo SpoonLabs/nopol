@@ -59,8 +59,11 @@ public class NoPolLauncher {
 		System.out.println("----INFORMATION----");
 		System.out.println("Nb Statements Analyzed : "+SynthesizerFactory.getNbStatementsAnalysed());
 		System.out.println("Nb Statements with Angelic Value Found : "+DefaultSynthesizer.getNbStatementsWithAngelicValue());
+        System.out.println("Nb inputs in SMT : "+DefaultSynthesizer.getDataSize());
+        System.out.println("Nb variables in SMT : "+DefaultSynthesizer.getNbVariables());
 		System.out.println("Nopol Execution time : "+ executionTime +"ms");
-		
+		// variable in
+        // contrainte in smt
 		if ( ! patches.isEmpty() ){
 			System.out.println("----PATCH FOUND----");
 			for ( Patch patch : patches ){

@@ -39,10 +39,13 @@ import fr.inria.lille.repair.common.synth.StatementType;
  */
 public final class DefaultSynthesizer implements Synthesizer {
 
-	private final SourceLocation sourceLocation;
+
+    private final SourceLocation sourceLocation;
 	private final ConstraintModelBuilder constraintModelBuilder;
 	private final StatementType type;
 	private static int nbStatementsWithAngelicValue = 0;
+    private static int dataSize = 0;
+    private static int nbVariables;
 	private ConditionalProcessor conditionalProcessor;
 
 	public DefaultSynthesizer(ConstraintModelBuilder constraintModelBuilder, SourceLocation sourceLocation, StatementType type, File outputFolder, ConditionalProcessor processor) {
@@ -81,6 +84,8 @@ public final class DefaultSynthesizer implements Synthesizer {
 		if (! genesis.isSuccessful()) {
 			return NO_PATCH;
 		}
+        DefaultSynthesizer.dataSize = dataSize;
+        DefaultSynthesizer.nbVariables = data.iterator().next().inputs().keySet().size();
 		return new StringPatch(genesis.returnStatement(), sourceLocation, type);
 	}
 	
@@ -88,9 +93,18 @@ public final class DefaultSynthesizer implements Synthesizer {
 		return nbStatementsWithAngelicValue;
 	}
 
-	@Override
+    public static int getDataSize() {
+        return dataSize;
+    }
+
+    public static int getNbVariables() {
+        return nbVariables;
+    }
+
+    @Override
 	public ConditionalProcessor getConditionalProcessor() {
 		return conditionalProcessor;
 	}
+
 
 }
