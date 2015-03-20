@@ -257,7 +257,8 @@ public class SymbolicTestRealBugs extends TestUtility {
                 new String[]{"org.apache.commons.lang.time.StopWatchTest"});
         fixComparison(
                 patch,
-                "(org.apache.commons.lang.time.StopWatch.STATE_RUNNING)==(org.apache.commons.lang.time.StopWatch.this.runningState)");
+                "(org.apache.commons.lang.time.StopWatch.STATE_RUNNING)==(org.apache.commons.lang.time.StopWatch.this.runningState)",
+                "(org.apache.commons.lang.time.StopWatch.this.runningState)==(org.apache.commons.lang.time.StopWatch.STATE_RUNNING)");
     }
 
     @Test
@@ -295,7 +296,7 @@ public class SymbolicTestRealBugs extends TestUtility {
         fixComparison(patch, "(start)==(seqEnd)");
     }
 
-    @Ignore
+    //@Ignore
     @Test
     public void AM1() {
         boolean isMaven = true;
