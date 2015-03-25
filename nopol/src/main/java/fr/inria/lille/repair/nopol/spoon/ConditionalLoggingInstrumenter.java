@@ -6,9 +6,7 @@ import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.insertBefo
 import java.util.Collection;
 
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.*;
 import xxl.java.container.classic.MetaMap;
 import xxl.java.container.map.Multimap;
 import fr.inria.lille.commons.spoon.collectable.CollectableValueFinder;
@@ -31,10 +29,16 @@ public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtSt
 	@Override
 	public void process(CtStatement statement) {
 		String evaluationAccess = "runtimeAngelicValue";
-		String evaluationValue = angelicInvocation(subprocessor().defaultCondition());
-		CtLocalVariable<Boolean> evaluation = newLocalVariableDeclaration(statement.getFactory(), boolean.class, evaluationAccess, evaluationValue);
+
+        CtLocalVariable<Boolean> defaultValue = newLocalVariableDeclaration(statement.getFactory(), Boolean.class, "spoonDefaultValue", "false");
+        insertBeforeUnderSameParent(defaultValue, statement);
+        CtCodeSnippetStatement defaultValueEvaluation = getFactory().Code().createCodeSnippetStatement("try{spoonDefaultValue=" + subprocessor().defaultCondition() + ";}catch(" + Exception.class.getCanonicalName()  +" e){}");
+        insertBeforeUnderSameParent(defaultValueEvaluation, statement);
+
+        String evaluationValue = angelicInvocation("spoonDefaultValue");
+		CtLocalVariable<Boolean> evaluation = newLocalVariableDeclaration(statement.getFactory(), Boolean.class, evaluationAccess, evaluationValue);
 		insertBeforeUnderSameParent(evaluation, statement);
-		appendValueCollection(statement, evaluationAccess);
+		appendValueCollection(statement, evaluationAccess, "spoonDefaultValue");
 		subprocessor().processCondition(statement, evaluationAccess);
 	}
 	
@@ -42,7 +46,7 @@ public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtSt
 		return AngelicExecution.invocation(booleanSnippet);
 	}
 	
-	public void appendValueCollection(CtStatement element, String outputName) {
+	public void appendValueCollection(CtStatement element, String outputName, String...ignore) {
 		CollectableValueFinder finder;
 		if (CtIf.class.isInstance(element)) {
 			finder = CollectableValueFinder.valueFinderFromIf((CtIf) element);
@@ -52,6 +56,10 @@ public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtSt
 		Collection<String> collectables = finder.reachableVariables();
 		Multimap<String, String> getters = finder.accessibleGetters();
 		collectables.remove(outputName);
+        for (int i = 0; i < ignore.length; i++) {
+            String s = ignore[i];
+            collectables.remove(s);
+        }
 		RuntimeValuesInstrumenter.runtimeCollectionBefore(element,  MetaMap.autoMap(collectables), getters, outputName, runtimeValues());
 	}
 	

@@ -182,12 +182,12 @@ public abstract class SpoonedFile {
 	protected File sourceFile() {
 		return sourceFile;
 	}
-	
-	protected URL[] projectClasspath() {
+
+    public URL[] projectClasspath() {
 		return projectClasspath;
 	}
 	
-	protected URL[] compilationClasspath() {
+	public URL[] compilationClasspath() {
 		if (compilationClasspath == null) {
 			List<URL> urls = MetaList.newArrayList(projectClasspath());
 			urls.addAll(asList(JavaLibrary.systemClasspathURLs()));
