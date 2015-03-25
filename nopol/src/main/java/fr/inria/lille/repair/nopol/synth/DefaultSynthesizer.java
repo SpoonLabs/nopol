@@ -20,10 +20,11 @@ import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 
+import com.gzoltar.core.instr.testing.TestResult;
 import org.slf4j.LoggerFactory;
 
-import xxl.java.junit.TestCase;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.trace.Specification;
@@ -61,7 +62,7 @@ public final class DefaultSynthesizer implements Synthesizer {
 	 * @see fr.inria.lille.jefix.synth.Synthesizer#buildPatch(java.net.URL[], java.lang.String[])
 	 */
 	@Override
-	public Patch buildPatch(URL[] classpath, String[] testClasses, Collection<TestCase> failures) {
+	public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, List<TestResult> failures) {
 		Collection<Specification<Boolean>> data = constraintModelBuilder.buildFor(classpath, testClasses, failures);
 
 		// XXX FIXME TODO move this

@@ -18,7 +18,10 @@ package fr.inria.lille.repair.nopol.synth;
 import java.io.File;
 import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 
+import com.gzoltar.core.instr.testing.TestResult;
+import fr.inria.lille.commons.spoon.SpoonedClass;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.slf4j.Logger;
@@ -49,23 +52,24 @@ public final class ConstraintModelBuilder {
 	public ConstraintModelBuilder(File sourceFolder, RuntimeValues<Boolean> runtimeValues, SourceLocation sourceLocation, Processor<?> processor, SpoonedProject spooner) {
 		this.sourceLocation = sourceLocation;
 		String qualifiedName = sourceLocation.getRootClassName();
-		classLoader = spooner.forked(qualifiedName).processedAndDumpedToClassLoader(processor);
+        SpoonedClass fork = spooner.forked(qualifiedName);
+		classLoader = fork.processedAndDumpedToClassLoader(processor);
 		this.runtimeValues = runtimeValues;
 	}
 
 	/**
 	 * @see fr.inria.lille.repair.nopol.synth.ConstraintModelBuilder#buildFor(java.net.URL[], java.lang.String[])
 	 */
-	public Collection<Specification<Boolean>> buildFor(URL[] classpath, String[] testClasses, Collection<TestCase> failures) {
+	public Collection<Specification<Boolean>> buildFor(URL[] classpath, List<TestResult> testClasses, List<TestResult> failures) {
 		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<Boolean>(runtimeValues);
 		AngelicExecution.enable();
-		CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, listener);
+		CompoundResult firstResult = TestSuiteExecution.runTestResult(failures, classLoader, listener);
 		AngelicExecution.flip();
-		CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, listener);
+		CompoundResult secondResult = TestSuiteExecution.runTestResult(failures, classLoader, listener);
 		AngelicExecution.disable();
 		if (determineViability(firstResult, secondResult)) {
 			/* to collect information for passing tests */
-			TestSuiteExecution.runCasesIn(testClasses, classLoader, listener);
+			TestSuiteExecution.runTestResult(testClasses, classLoader, listener);
 		}
 		return listener.specifications();
 	}

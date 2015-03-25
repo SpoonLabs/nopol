@@ -19,10 +19,11 @@ import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
+import com.gzoltar.core.components.Component;
+import com.gzoltar.core.components.Statement;
+import com.gzoltar.core.instr.testing.TestResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,12 +56,6 @@ public class NoPol {
 	private final StatementType type;
 	private static boolean singlePatch = true;
 
-	/**
-	 * @param rootPackage
-	 * @param sourceFolder
-	 * @param classpath
-	 * @param type 
-	 */
 	public NoPol(final File sourceFile, final URL[] classpath, StatementType type) {
 		this.classpath = classpath;
 		this.sourceFile = sourceFile;
@@ -77,10 +72,35 @@ public class NoPol {
 	
 	public List<Patch> build(String[] testClasses) {
 		Collection<SuspiciousStatement> statements = gZoltar.sortBySuspiciousness(testClasses);
+		Map<SourceLocation, List<TestResult>> testListPerStatement = getTestListPerStatement();
 		if (statements.isEmpty()) {
 			System.out.println("No suspicious statements found.");
 		}
-		return solveWithMultipleBuild(statements, testClasses, failingTests(testClasses));
+		List<TestResult> faillingClassTest = new ArrayList<>();
+		for (TestResult testResult : gZoltar.getGzoltar().getTestResults()) {
+			if(!testResult.wasSuccessful()) {
+				faillingClassTest.add(testResult);
+			}
+		}
+		return solveWithMultipleBuild(statements,testListPerStatement,testClasses, faillingClassTest);
+	}
+
+	private Map<SourceLocation, List<TestResult>> getTestListPerStatement() {
+		Map<SourceLocation, List<TestResult>> results = new HashMap<>();
+		List<TestResult> testResults = gZoltar.getGzoltar().getTestResults();
+		for (int i = 0; i < testResults.size(); i++) {
+			TestResult testResult = testResults.get(i);
+			List<Component> components = testResult.getCoveredComponents();
+			for (int j = 0; j < components.size(); j++) {
+				Statement component = (Statement) components.get(j);
+				SourceLocation sourceLocation = new SourceLocation(component.getMethod().getParent().getLabel(), component.getLineNumber());
+				if(!results.containsKey(sourceLocation)) {
+					results.put(sourceLocation, new ArrayList<TestResult>());
+				}
+				results.get(sourceLocation).add(testResult);
+			}
+		}
+		return results;
 	}
 	
 	private Collection<TestCase> failingTests(String[] testClasses) {
@@ -96,15 +116,16 @@ public class NoPol {
 	 * build
 	 * try to find patch
 	 */
-	private List<Patch> solveWithMultipleBuild(Collection<SuspiciousStatement> statements, String[] testClasses, Collection<TestCase> failures){
+	private List<Patch> solveWithMultipleBuild(Collection<SuspiciousStatement> statements, Map<SourceLocation, List<TestResult>> testListPerStatement, String[] testClasses, List<TestResult> failures){
 		List<Patch> patches = new ArrayList<Patch>();
 		for (SuspiciousStatement statement : statements) {
 			try {
 				if ( !statement.getSourceLocation().getContainingClassName().contains("Test")){ // Avoid modification on test cases
 					logger.debug("Analysing {}", statement);
-					Synthesizer synth = new SynthesizerFactory(sourceFile, spooner, type).getFor(statement.getSourceLocation());
-					Patch patch = synth.buildPatch(classpath, testClasses, failures);
-					if (isOk(patch, testClasses, synth.getConditionalProcessor())) {
+					SourceLocation sourceLocation = new SourceLocation(statement.getSourceLocation().getContainingClassName(), statement.getSourceLocation().getLineNumber());
+					Synthesizer synth = new SynthesizerFactory(sourceFile, spooner, type).getFor(sourceLocation);
+					Patch patch = synth.buildPatch(classpath, testListPerStatement.get(sourceLocation), failures);
+					if (isOk(patch, testListPerStatement.get(sourceLocation), synth.getConditionalProcessor())) {
 						patches.add(patch);
 						if ( isSinglePatch() ){
 							break;
@@ -121,7 +142,7 @@ public class NoPol {
 		return patches;
 	}
 
-	private boolean isOk(Patch newRepair, String[] testClasses, ConditionalProcessor processor) {
+	private boolean isOk(Patch newRepair, List<TestResult> testClasses, ConditionalProcessor processor) {
 		if (newRepair == NO_PATCH) {
 			return false;
 		}

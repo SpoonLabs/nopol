@@ -65,7 +65,7 @@ public final class SourceLocation {
 			return sourceFolder; 
 		}
 		String pathToJavaFile = getRootClassName().replace('.', File.separatorChar);
-		return FileLibrary.fileFrom(sourceFolder.getAbsolutePath() + '/' +  pathToJavaFile + ".java");
+		return FileLibrary.fileFrom(sourceFolder.getAbsolutePath() + '/' + pathToJavaFile + ".java");
 	}
 
 	/**
@@ -74,5 +74,23 @@ public final class SourceLocation {
 	@Override
 	public String toString() {
 		return String.format("SourceLocation %s:%d", containingClassName, lineNumber);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = containingClassName != null ? containingClassName.hashCode() : 0;
+		result = 31 * result + lineNumber;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		SourceLocation that = (SourceLocation) o;
+
+		if (lineNumber != that.lineNumber) return false;
+		return !(containingClassName != null ? !containingClassName.equals(that.containingClassName) : that.containingClassName != null);
 	}
 }

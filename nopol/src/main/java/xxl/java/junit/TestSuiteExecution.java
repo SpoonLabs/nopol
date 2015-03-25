@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.gzoltar.core.instr.testing.TestResult;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
@@ -35,15 +36,31 @@ public class TestSuiteExecution {
 	public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread) {
 		return runTestCase(testCase, classLoaderForTestThread, nullRunListener());
 	}
-	
+
 	public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread, RunListener listener) {
 		return executionResult(new JUnitSingleTestRunner(testCase, listener), classLoaderForTestThread);
+	}
+
+	public static Result runTestCase(TestResult testCase, ClassLoader classLoaderForTestThread, RunListener listener) {
+		return executionResult(new JUnitSingleTestResultRunner(testCase, listener), classLoaderForTestThread);
 	}
 	
 	public static CompoundResult runTestCases(Collection<TestCase> testCases, ClassLoader classLoaderForTestThread) {
 		return runTestCases(testCases, classLoaderForTestThread, nullRunListener());
 	}
-	
+
+	public static CompoundResult runTestResult(Collection<TestResult> testCases, ClassLoader classLoaderForTestThread) {
+		return runTestResult(testCases, classLoaderForTestThread, nullRunListener());
+	}
+
+	public static CompoundResult runTestResult(Collection<TestResult> testCases, ClassLoader classLoaderForTestThread, RunListener listener) {
+		List<Result> results = MetaList.newArrayList(testCases.size());
+		for (TestResult testCase : testCases) {
+			results.add(runTestCase(testCase, classLoaderForTestThread, listener));
+		}
+		return new CompoundResult(results);
+	}
+
 	public static CompoundResult runTestCases(Collection<TestCase> testCases, ClassLoader classLoaderForTestThread, RunListener listener) {
 		List<Result> results = MetaList.newArrayList(testCases.size());
 		for (TestCase testCase : testCases) {

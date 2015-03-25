@@ -3,9 +3,9 @@ package fr.inria.lille.repair.nopol.synth;
 import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
 
 import java.net.URL;
-import java.util.Collection;
+import java.util.List;
 
-import xxl.java.junit.TestCase;
+import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.spoon.ConditionalProcessor;
 
@@ -13,7 +13,7 @@ public interface Synthesizer {
 
 	static final Synthesizer NO_OP_SYNTHESIZER = new Synthesizer() {
 		@Override
-		public Patch buildPatch(URL[] classpath, String[] testClasses, Collection<TestCase> failures) {
+		public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, List<TestResult> failures) {
 			return NO_PATCH;
 		}
 
@@ -23,7 +23,7 @@ public interface Synthesizer {
 		}
 	};
 
-	Patch buildPatch(URL[] classpath, String[] testClasses, Collection<TestCase> failures);
+	Patch buildPatch(URL[] classpath, List<TestResult> testClasses, List<TestResult> failures);
 	
 	ConditionalProcessor getConditionalProcessor();
 }

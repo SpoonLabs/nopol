@@ -16,7 +16,9 @@
 package fr.inria.lille.repair.nopol.patch;
 
 import java.io.File;
+import java.util.List;
 
+import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.repair.common.patch.Patch;
 import org.junit.runner.Result;
 import org.slf4j.Logger;
@@ -49,14 +51,14 @@ public final class TestPatch {
 		return SPOON_DIRECTORY;
 	}
 	
-	public boolean passesAllTests(Patch patch, String[] testClasses, ConditionalProcessor processor) {
+	public boolean passesAllTests(Patch patch, List<TestResult> testClasses, ConditionalProcessor processor) {
 		logger.info("Applying patch: {}", patch);
 		String qualifiedName = patch.getRootClassName();
 		SpoonedClass spoonedClass = spoonedProject.forked(qualifiedName);
 		processor.setDefaultCondition(patch.asString());
 		ClassLoader loader = spoonedClass.processedAndDumpedToClassLoader(processor);
 		logger.info("Running test suite to check the patch \"{}\" is working", patch.asString());
-		Result result = TestSuiteExecution.runCasesIn(testClasses, loader);
+		Result result = TestSuiteExecution.runTestResult(testClasses, loader);
 		if (result.wasSuccessful()) {
 			spoonedClass.generateOutputFile(destinationFolder());
 			return true;
