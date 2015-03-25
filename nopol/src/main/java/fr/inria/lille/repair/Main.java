@@ -201,7 +201,7 @@ public class Main {
 				throw new RuntimeException("Invalid repair type: " + execution);
 			}
 		} else if (mode.equals("ranking")) {
-			Ranking ranking = new Ranking(sourceFile, classpath);
+			Ranking ranking = new Ranking(sourceFile, classpath, tests);
 			System.out.println(ranking.summary());
 		} else {
 			throw new RuntimeException("Invalid repair method: " + mode);
