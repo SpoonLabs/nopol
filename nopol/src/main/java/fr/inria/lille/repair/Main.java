@@ -15,238 +15,231 @@
  */
 package fr.inria.lille.repair;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
 
-import xxl.java.library.FileLibrary;
-import xxl.java.library.JavaLibrary;
-
-import com.martiansoftware.jsap.JSAP;
-import com.martiansoftware.jsap.JSAPException;
-import com.martiansoftware.jsap.JSAPResult;
-import com.martiansoftware.jsap.UnflaggedOption;
-
-import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
+import com.martiansoftware.jsap.*;
+import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.infinitel.InfinitelLauncher;
 import fr.inria.lille.repair.nopol.NoPolLauncher;
 import fr.inria.lille.repair.ranking.Ranking;
 import fr.inria.lille.repair.symbolic.SymbolicLauncher;
-import fr.inria.lille.repair.common.synth.StatementType;
+import xxl.java.library.FileLibrary;
+import xxl.java.library.JavaLibrary;
+
+import java.io.File;
+import java.net.URL;
+import java.util.Iterator;
 
 public class Main {
 	private static JSAP jsap = new JSAP();
-	private static String mode;
-	private static String type;
-	private static String execution;
-	private static String[] tests;
-	private static String solverPath;
-	private static String solver;
-	private static String source;
-	private static String classpath;
 
-	private static void parseArguments(String[] args) throws JSAPException {
-		UnflaggedOption opt1 = new UnflaggedOption("mode")
-				.setUsageName("repair|ranking")
-				.setStringParser(JSAP.STRING_PARSER).setDefault("repair")
-				.setRequired(true);
-		opt1.setHelp("The nopol mode. The repair mode is used to generate patch. The ranking mode is used to display suspicious statements");
-		jsap.registerParameter(opt1);
-		JSAPResult config = jsap.parse(args[0]);
-
-		mode = config.getString("mode");
-		if (!mode.equals("repair") && !mode.equals("ranking")) {
-			System.err
-					.println("Error: the mode \"" + mode + "\" is not valid.");
-
-			showUsage();
-		} else {
-			//jsap = new JSAP();
-		}
-		type = "";
-		if (mode.equals("repair")) {
-			String[] types = new String[] { "loop", "condition",
-					"precondition", "arithmetic" };
-			UnflaggedOption opt2 = new UnflaggedOption("type")
-					.setUsageName("statement-type")
-					.setStringParser(JSAP.STRING_PARSER)
-					.setDefault("condition").setRequired(true);
-			opt2.setHelp("The statement to analyse (possible values: loop, condition, precondition, arithmetic).");
-			jsap.registerParameter(opt2);
-
-			config = jsap.parse(args);
-			type = config.getString("type");
-			boolean found = false;
-			for (String string : types) {
-				if (string.equals(type)) {
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				showUsage();
-			}
-			if (!type.equals("loop")) {
-				UnflaggedOption opt3 = new UnflaggedOption("execution")
-						.setStringParser(JSAP.STRING_PARSER)
-						.setDefault(new String[] { "angelic", "symbolic" })
-						.setRequired(true).setGreedy(false);
-				opt3.setHelp("The execution type can be angelic or symbolic");
-				jsap.registerParameter(opt3);
-				config = jsap.parse(args);
-				execution = config.getString("execution");
-			}
-		}
-
-		UnflaggedOption opt4 = new UnflaggedOption("source")
-				.setStringParser(JSAP.STRING_PARSER).setRequired(true)
-				.setGreedy(false);
-		opt4.setHelp("The source folder of the project.");
-		jsap.registerParameter(opt4);
-		config = jsap.parse(args);
-		source = config.getString("source");
-
-		UnflaggedOption opt5 = new UnflaggedOption("classpath")
-				.setStringParser(JSAP.STRING_PARSER).setRequired(true)
-				.setGreedy(false);
-		opt5.setHelp("The classpath of the project.");
-		jsap.registerParameter(opt5);
-
-		if (mode.equals("repair")) {
-			UnflaggedOption opt6 = new UnflaggedOption("solver")
-					.setUsageName("z3|cvc4")
-					.setStringParser(JSAP.STRING_PARSER).setRequired(true)
-					.setGreedy(false);
-			opt6.setHelp("The solver SAT type (possible values: z3 and cvc4).");
-			jsap.registerParameter(opt6);
-
-			UnflaggedOption opt7 = new UnflaggedOption("solver-path")
-					.setStringParser(JSAP.STRING_PARSER).setRequired(true)
-					.setGreedy(false);
-			opt7.setHelp("The path to chosen solver binary");
-			jsap.registerParameter(opt7);
-		}
-
-		UnflaggedOption opt8 = new UnflaggedOption("tests").setList(true)
-				.setStringParser(JSAP.STRING_PARSER).setRequired(false)
-				.setGreedy(false);
-		opt8.setHelp("Test classes");
-		jsap.registerParameter(opt8);
-
-		config = jsap.parse(args);
-		classpath = config.getString("classpath");
-		solver = config.getString("solver");
-		solverPath = config.getString("solver-path");
-		tests = config.getStringArray("tests");
-		if (!config.success()) {
-
-			System.err.println();
-
-			// print out specific error messages describing the problems
-			// with the command line, THEN print usage, THEN print full
-			// help. This is called "beating the user with a clue stick."
-			for (java.util.Iterator<?> errs = config.getErrorMessageIterator(); errs
-					.hasNext();) {
-				System.err.println("Error: " + errs.next());
-			}
-
-			System.err.println();
-			System.err.println("Usage: java " + Main.class.getName());
-			System.err.println("                " + jsap.getUsage());
-			System.err.println();
-			System.err.println(jsap.getHelp());
-			System.exit(1);
-		}
-	}
-
-	private static StatementType parseStatementType(String type) {
-		if(type.equals("condition")) {
-			return StatementType.CONDITIONAL;
-		} else if(type.equals("precondition")) {
-			return StatementType.PRECONDITION;
-		} else if(type.equals("arithmetic")) {
-			return StatementType.INTEGER_LITERAL;
-		} 
-		return null;
-	}
 	public static void main(String[] args) {
 		try {
+			initJSAP();
 			parseArguments(args);
 
-			File sourceFile = FileLibrary.openFrom(source);
-			URL[] classpath = JavaLibrary.classpathFrom(Main.classpath);
-			new Main(mode, execution, sourceFile, classpath, parseStatementType(type), solver,
-					solverPath, tests);
-			// new Main(args, repairMethod, sourceFile, classpath);
+			File sourceFile = FileLibrary.openFrom(Config.INSTANCE.getProjectSourcePath());
+			URL[] classpath = JavaLibrary.classpathFrom(Config.INSTANCE.getProjectClasspath());
+
+			switch (Config.INSTANCE.getMode()) {
+				case REPAIR:
+					switch (Config.INSTANCE.getType()) {
+						case LOOP:
+							InfinitelLauncher.launch(sourceFile, classpath, Config.INSTANCE.getProjectTests());
+							break;
+						default:
+							switch (Config.INSTANCE.getOracle()) {
+								case ANGELIC:
+									NoPolLauncher.launch(sourceFile, classpath, Config.INSTANCE.getType(), Config.INSTANCE.getProjectTests());
+									break;
+								case SYMBOLIC:
+									SymbolicLauncher.launch(sourceFile, classpath, Config.INSTANCE.getType(), Config.INSTANCE.getProjectTests());
+									break;
+							}
+							break;
+					}
+					break;
+				case RANKING:
+					Ranking ranking = new Ranking(sourceFile, classpath, Config.INSTANCE.getProjectTests());
+					System.out.println(ranking.summary());
+					break;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			showUsage();
 		}
 	}
 
-	private Main(String mode, String execution, File sourceFile,
-			URL[] classpath, StatementType type, String solver, String solverPath,
-			String[] tests) {
-		if (mode.equals("repair")) {
-			SolverFactory.setSolver(solver, solverPath);
-			if (type.equals("loop")) {
-				InfinitelLauncher.launch(sourceFile, classpath, tests);
-			} else if (execution.equals("symbolic")) {
-				SymbolicLauncher.launch(sourceFile, classpath, type, tests);
-			} else if (execution.equals("angelic")) {
-				NoPolLauncher.launch(sourceFile, classpath, type, tests);
-			} else {
-				throw new RuntimeException("Invalid repair type: " + execution);
-			}
-		} else if (mode.equals("ranking")) {
-			Ranking ranking = new Ranking(sourceFile, classpath, tests);
-			System.out.println(ranking.summary());
-		} else {
-			throw new RuntimeException("Invalid repair method: " + mode);
-		}
-	}
-
-	/*private Main(String[] args, String repairMethod, File sourceFile,
-			URL[] classpath) {
-		String[] remainder = Arrays.copyOfRange(args, 5, args.length);
-		if (repairMethod.equalsIgnoreCase("nopol")) {
-			NoPolLauncher.launch(sourceFile, classpath, remainder);
-		} else if (repairMethod.equalsIgnoreCase("infinitel")) {
-			InfinitelLauncher.launch(sourceFile, classpath, remainder);
-		} else if (repairMethod.equalsIgnoreCase("symbolic")) {
-			SymbolicLauncher.launch(sourceFile, classpath, remainder);
-		} else if (repairMethod.equalsIgnoreCase("ranking")) {
-			Ranking ranking = new Ranking(sourceFile, classpath, remainder);
-			System.out.println(ranking.summary());
-		} else {
-			throw new RuntimeException("Invalid repair method: " + repairMethod);
-		}
-	}*/
-
 	private static void showUsage() {
 		System.err.println();
-		System.err.println("Usage: java " + Main.class.getName());
-		System.err.println("                " + jsap.getUsage());
+		System.err.println("Usage: java -jar nopol.jar");
+		System.err.println("                          " + jsap.getUsage());
 		System.err.println();
 		System.err.println(jsap.getHelp());
-		System.exit(1);
+	}
 
-		try {
-			InputStream usageDeatil = FileLibrary.resource("/usage")
-					.openStream();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					usageDeatil));
-			String currentLine = "";
-			while (currentLine != null) {
-				System.out.println(currentLine);
-				currentLine = reader.readLine();
+	private static void parseArguments(String[] args) {
+		JSAPResult config = jsap.parse(args);
+		if (!config.success()) {
+			System.err.println();
+			for (Iterator<?> errs = config.getErrorMessageIterator(); errs.hasNext();) {
+				System.err.println("Error: " + errs.next());
 			}
-			reader.close();
-		} catch (Exception e) {
-			throw new RuntimeException(
-					"Unexpected: usage detail file not found");
+			showUsage();
+			System.exit(1);
 		}
+
+		Config.INSTANCE.setType(strToStatementType(config.getString("type")));
+		Config.INSTANCE.setMode(strToMode(config.getString("mode")));
+		Config.INSTANCE.setSynthesis(strToSynthesis(config.getString("synthesis")));
+		Config.INSTANCE.setOracle(strToOracle(config.getString("oracle")));
+		Config.INSTANCE.setSolver(strToSolver(config.getString("solver")));
+		Config.INSTANCE.setSolverPath(config.getString("solverPath"));
+		Config.INSTANCE.setProjectClasspath(config.getString("classpath"));
+		Config.INSTANCE.setProjectSourcePath(config.getString("source"));
+		Config.INSTANCE.setProjectTests(config.getStringArray("test"));
+	}
+
+	private static Config.NopolSynthesis strToSynthesis(String str) {
+		if (str.equals("smt")) {
+			return Config.NopolSynthesis.SMT;
+		} else if (str.equals("brutpol")) {
+			return Config.NopolSynthesis.BRUTPOL;
+		}
+		throw new RuntimeException("Unknow Nopol oracle " + str);
+	}
+
+	private static Config.NopolOracle strToOracle(String str) {
+		if (str.equals("angelic")) {
+			return Config.NopolOracle.ANGELIC;
+		} else if (str.equals("symbolic")) {
+			return Config.NopolOracle.SYMBOLIC;
+		}
+		throw new RuntimeException("Unknow Nopol oracle " + str);
+	}
+
+	private static Config.NopolSolver strToSolver(String str) {
+		if (str.equals("z3")) {
+			return Config.NopolSolver.Z3;
+		} else if (str.equals("cvc4")) {
+			return Config.NopolSolver.CVC4;
+		}
+		throw new RuntimeException("Unknow Nopol solver " + str);
+	}
+
+	private static Config.NopolMode strToMode(String str) {
+		if (str.equals("repair")) {
+			return Config.NopolMode.REPAIR;
+		} else if (str.equals("ranking")) {
+			return Config.NopolMode.RANKING;
+		}
+		throw new RuntimeException("Unknow Nopol mode " + str);
+	}
+
+	private static StatementType strToStatementType(String str) {
+		if (str.equals("loop")) {
+			return StatementType.LOOP;
+		} else if (str.equals("condition")) {
+			return StatementType.CONDITIONAL;
+		} else if (str.equals("precondition")) {
+			return StatementType.PRECONDITION;
+		} else if (str.equals("arithmetic")) {
+			return StatementType.INTEGER_LITERAL;
+		}
+		return StatementType.NONE;
+	}
+
+	private static void initJSAP() throws JSAPException {
+		FlaggedOption modeOpt = new FlaggedOption("mode");
+		modeOpt.setRequired(false);
+		modeOpt.setAllowMultipleDeclarations(false);
+		modeOpt.setLongFlag("mode");
+		modeOpt.setShortFlag('m');
+		modeOpt.setUsageName("repair|ranking");
+		modeOpt.setStringParser(JSAP.STRING_PARSER);
+		modeOpt.setDefault("repair");
+		modeOpt.setHelp("Define the mode of execution.");
+		jsap.registerParameter(modeOpt);
+
+		FlaggedOption typeOpt = new FlaggedOption("type");
+		typeOpt.setRequired(false);
+		typeOpt.setAllowMultipleDeclarations(false);
+		typeOpt.setLongFlag("type");
+		typeOpt.setShortFlag('e');
+		typeOpt.setUsageName("loop|condition|precondition|arithmetic");
+		typeOpt.setStringParser(JSAP.STRING_PARSER);
+		typeOpt.setDefault("condition");
+		typeOpt.setHelp("The type of statement to analyze (only used with repair mode).");
+		jsap.registerParameter(typeOpt);
+
+		FlaggedOption oracleOpt = new FlaggedOption("oracle");
+		oracleOpt.setRequired(false);
+		oracleOpt.setAllowMultipleDeclarations(false);
+		oracleOpt.setLongFlag("oracle");
+		oracleOpt.setShortFlag('o');
+		oracleOpt.setUsageName("angelic|symbolic");
+		oracleOpt.setStringParser(JSAP.STRING_PARSER);
+		oracleOpt.setDefault("angelic");
+		oracleOpt.setHelp("Define the oracle (only used with repair mode).");
+		jsap.registerParameter(oracleOpt);
+
+		FlaggedOption synthesisOpt = new FlaggedOption("synthesis");
+		synthesisOpt.setRequired(false);
+		synthesisOpt.setAllowMultipleDeclarations(false);
+		synthesisOpt.setLongFlag("synthesis");
+		synthesisOpt.setShortFlag('y');
+		synthesisOpt.setUsageName("smt|brutpol");
+		synthesisOpt.setStringParser(JSAP.STRING_PARSER);
+		synthesisOpt.setDefault("smt");
+		synthesisOpt.setHelp("Define the patch synthesis.");
+		jsap.registerParameter(synthesisOpt);
+
+		FlaggedOption solverOpt = new FlaggedOption("solver");
+		solverOpt.setRequired(false);
+		solverOpt.setAllowMultipleDeclarations(false);
+		solverOpt.setLongFlag("solver");
+		solverOpt.setShortFlag('l');
+		solverOpt.setUsageName("z3|cvc4");
+		solverOpt.setStringParser(JSAP.STRING_PARSER);
+		solverOpt.setDefault("z3");
+		solverOpt.setHelp("Define the solver (only used with smt synthesis).");
+		jsap.registerParameter(solverOpt);
+
+		FlaggedOption solverPathOpt = new FlaggedOption("solverPath");
+		solverPathOpt.setRequired(false);
+		solverPathOpt.setAllowMultipleDeclarations(false);
+		solverPathOpt.setLongFlag("solver-path");
+		solverPathOpt.setShortFlag('p');
+		solverPathOpt.setStringParser(JSAP.STRING_PARSER);
+		solverPathOpt.setHelp("Define the solver binary path (only used with smt synthesis).");
+		jsap.registerParameter(solverPathOpt);
+
+		FlaggedOption sourceOpt = new FlaggedOption("source");
+		sourceOpt.setRequired(true);
+		sourceOpt.setAllowMultipleDeclarations(false);
+		sourceOpt.setLongFlag("source");
+		sourceOpt.setShortFlag('s');
+		sourceOpt.setStringParser(JSAP.STRING_PARSER);
+		sourceOpt.setHelp("Define the path to the source code of the project.");
+		jsap.registerParameter(sourceOpt);
+
+		FlaggedOption classpathOpt = new FlaggedOption("classpath");
+		classpathOpt.setRequired(true);
+		classpathOpt.setAllowMultipleDeclarations(false);
+		classpathOpt.setLongFlag("classpath");
+		classpathOpt.setShortFlag('c');
+		classpathOpt.setStringParser(JSAP.STRING_PARSER);
+		classpathOpt.setHelp("Define the classpath of the project.");
+		jsap.registerParameter(classpathOpt);
+
+		FlaggedOption testOpt = new FlaggedOption("test");
+		testOpt.setRequired(false);
+		testOpt.setAllowMultipleDeclarations(false);
+		testOpt.setLongFlag("test");
+		testOpt.setShortFlag('t');
+		testOpt.setList(true);
+		testOpt.setStringParser(JSAP.STRING_PARSER);
+		testOpt.setHelp("Define the tests of the project.");
+		jsap.registerParameter(testOpt);
 	}
 }

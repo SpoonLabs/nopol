@@ -1,6 +1,7 @@
 package fr.inria.lille.repair.common.synth;
 
 public enum StatementType {
+	LOOP(Boolean.class),
 	CONDITIONAL(Boolean.class),
 	PRECONDITION(Boolean.class),
 	INTEGER_LITERAL(Integer.class),
