@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.gzoltar.core.components.count.ComponentCount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,9 +71,9 @@ public class Ranking {
 			if (testResult.wasSuccessful()) {
 				successfulTests++;
 			}
-			List<Component> components = testResult.getCoveredComponents();
-			for (Iterator<?> iterator = components.iterator(); iterator.hasNext();) {
-				Statement component = (Statement) iterator.next();
+			List<ComponentCount> components = testResult.getCoveredComponents();
+			for (Iterator<ComponentCount> iterator = components.iterator(); iterator.hasNext();) {
+				Statement component = (Statement) iterator.next().getComponent();
 				String key = component.getMethod().getParent().getLabel() + ":"
 						+ component.getLineNumber();
 				System.out.println(component.getMethod());
