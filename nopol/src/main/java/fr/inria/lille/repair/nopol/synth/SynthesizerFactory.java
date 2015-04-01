@@ -19,7 +19,9 @@ import static fr.inria.lille.repair.nopol.synth.Synthesizer.NO_OP_SYNTHESIZER;
 
 import java.io.File;
 
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.synth.StatementTypeDetector;
+import fr.inria.lille.repair.nopol.synth.brutpol.BrutSynthesizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +62,7 @@ public final class SynthesizerFactory {
 
 	public Synthesizer getFor(final SourceLocation statement) {
 		nbStatementsAnalysed++;
-		ConditionalProcessor conditional = null;
+		ConditionalProcessor conditional;
 		RuntimeValues<Boolean> runtimeValues = runtimeValuesInstance;
 		SpoonedClass spoonCl = spooner.forked(statement.getRootClassName());
 
@@ -75,12 +77,18 @@ public final class SynthesizerFactory {
 				conditional = new ConditionalAdder(detector.statement());
 				break;
 			default:
-				logger.debug("No synthetizer found for {}.", statement);
+				logger.debug("No synthesizer found for {}.", statement);
 				return NO_OP_SYNTHESIZER;
 		}
-		Processor<CtStatement> processor = new ConditionalLoggingInstrumenter(runtimeValuesInstance, conditional);
-		ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, runtimeValues, statement, processor, spooner);
-		return new DefaultSynthesizer(constraintModelBuilder, statement, detector.getType(), sourceFolder, conditional);
+		switch (Config.INSTANCE.getSynthesis()) {
+			case SMT:
+				Processor<CtStatement> processor = new ConditionalLoggingInstrumenter(runtimeValuesInstance, conditional);
+				ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, runtimeValues, statement, processor, spooner);
+				return new DefaultSynthesizer(constraintModelBuilder, statement, detector.getType(), sourceFolder, conditional);
+			case BRUTPOL:
+				return new BrutSynthesizer(sourceFolder, statement, detector.getType(), conditional, spooner);
+		}
+		throw new RuntimeException("Unknown synthesizer");
 	}
 
 	public static int getNbStatementsAnalysed(){

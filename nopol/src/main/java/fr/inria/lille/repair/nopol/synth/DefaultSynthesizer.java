@@ -44,7 +44,7 @@ public final class DefaultSynthesizer implements Synthesizer {
     private final SourceLocation sourceLocation;
 	private final ConstraintModelBuilder constraintModelBuilder;
 	private final StatementType type;
-	private static int nbStatementsWithAngelicValue = 0;
+	public static int nbStatementsWithAngelicValue = 0;
     private static int dataSize = 0;
     private static int nbVariables;
 	private ConditionalProcessor conditionalProcessor;

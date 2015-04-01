@@ -1,6 +1,11 @@
 package fr.inria.lille.repair.nopol.synth;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class AngelicExecution {
+
+	public static List<Boolean> previousValue = new ArrayList<>();
 
 	public static String invocation(String booleanSnippet) {
 		return AngelicExecution.class.getName() + ".angelicValue(" + booleanSnippet + ")";
@@ -8,8 +13,10 @@ public final class AngelicExecution {
 	
 	public static boolean angelicValue(boolean condition) {
 		if (enabled()) {
+			previousValue.add(booleanValue());
 			return booleanValue();
 		}
+		previousValue.add(condition);
 		return condition;
 	}
 	
@@ -19,14 +26,17 @@ public final class AngelicExecution {
 	
 	public static void flip() {
 		booleanValue = ! booleanValue;
+		previousValue = new ArrayList<>();
 	}
 	
 	public static void enable() {
 		enabled = true;
+		previousValue = new ArrayList<>();
 	}
 	
 	public static void disable() {
 		enabled = false;
+		previousValue = new ArrayList<>();
 	}
 	
 	private static boolean enabled() {
