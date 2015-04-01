@@ -23,7 +23,9 @@ import java.util.*;
 
 import com.gzoltar.core.components.Component;
 import com.gzoltar.core.components.Statement;
+import com.gzoltar.core.components.count.ComponentCount;
 import com.gzoltar.core.instr.testing.TestResult;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,13 +78,7 @@ public class NoPol {
 		if (statements.isEmpty()) {
 			System.out.println("No suspicious statements found.");
 		}
-		List<TestResult> faillingClassTest = new ArrayList<>();
-		for (TestResult testResult : gZoltar.getGzoltar().getTestResults()) {
-			if(!testResult.wasSuccessful()) {
-				faillingClassTest.add(testResult);
-			}
-		}
-		return solveWithMultipleBuild(statements,testListPerStatement,testClasses, faillingClassTest);
+		return solveWithMultipleBuild(statements,testListPerStatement);
 	}
 
 	private Map<SourceLocation, List<TestResult>> getTestListPerStatement() {
@@ -90,9 +86,10 @@ public class NoPol {
 		List<TestResult> testResults = gZoltar.getGzoltar().getTestResults();
 		for (int i = 0; i < testResults.size(); i++) {
 			TestResult testResult = testResults.get(i);
-			List<Component> components = testResult.getCoveredComponents();
+			List<ComponentCount> components = testResult.getCoveredComponents();
 			for (int j = 0; j < components.size(); j++) {
-				Statement component = (Statement) components.get(j);
+				Statement component = (Statement) components.get(j).getComponent();
+
 				SourceLocation sourceLocation = new SourceLocation(component.getMethod().getParent().getLabel(), component.getLineNumber());
 				if(!results.containsKey(sourceLocation)) {
 					results.put(sourceLocation, new ArrayList<TestResult>());
@@ -116,7 +113,7 @@ public class NoPol {
 	 * build
 	 * try to find patch
 	 */
-	private List<Patch> solveWithMultipleBuild(Collection<SuspiciousStatement> statements, Map<SourceLocation, List<TestResult>> testListPerStatement, String[] testClasses, List<TestResult> failures){
+	private List<Patch> solveWithMultipleBuild(Collection<SuspiciousStatement> statements, Map<SourceLocation, List<TestResult>> testListPerStatement){
 		List<Patch> patches = new ArrayList<Patch>();
 		for (SuspiciousStatement statement : statements) {
 			try {
@@ -124,7 +121,18 @@ public class NoPol {
 					logger.debug("Analysing {}", statement);
 					SourceLocation sourceLocation = new SourceLocation(statement.getSourceLocation().getContainingClassName(), statement.getSourceLocation().getLineNumber());
 					Synthesizer synth = new SynthesizerFactory(sourceFile, spooner, type).getFor(sourceLocation);
-					Patch patch = synth.buildPatch(classpath, testListPerStatement.get(sourceLocation), failures);
+					List<TestResult> tests = testListPerStatement.get(sourceLocation);
+					List<TestResult> failures = new ArrayList<>();
+					for (int i = 0; i < tests.size(); i++) {
+						TestResult testResult = tests.get(i);
+						if(!testResult.wasSuccessful()) {
+							failures.add(testResult);
+						}
+					}
+					if(failures.isEmpty()) {
+						continue;
+					}
+					Patch patch = synth.buildPatch(classpath, tests, failures);
 					if (isOk(patch, testListPerStatement.get(sourceLocation), synth.getConditionalProcessor())) {
 						patches.add(patch);
 						if ( isSinglePatch() ){
