@@ -100,6 +100,13 @@
 			<version>0.9.7.1</version>
 		</dependency>
 		<dependency>
+			<groupId>java.nio</groupId>
+			<artifactId>jdi</artifactId>
+			<scope>system</scope>
+			<version>0.0.1</version>
+			<systemPath>${java.home}/../lib/tools.jar</systemPath>
+		</dependency>
+		<dependency>
 			<groupId>sacha</groupId>
 			<artifactId>infra</artifactId>
 			<version>0.1</version>
