@@ -63,7 +63,7 @@ public class SymbolicFixer {
 		spoonProject = new SpoonedProject(this.sourceFile, classpath);		
 		jpfSpoonedProject = new SpoonedProject(this.sourceFile, classpath);
 		// init gzolor
-		gZoltar = GZoltarSuspiciousProgramStatements.create(
+		gZoltar = GZoltarSuspiciousProgramStatements.create(project.sourceFile(),
 				project.classpath(), spoonProject.topPackageNames());
 
 	}

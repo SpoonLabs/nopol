@@ -13,6 +13,13 @@ public class JUnitSingleTestResultRunner implements Callable<Result> {
 	private final String testName;
 	private final String className;
 
+	public JUnitSingleTestResultRunner(String test, RunListener listener) {
+		this.listener = listener;
+		String[] split = test.split("#");
+		this.testName = split[1];
+		this.className = split[0];
+	}
+
 	public JUnitSingleTestResultRunner(TestResult testCase, RunListener listener) {
 		this.testCase = testCase;
 		this.listener = listener;

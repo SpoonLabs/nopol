@@ -19,13 +19,13 @@ import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
 
 import java.io.File;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
 
 import com.gzoltar.core.components.Component;
 import com.gzoltar.core.components.Statement;
 import com.gzoltar.core.components.count.ComponentCount;
 import com.gzoltar.core.instr.testing.TestResult;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +57,7 @@ public class NoPol {
 	private final File sourceFile;
 	private final StatementType type;
 	private static boolean singlePatch = true;
+	private String[] testClasses;
 
 	public NoPol(final File sourceFile, final URL[] classpath, StatementType type) {
 		this.classpath = classpath;
@@ -64,21 +65,21 @@ public class NoPol {
 		this.type = type;
 		spooner = new SpoonedProject(sourceFile, classpath);
 		testPatch = new TestPatch(sourceFile, spooner);
-		gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath, spooner.topPackageNames());
+		gZoltar = GZoltarSuspiciousProgramStatements.create(this.sourceFile, this.classpath, Arrays.asList(""));
 	}
 
 	public List<Patch> build() {
-		String[] testClasses = new TestClassesFinder().findIn(classpath, false);
+		this.testClasses = new TestClassesFinder().findIn(classpath, false);
 		return build(testClasses);
 	}
 	
 	public List<Patch> build(String[] testClasses) {
 		Collection<SuspiciousStatement> statements = gZoltar.sortBySuspiciousness(testClasses);
-		Map<SourceLocation, List<TestResult>> testListPerStatement = getTestListPerStatement();
 		if (statements.isEmpty()) {
-			System.out.println("No suspicious statements found.");
+			throw new RuntimeException("No suspicious statements found.");
 		}
-		return solveWithMultipleBuild(statements,testListPerStatement);
+		Map<SourceLocation, List<TestResult>> testListPerStatement = getTestListPerStatement();
+		return solveWithMultipleBuild(statements, testListPerStatement);
 	}
 
 	private Map<SourceLocation, List<TestResult>> getTestListPerStatement() {
@@ -122,18 +123,22 @@ public class NoPol {
 					SourceLocation sourceLocation = new SourceLocation(statement.getSourceLocation().getContainingClassName(), statement.getSourceLocation().getLineNumber());
 					Synthesizer synth = new SynthesizerFactory(sourceFile, spooner, type).getFor(sourceLocation);
 					List<TestResult> tests = testListPerStatement.get(sourceLocation);
-					List<TestResult> failures = new ArrayList<>();
+
+
+					List<String> faillingClassTest =  new ArrayList<>();
 					for (int i = 0; i < tests.size(); i++) {
 						TestResult testResult = tests.get(i);
 						if(!testResult.wasSuccessful()) {
-							failures.add(testResult);
+							faillingClassTest.add(testResult.getName().split("#")[0]);
 						}
 					}
-					if(failures.isEmpty()) {
+					Collection<TestCase> faillingTest = failingTests(faillingClassTest.toArray(new String[0]), new URLClassLoader(classpath));
+
+					if(faillingTest.isEmpty()) {
 						continue;
 					}
-					Patch patch = synth.buildPatch(classpath, tests, failures);
-					if (isOk(patch, testListPerStatement.get(sourceLocation), synth.getConditionalProcessor())) {
+					Patch patch = synth.buildPatch(classpath, tests, faillingTest);
+					if (isOk(patch, gZoltar.getGzoltar().getTestResults(), synth.getConditionalProcessor())) {
 						patches.add(patch);
 						if ( isSinglePatch() ){
 							break;
@@ -164,5 +169,18 @@ public class NoPol {
 	
 	public static boolean setSinglePatch(boolean singlePatch) {
 		return NoPol.singlePatch = singlePatch;
+	}
+
+	/**
+	 * returns the list of failing tests
+	 *
+	 * @param testClasses
+	 * @return the list of failing tests
+	 */
+	private Collection<TestCase> failingTests(String[] testClasses,
+											  ClassLoader testClassLoader) {
+		TestCasesListener listener = new TestCasesListener();
+		TestSuiteExecution.runCasesIn(testClasses, testClassLoader, listener);
+		return listener.failedTests();
 	}
 }

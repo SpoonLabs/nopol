@@ -18,6 +18,7 @@ package fr.inria.lille.repair.nopol.sps.gzoltar;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.FluentIterable.from;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -55,24 +56,24 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 	}
 
 	/**
-	 * @param sourcePackage
+	 * @param source
 	 * @param classpath
 	 * @return
 	 */
-	public static GZoltarSuspiciousProgramStatements create(URL[] classpath, Collection<String> packageNames) {
-		return new GZoltarSuspiciousProgramStatements(checkNotNull(classpath), checkNotNull(packageNames));
+	public static GZoltarSuspiciousProgramStatements create(File source, URL[] classpath, Collection<String> packageNames) {
+		return new GZoltarSuspiciousProgramStatements(source, checkNotNull(classpath), checkNotNull(packageNames));
 	}
 
 	private final GZoltar gzoltar;
 
-	private GZoltarSuspiciousProgramStatements(final URL[] classpath, Collection<String> packageNames) {
+	private GZoltarSuspiciousProgramStatements(File source, final URL[] classpath, Collection<String> packageNames) {
 		try {
 			gzoltar = new GZoltarJava7();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 		
-		HashSet<String> classpaths = new HashSet<String>(gzoltar.getClasspaths());
+		HashSet<String> classpaths = new HashSet<>(gzoltar.getClasspaths());
 		for (URL url : classpath) {
 			if ("file".equals(url.getProtocol())) {
 				classpaths.add(url.getPath());
@@ -84,7 +85,6 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		gzoltar.setClassPaths(new ArrayList<String>(classpaths));
 		gzoltar.addPackageNotToInstrument("org.junit");
 		gzoltar.addPackageNotToInstrument("junit.framework");
-		
 		for (String packageName : packageNames) {
 			gzoltar.addPackageToInstrument(packageName);
 		}

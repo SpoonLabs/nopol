@@ -41,6 +41,10 @@ public class TestSuiteExecution {
 		return executionResult(new JUnitSingleTestRunner(testCase, listener), classLoaderForTestThread);
 	}
 
+	public static Result runTest(String test, ClassLoader classLoaderForTestThread, RunListener listener) {
+		return executionResult(new JUnitSingleTestResultRunner(test, listener), classLoaderForTestThread);
+	}
+
 	public static Result runTestCase(TestResult testCase, ClassLoader classLoaderForTestThread, RunListener listener) {
 		return executionResult(new JUnitSingleTestResultRunner(testCase, listener), classLoaderForTestThread);
 	}
