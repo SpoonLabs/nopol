@@ -83,7 +83,14 @@ public class Ranking {
 		output += "Successful tests: " + successfulTests + "\n";
 		output += "Failed tests:     " + (totalTest - successfulTests) + "\n\n";
 
-		output += "/************************/\n";
+		for (TestResult testResult : gzoloarTestResults) {
+			if (!testResult.wasSuccessful()) {
+				output += testResult.getName() + "\n";
+				output += testResult.getTrace() + "\n";
+			}
+		}
+
+		output += "\n/************************/\n";
 		output += "/* Suspicious statement */\n";
 		output += "/************************/\n";
 		for (SuspiciousStatement suspiciousStatement : suspicousStatements) {
@@ -100,8 +107,8 @@ public class Ranking {
 					location.getLineNumber(),
 					suspiciousStatement.getSuspiciousness(),
 					executedAndPassedCount, executedAndFailedCount,
-					sucesssTests.size() - executedAndPassedCount,
-					failedTests.size() - executedAndFailedCount);
+					successfulTests - executedAndPassedCount,
+					totalTest - successfulTests - executedAndFailedCount);
 		}
 		return output;
 	}
