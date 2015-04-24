@@ -12,6 +12,7 @@ public abstract class MethodInvocationImpl extends ExpressionImpl implements Met
     private final Expression expression;
     private final List<Expression> parameters;
     private final Value jdiValue;
+    private String strExpression = null;
 
     public MethodInvocationImpl(String method, String declaringType, Expression expression, List<Expression> parameters, Value jdiValue, Object value, Class type) {
         super(value, type);
@@ -51,15 +52,18 @@ public abstract class MethodInvocationImpl extends ExpressionImpl implements Met
 
     @Override
     public String toString() {
-        String arguments = "";
-        for (int i = 0; i < parameters.size(); i++) {
-            Expression expression1 = parameters.get(i);
-            arguments += expression1.toString();
-            if (i < parameters.size() - 1) {
-                arguments += ", ";
+        if(strExpression == null) {
+            String arguments = "";
+            for (int i = 0; i < parameters.size(); i++) {
+                Expression expression1 = parameters.get(i);
+                arguments += expression1.toString();
+                if (i < parameters.size() - 1) {
+                    arguments += ", ";
+                }
             }
+            strExpression = getExpression().toString() + "." + getMethod() + "(" + arguments + ")";
         }
-        return getExpression().toString() + "." + getMethod() + "(" + arguments + ")";
+        return strExpression;
     }
 
     @Override
@@ -67,7 +71,7 @@ public abstract class MethodInvocationImpl extends ExpressionImpl implements Met
         String arguments = "";
         for (int i = 0; i < parameters.size(); i++) {
             Expression expression1 = parameters.get(i);
-            arguments += expression1.toString();
+            arguments += expression1.asPatch();
             if (i < parameters.size() - 1) {
                 arguments += ", ";
             }

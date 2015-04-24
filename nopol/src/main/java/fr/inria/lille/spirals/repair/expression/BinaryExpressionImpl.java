@@ -12,6 +12,7 @@ public abstract class BinaryExpressionImpl extends ExpressionImpl implements Bin
     private Operator operator;
     private Expression first;
     private Expression second;
+    private String strExpression = null;
 
     /**
      *
@@ -100,28 +101,24 @@ public abstract class BinaryExpressionImpl extends ExpressionImpl implements Bin
 
     @Override
     public String toString() {
-        String first = getFirstExpression().toString();
-        if (getFirstExpression() instanceof BinaryExpression) {
-            first = "(" + first + ")";
+        if(strExpression == null) {
+            String first = getFirstExpression().toString();
+            if (getFirstExpression() instanceof BinaryExpression) {
+                first = "(" + first + ")";
+            }
+            String second = getSecondExpression().toString();
+            if (getSecondExpression() instanceof BinaryExpression) {
+                second = "(" + second + ")";
+            }
+            strExpression = first + " " + getOperator().getSymbol() + " " + second;
         }
-        String second = getSecondExpression().toString();
-        if (getSecondExpression() instanceof BinaryExpression) {
-            second = "(" + second + ")";
-        }
-        return first + " " + getOperator().getSymbol() + " " + second;
+
+        return strExpression;
     }
 
     @Override
     public String asPatch() {
-        String first = getFirstExpression().asPatch();
-        if (getFirstExpression() instanceof BinaryExpression) {
-            first = "(" + first + ")";
-        }
-        String second = getSecondExpression().asPatch();
-        if (getSecondExpression() instanceof BinaryExpression) {
-            second = "(" + second + ")";
-        }
-        return first + " " + getOperator().getSymbol() + " " + second;
+        return toString();
     }
 }
 

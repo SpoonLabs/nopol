@@ -13,6 +13,7 @@ public abstract class FieldAccessImpl extends ExpressionImpl implements FieldAcc
     private final ComplexTypeExpression expression;
     private final String fieldName;
     private final Value jdiValue;
+    private String strExpression = null;
 
     /**
      *
@@ -55,7 +56,10 @@ public abstract class FieldAccessImpl extends ExpressionImpl implements FieldAcc
 
     @Override
     public String toString() {
-        return this.getExpression().toString() + "." + fieldName;
+        if(strExpression == null) {
+            strExpression = this.getExpression().toString() + "." + fieldName;
+        }
+        return strExpression;
     }
 
     @Override

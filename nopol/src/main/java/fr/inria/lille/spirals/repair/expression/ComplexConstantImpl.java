@@ -28,7 +28,7 @@ public class ComplexConstantImpl extends ComplexValueImpl implements ComplexCons
 
     @Override
     public String toString() {
-        return this.getVariableName() + "";
+        return this.getVariableName();
     }
 
     @Override
