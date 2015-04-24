@@ -23,7 +23,7 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtTypeReference;
@@ -137,7 +137,7 @@ public class CollectableValueFinder {
 	
 	protected String nameForField(CtField<?> field, String fieldOwner) {
 		String fieldName = field.getSimpleName();
-		CtSimpleType<?> declaringType = field.getDeclaringType();
+		CtType<?> declaringType = field.getDeclaringType();
 		String declaringClass = declaringType.getQualifiedName().replace('$', '.');
 		if (hasStaticModifier(field)) {
 			fieldName = declaringClass + "." + fieldName;

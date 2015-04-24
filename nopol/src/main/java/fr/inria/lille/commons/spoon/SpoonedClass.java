@@ -4,11 +4,11 @@ import static java.util.Arrays.asList;
 
 import java.util.Collection;
 
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 
 public class SpoonedClass extends SpoonedFile {
 
-	public SpoonedClass(SpoonedProject parentProject, CtSimpleType<?> modelledClass) {
+	public SpoonedClass(SpoonedProject parentProject, CtType<?> modelledClass) {
 		super(modelledClass.getPosition().getFile(), parentProject.projectClasspath());
 		this.simpleType = modelledClass;
 		this.parentProject = parentProject;
@@ -17,7 +17,7 @@ public class SpoonedClass extends SpoonedFile {
 	}
 	
 	@Override
-	protected Collection<? extends CtSimpleType<?>> modelledClasses() {
+	protected Collection<? extends CtType<?>> modelledClasses() {
 		return asList(modelledClass());
 	}
 	
@@ -29,11 +29,11 @@ public class SpoonedClass extends SpoonedFile {
 		return super.sourceForModelledClass(modelledClass());
 	}
 	
-	public CtSimpleType<?> getSimpleType() {
+	public CtType<?> getSimpleType() {
 		return simpleType;
 	}
 	
-	protected CtSimpleType<?> modelledClass() {
+	protected CtType<?> modelledClass() {
 		return typeFactory().get(qualifiedClassName());
 	}
 	
@@ -43,5 +43,5 @@ public class SpoonedClass extends SpoonedFile {
 	
 	private String qualifiedClassName;
 	private SpoonedProject parentProject;
-	private CtSimpleType<?> simpleType;
+	private CtType<?> simpleType;
 }
