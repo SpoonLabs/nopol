@@ -11,12 +11,8 @@ import java.util.*;
  */
 public class Candidates extends ArrayList<Expression> {
 
-    private Map<String, Expression> cache = new HashMap<>();
+    private Set<String> cache = new HashSet<>();
     private Map<String, Object> cacheValues = new HashMap<>();
-
-    public Map<String, Expression> getCache() {
-        return cache;
-    }
 
     public Map<String, Object> getCacheValues() {
         return cacheValues;
@@ -25,6 +21,9 @@ public class Candidates extends ArrayList<Expression> {
     @Override
     public boolean add(Expression expression) {
         if (expression == null) {
+            return false;
+        }
+        if(this.cache.contains(expression.toString())) {
             return false;
         }
         if (cacheValues.containsKey(expression.toString())) {
@@ -54,7 +53,7 @@ public class Candidates extends ArrayList<Expression> {
                 this.add(expression1);
             }
         }
-        cache.putAll(candidates.cache);
+        cache.addAll(candidates.cache);
         cacheValues.putAll(candidates.cacheValues);
         return true;
     }
@@ -87,7 +86,7 @@ public class Candidates extends ArrayList<Expression> {
 
     public Candidates filter(Class type, Object value) {
         Candidates exps = new Candidates();
-        Map<String, Expression> tmpCache = new HashMap<>();
+        Set<String> tmpCache = new HashSet<>();
         Map<String, Object> tmpCacheValues = new HashMap<>();
         for (int i = 0; i < this.size(); i++) {
             Expression expression = this.get(i);
@@ -96,7 +95,7 @@ public class Candidates extends ArrayList<Expression> {
                 addToCache(expression, tmpCache, tmpCacheValues);
             }
         }
-        exps.cache.putAll(tmpCache);
+        exps.cache.addAll(tmpCache);
         exps.cacheValues.putAll(tmpCacheValues);
         return exps;
     }
@@ -128,16 +127,12 @@ public class Candidates extends ArrayList<Expression> {
         addToCache(expression, cache, cacheValues);
     }
 
-    private void addToCache(Expression expression, Map<String, Expression> tmpCache, Map<String, Object> tmpCacheValue) {
+    private void addToCache(Expression expression, Set<String> tmpCache, Map<String, Object> tmpCacheValue) {
         if (tmpCacheValue.containsKey(expression.toString())) {
             return;
         }
-        tmpCache.put(expression.toString(), expression);
+        tmpCache.add(expression.toString());
         tmpCacheValue.put(expression.toString(), expression.getValue());
-    }
-
-    public Collection<Expression> getAlternatives() {
-        return cache.values();
     }
 
     public Candidates intersection(Candidates filtredCandidates, boolean checkValue) {
@@ -153,7 +148,7 @@ public class Candidates extends ArrayList<Expression> {
         Candidates intersection = new Candidates();
         for (int i = 0; i < this.size(); i++) {
             Expression expression = this.get(i);
-            if (!filtredCandidates.cache.containsKey(expression.toString()) || expression instanceof Constant) {
+            if (!filtredCandidates.cache.contains(expression) || expression instanceof Constant) {
                 intersection.add(expression);
             }
         }
@@ -173,7 +168,7 @@ public class Candidates extends ArrayList<Expression> {
     }
 
     public boolean containsExpression(Expression o) {
-        return this.cache.containsKey(o.toString());
+        return this.cache.contains(o.toString());
     }
 
     public boolean containsExpressionValue(Expression o) {
