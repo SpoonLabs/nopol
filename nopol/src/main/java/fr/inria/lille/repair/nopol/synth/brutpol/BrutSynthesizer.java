@@ -37,6 +37,7 @@ import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
  */
 public class BrutSynthesizer implements Synthesizer {
 
+    private final Logger testsOutput = LoggerFactory.getLogger(getClass().getName());
     private final ConditionalProcessor conditionalProcessor;
     private final StatementType type;
     private final SourceLocation sourceLocation;
@@ -88,7 +89,30 @@ public class BrutSynthesizer implements Synthesizer {
             passedTests = testCasesListener.passedTests;
             for (Iterator<String> iterator = passedTests.keySet().iterator(); iterator.hasNext(); ) {
                 String next = iterator.next();
-                oracle.put(next, passedTests.get(next).toArray());
+                Object[] values = passedTests.get(next).toArray();
+                boolean isSame = true;
+                for (int i = 1; i < values.length; i++) {
+                    Object value = values[i - 1];
+                    Object value1 = values[i];
+                    if(!value.equals(value1)) {
+                        isSame = false;
+                        break;
+                    }
+                }
+                if (isSame) {
+                    AngelicExecution.enable();
+                    boolean flippedValue = !(Boolean) values[0];
+                    AngelicExecution.setBooleanValue(flippedValue);
+                    testCasesListener = new TestRunListener();
+                    Result result = TestSuiteExecution.runTest(next, classLoader, testCasesListener);
+                    if(!result.wasSuccessful()) {
+                        oracle.put(next, values);
+                    } else {
+                        testsOutput.debug("Ignore the test {}", next);
+                    }
+                } else {
+                    oracle.put(next, values);
+                }
             }
             SynthesizerImpl synthesizer = new SynthesizerImpl(spooner,sourceFolder.getAbsolutePath(),sourceLocation,classpath,oracle, oracle.keySet().toArray(new String[0]));
             Candidates run = synthesizer.run();
@@ -106,7 +130,6 @@ public class BrutSynthesizer implements Synthesizer {
         boolean viablePatch = firstFailures.isEmpty();
         if (!viablePatch) {
             //logger.debug("Failing test(s): {}\n{}", sourceLocation, firstFailures);
-            Logger testsOutput = LoggerFactory.getLogger("tests.output");
             testsOutput.debug("First set: \n{}", firstResult.getFailures());
             testsOutput.debug("Second set: \n{}", secondResult.getFailures());
         }

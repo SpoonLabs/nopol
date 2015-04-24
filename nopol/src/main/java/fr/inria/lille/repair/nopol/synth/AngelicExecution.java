@@ -23,7 +23,11 @@ public final class AngelicExecution {
 	public static boolean booleanValue() {
 		return booleanValue;
 	}
-	
+
+	public static void setBooleanValue(boolean booleanValue) {
+		AngelicExecution.booleanValue = booleanValue;
+	}
+
 	public static void flip() {
 		booleanValue = ! booleanValue;
 		previousValue = new ArrayList<>();
