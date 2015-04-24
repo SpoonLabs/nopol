@@ -36,7 +36,9 @@ public class Main {
 	public static void main(String[] args) {
 		try {
 			initJSAP();
-			parseArguments(args);
+			if (!parseArguments(args)) {
+				return;
+			}
 
 			File sourceFile = FileLibrary.openFrom(Config.INSTANCE.getProjectSourcePath());
 			URL[] classpath = JavaLibrary.classpathFrom(Config.INSTANCE.getProjectClasspath());
@@ -78,7 +80,7 @@ public class Main {
 		System.err.println(jsap.getHelp());
 	}
 
-	private static void parseArguments(String[] args) {
+	private static boolean parseArguments(String[] args) {
 		JSAPResult config = jsap.parse(args);
 		if (!config.success()) {
 			System.err.println();
@@ -86,7 +88,7 @@ public class Main {
 				System.err.println("Error: " + errs.next());
 			}
 			showUsage();
-			System.exit(1);
+			return false;
 		}
 
 		Config.INSTANCE.setType(strToStatementType(config.getString("type")));
@@ -98,6 +100,7 @@ public class Main {
 		Config.INSTANCE.setProjectClasspath(config.getString("classpath"));
 		Config.INSTANCE.setProjectSourcePath(config.getString("source"));
 		Config.INSTANCE.setProjectTests(config.getStringArray("test"));
+		return true;
 	}
 
 	private static Config.NopolSynthesis strToSynthesis(String str) {

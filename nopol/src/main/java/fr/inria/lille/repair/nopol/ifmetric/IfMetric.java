@@ -96,8 +96,6 @@ public class IfMetric {
 				.toString(File.pathSeparatorChar));
 
 		new IfMetric(sourceFolder, paths).run();
-
-		System.exit(0);
 	}
 
 	private void run() {
