@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtStatement;
 import xxl.java.junit.CompoundResult;
+import xxl.java.junit.TestCase;
 import xxl.java.junit.TestSuiteExecution;
 
 import java.io.File;
@@ -51,7 +52,7 @@ public class BrutSynthesizer implements Synthesizer {
     }
 
     @Override
-    public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, List<TestResult> failures) {
+    public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
         List<TestResult> failuresExecuted = new ArrayList<>();
 
 
@@ -61,17 +62,18 @@ public class BrutSynthesizer implements Synthesizer {
         Map<String, Object[]> oracle = new HashMap<>();
 
         AngelicExecution.enable();
+        AngelicExecution.setBooleanValue(false);
         TestRunListener testCasesListener = new TestRunListener();
-        CompoundResult firstResult = TestSuiteExecution.runTestResult(failures, classLoader, testCasesListener);
+        CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, testCasesListener);
         Map<String, List<Boolean>> passedTests = testCasesListener.passedTests;
         for (Iterator<String> iterator = passedTests.keySet().iterator(); iterator.hasNext(); ) {
             String next = iterator.next();
             oracle.put(next, passedTests.get(next).toArray());
         }
-
         AngelicExecution.flip();
+
         testCasesListener = new TestRunListener();
-        CompoundResult secondResult = TestSuiteExecution.runTestResult(failures, classLoader, testCasesListener);
+        CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, testCasesListener);
         AngelicExecution.disable();
         passedTests = testCasesListener.passedTests;
         for (Iterator<String> iterator = passedTests.keySet().iterator(); iterator.hasNext(); ) {

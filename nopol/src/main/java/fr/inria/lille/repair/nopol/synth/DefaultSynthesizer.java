@@ -33,6 +33,7 @@ import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.patch.StringPatch;
 import fr.inria.lille.repair.nopol.spoon.ConditionalProcessor;
 import fr.inria.lille.repair.common.synth.StatementType;
+import xxl.java.junit.TestCase;
 
 /**
  * @author Favio D. DeMarco
@@ -62,7 +63,7 @@ public final class DefaultSynthesizer implements Synthesizer {
 	 * @see fr.inria.lille.jefix.synth.Synthesizer#buildPatch(java.net.URL[], java.lang.String[])
 	 */
 	@Override
-	public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, List<TestResult> failures) {
+	public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
 		Collection<Specification<Boolean>> data = constraintModelBuilder.buildFor(classpath, testClasses, failures);
 
 		// XXX FIXME TODO move this
