@@ -1,11 +1,14 @@
 package fr.inria.lille.spirals.repair.vm;
 
+import com.sun.jdi.ThreadReference;
 import com.sun.jdi.VirtualMachine;
+import com.sun.jdi.request.BreakpointRequest;
 import fr.inria.lille.spirals.repair.MethodTestRunner;
 
 import java.io.*;
 import java.net.ConnectException;
 import java.net.URL;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,18 +59,20 @@ public class DebugJUnitRunner {
             testList += testClass + " ";
         }
         ProcessBuilder processBuilder = new ProcessBuilder("java",
-                "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y",
-                "-cp",
-                strClasspath,
-                MethodTestRunner.class.getCanonicalName(),
-                testList
+            "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y",
+            "-cp",
+            strClasspath,
+            MethodTestRunner.class.getCanonicalName(),
+            testList
         );
         System.out.println("java -cp " + strClasspath + " " + MethodTestRunner.class.getCanonicalName() + " " + testList);
         File log = new File("log");
         log.delete();
         log.createNewFile();
         OutputStream out = new FileOutputStream(log);
+
         process = processBuilder.start();
+
         InputStreamReader isr = new InputStreamReader(process.getInputStream());
         BufferedReader br = new BufferedReader(isr);
         String lineRead = br.readLine();
@@ -76,9 +81,22 @@ public class DebugJUnitRunner {
         matcher.find();
         port = Integer.parseInt(matcher.group());
         try {
-            VirtualMachine vm = new VMAcquirer().connect(port);
+            final VirtualMachine vm = new VMAcquirer().connect(port);
             copy(process.getInputStream(), out);
             copy(process.getErrorStream(), out);
+            // kill process when the program exit
+            Runtime.getRuntime().addShutdownHook( new Thread() {
+                public void run() {
+
+                    try {
+                        vm.exit(0);
+                        process.destroy();
+                        process.waitFor();
+                    } catch (InterruptedException e) {
+                        // ignore
+                    }
+                }
+            });
             return vm;
         } catch (ConnectException e) {
             process.destroy();
