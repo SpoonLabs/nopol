@@ -1,0 +1,67 @@
+package fr.inria.lille.repair.common.patch;
+
+import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.nopol.SourceLocation;
+import fr.inria.lille.spirals.repair.expression.Expression;
+
+import java.io.File;
+
+/**
+ * Created by spirals on 25/03/15.
+ */
+public class ExpressionPatch implements Patch {
+    private final Expression expression;
+    private final SourceLocation location;
+    private final StatementType type;
+
+    public ExpressionPatch(final Expression expression, final SourceLocation location, final StatementType type) {
+        this.expression = expression;
+        this.location = location;
+        this.type = type;
+    }
+
+    /**
+     * @see Patch#asString()
+     */
+    @Override
+    public String asString() {
+        return expression.asPatch();
+    }
+
+    /**
+     * @return the containingClassName
+     */
+    @Override
+    public String getRootClassName() {
+        return location.getRootClassName();
+    }
+
+    /**
+     * @see Patch#getFile(File)
+     */
+    @Override
+    public File getFile(final File sourceFolder) {
+        return location.getSourceFile(sourceFolder);
+    }
+
+    /**
+     * @see Patch#getLineNumber()
+     */
+    @Override
+    public int getLineNumber() {
+        return location.getLineNumber();
+    }
+
+    @Override
+    public StatementType getType() {
+        return type;
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return String.format("%s:%d: %s %s", location.getContainingClassName(), getLineNumber(), type, expression.toString());
+    }
+}
