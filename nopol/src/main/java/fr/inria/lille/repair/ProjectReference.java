@@ -10,33 +10,33 @@ public class ProjectReference {
 
 	public ProjectReference(String sourceFile, String classpath,
 			String[] testClasses) {
-		this(FileLibrary.openFrom(sourceFile), JavaLibrary
-				.classpathFrom(classpath));
-		this.testClasses = testClasses;
+		this(sourceFile, JavaLibrary
+				.classpathFrom(classpath), testClasses);
 	}
 
 	public ProjectReference(String sourceFile, URL[] classpath,
 			String[] testClasses) {
-		this.sourceFile = FileLibrary.openFrom(sourceFile);
+		this.sourceFiles = new File[1];
+		this.sourceFiles[0] = FileLibrary.openFrom(sourceFile);
 		this.classpath = classpath;
 		this.testClasses = testClasses;
 	}
 
-	public ProjectReference(File sourceFile, URL[] classpath) {
-		this.sourceFile = sourceFile;
+	public ProjectReference(File[] sourceFile, URL[] classpath) {
+		this.sourceFiles = sourceFile;
 		this.classpath = classpath;
 		testClasses = new TestClassesFinder().findIn(classpath(), false);
 	}
 
-	public ProjectReference(File sourceFile, URL[] classpath,
+	public ProjectReference(File[] sourceFile, URL[] classpath,
 			String[] testClasses) {
-		this.sourceFile = sourceFile;
+		this.sourceFiles = sourceFile;
 		this.classpath = classpath;
 		this.testClasses = testClasses;
 	}
 
-	public File sourceFile() {
-		return sourceFile;
+	public File[] sourceFiles() {
+		return sourceFiles;
 	}
 
 	public URL[] classpath() {
@@ -52,7 +52,7 @@ public class ProjectReference {
 	}
 
 	private File testFile;
-	private File sourceFile;
+	private File[] sourceFiles;
 	private URL[] classpath;
 	private String[] testClasses;
 }

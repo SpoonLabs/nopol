@@ -18,7 +18,7 @@ public class ProjectMonitorImplanter extends AbstractProcessor<CtWhile> {
 
 	public static MonitoringTestExecutor implanted(ProjectReference project, InfinitelConfiguration configuration) {
 		ProjectMonitorImplanter implanter = new ProjectMonitorImplanter(configuration.iterationsThreshold());
-		SpoonedProject spoonedProject = new SpoonedProject(project.sourceFile(), project.classpath());
+		SpoonedProject spoonedProject = new SpoonedProject(project.sourceFiles(), project.classpath());
 		spoonedProject.process(implanter);
 		ClassLoader classLoader = spoonedProject.dumpedToClassLoader();
 		MonitoringTestExecutor testExecutor = new MonitoringTestExecutor(classLoader, implanter.implant());

@@ -1,5 +1,6 @@
 package fr.inria.lille.commons.synthesis.smt.solver;
 
+import fr.inria.lille.repair.common.config.Config;
 import org.smtlib.IExpr.ISymbol;
 import org.smtlib.ISolver;
 import org.smtlib.SMT;
@@ -30,6 +31,19 @@ public abstract class SolverFactory {
 			solverFactory = new CVC4SolverFactory(pathToSolver);
 		} else {
 			throw new RuntimeException("Invalid solver name: " + solverName);
+		}
+	}
+
+	public static void setSolver(Config.NopolSolver solver, String pathToSolver) {
+		switch (solver) {
+			case Z3:
+				solverFactory = new Z3SolverFactory(pathToSolver);
+				break;
+			case CVC4:
+				solverFactory = new CVC4SolverFactory(pathToSolver);
+				break;
+			default:
+				throw new RuntimeException("Invalid solver name: " + solver);
 		}
 	}
 	

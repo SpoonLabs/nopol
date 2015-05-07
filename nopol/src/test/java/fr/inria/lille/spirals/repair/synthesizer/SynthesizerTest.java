@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import xxl.java.library.JavaLibrary;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -151,7 +152,8 @@ public class SynthesizerTest {
 
         String classpath = "../test-projects/target/test-classes:../test-projects/target/classes/:/home/spirals/.m2/repository/junit/junit/4.11/junit-4.11.jar:/home/spirals/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar";
         SourceLocation location = new SourceLocation(className, line);
-        Synthesizer synthesizer = new SynthesizerImpl("../test-projects/src/main/java/", location, JavaLibrary.classpathFrom(classpath), oracle, tests.toArray(new String[0]));
+        File[] files = new File []{new File("../test-projects/src/main/java/"), new File("../test-projects/src/test/java/")};
+        Synthesizer synthesizer = new SynthesizerImpl(files, location, JavaLibrary.classpathFrom(classpath), oracle, tests.toArray(new String[0]));
         Candidates expression = synthesizer.run();
         check(expression, patch);
     }

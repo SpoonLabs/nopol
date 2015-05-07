@@ -120,7 +120,7 @@ public class IfMetric {
 	private void compute(String[] testClasses) {
 		IfCollectorProcessor collectorProcessor = new IfCollectorProcessor();
 		IfCountingInstrumentingProcessor instrumentingProcessor = new IfCountingInstrumentingProcessor(this);
-		SpoonedProject project = new SpoonedProject(sourceFolder, classpath);
+		SpoonedProject project = new SpoonedProject(new File[]{sourceFolder}, classpath);
 		ClassLoader loader = project.processedAndDumpedToClassLoader(modifyClass, asList(collectorProcessor, instrumentingProcessor));
 		
 		writeOutPut("ClassName.TestCaseName\t\t\tNbInpurIf\tNbPurIf");

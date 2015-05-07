@@ -9,12 +9,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import fr.inria.lille.repair.common.config.Config;
 import org.slf4j.Logger;
 
 import spoon.compiler.Environment;
@@ -41,11 +41,13 @@ public abstract class SpoonedFile {
 	
 	protected abstract Collection<? extends CtType<?>> modelledClasses();
 	
-	public SpoonedFile(File sourceFile, URL[] projectClasspath) {
-		logDebug(logger(), format("[Building Spoon model from %s]", sourceFile));
-		this.sourceFile = sourceFile;
+	public SpoonedFile(File[] sourceFiles, URL[] projectClasspath) {
+		logDebug(logger(), format("[Building Spoon model from %s]", sourceFiles));
+		this.sourceFiles = sourceFiles;
 		this.projectClasspath = projectClasspath;
-		factory = SpoonModelLibrary.modelFor(sourceFile, projectClasspath());
+		factory = SpoonModelLibrary.newFactory();
+		factory.getEnvironment().setComplianceLevel(Config.INSTANCE.getComplianceLevel());
+		factory = SpoonModelLibrary.modelFor(factory, sourceFiles, projectClasspath());
 		compiler = new DynamicClassCompiler(compilationClasspath());
 		manager = new RuntimeProcessingManager(spoonFactory());
 		compiledClasses = MetaMap.newHashMap();
@@ -179,8 +181,8 @@ public abstract class SpoonedFile {
 		return BytecodeClassLoaderBuilder.loaderWith(compiledClasses, compilationClasspath());
 	}
 	
-	protected File sourceFile() {
-		return sourceFile;
+	protected File[] sourceFiles() {
+		return sourceFiles;
 	}
 
     public URL[] projectClasspath() {
@@ -226,14 +228,14 @@ public abstract class SpoonedFile {
 	
 	@Override
 	public String toString() {
-		return "Spoon model for: " + sourceFile();
+		return "Spoon model for: " + sourceFiles();
 	}
 	
 	private Logger logger() {
 		return loggerFor(this);
 	}
 	
-	private File sourceFile;
+	private File[] sourceFiles;
 	private URL[] projectClasspath;
 	private URL[] compilationClasspath;
 	private Factory factory;

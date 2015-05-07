@@ -2,6 +2,7 @@ package fr.inria.lille.commons.spoon;
 
 import static java.util.Arrays.asList;
 
+import java.io.File;
 import java.util.Collection;
 
 import spoon.reflect.declaration.CtType;
@@ -9,7 +10,7 @@ import spoon.reflect.declaration.CtType;
 public class SpoonedClass extends SpoonedFile {
 
 	public SpoonedClass(SpoonedProject parentProject, CtType<?> modelledClass) {
-		super(modelledClass.getPosition().getFile(), parentProject.projectClasspath());
+		super(new File[] {modelledClass.getPosition().getFile()}, parentProject.projectClasspath());
 		this.simpleType = modelledClass;
 		this.parentProject = parentProject;
 		qualifiedClassName = modelledClass.getQualifiedName();

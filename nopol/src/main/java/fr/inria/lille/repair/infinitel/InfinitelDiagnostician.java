@@ -46,11 +46,11 @@ public class InfinitelDiagnostician extends Infinitel {
 	public static void main(String[] args) {
 		File sourceFile = FileLibrary.openFrom(args[0]);
 		URL[] classpath = JavaLibrary.classpathFrom(args[1]);
-		new InfinitelDiagnostician(sourceFile, classpath).diagnose();
+		new InfinitelDiagnostician(new File[]{sourceFile}, classpath).diagnose();
 		System.out.println("Diagnostics ended");
 	}
 	
-	public InfinitelDiagnostician(File sourceFile, URL[] classpath) {
+	public InfinitelDiagnostician(File[] sourceFile, URL[] classpath) {
 		super(sourceFile, classpath);
 	}
 	

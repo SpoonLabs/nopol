@@ -34,19 +34,25 @@ import xxl.java.library.JavaLibrary;
 
 public class SpoonModelLibrary {
 
-	public static Factory modelFor(File sourceFile) {
-		return modelFor(sourceFile, null);
+	public static Factory modelFor(File[] sourceFiles) {
+		return modelFor(sourceFiles, null);
 	}
-	
-	public static Factory modelFor(File sourceFile, URL[] classpath) {
-		Factory factory = newFactory();
+
+	public static Factory modelFor(File[] sourceFiles, URL[] classpath) {
+		return modelFor(newFactory(), sourceFiles, classpath);
+	}
+
+	public static Factory modelFor(Factory factory, File[] sourceFiles, URL[] classpath) {
 		factory.getEnvironment().setDebug(true);
 		try {
 			SpoonCompiler compiler = launcher().createCompiler(factory);
 			if (classpath != null) {
 				compiler.setSourceClasspath(JavaLibrary.asFilePath(classpath));
 			}
-			compiler.addInputSource(sourceFile);
+			for (int i = 0; i < sourceFiles.length; i++) {
+				File sourceFile = sourceFiles[i];
+				compiler.addInputSource(sourceFile);
+			}
 			compiler.build();
 		} catch (Exception e) {
 			e.printStackTrace();

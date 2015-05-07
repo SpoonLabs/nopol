@@ -50,22 +50,21 @@ import fr.inria.lille.repair.common.synth.StatementType;
 public class NoPol {
 
 	private final URL[] classpath;
-	private final GZoltarSuspiciousProgramStatements gZoltar;
+	private GZoltarSuspiciousProgramStatements gZoltar;
 	private final TestPatch testPatch;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final SpoonedProject spooner;
-	private final File sourceFile;
+	private final File[] sourceFiles;
 	private final StatementType type;
 	private static boolean singlePatch = true;
 	private String[] testClasses;
 
-	public NoPol(final File sourceFile, final URL[] classpath, StatementType type) {
+	public NoPol(final File[] sourceFiles, final URL[] classpath, StatementType type) {
 		this.classpath = classpath;
-		this.sourceFile = sourceFile;
+		this.sourceFiles = sourceFiles;
 		this.type = type;
-		spooner = new SpoonedProject(sourceFile, classpath);
-		testPatch = new TestPatch(sourceFile, spooner);
-		gZoltar = GZoltarSuspiciousProgramStatements.create(this.sourceFile, this.classpath, Arrays.asList(""));
+		spooner = new SpoonedProject(sourceFiles, classpath);
+		testPatch = new TestPatch(sourceFiles[0], spooner);
 	}
 
 	public List<Patch> build() {
@@ -74,6 +73,7 @@ public class NoPol {
 	}
 	
 	public List<Patch> build(String[] testClasses) {
+		gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath, Arrays.asList(testClasses));
 		Collection<SuspiciousStatement> statements = gZoltar.sortBySuspiciousness(testClasses);
 		if (statements.isEmpty()) {
 			throw new RuntimeException("No suspicious statements found.");
@@ -121,7 +121,7 @@ public class NoPol {
 				if ( !statement.getSourceLocation().getContainingClassName().contains("Test")){ // Avoid modification on test cases
 					logger.debug("Analysing {}", statement);
 					SourceLocation sourceLocation = new SourceLocation(statement.getSourceLocation().getContainingClassName(), statement.getSourceLocation().getLineNumber());
-					Synthesizer synth = new SynthesizerFactory(sourceFile, spooner, type).getFor(sourceLocation);
+					Synthesizer synth = new SynthesizerFactory(sourceFiles, spooner, type).getFor(sourceLocation);
 					List<TestResult> tests = testListPerStatement.get(sourceLocation);
 
 

@@ -59,7 +59,7 @@ public class InfinitelTest {
 	public void unbreakableLoops() {
 		Infinitel infinitel = infinitel(1);
 		ProjectMonitorImplanter implanter = new ProjectMonitorImplanter(0);
-		Map<String, CtWhile> loops = loopsByMethodIn(infinitel.project().sourceFile(), 5);
+		Map<String, CtWhile> loops = loopsByMethodIn(infinitel.project().sourceFiles(), 5);
 		assertFalse(implanter.isUnbreakable(loops.get("loopResult")));
 		assertFalse(implanter.isUnbreakable(loops.get("fixableInfiniteLoop")));
 		assertFalse(implanter.isUnbreakable(loops.get("binomialTest")));
@@ -148,8 +148,8 @@ public class InfinitelTest {
 		}
 	}
 	
-	private Map<String, CtWhile> loopsByMethodIn(File sourceFile, int numberOfLoops) {
-		Factory model = SpoonModelLibrary.modelFor(sourceFile);
+	private Map<String, CtWhile> loopsByMethodIn(File[] sourceFiles, int numberOfLoops) {
+		Factory model = SpoonModelLibrary.modelFor(sourceFiles);
 		Collection<CtPackage> allRoots = model.Package().getAllRoots();
 		assertEquals(1, allRoots.size());
 		Collection<CtWhile> elements = SpoonElementLibrary.allChildrenOf(MetaCollection.any(allRoots), CtWhile.class);

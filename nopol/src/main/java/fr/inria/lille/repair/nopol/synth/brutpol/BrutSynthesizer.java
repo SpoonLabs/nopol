@@ -42,14 +42,14 @@ public class BrutSynthesizer implements Synthesizer {
     private final StatementType type;
     private final SourceLocation sourceLocation;
     private final SpoonedProject spooner;
-    private final File sourceFolder;
+    private final File[] sourceFolders;
 
-    public BrutSynthesizer(File sourceFolder, SourceLocation sourceLocation, StatementType type, ConditionalProcessor processor, SpoonedProject spooner) {
+    public BrutSynthesizer(File[] sourceFolders, SourceLocation sourceLocation, StatementType type, ConditionalProcessor processor, SpoonedProject spooner) {
         this.sourceLocation = sourceLocation;
         this.type = type;
         this.conditionalProcessor = processor;
         this.spooner = spooner;
-        this.sourceFolder = sourceFolder;
+        this.sourceFolders = sourceFolders;
     }
 
     @Override
@@ -114,7 +114,7 @@ public class BrutSynthesizer implements Synthesizer {
                     oracle.put(next, values);
                 }
             }
-            SynthesizerImpl synthesizer = new SynthesizerImpl(spooner,sourceFolder.getAbsolutePath(),sourceLocation,classpath,oracle, oracle.keySet().toArray(new String[0]));
+            SynthesizerImpl synthesizer = new SynthesizerImpl(spooner, sourceFolders,sourceLocation,classpath,oracle, oracle.keySet().toArray(new String[0]));
             Candidates run = synthesizer.run();
             if(run.size() > 0) {
                 return new ExpressionPatch(run.get(0), sourceLocation, type);

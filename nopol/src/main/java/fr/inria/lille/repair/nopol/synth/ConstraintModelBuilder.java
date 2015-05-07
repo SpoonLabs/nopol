@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.commons.spoon.SpoonedClass;
+import fr.inria.lille.repair.nopol.NoPolLauncher;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.slf4j.Logger;
@@ -49,7 +50,7 @@ public final class ConstraintModelBuilder {
 	private RuntimeValues<Boolean> runtimeValues;
 	private SourceLocation sourceLocation;
 	
-	public ConstraintModelBuilder(File sourceFolder, RuntimeValues<Boolean> runtimeValues, SourceLocation sourceLocation, Processor<?> processor, SpoonedProject spooner) {
+	public ConstraintModelBuilder(RuntimeValues<Boolean> runtimeValues, SourceLocation sourceLocation, Processor<?> processor, SpoonedProject spooner) {
 		this.sourceLocation = sourceLocation;
 		String qualifiedName = sourceLocation.getRootClassName();
         SpoonedClass fork = spooner.forked(qualifiedName);
@@ -61,16 +62,26 @@ public final class ConstraintModelBuilder {
 	 * @see fr.inria.lille.repair.nopol.synth.ConstraintModelBuilder#buildFor(URL[], List, Collection)
 	 */
 	public Collection<Specification<Boolean>> buildFor(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
+		int nbFailingTestExecution = 0;
+		int nbPassedTestExecution = 0;
 		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<Boolean>(runtimeValues);
 		AngelicExecution.enable();
 		CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, listener);
+		nbFailingTestExecution +=listener.numberOfFailedTests();
+		nbPassedTestExecution += listener.numberOfTests() - listener.numberOfFailedTests();
 		AngelicExecution.flip();
 		CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, listener);
+		nbFailingTestExecution +=listener.numberOfFailedTests();
+		nbPassedTestExecution += listener.numberOfTests() - listener.numberOfFailedTests();
 		AngelicExecution.disable();
 		if (determineViability(firstResult, secondResult)) {
 			/* to collect information for passing tests */
 			TestSuiteExecution.runTestResult(testClasses, classLoader, listener);
+			nbFailingTestExecution +=listener.numberOfFailedTests();
+			nbPassedTestExecution += listener.numberOfTests() - listener.numberOfFailedTests();
 		}
+		NoPolLauncher.nbFailingTestExecution.add(nbFailingTestExecution);
+		NoPolLauncher.nbPassedTestExecution.add(nbPassedTestExecution);
 		return listener.specifications();
 	}
 	

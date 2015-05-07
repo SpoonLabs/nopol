@@ -43,7 +43,7 @@ import fr.inria.lille.repair.common.synth.StatementType;
  */
 public final class SynthesizerFactory {
 
-	private final File sourceFolder;
+	private final File[] sourceFolders;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final SpoonedProject spooner;
 	private StatementType type;
@@ -54,8 +54,8 @@ public final class SynthesizerFactory {
 	 * @param type 
 	 * 
 	 */
-	public SynthesizerFactory(final File sourceFolder, final SpoonedProject spooner, StatementType type) {
-		this.sourceFolder = sourceFolder;
+	public SynthesizerFactory(final File[] sourceFolders, final SpoonedProject spooner, StatementType type) {
+		this.sourceFolders = sourceFolders;
 		this.spooner = spooner;
 		this.type = type;
 	}
@@ -83,10 +83,10 @@ public final class SynthesizerFactory {
 		switch (Config.INSTANCE.getSynthesis()) {
 			case SMT:
 				Processor<CtStatement> processor = new ConditionalLoggingInstrumenter(runtimeValuesInstance, conditional);
-				ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(sourceFolder, runtimeValues, statement, processor, spooner);
-				return new DefaultSynthesizer(constraintModelBuilder, statement, detector.getType(), sourceFolder, conditional);
+				ConstraintModelBuilder constraintModelBuilder = new ConstraintModelBuilder(runtimeValues, statement, processor, spooner);
+				return new DefaultSynthesizer(constraintModelBuilder, statement, detector.getType(), conditional);
 			case BRUTPOL:
-				return new BrutSynthesizer(sourceFolder, statement, detector.getType(), conditional, spooner);
+				return new BrutSynthesizer(sourceFolders, statement, detector.getType(), conditional, spooner);
 		}
 		throw new RuntimeException("Unknown synthesizer");
 	}

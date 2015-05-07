@@ -19,6 +19,7 @@ import static java.lang.String.format;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.lille.repair.Main;
@@ -41,7 +42,7 @@ public class NoPolLauncher {
 		Main.main(new String[] {"repair", type, "angelic", filePath, classpath, solverName, solverPath});
 	}
 	
-	public static List<Patch> launch(File sourceFile, URL[] classpath, StatementType type, String[] args) {
+	public static List<Patch> launch(File[] sourceFile, URL[] classpath, StatementType type, String[] args) {
 		long executionTime = System.currentTimeMillis();
 		NoPol nopol = new NoPol(sourceFile, classpath, type);
 		List<Patch> patches = null;

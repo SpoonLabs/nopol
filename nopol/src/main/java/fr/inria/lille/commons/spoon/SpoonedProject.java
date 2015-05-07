@@ -13,7 +13,7 @@ import xxl.java.container.classic.MetaList;
 
 public class SpoonedProject extends SpoonedFile {
 	
-	public SpoonedProject(File sourceFile, URL[] classpath) {
+	public SpoonedProject(File[] sourceFile, URL[] classpath) {
 		super(sourceFile, classpath);
 	}
 	

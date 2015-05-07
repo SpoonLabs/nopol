@@ -44,14 +44,14 @@ public class SymbolicFixer {
 	private final SpoonedProject spoonProject;
 	private final StatementType type;
 
-	public SymbolicFixer(final File sourceFile, final URL[] classpath,
+	public SymbolicFixer(final File[] sourceFile, final URL[] classpath,
 			StatementType type) {
 		this(new ProjectReference(sourceFile, classpath), type);
 	}
 
 	public SymbolicFixer(ProjectReference project, StatementType type) {
 		this.classpath = project.classpath();
-		this.sourceFile = project.sourceFile();
+		this.sourceFile = project.sourceFiles();
 		this.testClasses = project.testClasses();
 		this.type = type;
 		
@@ -63,8 +63,7 @@ public class SymbolicFixer {
 		spoonProject = new SpoonedProject(this.sourceFile, classpath);		
 		jpfSpoonedProject = new SpoonedProject(this.sourceFile, classpath);
 		// init gzolor
-		gZoltar = GZoltarSuspiciousProgramStatements.create(project.sourceFile(),
-				project.classpath(), spoonProject.topPackageNames());
+		gZoltar = GZoltarSuspiciousProgramStatements.create(project.classpath(), spoonProject.topPackageNames());
 
 	}
 
@@ -283,7 +282,7 @@ public class SymbolicFixer {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final SpoonedProject jpfSpoonedProject;
 	private URL[] classpath;
-	private final File sourceFile;
+	private final File[] sourceFile;
 	private final GZoltarSuspiciousProgramStatements gZoltar;
 	private String[] testClasses;
 }

@@ -18,7 +18,7 @@ import fr.inria.lille.repair.infinitel.loop.implant.ProjectMonitorImplanter;
 
 public class Infinitel {
 
-	public static void run(File sourceFile, URL[] classpath) {
+	public static void run(File[] sourceFile, URL[] classpath) {
 		Infinitel infiniteLoopFixer = new Infinitel(sourceFile, classpath);
 		try {
 			infiniteLoopFixer.repair();
@@ -28,7 +28,7 @@ public class Infinitel {
 		}
 	}
 	
-	public Infinitel(File sourceFile, URL[] classpath) {
+	public Infinitel(File[] sourceFile, URL[] classpath) {
 		this(new ProjectReference(sourceFile, classpath));
 	}
 	

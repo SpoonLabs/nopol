@@ -66,9 +66,11 @@ public class Config {
     private NopolOracle oracle = NopolOracle.ANGELIC;
     private NopolSolver solver = NopolSolver.Z3;
     private String solverPath;
-    private String projectSourcePath;
+    private String[] projectSourcePath;
     private String projectClasspath;
     private String[] projectTests;
+
+    private int complianceLevel;
 
     Config() {
         p = new Properties();
@@ -99,6 +101,8 @@ public class Config {
             fieldAccessWeight = Double.parseDouble(p.getProperty("fieldAccess", "0"));
             constantWeight = Double.parseDouble(p.getProperty("constant", "0"));
             variableWeight = Double.parseDouble(p.getProperty("variable", "0"));
+
+            complianceLevel = Integer.parseInt(p.getProperty("complianceLevel", "7"));
         } catch (IOException e) {
             throw new RuntimeException("Unable to load config file");
         }
@@ -328,11 +332,11 @@ public class Config {
         this.solverPath = solverPath;
     }
 
-    public String getProjectSourcePath() {
+    public String[] getProjectSourcePath() {
         return projectSourcePath;
     }
 
-    public void setProjectSourcePath(String projectSourcePath) {
+    public void setProjectSourcePath(String[] projectSourcePath) {
         this.projectSourcePath = projectSourcePath;
     }
 
@@ -350,5 +354,13 @@ public class Config {
 
     public void setProjectTests(String[] projectTests) {
         this.projectTests = projectTests;
+    }
+
+    public int getComplianceLevel() {
+        return complianceLevel;
+    }
+
+    public void setComplianceLevel(int complianceLevel) {
+        this.complianceLevel = complianceLevel;
     }
 }

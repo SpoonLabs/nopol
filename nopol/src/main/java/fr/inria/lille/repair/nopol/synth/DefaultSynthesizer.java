@@ -50,7 +50,7 @@ public final class DefaultSynthesizer implements Synthesizer {
     private static int nbVariables;
 	private ConditionalProcessor conditionalProcessor;
 
-	public DefaultSynthesizer(ConstraintModelBuilder constraintModelBuilder, SourceLocation sourceLocation, StatementType type, File outputFolder, ConditionalProcessor processor) {
+	public DefaultSynthesizer(ConstraintModelBuilder constraintModelBuilder, SourceLocation sourceLocation, StatementType type, ConditionalProcessor processor) {
 		this.constraintModelBuilder = constraintModelBuilder;
 		this.sourceLocation = sourceLocation;
 		this.type = type;

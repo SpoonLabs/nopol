@@ -13,6 +13,7 @@ import xxl.java.junit.TestSuiteExecution;
 import xxl.java.library.FileLibrary;
 import xxl.java.library.JavaLibrary;
 
+import java.io.File;
 import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.List;
@@ -35,28 +36,34 @@ public abstract class TestUtility {
 
     public ProjectReference projectForExample(int nopolExampleNumber) {
         String sourceFile = "../test-projects/src/";
-        String classpath = "../test-projects/target/test-classes:../test-projects/target/classes";
+        String classpath = "../test-projects/target/test-classes:../test-projects/target/classes:misc/nopol-example/junit-4.11.jar";
         String[] testClasses = new String[] { executionType + "_examples." + executionType + "_example_"
                 + nopolExampleNumber + ".NopolExampleTest" };
         return new ProjectReference(sourceFile, classpath, testClasses);
     }
 
     private List<Patch> patchFor(ProjectReference project, StatementType type) {
-        clean(project.sourceFile().getParent());
+        for (int i = 0; i < project.sourceFiles().length; i++) {
+            File file = project.sourceFiles()[i];
+            clean(file.getParent());
+        }
         List<Patch> patches;
         switch (this.executionType) {
             case "symbolic":
                 patches = SymbolicLauncher.run(project, type);
                 break;
             case "nopol":
-                NoPol nopol = new NoPol(project.sourceFile(), project.classpath(), type);
+                NoPol nopol = new NoPol(project.sourceFiles(), project.classpath(), type);
                 patches = nopol.build(project.testClasses());
                 break;
             default:
                 throw new RuntimeException("Execution type not found");
         }
 
-        clean(project.sourceFile().getParent());
+        for (int i = 0; i < project.sourceFiles().length; i++) {
+            File file = project.sourceFiles()[i];
+            clean(file.getParent());
+        }
         return patches;
     }
 
@@ -109,14 +116,14 @@ public abstract class TestUtility {
         switch (this.executionType) {
             case "symbolic":
                 patches = SymbolicLauncher
-                        .launch(FileLibrary.openFrom(srcFolder),
+                        .launch(new File[]{FileLibrary.openFrom(srcFolder)},
                                 JavaLibrary.classpathFrom(classpath),
                                 statementType,
                                 tests);
                 break;
             case "nopol":
                 patches = NoPolLauncher
-                        .launch(FileLibrary.openFrom(srcFolder),
+                        .launch(new File[]{FileLibrary.openFrom(srcFolder)},
                                 JavaLibrary.classpathFrom(classpath),
                                 statementType,
                                 tests);

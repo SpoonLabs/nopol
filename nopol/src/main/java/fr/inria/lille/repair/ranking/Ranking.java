@@ -120,7 +120,7 @@ public class Ranking {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private URL[] classpath;
-	private final File sourceFile;
+	private final File sourceFile[];
 	private final GZoltarSuspiciousProgramStatements gZoltar;
 	private String[] testClasses;
 }

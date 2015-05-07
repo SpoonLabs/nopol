@@ -17,6 +17,7 @@ package fr.inria.lille.repair;
 
 
 import com.martiansoftware.jsap.*;
+import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.infinitel.InfinitelLauncher;
@@ -40,29 +41,35 @@ public class Main {
 				return;
 			}
 
-			File sourceFile = FileLibrary.openFrom(Config.INSTANCE.getProjectSourcePath());
+			File[] sourceFiles = new File[Config.INSTANCE.getProjectSourcePath().length];
+			for (int i = 0; i < Config.INSTANCE.getProjectSourcePath().length; i++) {
+				String path = Config.INSTANCE.getProjectSourcePath()[i];
+				File sourceFile = FileLibrary.openFrom(path);
+				sourceFiles[i] = sourceFile;
+			}
+
 			URL[] classpath = JavaLibrary.classpathFrom(Config.INSTANCE.getProjectClasspath());
 
 			switch (Config.INSTANCE.getMode()) {
 				case REPAIR:
 					switch (Config.INSTANCE.getType()) {
 						case LOOP:
-							InfinitelLauncher.launch(sourceFile, classpath, Config.INSTANCE.getProjectTests());
+							InfinitelLauncher.launch(sourceFiles, classpath, Config.INSTANCE.getProjectTests());
 							break;
 						default:
 							switch (Config.INSTANCE.getOracle()) {
 								case ANGELIC:
-									NoPolLauncher.launch(sourceFile, classpath, Config.INSTANCE.getType(), Config.INSTANCE.getProjectTests());
+									NoPolLauncher.launch(sourceFiles, classpath, Config.INSTANCE.getType(), Config.INSTANCE.getProjectTests());
 									break;
 								case SYMBOLIC:
-									SymbolicLauncher.launch(sourceFile, classpath, Config.INSTANCE.getType(), Config.INSTANCE.getProjectTests());
+									SymbolicLauncher.launch(sourceFiles, classpath, Config.INSTANCE.getType(), Config.INSTANCE.getProjectTests());
 									break;
 							}
 							break;
 					}
 					break;
 				case RANKING:
-					Ranking ranking = new Ranking(sourceFile, classpath, Config.INSTANCE.getProjectTests());
+					Ranking ranking = new Ranking(sourceFiles, classpath, Config.INSTANCE.getProjectTests());
 					System.out.println(ranking.summary());
 					break;
 			}
@@ -96,10 +103,14 @@ public class Main {
 		Config.INSTANCE.setSynthesis(strToSynthesis(config.getString("synthesis")));
 		Config.INSTANCE.setOracle(strToOracle(config.getString("oracle")));
 		Config.INSTANCE.setSolver(strToSolver(config.getString("solver")));
-		Config.INSTANCE.setSolverPath(config.getString("solverPath"));
+		if(config.getString("solverPath") != null) {
+			Config.INSTANCE.setSolverPath(config.getString("solverPath"));
+			SolverFactory.setSolver(Config.INSTANCE.getSolver(), Config.INSTANCE.getSolverPath());
+		}
 		Config.INSTANCE.setProjectClasspath(config.getString("classpath"));
-		Config.INSTANCE.setProjectSourcePath(config.getString("source"));
+		Config.INSTANCE.setProjectSourcePath(config.getStringArray("source"));
 		Config.INSTANCE.setProjectTests(config.getStringArray("test"));
+		Config.INSTANCE.setComplianceLevel(config.getInt("complianceLevel", 7));
 		return true;
 	}
 
@@ -223,6 +234,7 @@ public class Main {
 		sourceOpt.setLongFlag("source");
 		sourceOpt.setShortFlag('s');
 		sourceOpt.setStringParser(JSAP.STRING_PARSER);
+		sourceOpt.setList(true);
 		sourceOpt.setHelp("Define the path to the source code of the project.");
 		jsap.registerParameter(sourceOpt);
 
@@ -244,5 +256,14 @@ public class Main {
 		testOpt.setStringParser(JSAP.STRING_PARSER);
 		testOpt.setHelp("Define the tests of the project.");
 		jsap.registerParameter(testOpt);
+
+		FlaggedOption complianceLevelOpt = new FlaggedOption("complianceLevel");
+		complianceLevelOpt.setRequired(false);
+		complianceLevelOpt.setAllowMultipleDeclarations(false);
+		complianceLevelOpt.setLongFlag("complianceLevel");
+		complianceLevelOpt.setStringParser(JSAP.INTEGER_PARSER);
+		complianceLevelOpt.setDefault("7");
+		complianceLevelOpt.setHelp("The compliance level of the project.");
+		jsap.registerParameter(complianceLevelOpt);
 	}
 }

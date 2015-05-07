@@ -15,7 +15,7 @@ import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
 
 public class SymbolicLauncher {
-	public static List<Patch> launch(File sourceFile, URL[] classpath,
+	public static List<Patch> launch(File[] sourceFile, URL[] classpath,
 			StatementType type, String[] args) {
 		long executionTime = System.currentTimeMillis();
 		SymbolicLauncher symbolicFixer = new SymbolicLauncher(sourceFile,
@@ -43,7 +43,7 @@ public class SymbolicLauncher {
 		return null;
 	}
 
-	public SymbolicLauncher(File sourceFile, URL[] classpath, StatementType type, String[] tests) {
+	public SymbolicLauncher(File[] sourceFile, URL[] classpath, StatementType type, String[] tests) {
 		this(new ProjectReference(sourceFile, classpath, tests), type);
 	}
 

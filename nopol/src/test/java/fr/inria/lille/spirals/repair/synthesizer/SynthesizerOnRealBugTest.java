@@ -8,6 +8,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import xxl.java.library.JavaLibrary;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -515,7 +516,7 @@ public class SynthesizerOnRealBugTest {
                 classpath += ":";
             }
         }
-        Synthesizer synthesizer = new SynthesizerImpl(srcFolder + sourceFolder,location, JavaLibrary.classpathFrom(classpath), oracle, oracle.keySet().toArray(new String[0]));
+        Synthesizer synthesizer = new SynthesizerImpl(new File[]{new File(srcFolder + sourceFolder)},location, JavaLibrary.classpathFrom(classpath), oracle, oracle.keySet().toArray(new String[0]));
         Candidates result = synthesizer.run();
         check(result, patch);
     }

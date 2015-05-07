@@ -34,7 +34,7 @@ import java.util.*;
 public class SynthesizerImpl implements Synthesizer {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final String projectRoot;
+    private final File[] projectRoots;
     private final SourceLocation location;
     private final URL[] classpath;
     private final Map<String, Object[]> oracle;
@@ -59,13 +59,13 @@ public class SynthesizerImpl implements Synthesizer {
     private SpoonElementsCollector spoonElementsCollector;
     private StatCollector statCollector;
 
-    public SynthesizerImpl(SpoonedProject spoon, String projectRoot, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests) {
-        this(projectRoot, location, classpath, oracle, tests);
+    public SynthesizerImpl(SpoonedProject spoon, File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests) {
+        this(projectRoots, location, classpath, oracle, tests);
         this.spoon = spoon;
     }
 
-    public SynthesizerImpl(String projectRoot, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests) {
-        this.projectRoot = projectRoot;
+    public SynthesizerImpl(File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests) {
+        this.projectRoots = projectRoots;
         this.location = location;
 
         this.oracle = oracle;
@@ -218,20 +218,25 @@ public class SynthesizerImpl implements Synthesizer {
                     }
                 }
             }
-            System.out.println(frames);
         } catch (IncompatibleThreadStateException e) {
             e.printStackTrace();
         }
-
         throw new RuntimeException("Unable to identify the current test");
     }
 
     private void initSpoon() {
-        File classFile = new File(projectRoot + this.location.getContainingClassName().replaceAll("\\.", "/") + ".java");
-
+        File classFile = null;
+        for (int i = 0; i < projectRoots.length; i++) {
+            File projectRoot = projectRoots[i];
+            classFile = new File(projectRoot.getAbsoluteFile() + this.location.getContainingClassName().replaceAll("\\.", "/") + ".java");
+            if(classFile.exists()) {
+                break;
+            }
+            classFile = null;
+        }
         if (spoon == null) {
             try {
-                spoon = new SpoonedProject(classFile, classpath);
+                spoon = new SpoonedProject(new File[]{classFile}, classpath);
             } catch (Exception e) {
                 logger.warn("Unable to spoon the project", e);
                 return;
@@ -269,7 +274,7 @@ public class SynthesizerImpl implements Synthesizer {
                 return new Candidates();
             }
         }
-        DataCollector dataCollect = new DataCollector(threadRef, constants, location, buggyMethod, classes);
+        DataCollector dataCollect = new DataCollector(threadRef, constants, location, buggyMethod, classes, statCollector);
         return dataCollect.collect();
     }
 

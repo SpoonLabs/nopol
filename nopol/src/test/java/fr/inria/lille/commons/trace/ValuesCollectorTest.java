@@ -387,7 +387,7 @@ public class ValuesCollectorTest {
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private CtElement elementFromSnippet(File sourceFile, String codeSnippet) {
-		Factory model = SpoonModelLibrary.modelFor(sourceFile);
+		Factory model = SpoonModelLibrary.modelFor(new File[]{sourceFile});
 		Filter filter = new CodeSnippetFilter(sourceFile, codeSnippet);
 		List<CtElement> elements = SpoonElementLibrary.filteredElements(model, filter);
 		assertEquals(1, elements.size());
