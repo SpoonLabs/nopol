@@ -62,7 +62,7 @@ public class Config {
 
     private NopolMode mode = NopolMode.REPAIR;
     private StatementType type = StatementType.CONDITIONAL;
-    private NopolSynthesis synthesis = NopolSynthesis.BRUTPOL;
+    private NopolSynthesis synthesis = NopolSynthesis.SMT;
     private NopolOracle oracle = NopolOracle.ANGELIC;
     private NopolSolver solver = NopolSolver.Z3;
     private String solverPath;

@@ -5,7 +5,7 @@ import java.util.List;
 
 public final class AngelicExecution {
 
-	public static List<Boolean> previousValue = new ArrayList<>();
+	public static List previousValue = new ArrayList<>();
 
 	public static String invocation(String booleanSnippet) {
 		return AngelicExecution.class.getName() + ".angelicValue(" + booleanSnippet + ")";

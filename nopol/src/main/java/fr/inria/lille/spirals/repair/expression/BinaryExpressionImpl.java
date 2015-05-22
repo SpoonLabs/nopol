@@ -118,7 +118,15 @@ public abstract class BinaryExpressionImpl extends ExpressionImpl implements Bin
 
     @Override
     public String asPatch() {
-        return toString();
+        String first = getFirstExpression().asPatch();
+        if (getFirstExpression() instanceof BinaryExpression) {
+            first = "(" + first + ")";
+        }
+        String second = getSecondExpression().asPatch();
+        if (getSecondExpression() instanceof BinaryExpression) {
+            second = "(" + second + ")";
+        }
+        return first + " " + getOperator().getSymbol() + " " + second;
     }
 }
 

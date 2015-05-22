@@ -5,6 +5,7 @@ import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.insertBefo
 
 import java.util.Collection;
 
+import fr.inria.lille.repair.nopol.spoon.smt.ConditionalProcessor;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.*;
 import xxl.java.container.classic.MetaMap;
@@ -16,7 +17,7 @@ import fr.inria.lille.repair.nopol.synth.AngelicExecution;
 
 public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtStatement> {
 
-	public ConditionalLoggingInstrumenter(RuntimeValues<Boolean> runtimeValues, ConditionalProcessor subprocessor) {
+	public ConditionalLoggingInstrumenter(RuntimeValues<Boolean> runtimeValues, NopolProcessor subprocessor) {
 		this.subprocessor = subprocessor;
 		this.runtimeValues = runtimeValues;
 	}
@@ -32,14 +33,14 @@ public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtSt
 
         CtLocalVariable<Boolean> defaultValue = newLocalVariableDeclaration(statement.getFactory(), Boolean.class, "spoonDefaultValue", "false");
         insertBeforeUnderSameParent(defaultValue, statement);
-        CtCodeSnippetStatement defaultValueEvaluation = getFactory().Code().createCodeSnippetStatement("try{spoonDefaultValue=" + subprocessor().defaultCondition() + ";}catch(" + Exception.class.getCanonicalName()  +" e){}");
+        CtCodeSnippetStatement defaultValueEvaluation = getFactory().Code().createCodeSnippetStatement("try{spoonDefaultValue=" + subprocessor().getDefaultValue() + ";}catch(" + Exception.class.getCanonicalName()  +" e){}");
         insertBeforeUnderSameParent(defaultValueEvaluation, statement);
 
         String evaluationValue = angelicInvocation("spoonDefaultValue");
 		CtLocalVariable<Boolean> evaluation = newLocalVariableDeclaration(statement.getFactory(), Boolean.class, evaluationAccess, evaluationValue);
 		insertBeforeUnderSameParent(evaluation, statement);
 		appendValueCollection(statement, evaluationAccess, "spoonDefaultValue");
-		subprocessor().processCondition(statement, evaluationAccess);
+		((ConditionalProcessor)subprocessor()).processCondition(statement, evaluationAccess);
 	}
 	
 	protected String angelicInvocation(String booleanSnippet) {
@@ -67,10 +68,10 @@ public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtSt
 		return runtimeValues;
 	}
 	
-	private ConditionalProcessor subprocessor() {
+	private NopolProcessor subprocessor() {
 		return subprocessor;
 	}
 	
-	private ConditionalProcessor subprocessor;
+	private NopolProcessor subprocessor;
 	private RuntimeValues<Boolean> runtimeValues;
 }

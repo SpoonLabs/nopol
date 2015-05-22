@@ -13,16 +13,12 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.repair.symbolic.synth;
+package fr.inria.lille.repair.nopol.synth;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,10 +26,15 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.gzoltar.core.instr.testing.TestResult;
+import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
+import fr.inria.lille.repair.nopol.spoon.symbolic.TestExecutorProcessor;
 import org.junit.runner.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spoon.processing.Processor;
+import xxl.java.compiler.DynamicCompilationException;
 import xxl.java.junit.TestCase;
 import xxl.java.junit.TestSuiteExecution;
 import fr.inria.lille.commons.spoon.SpoonedClass;
@@ -43,9 +44,8 @@ import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.commons.trace.SpecificationTestCasesListener;
 import fr.inria.lille.repair.nopol.SourceLocation;
-import fr.inria.lille.repair.symbolic.jpf.JPFUtil;
-import fr.inria.lille.repair.symbolic.spoon.LoggingInstrumenter;
-import fr.inria.lille.repair.symbolic.spoon.SymbolicProcessor;
+import fr.inria.lille.repair.nopol.jpf.JPFUtil;
+import fr.inria.lille.repair.nopol.spoon.LoggingInstrumenter;
 import gov.nasa.jpf.Config;
 import gov.nasa.jpf.JPF;
 import gov.nasa.jpf.Property;
@@ -53,7 +53,6 @@ import gov.nasa.jpf.search.Search;
 import gov.nasa.jpf.search.SearchListenerAdapter;
 import gov.nasa.jpf.symbc.numeric.PCChoiceGenerator;
 import gov.nasa.jpf.symbc.numeric.PathCondition;
-import gov.nasa.jpf.vm.Instruction;
 import gov.nasa.jpf.vm.VM;
 
 /**
@@ -62,38 +61,64 @@ import gov.nasa.jpf.vm.VM;
  * @author Thomas Durieux
  * 
  */
-public final class JPFRunner<T> {
+public final class JPFRunner<T> implements AngelicValue<T>{
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final RuntimeValues<T> runtimeValues;
 	private final SourceLocation sourceLocation;
 	private final SpoonedFile spoon;
-	private final SymbolicProcessor processor;
+	private final NopolProcessor processor;
 
 	private final File outputSourceFile = new File("src-gen");
 	private final File outputCompiledFile = new File("target-gen");
+	private final SpoonedProject cleanSpoon;
 	private boolean find = false;
 
 	public JPFRunner(RuntimeValues<T> runtimeValues,
-			SourceLocation sourceLocation, SymbolicProcessor processor,
-			SpoonedFile spooner) {
+			SourceLocation sourceLocation, NopolProcessor processor,
+			SpoonedFile spooner, final SpoonedProject cleanSpoon) {
 		this.sourceLocation = sourceLocation;
 		this.runtimeValues = runtimeValues;
 		this.spoon = spooner;
 		this.processor = processor;
+		this.cleanSpoon = cleanSpoon;
 	}
 
-	public Collection<Specification<T>> buildFor(URL[] classpath,
-			final String[] testClasses, final Collection<TestCase> failures,
-			final SpoonedProject cleanSpoon, String mainClass) {
+	@Override
+	public Collection<Specification<T>> buildFor(final URL[] classpath,final List<TestResult> testClasses, final Collection<TestCase> failures) {
+		SpoonedClass fork = cleanSpoon.forked(sourceLocation.getContainingClassName());
+		final LoggingInstrumenter<T> logging = createLoggingInstrumenter();
+		final ClassLoader unitTestClassLoader = fork.processedAndDumpedToClassLoader(logging);
+		final SpecificationTestCasesListener<T> listener = run(classpath, failures, unitTestClassLoader);
 
-		final SpecificationTestCasesListener<T> listener = new SpecificationTestCasesListener<T>(
-				runtimeValues);
+		if (this.find) {
+			logging.disable();
+			TestSuiteExecution.runTestResult(testClasses, unitTestClassLoader, listener);
+		}
+		return listener.specifications();
+	}
+
+	@Override
+	public Collection<Specification<T>> buildFor(final URL[] classpath,final String[] testClasses, final Collection<TestCase> failures) {
+		final LoggingInstrumenter<T> logging = createLoggingInstrumenter();
+		SpoonedClass fork = cleanSpoon.forked(sourceLocation.getContainingClassName());
+		final ClassLoader unitTestClassLoader = fork.processedAndDumpedToClassLoader(logging);
+
+		final SpecificationTestCasesListener<T> listener = run(classpath, failures, unitTestClassLoader);
+
+		if (this.find) {
+			logging.disable();
+			TestSuiteExecution.runCasesIn(testClasses, unitTestClassLoader, listener);
+		}
+		return listener.specifications();
+	}
+
+	private LoggingInstrumenter<T> createLoggingInstrumenter() {
 		// transforms
 		try {
 			this.spoon.process(processor);
-		} catch (xxl.java.compiler.DynamicCompilationException e) {
-			return listener.specifications();
+		} catch (DynamicCompilationException e) {
+			throw new RuntimeException("Unable to compile the project", e);
 		}
 		try {
 			this.spoon.generateOutputFile(outputSourceFile);
@@ -102,35 +127,37 @@ public final class JPFRunner<T> {
 			throw new RuntimeException("Unable to write transformed test", e);
 		}
 
-		// create the classpath for JPF
-		TestCase[] array = failures.toArray(new TestCase[0]);
+		return new LoggingInstrumenter<>(runtimeValues, processor);
+	}
+
+	private String createClassPath(final URL[] classpath) {
 		String stringClassPath = outputCompiledFile.getAbsolutePath() + ":";
 		for (int i = 2; i < classpath.length; i++) {
 			URL url = classpath[i];
 			stringClassPath += url.getPath() + ":";
 		}
+		return stringClassPath;
+	}
 
-		final LoggingInstrumenter<T> logging = new LoggingInstrumenter<T>(
-				runtimeValues, processor);
-		SpoonedClass fork = cleanSpoon.forked(sourceLocation
-				.getContainingClassName());
-		final ClassLoader unitTestClassLoader;
-		try {
-			unitTestClassLoader = fork
-				.processedAndDumpedToClassLoader(logging);
-		}catch (Exception e) {
-			logger.error(e.getMessage());
-			return listener.specifications();
-		}
-		List<TestCase> passedTest = new ArrayList<TestCase>(failures.size());
-		for (final TestCase testCase : array) {
-			logger.debug("SYMBOLIC EXECUTION on " + sourceLocation + " Test "
-					+ testCase);
+	private SpecificationTestCasesListener<T> run(final URL[] classpath, final Collection<TestCase> failures, ClassLoader unitTestClassLoader) {
+		final SpecificationTestCasesListener<T> listener = new SpecificationTestCasesListener<>(runtimeValues);
+
+		// create the classpath for JPF
+		String stringClassPath = createClassPath(classpath);
+
+		String mainClass = "nopol.repair.NopolTestRunner";
+		//TestExecutorProcessor.createMainTestClass(spoon, mainClass);
+
+		List<TestCase> passedTest = new ArrayList<>(failures.size());
+		Iterator<TestCase> iterator = failures.iterator();
+		while (iterator.hasNext()) {
+			TestCase testCase = iterator.next();
+			logger.debug("SYMBOLIC EXECUTION on " + sourceLocation + " Test " + testCase);
 			String[] args = new String[1];
 			args[0] = testCase.className() + "." + testCase.testName();
 
-			Config conf = JPFUtil.createConfig(args, mainClass,
-					stringClassPath, outputSourceFile.getAbsolutePath());
+
+			Config conf = JPFUtil.createConfig(args, mainClass, stringClassPath, outputSourceFile.getAbsolutePath());
 			final JPF jpf = new JPF(conf);
 
 			// executes JPF
@@ -150,15 +177,12 @@ public final class JPFRunner<T> {
 			try {
 				future.get(60, TimeUnit.SECONDS);
 			} catch (InterruptedException e) {
-				System.out.println("job was interrupted");
 				continue;
 			} catch (ExecutionException e) {
 				e.printStackTrace();
-				System.out.println("caught exception: " + e.getCause());
 				continue;
 			} catch (TimeoutException e) {
 				future.cancel(true);
-				System.out.println("timeout");
 				continue;
 			}
 
@@ -167,15 +191,12 @@ public final class JPFRunner<T> {
 			if (result == null) {
 				continue;
 			}
-			logger.debug("SYMBOLIC VALUE on " + sourceLocation + " for Test "
-					+ testCase + " Value: " + result);
+			logger.debug("SYMBOLIC VALUE on " + sourceLocation + " for Test " + testCase + " Value: " + result);
 			// collect runtime
-			boolean passed = executeTestAndCollectRuntimeValues(result,
-					testCase, unitTestClassLoader, listener);
+			boolean passed = executeTestAndCollectRuntimeValues(result, testCase, unitTestClassLoader, listener);
 			if (passed) {
 				this.find = true;
-				TestSuiteExecution.runTestCases(failures, unitTestClassLoader,
-						listener);
+				TestSuiteExecution.runTestCases(failures, unitTestClassLoader, listener);
 				if (!passedTest.contains(testCase)) {
 					passedTest.add(testCase);
 				}
@@ -184,12 +205,8 @@ public final class JPFRunner<T> {
 				}
 			}
 		}
-		if (this.find) {
-			logging.disable();
-			TestSuiteExecution.runCasesIn(testClasses, unitTestClassLoader,
-					listener);
-		}
-		return listener.specifications();
+
+		return listener;
 	}
 
 	private boolean executeTestAndCollectRuntimeValues(Object result,
@@ -227,7 +244,6 @@ public final class JPFRunner<T> {
 			PCChoiceGenerator choiceGenerator = vm
 					.getLastChoiceGeneratorOfType(PCChoiceGenerator.class);
 			if (choiceGenerator != null) {
-				Instruction instruction = choiceGenerator.getInsn();
 				PathCondition pc = choiceGenerator.getCurrentPC();
 				if (search.getErrors().size() < 0) {
 					return;

@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import spoon.processing.Processor;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.CtSimpleType;
 import xxl.java.container.classic.MetaList;
 
 public class SpoonedProject extends SpoonedFile {
@@ -18,16 +18,16 @@ public class SpoonedProject extends SpoonedFile {
 	}
 	
 	@Override
-	protected Collection<? extends CtType<?>> modelledClasses() {
+	protected Collection<? extends CtSimpleType<?>> modelledClasses() {
 		return typeFactory().getAll();
 	}
 	
-	protected CtType<?> modelledClass(String qualifiedName) {
+	protected CtSimpleType<?> modelledClass(String qualifiedName) {
 		return typeFactory().get(qualifiedName);
 	}
 	
-	protected Collection<CtType<?>> modelledClasses(Collection<String> qualifiedNames) {
-		Collection<CtType<?>> modelledClasses = MetaList.newLinkedList();
+	protected Collection<CtSimpleType<?>> modelledClasses(Collection<String> qualifiedNames) {
+		Collection<CtSimpleType<?>> modelledClasses = MetaList.newLinkedList();
 		for (String qualifiedName : qualifiedNames) {
 			modelledClasses.add(modelledClass(qualifiedName));
 		}
@@ -35,7 +35,7 @@ public class SpoonedProject extends SpoonedFile {
 	}
 	
 	public SpoonedClass forked(String qualifiedName) {
-		CtType<?> modelledClass = modelledClass(qualifiedName);
+		CtSimpleType<?> modelledClass = modelledClass(qualifiedName);
 		if(modelledClass == null) {
 			return null;
 		}

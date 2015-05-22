@@ -9,8 +9,10 @@ import fr.inria.lille.spirals.repair.expression.*;
 import fr.inria.lille.spirals.repair.synthesizer.collect.factory.ExpressionFacotry;
 import fr.inria.lille.spirals.repair.synthesizer.collect.filter.FieldFilter;
 import fr.inria.lille.spirals.repair.synthesizer.collect.filter.MethodFilter;
+import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.StatCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spoon.reflect.reference.CtExecutableReference;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -27,14 +29,16 @@ public class DataCollector {
     private final Set<String> importedClasses;
     private final String buggyMethod;
     private final SourceLocation location;
+    private final StatCollector statCollector;
 
-    public DataCollector(ThreadReference threadRef, Candidates constants, SourceLocation location, String buggyMethod, Set<String> classes) {
+    public DataCollector(ThreadReference threadRef, Candidates constants, SourceLocation location, String buggyMethod, Set<String> classes, StatCollector statCollector) {
         this.threadRef = threadRef;
 
         this.constants = constants;
         this.importedClasses = classes;
         this.buggyMethod = buggyMethod;
         this.location = location;
+        this.statCollector = statCollector;
     }
 
     public Candidates collect() {
@@ -70,7 +74,7 @@ public class DataCollector {
                 candidates.addAll(constants);
             }
             if (Config.INSTANCE.isCollectStaticMethods()) {
-                collectMethods(importedClasses, threadRef, candidates, candidates);
+                collectMethods(statCollector.getStatMethod().keySet(), threadRef, candidates, candidates);
             }
             Candidates previousLevel = new Candidates();
             previousLevel.addAll(candidates);
@@ -114,6 +118,8 @@ public class DataCollector {
 
         return candidates;
     }
+
+
 
     private Candidates collect(ComplexTypeExpression exp, ThreadReference threadRef, Candidates candidates) {
         Candidates results = new Candidates();
@@ -165,18 +171,71 @@ public class DataCollector {
         }
     }
 
-    private void collectMethods(Set<String> classes, ThreadReference threadRef, Candidates candidates, Candidates params) {
-        Iterator<String> it = classes.iterator();
+    private void collectMethods(Set<CtExecutableReference> ctExecutableReferences, ThreadReference threadRef, Candidates candidates, Candidates params) {
+        Iterator<CtExecutableReference> it = ctExecutableReferences.iterator();
         while (it.hasNext()) {
-            String cl = it.next();
-            List<ReferenceType> refs = threadRef.virtualMachine().classesByName(cl);
+            CtExecutableReference next = it.next();
+            List<ReferenceType> refs = threadRef.virtualMachine().classesByName(next.getDeclaringType().getQualifiedName());
             if (refs.size() == 0) {
                 continue;
             }
 
             ReferenceType ref = refs.get(0);
-            ComplexValue exp = new ComplexValueImpl(cl, ref);
-            collectMethods(exp, threadRef, candidates, params);
+            ComplexValue exp = new ComplexValueImpl(next.getDeclaringType().getQualifiedName(), ref);
+            collectMethods(exp, next.getSimpleName(), threadRef, candidates, params);
+        }
+    }
+
+    private void collectMethods(ComplexValue exp, String methodName, ThreadReference threadRef, Candidates candidates, Candidates parmas) {
+        boolean isStatic;
+        ReferenceType ref;
+        if (exp.getValue() instanceof ObjectReference) {
+            isStatic = false;
+            ref = ((ObjectReference) exp.getValue()).referenceType();
+        } else if (exp.getValue() instanceof ReferenceType) {
+            isStatic = true;
+            ref = (ReferenceType) exp.getValue();
+        } else {
+            return;
+        }
+        List<Method> methods = ref.methodsByName(methodName);
+        for (int i = 0; i < methods.size(); i++) {
+            Method method = methods.get(i);
+            if (!exp.toString().equals("this") && !method.isPublic()) {
+                continue;
+            }
+            if ((exp.toString().equals("this") || this.location.getContainingClassName().equals(ref.name()) )
+                    && method.name().equals(buggyMethod)) {
+                continue;
+            }
+            if (!MethodFilter.toProcess(method)) {
+                continue;
+            }
+            if (isStatic && !method.isStatic()) {
+                continue;
+            }
+            try {
+                List<Type> argumentTypes = method.argumentTypes();
+                List<List<Expression>> argumentCandidates = new ArrayList<>();
+                for (int j = 0; j < argumentTypes.size(); j++) {
+                    Type type = argumentTypes.get(j);
+                    Candidates expressions = (parmas.filter(type));
+                    argumentCandidates.add(expressions);
+                }
+                argumentCandidates = combine(argumentCandidates);
+                if (argumentCandidates.size() == 0 && 0 == method.argumentTypeNames().size()) {
+                    candidates.add(callMethod(threadRef, exp, method, Collections.EMPTY_LIST));
+                }
+                for (int j = 0; j < argumentCandidates.size(); j++) {
+                    List<Expression> expressions = argumentCandidates.get(j);
+                    if (expressions.size() != method.argumentTypeNames().size()) {
+                        break;
+                    }
+                    candidates.add(callMethod(threadRef, exp, method, expressions));
+                }
+            } catch (ClassNotLoadedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -11,9 +11,9 @@ import spoon.reflect.cu.SourcePosition;
 import xxl.java.library.FileLibrary;
 import fr.inria.lille.repair.nopol.spoon.SpoonConditionalPredicate;
 import fr.inria.lille.repair.nopol.spoon.SpoonStatementPredicate;
-import fr.inria.lille.repair.symbolic.spoon.SpoonBooleanStatement;
-import fr.inria.lille.repair.symbolic.spoon.SpoonDoubleStatement;
-import fr.inria.lille.repair.symbolic.spoon.SpoonIntegerStatement;
+import fr.inria.lille.repair.nopol.spoon.symbolic.SpoonBooleanStatement;
+import fr.inria.lille.repair.nopol.spoon.symbolic.SpoonDoubleStatement;
+import fr.inria.lille.repair.nopol.spoon.symbolic.SpoonIntegerStatement;
 
 public class StatementTypeDetector extends AbstractProcessor<CtStatement> {
 

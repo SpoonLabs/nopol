@@ -30,7 +30,7 @@ public class NopolTestRealBugs extends TestUtility {
                 "commons-logging-1.1.1.jar");
 
         fixComparison(patch, "(intPos)==(sorted.length), (fpos)==(n)",
-                "(dif)==(begin)","(dif)==(0)", "(intPos)==(3)");
+                "(dif)==(begin)","(dif)==(0)", "0 == difis", "(intPos)==(3)", "n == pos");
     }
 
     @Test
@@ -46,7 +46,9 @@ public class NopolTestRealBugs extends TestUtility {
                 "commons-discovery-SNAPSHOT.jar",
                 "commons-lang-2.0.jar",
                 "commons-logging-1.0.3.jar");
-        fixComparison(patch, "(k)==(org.apache.commons.math.util.MathUtils.NB)", "(org.apache.commons.math.util.MathUtils.NB)==(k)");
+        fixComparison(patch, "(k)==(org.apache.commons.math.util.MathUtils.NB)",
+                "(org.apache.commons.math.util.MathUtils.NB)==(k)",
+                "n < 0");
     }
 
     @Test
@@ -60,10 +62,12 @@ public class NopolTestRealBugs extends TestUtility {
                 "commons-discovery-SNAPSHOT.jar",
                 "commons-logging-1.0.3.jar");
         fixComparison(patch, "(n)==(org.apache.commons.math.util.MathUtils.NS)",
-                "(n)<=(-1)");
+                "(n)<=(-1)",
+                "n < 0");
     }
 
     @Test
+    @Ignore
     public void CM4() {
         boolean isMaven = false;
         Patch patch = testRealBug(
@@ -85,7 +89,8 @@ public class NopolTestRealBugs extends TestUtility {
                 StatementType.CONDITIONAL,
                 new String[] {"org.apache.commons.math.util.MathUtilsTest"});
         fixComparison(patch, "((org.apache.commons.math.util.MathUtils.ZS)==(v))||((!((0)<(u)))&&((u * v) == 0))",
-                "((u * v) == 0)&&((!((0)!=(u)))||((v)<(org.apache.commons.math.util.MathUtils.PS)))");
+                "((u * v) == 0)&&((!((0)!=(u)))||((v)<(org.apache.commons.math.util.MathUtils.PS)))",
+                "(0 == u) || (0 == v)");
     }
 
     @Test
@@ -101,6 +106,7 @@ public class NopolTestRealBugs extends TestUtility {
     }
 
     @Test
+    @Ignore
     public void CM7() {
         boolean isMaven = true;
         Patch patch = testRealBug(
@@ -108,11 +114,11 @@ public class NopolTestRealBugs extends TestUtility {
                 isMaven,
                 StatementType.CONDITIONAL,
                 new String[] {});
-        fixComparison(patch, "(mean)<(1)");
+        fixComparison(patch, "(mean)<(1)", "mean <= 0");
+        // Execution time 10min 40sec break point in a multiples 100 000 iterations slowdown the execution
     }
 
     @Test
-    @Ignore
     public void CM8() {
         boolean isMaven = true;
         Patch patch = testRealBug(
@@ -120,7 +126,8 @@ public class NopolTestRealBugs extends TestUtility {
                 isMaven,
                 StatementType.CONDITIONAL,
                 new String[] {"org.apache.commons.math3.fraction.FractionTest"});
-        fixComparison(patch, "(ns)!=(n)");
+        fixComparison(patch, "(ns)!=(n)",
+                "((org.apache.commons.math3.fraction.Fraction)((org.apache.commons.math3.fraction.Fraction)this).getReducedFraction(maxDenominator, maxIterations)).percentageValue() < maxDenominator");
     }
 
     @Test
@@ -143,7 +150,7 @@ public class NopolTestRealBugs extends TestUtility {
                 isMaven,
                 StatementType.CONDITIONAL,
                 new String[]{"org.apache.commons.math3.stat.correlation.CovarianceTest"});
-        fixComparison(patch, "(nRows < 2)");
+        fixComparison(patch, "(nRows < 2)", "nRows < 2", "((org.apache.commons.math3.linear.AbstractRealMatrix)matrix).isSquare()");
     }
 
 
@@ -155,7 +162,7 @@ public class NopolTestRealBugs extends TestUtility {
                 isMaven,
                 StatementType.CONDITIONAL,
                 new String[]{"org.apache.commons.lang.StringUtilsTest" });
-        fixComparison(patch, "(text.length())==(3)", "(text.length())==(with.length())");
+        fixComparison(patch, "(text.length())==(3)", "(text.length())==(with.length())", "(null == with) || (0 != ((java.lang.String)with).length())");
     }
 
     @Test
@@ -168,7 +175,9 @@ public class NopolTestRealBugs extends TestUtility {
                 new String[]{"org.apache.commons.lang.StringUtilsTest" });
         fixComparison(patch,
                 "(lastIdx)<(org.apache.commons.lang.StringUtils.blanks.length())",
-                "(lastIdx)<=(0)");
+                "(lastIdx)<=(0)",
+                "lastIdx <= 0",
+                "(lastIdx)<(1)");
     }
 
     @Test
@@ -181,10 +190,13 @@ public class NopolTestRealBugs extends TestUtility {
                 new String[]{"org.apache.commons.lang.StringUtilsSubstringTest" },
                 "junit-3.8.jar");
         fixComparison(patch, "(!((0)<=(len)))||((5)<(pos))",
-                "((len)<=(-1))||((str.length())<(pos))");
+                "((len)<=(-1))||((str.length())<(pos))",
+                "(len < 0) || (((java.lang.String)str).length() < pos)",
+                "(((java.lang.String)str).length() < pos) || (len < 0)");
     }
 
     @Test
+    @Ignore
     public void CL4() {
         boolean isMaven = false;
         Patch patch = testRealBug(
@@ -206,20 +218,19 @@ public class NopolTestRealBugs extends TestUtility {
                 isMaven,
                 StatementType.CONDITIONAL,
                 new String[]{});
-        fixComparison(patch, "(specific)!=(null)", "className.length()==0");
+        fixComparison(patch, "(specific)!=(null)", "className.length()==0","0 == ((java.lang.String)className).length()");
     }
 
     @Test
-    @Ignore
     public void CL6() {
         boolean isMaven = true;
         Patch patch = testRealBug(
                 "cl6",
                 isMaven,
-                StatementType.PRECONDITION,
+                StatementType.CONDITIONAL,
                 new String[]{},
                 "easymock-2.5.2.jar");
-        fixComparison(patch, "(specific)!=(null)");
+        fixComparison(patch, "(specific)!=(null)", "(cs == null) || (0 == ((java.lang.String)cs).length())");
     }
 
     @Test
@@ -232,7 +243,7 @@ public class NopolTestRealBugs extends TestUtility {
                 new String[]{},
                 "commons-discovery-0.4.jar",
                 "commons-logging-1.1.1.jar");
-        fixComparison(patch, "(specific)!=(null)");
+        fixComparison(patch, "0 <= ((org.apache.commons.math.stat.descriptive.moment.GeometricMean)this).getResult()");
     }
 
     @Test
@@ -243,7 +254,7 @@ public class NopolTestRealBugs extends TestUtility {
                 isMaven,
                 StatementType.PRECONDITION,
                 new String[]{"org.apache.commons.math.exception.util.MessageFactoryTest"});
-        fixComparison(patch, "specific!=null");
+        fixComparison(patch, "specific!=null", "null != specific", "0 != ((java.lang.StringBuilder)sb).length()");
     }
 
     @Test
@@ -256,8 +267,10 @@ public class NopolTestRealBugs extends TestUtility {
                 new String[]{"org.apache.commons.lang.time.StopWatchTest"});
         fixComparison(
                 patch,
+                "(org.apache.commons.lang.time.StopWatch.this.runningState)==(org.apache.commons.lang.time.StopWatch.STATE_RUNNING)",
                 "(org.apache.commons.lang.time.StopWatch.STATE_RUNNING)==(org.apache.commons.lang.time.StopWatch.this.runningState)",
-                "(org.apache.commons.lang.time.StopWatch.this.stopTime)==(-1)");
+                "(org.apache.commons.lang.time.StopWatch.this.stopTime)==(-1)",
+                "this.stopTime <= 0");
     }
 
     @Test
@@ -272,7 +285,6 @@ public class NopolTestRealBugs extends TestUtility {
     }
 
     @Test
-    @Ignore
     public void PL3() {
         boolean isMaven = true;
         Patch patch = testRealBug(
@@ -280,7 +292,7 @@ public class NopolTestRealBugs extends TestUtility {
                 isMaven,
                 StatementType.PRECONDITION,
                 new String[]{"org.apache.commons.lang.WordUtilsTest"});
-        fixComparison(patch, "lower > str.length()");
+        fixComparison(patch, "lower > str.length()", "((java.lang.String)str).length() <= lower", "str.length() <= lower");
     }
 
     @Test
@@ -292,6 +304,6 @@ public class NopolTestRealBugs extends TestUtility {
                 StatementType.PRECONDITION,
                 new String[]{"org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest"},
                 "easymock-2.5.2.jar");
-        fixComparison(patch, "(start)==(seqEnd)");
+        fixComparison(patch, "(start)==(seqEnd)", "1 == (seqEnd / index)", "seqEnd == start");
     }
 }

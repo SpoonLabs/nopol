@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.repair.symbolic.spoon;
+package fr.inria.lille.repair.nopol.spoon.symbolic;
 
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtLocalVariable;

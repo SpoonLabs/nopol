@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.repair.symbolic.spoon;
+package fr.inria.lille.repair.nopol.spoon.symbolic;
 
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtLocalVariable;
@@ -27,7 +27,7 @@ import com.google.common.base.Predicate;
  * @author Thomas Durieux
  * 
  */
-public enum SpoonIntegerStatement implements Predicate<CtElement> {
+public enum SpoonBooleanStatement implements Predicate<CtElement> {
 	INSTANCE;
 
 	private Class<?> getClassOfStatement(CtElement candidate) {
@@ -64,15 +64,15 @@ public enum SpoonIntegerStatement implements Predicate<CtElement> {
 			Class<?> localVariableClass = ctLocalVariable.getType()
 					.getActualClass();
 
-			isPrimitiveLiteral = localVariableClass.equals(Integer.class)
-					|| localVariableClass.equals(int.class);
+			isPrimitiveLiteral = localVariableClass.equals(Boolean.class)
+								|| localVariableClass.equals(boolean.class);
 		} else if (candidate instanceof CtAssignment<?, ?>) {
 			CtAssignment<?, ?> ctAssignment = (CtAssignment<?, ?>) candidate;
 			Class<?> localVariableClass = ctAssignment.getType()
 					.getActualClass();
 
-			isPrimitiveLiteral = localVariableClass.equals(Integer.class)
-					|| localVariableClass.equals(int.class);
+			isPrimitiveLiteral = localVariableClass.equals(Boolean.class)
+					|| localVariableClass.equals(boolean.class);
 		}
 
 		return isPrimitiveLiteral;

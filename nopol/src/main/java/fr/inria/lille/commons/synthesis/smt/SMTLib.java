@@ -221,7 +221,11 @@ public class SMTLib {
 	public List<IExpr> asIExprs(Collection<Object> objects) {
 		List<IExpr> smtExprs = MetaList.newLinkedList();
 		for (Object object : objects) {
-			smtExprs.add(asIExpr(object));
+			try {
+				smtExprs.add(asIExpr(object));
+			} catch (Exception e) {
+				// ignore the object
+			}
 		}
 		return smtExprs;
 	}

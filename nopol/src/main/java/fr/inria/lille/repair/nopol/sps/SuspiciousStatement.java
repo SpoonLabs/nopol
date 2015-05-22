@@ -15,6 +15,7 @@
  */
 package fr.inria.lille.repair.nopol.sps;
 
+import com.gzoltar.core.components.Statement;
 import fr.inria.lille.repair.nopol.SourceLocation;
 
 /**
@@ -26,4 +27,6 @@ public interface SuspiciousStatement {
 	SourceLocation getSourceLocation();
 
 	double getSuspiciousness();
+
+	Statement getStatement();
 }

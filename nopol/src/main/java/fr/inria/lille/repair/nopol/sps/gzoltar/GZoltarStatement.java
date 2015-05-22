@@ -80,6 +80,11 @@ final class GZoltarStatement implements SuspiciousStatement {
 		return this.statement.getSuspiciousness();
 	}
 
+	@Override
+	public Statement getStatement() {
+		return statement;
+	}
+
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */

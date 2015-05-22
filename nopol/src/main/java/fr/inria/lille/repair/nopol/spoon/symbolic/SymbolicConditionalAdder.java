@@ -1,16 +1,17 @@
-package fr.inria.lille.repair.symbolic.spoon;
+package fr.inria.lille.repair.nopol.spoon.symbolic;
 
+import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import gov.nasa.jpf.symbc.Debug;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 
-public class ConditionalAdder extends SymbolicProcessor {
+public class SymbolicConditionalAdder extends NopolProcessor {
 
-	public ConditionalAdder(CtStatement target) {
+	public SymbolicConditionalAdder(CtStatement target) {
 		super(target);
-		super.defaultValue = "true";
+		setDefaultValue("true");
 		super.setType(Boolean.class);
 	}
 	
@@ -18,7 +19,7 @@ public class ConditionalAdder extends SymbolicProcessor {
 		logger.debug("##### {} ##### Before:\n{}", element, element.getParent());
 		CtElement parent = element.getParent();
 		CtIf newIf = element.getFactory().Core().createIf();
-		CtCodeSnippetExpression<Boolean> condition = null;
+		CtCodeSnippetExpression<Boolean> condition;
 		if (getValue() != null) {
             switch (getValue()) {
                 case "1":

@@ -3,6 +3,7 @@ package fr.inria.lille.spirals.repair.synthesizer.collect.spoon;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
@@ -90,6 +91,9 @@ public class StatCollector extends AbstractProcessor<CtElement> {
                 return;
             }
             CtExecutableReference executable = ((CtInvocation) ctElement).getExecutable();
+            if(executable.isConstructor()) {
+                return;
+            }
             if (!statMethod.containsKey(executable)) {
                 statMethod.put(executable, 1);
             } else {
@@ -99,12 +103,24 @@ public class StatCollector extends AbstractProcessor<CtElement> {
         }
     }
 
-    public boolean isMethod(CtElement ctElement) {
-        CtMethod parent = ctElement.getParent(CtMethod.class);
+    private boolean isMethod(CtElement ctElement) {
+        CtExecutable parent = ctElement.getParent(CtExecutable.class);
         if (parent == null) {
             return false;
         }
         return parent.getSimpleName().equals(buggyMethod);
+    }
+
+    public Map<BinaryOperatorKind, Integer> getStatOperator() {
+        return statOperator;
+    }
+
+    public Map<CtVariableReference, Integer> getStatVariable() {
+        return statVariable;
+    }
+
+    public Map<CtExecutableReference, Integer> getStatMethod() {
+        return statMethod;
     }
 
     @Override

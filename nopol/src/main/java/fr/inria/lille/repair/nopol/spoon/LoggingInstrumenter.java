@@ -1,4 +1,4 @@
-package fr.inria.lille.repair.symbolic.spoon;
+package fr.inria.lille.repair.nopol.spoon;
 
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newLocalVariableDeclaration;
 import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.insertBeforeUnderSameParent;
@@ -21,7 +21,7 @@ public final class LoggingInstrumenter<T> extends
 	private static Object value;
 
 	public LoggingInstrumenter(RuntimeValues<T> runtimeValues,
-			SymbolicProcessor subprocessor) {
+			NopolProcessor subprocessor) {
 		this.subprocessor = subprocessor;
 		this.runtimeValues = runtimeValues;
 	}
@@ -83,10 +83,10 @@ public final class LoggingInstrumenter<T> extends
 		return runtimeValues;
 	}
 
-	private SymbolicProcessor subprocessor() {
+	private NopolProcessor subprocessor() {
 		return subprocessor;
 	}
 
-	private final SymbolicProcessor subprocessor;
+	private final NopolProcessor subprocessor;
 	private final RuntimeValues<T> runtimeValues;
 }

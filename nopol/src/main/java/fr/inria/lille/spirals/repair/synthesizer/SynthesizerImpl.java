@@ -148,23 +148,77 @@ public class SynthesizerImpl implements Synthesizer {
         }
         com.sun.jdi.Location jdiLocation = (com.sun.jdi.Location) listOfLocations.get(0);
         this.buggyMethod = jdiLocation.method().name();
-        BreakpointRequest breakpointRequest = erm.createBreakpointRequest((com.sun.jdi.Location) listOfLocations.get(0));
-        breakpointRequest.setEnabled(true);
+        breakpointSuspicious = erm.createBreakpointRequest(jdiLocation);
+        breakpointSuspicious.setEnabled(true);
         initSpoon();
         spoonElementsCollector = new SpoonElementsCollector(variablesInSuspicious);
         this.initExecutionTime = System.currentTimeMillis();
     }
 
+    private boolean jumpEnabled = false;
+    private BreakpointRequest breakpointJump;
+    private BreakpointRequest breakpointSuspicious;
+    private void jumpEndTest(ThreadReference threadRef) {
+        try {
+            List<StackFrame> frames = threadRef.frames();
+            for (int i = 0; i < frames.size(); i++) {
+                StackFrame stackFrame = frames.get(i);
+                for (int j = 0; j < tests.length; j++) {
+                    String test = tests[j];
+                    String[] splitted = test.split("#");
+                    test = splitted[0];
+                    ObjectReference thisObject = stackFrame.thisObject();
+                    if (thisObject == null) {
+                        continue;
+                    }
+                    String frameClass = thisObject.referenceType().name();
+                    if (frameClass.equals(test)) {
+                        String frameMethod = stackFrame.location().method().name();
+                        if (oracle.containsKey(test + "#" + frameMethod)) {
+                            EventRequestManager erm = vm.eventRequestManager();
+                            try {
+                                List listOfLocations = stackFrame.location().declaringType().locationsOfLine(stackFrame.location().lineNumber());
+                                if (listOfLocations.size() == 0) {
+                                    continue;
+                                }
+                                com.sun.jdi.Location jdiLocation = (com.sun.jdi.Location) listOfLocations.get(listOfLocations.size() - 1);
+                                breakpointJump = erm.createBreakpointRequest(jdiLocation);
+                                breakpointJump.setEnabled(true);
+                                jumpEnabled = true;
+                                breakpointSuspicious.setEnabled(false);
+                                return;
+                            } catch (AbsentInformationException e) {
+                                // ignore
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (IncompatibleThreadStateException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void processBreakPointEvents(BreakpointEvent breakpointEvent) throws IncompatibleThreadStateException {
+        if(jumpEnabled) {
+            breakpointJump.setEnabled(false);
+            jumpEnabled = false;
+            breakpointSuspicious.setEnabled(true);
+            return;
+        }
         nbBreakPointCalls++;
         ThreadReference threadRef = breakpointEvent.thread();
-        getCurrentTest(threadRef);
+        try {
+            getCurrentTest(threadRef);
+        } catch (RuntimeException e) {
+            return;
+        }
         if (!oracle.containsKey(currentTestClass + "#" + currentTestMethod)) {
             return;
         }
         if (values.containsKey(currentTestClass + "#" + currentTestMethod)) {
             if (values.get(currentTestClass + "#" + currentTestMethod).size() > Config.INSTANCE.getMaxLineInvocationPerTest()) {
+                jumpEndTest(threadRef);
                 return;
             }
         }
@@ -465,12 +519,17 @@ public class SynthesizerImpl implements Synthesizer {
         System.out.println("Total Execution time     " + (System.currentTimeMillis() - startTime) + " ms");
         System.out.println("Nb line execution        " + nbBreakPointCalls);
         System.out.println();
-        System.out.println("Result                   " + result);
+        String patchResult = "";
+        for (int i = 0; i < result.size(); i++) {
+            Expression expression = result.get(i);
+            patchResult+= expression.asPatch() + ", ";
+        }
+        System.out.println("Result                   " + patchResult);
         System.out.println();
         System.out.println();
 
         System.out.println(this.statCollector);
 
-        System.out.println(" & " + nbConstant + " & " + nbMethodInvocation + " & " + nbFieldAccess + " & " + nbVariable + " & " + nbValueToCombine + " & " + nbExpressionEvaluated + " & " + (System.currentTimeMillis() - startTime) + " ms" + " & " + nbBreakPointCalls + " & " + result.toString().replaceAll("&", "\\&") + " &");
+        System.out.println(" & " + nbConstant + " & " + nbMethodInvocation + " & " + nbFieldAccess + " & " + nbVariable + " & " + nbValueToCombine + " & " + nbExpressionEvaluated + " & " + (System.currentTimeMillis() - startTime) + " ms" + " & " + nbBreakPointCalls + " & " + patchResult.replaceAll("&", "\\&") + " &");
     }
 }

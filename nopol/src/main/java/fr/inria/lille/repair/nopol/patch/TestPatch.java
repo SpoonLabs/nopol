@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.repair.common.patch.Patch;
+import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import org.junit.runner.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import xxl.java.junit.TestSuiteExecution;
 import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
-import fr.inria.lille.repair.nopol.spoon.ConditionalProcessor;
+import fr.inria.lille.repair.nopol.spoon.smt.ConditionalProcessor;
 
 /**
  * @author Favio D. DeMarco
@@ -51,17 +52,19 @@ public final class TestPatch {
 		return SPOON_DIRECTORY;
 	}
 	
-	public boolean passesAllTests(Patch patch, List<TestResult> testClasses, ConditionalProcessor processor) {
+	public boolean passesAllTests(Patch patch, List<TestResult> testClasses, NopolProcessor processor) {
 		logger.info("Applying patch: {}", patch);
 		String qualifiedName = patch.getRootClassName();
 		SpoonedClass spoonedClass = spoonedProject.forked(qualifiedName);
-		processor.setDefaultCondition(patch.asString());
+		processor.setValue(patch.asString());
 		ClassLoader loader = spoonedClass.processedAndDumpedToClassLoader(processor);
 		logger.info("Running test suite to check the patch \"{}\" is working", patch.asString());
 		Result result = TestSuiteExecution.runTestResult(testClasses, loader);
 		if (result.wasSuccessful()) {
 			spoonedClass.generateOutputFile(destinationFolder());
 			return true;
+		} else {
+			logger.info("Failing tests {}", result.getFailures());
 		}
 		return false;
 	}

@@ -23,6 +23,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.declaration.ModifierKind;
@@ -106,7 +107,7 @@ public class SpoonElementLibrary {
 	}
 	
 	public static boolean isSimpleType(CtElement element) {
-		return isInstanceOf(CtType.class, element);
+		return isInstanceOf(CtSimpleType.class, element);
 	}
 	
 	public static boolean isType(CtElement element) {
@@ -118,7 +119,7 @@ public class SpoonElementLibrary {
 	}
 	
 	public static boolean isANestedType(CtElement element) {
-		return isSimpleType(element) && hasParentOfType(CtType.class, element);
+		return isSimpleType(element) && hasParentOfType(CtSimpleType.class, element);
 	}
 	
 	public static boolean isTypedElement(CtElement element) {
@@ -155,12 +156,12 @@ public class SpoonElementLibrary {
 	
 	public static CtTypeReference<?> typeOf(CtElement element) {
 		if (isSimpleType(element)) {
-			return ((CtType<?>) element).getReference();
+			return ((CtSimpleType<?>) element).getReference();
 		}
 		if (isTypedElement(element)) {
 			return ((CtTypedElement<?>) element).getType();
 		}
-		return typeOf(parentOfType(CtType.class, element));
+		return typeOf(parentOfType(CtSimpleType.class, element));
 	}
 	
 	public static boolean hasStaticModifier(CtElement element) {
@@ -194,10 +195,10 @@ public class SpoonElementLibrary {
 		if (allowsModifiers(element)) {
 			boolean inStatic = hasStaticModifier(element);
 			if (isANestedType(element)) {
-				inStatic |= inStaticCode(parentOfType(CtType.class, element));
+				inStatic |= inStaticCode(parentOfType(CtSimpleType.class, element));
 			}
 			return inStatic;
 		}
-		return hasStaticModifier(element.getParent(CtModifiable.class)) || inStaticCode(element.getParent(CtType.class));
+		return hasStaticModifier(element.getParent(CtModifiable.class)) || inStaticCode(element.getParent(CtSimpleType.class));
 	}
 }

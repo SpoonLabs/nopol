@@ -41,31 +41,40 @@ public class NoPolLauncher {
 		System.out.println(format("args:\n\t%s\n\t%s\n\t%s\n\t%s", filePath, classpath, solverName, solverPath));
 		Main.main(new String[] {"repair", type, "angelic", filePath, classpath, solverName, solverPath});
 	}
-	
+
 	public static List<Patch> launch(File[] sourceFile, URL[] classpath, StatementType type, String[] args) {
 		long executionTime = System.currentTimeMillis();
 		NoPol nopol = new NoPol(sourceFile, classpath, type);
 		List<Patch> patches = null;
-		if (args.length > 0) {
-			patches = nopol.build(args);
-		} else {
-			patches = nopol.build();
+		try {
+			if (args.length > 0) {
+				patches = nopol.build(args);
+			} else {
+				patches = nopol.build();
+			}
+		} catch (Exception e) {
+
+		} finally {
+			executionTime = System.currentTimeMillis() - executionTime;
+			displayResult(patches, executionTime);
 		}
-		executionTime = System.currentTimeMillis() - executionTime;
-		displayResult(patches, executionTime);
 		return patches;
 	}
-	
+
+	public static ArrayList<Integer> nbFailingTestExecution = new ArrayList<>();
+	public static ArrayList<Integer> nbPassedTestExecution = new ArrayList<>();
+
 	private static void displayResult(List<Patch> patches, long executionTime){
 		System.out.println("----INFORMATION----");
 		System.out.println("Nb Statements Analyzed : "+SynthesizerFactory.getNbStatementsAnalysed());
 		System.out.println("Nb Statements with Angelic Value Found : "+DefaultSynthesizer.getNbStatementsWithAngelicValue());
         System.out.println("Nb inputs in SMT : "+DefaultSynthesizer.getDataSize());
         System.out.println("Nb variables in SMT : "+DefaultSynthesizer.getNbVariables());
+		System.out.println("Nb run failing test  : " + nbFailingTestExecution);
+		System.out.println("Nb run passing test : " + nbPassedTestExecution);
 		System.out.println("Nopol Execution time : "+ executionTime +"ms");
-		// variable in
-        // contrainte in smt
-		if ( ! patches.isEmpty() ){
+
+		if (patches != null && ! patches.isEmpty() ){
 			System.out.println("----PATCH FOUND----");
 			for ( Patch patch : patches ){
 				System.out.println(patch);

@@ -1,10 +1,11 @@
-package fr.inria.lille.repair.symbolic.spoon;
+package fr.inria.lille.repair.nopol.spoon.symbolic;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import fr.inria.lille.commons.spoon.SpoonedFile;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtMethod;
@@ -16,21 +17,21 @@ import fr.inria.lille.commons.spoon.SpoonedProject;
 
 public class TestExecutorProcessor {
 
-	public static void createMainTestClass(SpoonedProject spooner,
+	public static void createMainTestClass(SpoonedFile spooner,
 			String className) {
 		Factory factory = spooner.spoonFactory();
 		CtClass<Object> executeTestClass = factory.Class().create(className);
 
 		CtTypeReference<String[]> typedReference = factory.Class()
 				.createReference(String[].class);
-		CtTypeReference<Object> returntypedReference = factory.Class()
+		CtTypeReference<Object> returnTypedReference = factory.Class()
 				.createReference("void");
 
-		Set<ModifierKind> modifiers = new LinkedHashSet<ModifierKind>(2);
+		Set<ModifierKind> modifiers = new LinkedHashSet<>(2);
 		modifiers.add(ModifierKind.PUBLIC);
 		modifiers.add(ModifierKind.STATIC);
 
-		HashSet<CtTypeReference<? extends Throwable>> exceptions = new HashSet<CtTypeReference<? extends Throwable>>();
+		HashSet<CtTypeReference<? extends Throwable>> exceptions = new HashSet<>();
 		exceptions.add(factory.Class().createReference(Exception.class));
 
 		CtBlock<?> body = spooner.spoonFactory().Core().createBlock();
@@ -45,7 +46,7 @@ public class TestExecutorProcessor {
 		CtMethod<?> method = spooner
 				.spoonFactory()
 				.Method()
-				.create(executeTestClass, modifiers, returntypedReference,
+				.create(executeTestClass, modifiers, returnTypedReference,
 						"main", new ArrayList<CtParameter<?>>(), exceptions,
 						body);
 		spooner.spoonFactory().Method()

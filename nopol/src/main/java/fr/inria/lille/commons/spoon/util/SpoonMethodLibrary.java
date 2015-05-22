@@ -11,8 +11,10 @@ import java.util.Collection;
 
 import spoon.reflect.code.CtReturn;
 import spoon.reflect.code.CtStatement;
-import spoon.reflect.declaration.*;
+import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtTypeReference;
 
 public class SpoonMethodLibrary {
@@ -64,7 +66,7 @@ public class SpoonMethodLibrary {
 	}
 
 	public static Collection<CtMethod<?>> methodsOf(CtTypeReference<?> type) {
-		CtElement declaration = type.getDeclaration();
+		CtSimpleType<?> declaration = type.getDeclaration();
 		if (isType(declaration)) {
 			return ((CtType<?>) declaration).getAllMethods();
 		}

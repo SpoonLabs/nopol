@@ -48,8 +48,8 @@ public class ConstraintBasedSynthesis {
 	public <T> CodeGenesis codesSynthesisedFrom(Class<T> outputClass, Collection<Specification<T>> specifications) {
 		Collection<Operator<?>> operators = MetaList.newLinkedList();
 		Expression<?> outputExpression = outputExpressionFor(outputClass);
-		Collection<Map<String, Object>> synthesisInputs = synhtesisInputValues(specifications, outputExpression);
-		Collection<Expression<?>> inputs = inputExpressions(synthesisInputs, outputExpression); 
+		Collection<Map<String, Object>> synthesisInputs = synthesisInputValues(specifications, outputExpression);
+		Collection<Expression<?>> inputs = inputExpressions(synthesisInputs, outputExpression);
 		for (OperatorTheory theory : theories()) {
 			operators.addAll(theory.operators());
 			LocationVariableContainer container = variableContainerFor(outputExpression, operators, inputs);
@@ -66,7 +66,7 @@ public class ConstraintBasedSynthesis {
 		return new Expression(smtLibCompatibleClass, "result");
 	}
 
-	private <T> Collection<Map<String, Object>> synhtesisInputValues(Collection<Specification<T>> specifications, Expression<?> outputExpression) {
+	private <T> Collection<Map<String, Object>> synthesisInputValues(Collection<Specification<T>> specifications, Expression<?> outputExpression) {
 		logCollection(logger(), "Specifications:", specifications);
 		Collection<Map<String, Object>> synthesisInputs = MetaList.newLinkedList();
 		for (Specification<T> specification : specifications) {

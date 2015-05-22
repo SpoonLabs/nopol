@@ -1,4 +1,4 @@
-package fr.inria.lille.repair.symbolic.spoon;
+package fr.inria.lille.repair.nopol.spoon.symbolic;
 
 import gov.nasa.jpf.symbc.Debug;
 
@@ -38,10 +38,8 @@ import xxl.java.junit.TestCase;
 public class AssertReplacer extends AbstractProcessor<CtInvocation<?>> {
 
 	private static int exceptionCount = 0;
-	private final Collection<TestCase> faillingTest;
 
-	public AssertReplacer(Collection<TestCase> faillingTest) {
-		this.faillingTest = faillingTest;
+	public AssertReplacer() {
 	}
 
 	@Override
@@ -56,7 +54,6 @@ public class AssertReplacer extends AbstractProcessor<CtInvocation<?>> {
 				|| !executablePackage.getSimpleName().contains("junit")) {
 			return false;
 		}
-		CtClass<?> parentClass = candidate.getParent(CtClass.class);
 		CtMethod<?> parentMethod = candidate.getParent(CtMethod.class);
 		if (parentMethod == null) {
 			return false;

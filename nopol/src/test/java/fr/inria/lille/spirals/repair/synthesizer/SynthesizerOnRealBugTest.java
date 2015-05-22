@@ -276,7 +276,8 @@ public class SynthesizerOnRealBugTest {
                 new String[] {},
                 "len < 0 || str.length() < pos",
                 "(str.length() < pos) || (len < 0)",
-                "(len < 0) || (((java.lang.String)str).length() < pos)");
+                "(len < 0) || (((java.lang.String)str).length() < pos)",
+                "(((java.lang.String)str).length() < pos) || (len < 0)");
     }
 
     @Test
@@ -406,7 +407,21 @@ public class SynthesizerOnRealBugTest {
         oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate6", new Object[]{false});
         oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate7", new Object[]{false});
         oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate8", new Object[]{false});
+        oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate9", new Object[]{false});
+        oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate10", new Object[]{false});
+        oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate11", new Object[]{false});
+        oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate12", new Object[]{false});
+        oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate13", new Object[]{false});
+        oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate14", new Object[]{false});
+        oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate15", new Object[]{false});
+        oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate16", new Object[]{false});
         oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate17", new Object[]{true});
+        oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate18", new Object[]{false});
+        oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate19", new Object[]{false});
+        oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate20", new Object[]{false});
+        oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate21", new Object[]{false});
+        oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate22", new Object[]{false});
+        oracle.put("org.apache.commons.lang.WordUtilsTest#testAbbreviate23", new Object[]{false});
 
         SourceLocation location = new SourceLocation("org.apache.commons.lang.WordUtils", 617);
         boolean isMaven = true;
@@ -532,7 +547,7 @@ public class SynthesizerOnRealBugTest {
             position++;
             for (int j = 0; j < patch.length; j++) {
                 String s = patch[j];
-                if (o.toString().equals(s)) {
+                if (o.asPatch().equals(s)) {
                     printSummary(o, position);
                     return;
                 }
@@ -542,21 +557,21 @@ public class SynthesizerOnRealBugTest {
                 position++;
                 for (int k = 0; k < patch.length; k++) {
                     String s = patch[k];
-                    if (expression1.toString().equals(s)) {
+                    if (expression1.asPatch().equals(s)) {
                         printSummary(expression1, position);
                         return;
                     }
                 }
             }
         }
-        Assert.fail("No valid patch in candidates: " + expression);
+        Assert.fail("No valid patch in candidates: " + expression.get(0).asPatch());
     }
 
     private void printSummary(Expression expression, int position) {
         int size  = 1;
         size += expression.getAlternatives().size();
         System.out.println("# candidate: " + size);
-        System.out.println("Candidate: " + expression);
+        System.out.println("Candidate: " + expression.asPatch());
         System.out.println("Alternatives: " + expression.getAlternatives());
         System.out.println("Position: " + position);
     }

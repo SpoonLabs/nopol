@@ -17,12 +17,12 @@ package fr.inria.lille.repair.nopol.synth;
 
 import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
 
-import java.io.File;
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 
 import com.gzoltar.core.instr.testing.TestResult;
+import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import org.slf4j.LoggerFactory;
 
 import fr.inria.lille.commons.synthesis.CodeGenesis;
@@ -31,7 +31,7 @@ import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.patch.StringPatch;
-import fr.inria.lille.repair.nopol.spoon.ConditionalProcessor;
+import fr.inria.lille.repair.nopol.spoon.smt.ConditionalProcessor;
 import fr.inria.lille.repair.common.synth.StatementType;
 import xxl.java.junit.TestCase;
 
@@ -39,18 +39,17 @@ import xxl.java.junit.TestCase;
  * @author Favio D. DeMarco
  * 
  */
-public final class DefaultSynthesizer implements Synthesizer {
-
+public final class DefaultSynthesizer<T> implements Synthesizer {
 
     private final SourceLocation sourceLocation;
-	private final ConstraintModelBuilder constraintModelBuilder;
+	private final AngelicValue constraintModelBuilder;
 	private final StatementType type;
 	public static int nbStatementsWithAngelicValue = 0;
     private static int dataSize = 0;
     private static int nbVariables;
-	private ConditionalProcessor conditionalProcessor;
+	private NopolProcessor conditionalProcessor;
 
-	public DefaultSynthesizer(ConstraintModelBuilder constraintModelBuilder, SourceLocation sourceLocation, StatementType type, ConditionalProcessor processor) {
+	public DefaultSynthesizer(AngelicValue constraintModelBuilder, SourceLocation sourceLocation, StatementType type, NopolProcessor processor) {
 		this.constraintModelBuilder = constraintModelBuilder;
 		this.sourceLocation = sourceLocation;
 		this.type = type;
@@ -64,7 +63,7 @@ public final class DefaultSynthesizer implements Synthesizer {
 	 */
 	@Override
 	public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
-		Collection<Specification<Boolean>> data = constraintModelBuilder.buildFor(classpath, testClasses, failures);
+		Collection<Specification<T>> data = constraintModelBuilder.buildFor(classpath, testClasses, failures);
 
 		// XXX FIXME TODO move this
 		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
@@ -81,8 +80,10 @@ public final class DefaultSynthesizer implements Synthesizer {
 			return NO_PATCH;
 		}
 		nbStatementsWithAngelicValue++;
+
 		ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis();
-		CodeGenesis genesis = synthesis.codesSynthesisedFrom(Boolean.class, data);
+		CodeGenesis genesis = synthesis.codesSynthesisedFrom(
+				(Class<T>) (type.getType()), data);
 		if (! genesis.isSuccessful()) {
 			return NO_PATCH;
 		}
@@ -104,7 +105,7 @@ public final class DefaultSynthesizer implements Synthesizer {
     }
 
     @Override
-	public ConditionalProcessor getConditionalProcessor() {
+	public NopolProcessor getProcessor() {
 		return conditionalProcessor;
 	}
 

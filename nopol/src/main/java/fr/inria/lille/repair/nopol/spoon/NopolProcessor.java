@@ -1,4 +1,4 @@
-package fr.inria.lille.repair.symbolic.spoon;
+package fr.inria.lille.repair.nopol.spoon;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,9 +7,9 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtStatement;
 import xxl.java.library.FileLibrary;
 
-public abstract class SymbolicProcessor extends AbstractProcessor<CtStatement> {
+public abstract class NopolProcessor extends AbstractProcessor<CtStatement> {
 
-	public SymbolicProcessor(CtStatement target) {
+	public NopolProcessor(CtStatement target) {
 		this.target = target;
 	}
 
@@ -37,6 +37,9 @@ public abstract class SymbolicProcessor extends AbstractProcessor<CtStatement> {
 	public String getDefaultValue() {
 		return defaultValue;
 	}
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
 
 	public Class<?> getType() {
 		return type;
@@ -47,7 +50,7 @@ public abstract class SymbolicProcessor extends AbstractProcessor<CtStatement> {
 	}
 
 	private Class<?> type;
-	protected String defaultValue;
+	private String defaultValue;
 	private String value;
 	private final CtStatement target;
 	protected final Logger logger = LoggerFactory.getLogger(this.getClass());

@@ -1,4 +1,4 @@
-package fr.inria.lille.repair.nopol.spoon;
+package fr.inria.lille.repair.nopol.spoon.smt;
 
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;

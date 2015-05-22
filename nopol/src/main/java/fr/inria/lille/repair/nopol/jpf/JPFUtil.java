@@ -1,4 +1,4 @@
-package fr.inria.lille.repair.symbolic.jpf;
+package fr.inria.lille.repair.nopol.jpf;
 
 import gov.nasa.jpf.Config;
 import gov.nasa.jpf.JPF;

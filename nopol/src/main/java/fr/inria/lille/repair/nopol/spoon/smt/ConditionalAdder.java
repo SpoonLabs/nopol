@@ -1,4 +1,4 @@
-package fr.inria.lille.repair.nopol.spoon;
+package fr.inria.lille.repair.nopol.spoon.smt;
 
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtIf;
@@ -24,7 +24,7 @@ public class ConditionalAdder extends ConditionalProcessor {
 		element.replace(newIf);
 		// this should be after the replace to avoid an StackOverflowException caused by the circular reference.
 		// see SpoonStatementPredicate
-		newIf.setThenStatement((CtStatement) element);
+		newIf.setThenStatement(element);
 		// Fix : warning: ignoring inconsistent parent for [CtElem1] ( [CtElem2] != [CtElem3] )
 		newIf.getThenStatement().setParent(newIf);
 		logger.debug("##### {} ##### After:\n{}", element, element.getParent().getParent());

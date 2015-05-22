@@ -42,7 +42,7 @@ import fr.inria.lille.repair.nopol.SourceLocation;
  * @author Favio D. DeMarco
  * 
  */
-public final class ConstraintModelBuilder {
+public final class ConstraintModelBuilder implements AngelicValue<Boolean>{
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private boolean viablePatch;
@@ -58,13 +58,18 @@ public final class ConstraintModelBuilder {
 		this.runtimeValues = runtimeValues;
 	}
 
+	@Override
+	public Collection<Specification<Boolean>> buildFor(URL[] classpath, String[] testClasses, Collection<TestCase> failures) {
+		return null;
+	}
+
 	/**
 	 * @see fr.inria.lille.repair.nopol.synth.ConstraintModelBuilder#buildFor(URL[], List, Collection)
 	 */
 	public Collection<Specification<Boolean>> buildFor(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
 		int nbFailingTestExecution = 0;
 		int nbPassedTestExecution = 0;
-		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<Boolean>(runtimeValues);
+		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<>(runtimeValues);
 		AngelicExecution.enable();
 		CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, listener);
 		nbFailingTestExecution +=listener.numberOfFailedTests();
@@ -84,7 +89,7 @@ public final class ConstraintModelBuilder {
 		NoPolLauncher.nbPassedTestExecution.add(nbPassedTestExecution);
 		return listener.specifications();
 	}
-	
+
 	private boolean determineViability(final Result firstResult, final Result secondResult) {
 		Collection<Description> firstFailures = TestSuiteExecution.collectDescription(firstResult.getFailures());
 		Collection<Description> secondFailures = TestSuiteExecution.collectDescription(secondResult.getFailures());

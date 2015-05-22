@@ -1,6 +1,7 @@
 package fr.inria.lille.repair;
 
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.repair.nopol.NoPolLauncher;
 import fr.inria.lille.repair.symbolic.SymbolicLauncher;
@@ -50,15 +51,16 @@ public abstract class TestUtility {
         List<Patch> patches;
         switch (this.executionType) {
             case "symbolic":
-                patches = SymbolicLauncher.run(project, type);
+                Config.INSTANCE.setOracle(Config.NopolOracle.SYMBOLIC);
                 break;
             case "nopol":
-                NoPol nopol = new NoPol(project.sourceFiles(), project.classpath(), type);
-                patches = nopol.build(project.testClasses());
+                Config.INSTANCE.setOracle(Config.NopolOracle.ANGELIC);
                 break;
             default:
                 throw new RuntimeException("Execution type not found");
         }
+        NoPol nopol = new NoPol(project.sourceFiles(), project.classpath(), type);
+        patches = nopol.build(project.testClasses());
 
         for (int i = 0; i < project.sourceFiles().length; i++) {
             File file = project.sourceFiles()[i];
@@ -115,22 +117,19 @@ public abstract class TestUtility {
         List<Patch> patches;
         switch (this.executionType) {
             case "symbolic":
-                patches = SymbolicLauncher
-                        .launch(new File[]{FileLibrary.openFrom(srcFolder)},
-                                JavaLibrary.classpathFrom(classpath),
-                                statementType,
-                                tests);
+                Config.INSTANCE.setOracle(Config.NopolOracle.SYMBOLIC);
                 break;
             case "nopol":
-                patches = NoPolLauncher
-                        .launch(new File[]{FileLibrary.openFrom(srcFolder)},
-                                JavaLibrary.classpathFrom(classpath),
-                                statementType,
-                                tests);
+                Config.INSTANCE.setOracle(Config.NopolOracle.ANGELIC);
                 break;
             default:
                 throw new RuntimeException("Execution type not found");
         }
+        patches = NoPolLauncher
+                .launch(new File[]{FileLibrary.openFrom(srcFolder)},
+                        JavaLibrary.classpathFrom(classpath),
+                        statementType,
+                        tests);
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
         assertEquals(patch.getType(), statementType);

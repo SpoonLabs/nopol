@@ -54,4 +54,10 @@ public class NopolExampleTest {
 		assertEquals(-2, ex.getMax(-2, -2));
 	}
 
+	@Test
+	public void test9() {
+		NopolExample ex = new NopolExample();
+		assertEquals(2, ex.getMax(2, -8));
+	}
+
 }

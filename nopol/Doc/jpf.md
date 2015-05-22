@@ -18,3 +18,5 @@ jpf-symbc = <path_to_jpf>/jpf-symbc
 
 extensions=${jpf-core},${jpf-symbc}
 ```
+
+## Execution

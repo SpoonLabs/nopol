@@ -10,9 +10,8 @@ import org.junit.Test;
  * Created by Thomas Durieux on 03/03/15.
  */
 public class SymbolicTestRealBugs extends TestUtility {
-    private String executionType = "symbolic";
 
-    public SymbolicTestRealBugs() {
+     public SymbolicTestRealBugs() {
         super("symbolic");
     }
 

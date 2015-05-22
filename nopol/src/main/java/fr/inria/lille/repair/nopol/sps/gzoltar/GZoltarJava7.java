@@ -138,7 +138,7 @@ public final class GZoltarJava7 extends GZoltar {
 			this.logger.debug(">>> Begin subprocess output");
 			int i;
 			while ((i = stream.read(byteArray)) != -1) {
-				this.logger.debug(new String(byteArray, 0, i));
+				this.logger.debug(new String(byteArray, 0, i).replace("\n", ""));
 			}
 			this.logger.debug("<<< End subprocess output");
 			process.waitFor();

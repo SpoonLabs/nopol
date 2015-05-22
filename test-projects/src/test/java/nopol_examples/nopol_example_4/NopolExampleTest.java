@@ -66,5 +66,11 @@ public class NopolExampleTest {
 	  NopolExample ex = new NopolExample();
 	  assertFalse(ex.canBeDividedby3("-"));
 	}
+
+	@Test
+	public void test11(){
+	  NopolExample ex = new NopolExample();
+	  assertFalse(ex.canBeDividedby3(""));
+	}
 }
 

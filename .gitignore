@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # System
 .DS_Store
 *.log
@@ -29,4 +30,8 @@ maven-eclipse.xml
 # Spoon
 spooned-classes/
 spooned/
+
+# logs
+*.log
+log
 

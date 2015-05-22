@@ -21,13 +21,9 @@ import static com.google.common.collect.FluentIterable.from;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,24 +52,49 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 	}
 
 	/**
-	 * @param source
 	 * @param classpath
 	 * @return
 	 */
-	public static GZoltarSuspiciousProgramStatements create(File source, URL[] classpath, Collection<String> packageNames) {
-		return new GZoltarSuspiciousProgramStatements(source, checkNotNull(classpath), checkNotNull(packageNames));
+	public static GZoltarSuspiciousProgramStatements create( URL[] classpath, Collection<String> packageNames) {
+		return new GZoltarSuspiciousProgramStatements(checkNotNull(classpath), checkNotNull(packageNames));
+	}
+
+	/**
+	 * @param classpath
+	 * @return
+	 */
+	public static GZoltarSuspiciousProgramStatements create( URL[] classpath, String[] tests) {
+		return new GZoltarSuspiciousProgramStatements(checkNotNull(classpath), checkNotNull(Arrays.asList("")));//getRootPackage(tests))));
+	}
+
+	private static String getRootPackage(String [] classes) {
+		String rootPackage = classes[0].substring(0, classes[0].lastIndexOf('.'));
+		for (int i = 1; i < classes.length; i++) {
+			String aClass = classes[i];
+			for (int j = 0; j < aClass.length(); j++) {
+				if(j >= rootPackage.length()) {
+					break;
+				}
+				if(rootPackage.charAt(j) != aClass.charAt(j)) {
+					rootPackage = rootPackage.substring(0, j -1);
+					break;
+				}
+			}
+		}
+		return rootPackage;
 	}
 
 	private final GZoltar gzoltar;
 
-	private GZoltarSuspiciousProgramStatements(File source, final URL[] classpath, Collection<String> packageNames) {
+	private GZoltarSuspiciousProgramStatements(final URL[] classpath, Collection<String> packageNames) {
 		try {
-			gzoltar = new GZoltarJava7();
+			//gzoltar = new GZoltarJava7();
+			gzoltar = new GZoltar(System.getProperty("user.dir"));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		
-		HashSet<String> classpaths = new HashSet<>(gzoltar.getClasspaths());
+
+		ArrayList<String> classpaths = new ArrayList<>();
 		for (URL url : classpath) {
 			if ("file".equals(url.getProtocol())) {
 				classpaths.add(url.getPath());
@@ -82,7 +103,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 			}
 		}
 		
-		gzoltar.setClassPaths(new ArrayList<String>(classpaths));
+		gzoltar.setClassPaths(classpaths);
 		gzoltar.addPackageNotToInstrument("org.junit");
 		gzoltar.addPackageNotToInstrument("junit.framework");
 		for (String packageName : packageNames) {

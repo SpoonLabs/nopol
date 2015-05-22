@@ -57,14 +57,7 @@ public class Main {
 							InfinitelLauncher.launch(sourceFiles, classpath, Config.INSTANCE.getProjectTests());
 							break;
 						default:
-							switch (Config.INSTANCE.getOracle()) {
-								case ANGELIC:
-									NoPolLauncher.launch(sourceFiles, classpath, Config.INSTANCE.getType(), Config.INSTANCE.getProjectTests());
-									break;
-								case SYMBOLIC:
-									SymbolicLauncher.launch(sourceFiles, classpath, Config.INSTANCE.getType(), Config.INSTANCE.getProjectTests());
-									break;
-							}
+							NoPolLauncher.launch(sourceFiles, classpath, Config.INSTANCE.getType(), Config.INSTANCE.getProjectTests());
 							break;
 					}
 					break;

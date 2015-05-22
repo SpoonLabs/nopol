@@ -1,19 +1,23 @@
 package fr.inria.lille.repair.nopol.spoon.brutpol;
 
-import fr.inria.lille.repair.nopol.spoon.ConditionalProcessor;
+import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
+import fr.inria.lille.repair.nopol.spoon.smt.ConditionalProcessor;
 import fr.inria.lille.repair.nopol.synth.AngelicExecution;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 
-import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newLocalVariableDeclaration;
+import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newLocalVariableDeclarationString;
 import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.insertBeforeUnderSameParent;
 
-public final class ConditionalInstrumenter extends AbstractProcessor<CtStatement> {
+public final class ConditionalInstrumenter<T> extends AbstractProcessor<CtStatement> {
 
-	public ConditionalInstrumenter(ConditionalProcessor subprocessor) {
+	private final Class cl;
+
+	public ConditionalInstrumenter(NopolProcessor subprocessor, Class<T> cl) {
 		this.subprocessor = subprocessor;
+		this.cl = cl;
 	}
 	
 	@Override
@@ -25,24 +29,24 @@ public final class ConditionalInstrumenter extends AbstractProcessor<CtStatement
 	public void process(CtStatement statement) {
 		String evaluationAccess = "runtimeAngelicValue";
 
-		CtLocalVariable<Boolean> defaultValue = newLocalVariableDeclaration(statement.getFactory(), Boolean.class, "spoonDefaultValue", "false");
+		CtLocalVariable<T> defaultValue = newLocalVariableDeclarationString(statement.getFactory(), cl, "spoonDefaultValue", "false");
 		insertBeforeUnderSameParent(defaultValue, statement);
-		CtCodeSnippetStatement defaultValueEvaluation = getFactory().Code().createCodeSnippetStatement("try{spoonDefaultValue=" + subprocessor().defaultCondition() + ";}catch(" + Exception.class.getCanonicalName()  +" e){}");
+		CtCodeSnippetStatement defaultValueEvaluation = getFactory().Code().createCodeSnippetStatement("try{spoonDefaultValue=" + subprocessor().getDefaultValue() + ";}catch(" + Exception.class.getCanonicalName()  +" e){}");
 		insertBeforeUnderSameParent(defaultValueEvaluation, statement);
 
 		String evaluationValue = angelicInvocation("spoonDefaultValue");
-		CtLocalVariable<Boolean> evaluation = newLocalVariableDeclaration(statement.getFactory(), Boolean.class, evaluationAccess, evaluationValue);
+		CtLocalVariable<T> evaluation = newLocalVariableDeclarationString(statement.getFactory(), cl, evaluationAccess, evaluationValue);
 		insertBeforeUnderSameParent(evaluation, statement);
-		subprocessor().processCondition(statement, evaluationAccess);
+		((ConditionalProcessor)subprocessor()).processCondition(statement, evaluationAccess);
 	}
 	
 	protected String angelicInvocation(String booleanSnippet) {
 		return AngelicExecution.invocation(booleanSnippet);
 	}
 	
-	private ConditionalProcessor subprocessor() {
+	private NopolProcessor subprocessor() {
 		return subprocessor;
 	}
 	
-	private ConditionalProcessor subprocessor;
+	private NopolProcessor subprocessor;
 }

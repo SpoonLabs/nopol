@@ -3,13 +3,15 @@ package fr.inria.lille.repair.nopol.synth.brutpol;
 import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
+import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.repair.common.patch.ExpressionPatch;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.SourceLocation;
-import fr.inria.lille.repair.nopol.spoon.ConditionalProcessor;
+import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.spoon.brutpol.ConditionalInstrumenter;
 import fr.inria.lille.repair.nopol.synth.AngelicExecution;
+import fr.inria.lille.repair.nopol.synth.AngelicValue;
 import fr.inria.lille.repair.nopol.synth.DefaultSynthesizer;
 import fr.inria.lille.repair.nopol.synth.Synthesizer;
 import fr.inria.lille.spirals.repair.commons.Candidates;
@@ -35,29 +37,34 @@ import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
 /**
  * Created by spirals on 25/03/15.
  */
-public class BrutSynthesizer implements Synthesizer {
+public class BrutSynthesizer<T> implements Synthesizer {
 
     private final Logger testsOutput = LoggerFactory.getLogger(getClass().getName());
-    private final ConditionalProcessor conditionalProcessor;
+    private final NopolProcessor nopolProcessor;
     private final StatementType type;
     private final SourceLocation sourceLocation;
     private final SpoonedProject spooner;
     private final File[] sourceFolders;
+    private final AngelicValue angelicValue;
 
-    public BrutSynthesizer(File[] sourceFolders, SourceLocation sourceLocation, StatementType type, ConditionalProcessor processor, SpoonedProject spooner) {
+    public BrutSynthesizer(AngelicValue angelicValue, File[] sourceFolders, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, SpoonedProject spooner) {
         this.sourceLocation = sourceLocation;
         this.type = type;
-        this.conditionalProcessor = processor;
+        this.nopolProcessor = processor;
         this.spooner = spooner;
         this.sourceFolders = sourceFolders;
+        this.angelicValue = angelicValue;
     }
 
     @Override
     public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
-        List<TestResult> failuresExecuted = new ArrayList<>();
+        Collection<Specification<T>> collection = angelicValue.buildFor(classpath, testClasses, failures);
 
-
-        Processor<CtStatement> processor = new ConditionalInstrumenter(conditionalProcessor);
+        for (Iterator<Specification<T>> iterator = collection.iterator(); iterator.hasNext(); ) {
+            Specification<T> next = iterator.next();
+            next.inputs();
+        }
+        Processor<CtStatement> processor = new ConditionalInstrumenter(nopolProcessor, type.getType());
         SpoonedClass fork = spooner.forked(sourceLocation.getContainingClassName());
         ClassLoader classLoader = fork.processedAndDumpedToClassLoader(processor);
         Map<String, Object[]> oracle = new HashMap<>();
@@ -66,7 +73,7 @@ public class BrutSynthesizer implements Synthesizer {
         AngelicExecution.setBooleanValue(false);
         TestRunListener testCasesListener = new TestRunListener();
         CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, testCasesListener);
-        Map<String, List<Boolean>> passedTests = testCasesListener.passedTests;
+        Map<String, List<T>> passedTests = testCasesListener.passedTests;
         for (Iterator<String> iterator = passedTests.keySet().iterator(); iterator.hasNext(); ) {
             String next = iterator.next();
             oracle.put(next, passedTests.get(next).toArray());
@@ -137,14 +144,14 @@ public class BrutSynthesizer implements Synthesizer {
     }
 
     @Override
-    public ConditionalProcessor getConditionalProcessor() {
-        return conditionalProcessor;
+    public NopolProcessor getProcessor() {
+        return nopolProcessor;
     }
 
 
     private class TestRunListener extends RunListener {
-        private Map<String, List<Boolean>> failedTests = new HashMap<>();
-        private Map<String, List<Boolean>> passedTests = new HashMap<>();
+        private Map<String, List<T>> failedTests = new HashMap<>();
+        private Map<String, List<T>> passedTests = new HashMap<>();
         @Override
         public void testFailure(Failure failure) throws Exception {
             Description description = failure.getDescription();

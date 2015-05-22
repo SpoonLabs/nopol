@@ -21,11 +21,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtWhile;
-import spoon.reflect.declaration.CtField;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtType;
-import spoon.reflect.declaration.CtVariable;
+import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.Filter;
 import spoon.reflect.visitor.filter.CompositeFilter;
@@ -80,10 +76,19 @@ public class CollectableValueFinder {
 	}
 	
 	protected void findFromStatement(CtStatement statement) {
-		CtTypeReference<?> typeReference = parentOfType(CtType.class, statement).getReference();
+		CtType parentType;
+		try {
+			parentType = parentOfType(CtType.class, statement);
+		} catch (ParentNotInitializedException e) {
+			return;
+		}
+		if(parentType == null) {
+			return;
+		}
 		ReachableVariableVisitor variableVisitor = new ReachableVariableVisitor(statement);
 		Collection<CtVariable<?>> reachedVariables = variablesInitializedBefore(statement, variableVisitor.reachedVariables());
 		addVariableNames(reachedVariables);
+		CtTypeReference<?> typeReference = parentType.getReference();
 		addVisibleFieldsOfParameters(reachedVariables, typeReference);
 		addGettersOfFields(reachedVariables, typeReference);
 	}
@@ -137,7 +142,7 @@ public class CollectableValueFinder {
 	
 	protected String nameForField(CtField<?> field, String fieldOwner) {
 		String fieldName = field.getSimpleName();
-		CtType<?> declaringType = field.getDeclaringType();
+		CtSimpleType<?> declaringType = field.getDeclaringType();
 		String declaringClass = declaringType.getQualifiedName().replace('$', '.');
 		if (hasStaticModifier(field)) {
 			fieldName = declaringClass + "." + fieldName;

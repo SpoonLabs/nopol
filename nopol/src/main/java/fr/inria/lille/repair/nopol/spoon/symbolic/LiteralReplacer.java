@@ -1,7 +1,8 @@
-package fr.inria.lille.repair.symbolic.spoon;
+package fr.inria.lille.repair.nopol.spoon.symbolic;
 
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newLocalVariableDeclaration;
 import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
+import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import gov.nasa.jpf.symbc.Debug;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtLocalVariable;
@@ -9,16 +10,16 @@ import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtTypedElement;
 
-public class LiteralReplacer extends SymbolicProcessor {
+public class LiteralReplacer extends NopolProcessor {
 
 	public LiteralReplacer(Class<?> cl, CtStatement statement) {
 		super(statement);
 		if (statement instanceof CtAssignment<?, ?>) {
-			super.defaultValue = ((CtAssignment<?, ?>) statement)
-					.getAssignment().toString();
+			super.setDefaultValue(((CtAssignment<?, ?>) statement)
+					.getAssignment().toString());
 		} else if (statement instanceof CtLocalVariable<?>) {
-			super.defaultValue = ((CtLocalVariable<?>) statement)
-					.getDefaultExpression().toString();
+			super.setDefaultValue( ((CtLocalVariable<?>) statement)
+					.getDefaultExpression().toString());
 		}
 		super.setType(cl);
 	}
@@ -59,7 +60,6 @@ public class LiteralReplacer extends SymbolicProcessor {
 						.getDefaultExpression());
 			}
 		}
-		System.out.println(ctStatement);
 	}
 
 	private void replaceDouble(CtElement ctElement) {

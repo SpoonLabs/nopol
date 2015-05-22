@@ -26,5 +26,8 @@ public class NopolExampleTest {
 	public void test5(){
 		assertEquals(-5, new NopolExample().negate(-5));
 	}
-
+	@Test
+	public void test6(){
+		assertEquals(-1, new NopolExample().negate(1));
+	}
 }

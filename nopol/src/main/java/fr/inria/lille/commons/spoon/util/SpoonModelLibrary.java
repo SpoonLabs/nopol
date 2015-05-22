@@ -90,7 +90,9 @@ public class SpoonModelLibrary {
 	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, Class<T> type, String variableName, T defaultValue) {
 		return newLocalVariable(factory, type, variableName, newLiteral(factory, defaultValue));
 	}
-	
+	public static <T> CtLocalVariable<T> newLocalVariableDeclarationString(Factory factory, Class<T> type, String variableName, String defaultValue) {
+		return newLocalVariableDeclaration(factory, type, variableName, defaultValue);
+	}
 	public static <T> CtLocalVariable<T> newLocalVariableDeclaration(Factory factory, Class<T> type, String variableName, String defaultValue) {
 		return newLocalVariable(factory, type, variableName, newExpressionFromSnippet(factory, defaultValue, type));
 	}

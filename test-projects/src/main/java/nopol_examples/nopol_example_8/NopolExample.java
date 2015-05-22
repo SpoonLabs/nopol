@@ -9,7 +9,7 @@ public class NopolExample {
 	public boolean productLowerThan100(double a, double b){
 		
 		// if ( a * b <= 100) // FIX
-		if ( a * b < 100 )
+		if ( a * b < 100)
 			return true;
 		
 		return false;
