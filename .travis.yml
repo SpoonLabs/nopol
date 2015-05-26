@@ -1,0 +1,8 @@
+language: java
+
+
+install: "./.travis_install.sh"
+script: "./.travis_run_tests.sh"
+
+jdk:
+  - oraclejdk7
