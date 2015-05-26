@@ -23,7 +23,6 @@ import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.infinitel.InfinitelLauncher;
 import fr.inria.lille.repair.nopol.NoPolLauncher;
 import fr.inria.lille.repair.ranking.Ranking;
-import fr.inria.lille.repair.symbolic.SymbolicLauncher;
 import xxl.java.library.FileLibrary;
 import xxl.java.library.JavaLibrary;
 
