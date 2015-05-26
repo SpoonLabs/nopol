@@ -1,3 +1,5 @@
+# Nopol [![Build Status](https://travis-ci.org/SpoonLabs/nopol.svg?branch=master)](https://travis-ci.org/SpoonLabs/nopol)
+
 This is the repository of Nopol.
 
 Nopol is an automatic software repair tool developed at Inria Lille.
