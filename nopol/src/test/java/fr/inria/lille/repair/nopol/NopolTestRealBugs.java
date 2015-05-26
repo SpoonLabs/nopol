@@ -160,7 +160,7 @@ public class NopolTestRealBugs extends TestUtility {
         Patch patch = testRealBug(
                 "cl1",
                 isMaven,
-                StatementType.CONDITIONAL,
+                StatementType.PRECONDITION,
                 new String[]{"org.apache.commons.lang.StringUtilsTest" });
         fixComparison(patch, "(text.length())==(3)", "(text.length())==(with.length())", "(null == with) || (0 != ((java.lang.String)with).length())");
     }

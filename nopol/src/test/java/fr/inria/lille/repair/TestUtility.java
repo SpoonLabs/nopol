@@ -4,7 +4,6 @@ import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.repair.nopol.NoPolLauncher;
-import fr.inria.lille.repair.symbolic.SymbolicLauncher;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import xxl.java.container.classic.MetaSet;

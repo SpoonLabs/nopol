@@ -6,6 +6,7 @@ import java.util.Collection;
 
 import fr.inria.lille.repair.TestUtility;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.common.patch.Patch;
@@ -38,6 +39,7 @@ public class NopolTest extends TestUtility{
 		fixComparison(patch, "(tmp)==(0)", "(0)==(tmp)", "0 == tmp");
 	}
 	
+	@Ignore
 	@Test
 	public void example4Fix() {
 		Collection<String> failedTests = asList("test5");
@@ -78,13 +80,6 @@ public class NopolTest extends TestUtility{
 		Patch patch = test(8, 12, StatementType.CONDITIONAL, failedTests);
 		fixComparison(patch, "((a * b))<=(100)", "(a * b) <= 100");
 	}
-
-    @Test
-    public void example12Fix() {
-        Collection<String> failedTests = asList("test_3");
-        Patch patch = test(12, 10, StatementType.CONDITIONAL, failedTests);
-        fixComparison(patch, "((a * b))<=(100)");
-    }
 
 	public static String absolutePathOf(int exampleNumber) {
 		return "../test-projects/src/main/java/nopol_examples/nopol_example_" + exampleNumber + "/NopolExample.java";

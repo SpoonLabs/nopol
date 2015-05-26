@@ -9,7 +9,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         NopolTest.class,
-        SynthesizerTest.class,
+        //SynthesizerTest.class,
         InfinitelTest.class
 })
 public class TravisTestSuite {

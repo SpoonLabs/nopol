@@ -131,7 +131,7 @@ public class SynthesizerTest {
         oracle.put("test_3", new Object[]{true});
         oracle.put("test_4", new Object[]{false});
 
-        test(12, oracle, 10, "list == null || list.size() == 0", "(list == null) || list.isEmpty()");
+        test(12, oracle, 4, "list == null || list.size() == 0", "(list == null) || list.isEmpty()");
     }
 
     private void test(int nopolExampleNumber, Map<String, Object[]> o, int line, String... patch) {

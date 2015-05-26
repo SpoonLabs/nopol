@@ -196,6 +196,7 @@ public class InfinitelTest {
 							 "(b != a)&&((((-1)+(a))<=(1))||(!((a)<(b))))",
 							 "((!(((a)-(1))<(b)))||(((a)-(1))<=(1)))&&(b != a)",
 							 "((b != a)&&(((1)+(1))!=((a)-(1))))||((b)<=((a)-(1)))",
+				             "(b != a)&&(((b)<(a))||((a)<=(((0)-(-1))+((0)-(-1)))))",
 							 "!((((a)+(-1))<(b))&&((((1)-((a)+(-1)))<=(-1))||((a)==(b))))"));
 	}
 	
@@ -210,7 +211,7 @@ public class InfinitelTest {
 	public void infinitelExample3() {
 		Map<String, Integer> expected = expectedIterationsMap(3, asList("doesNotReachZeroReturnCopy"), asList(0));
 		CodeGenesis fix = checkInfinitel(3, 7, 3, 0, expected);
-		checkFix(fix, asList("(-1)<(aCopy)", "(1)<=(a)"));
+		checkFix(fix, asList("(-1)<(aCopy)", "(1)<=(a)", "(0)<(a)"));
 	}
 	
 	@Test
