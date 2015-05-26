@@ -282,7 +282,7 @@ public class SynthesizerImpl implements Synthesizer {
         File classFile = null;
         for (int i = 0; i < projectRoots.length; i++) {
             File projectRoot = projectRoots[i];
-            classFile = new File(projectRoot.getAbsoluteFile() + this.location.getContainingClassName().replaceAll("\\.", "/") + ".java");
+            classFile = new File(projectRoot.getAbsoluteFile() + "/" + this.location.getContainingClassName().replaceAll("\\.", "/") + ".java");
             if(classFile.exists()) {
                 break;
             }
