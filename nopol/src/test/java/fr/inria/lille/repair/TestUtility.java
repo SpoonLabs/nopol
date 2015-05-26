@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
  */
 public abstract class TestUtility {
     private String solver = "z3";
-    private String solverPath = "/home/spirals/git/z3/build/z3"; // "lib/z3-4.3.2/z3_for_mac"
+    private String solverPath =  "lib/z3/z3_for_linux";
     private String realBugPath = "../../nopol-dataset/";
     private String executionType;
 

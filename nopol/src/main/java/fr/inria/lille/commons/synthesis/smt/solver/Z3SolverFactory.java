@@ -15,7 +15,7 @@ public class Z3SolverFactory extends SolverFactory {
 	 */
 	
 	public Z3SolverFactory() {
-		this("lib/z3-4.3.2/z3_for_mac");
+		this("lib/z3/z3_for_" +(isMac()? "mac" : "linux"));
 	}
 	
 	public Z3SolverFactory(String solverPath) {
@@ -35,5 +35,11 @@ public class Z3SolverFactory extends SolverFactory {
 	@Override
 	public ISymbol logic() {
 		return SMTLib.logicAufnira();
+	}
+
+
+	private static boolean isMac() {
+		String OS = System.getProperty("os.name").toLowerCase();
+		return (OS.indexOf("mac") >= 0);
 	}
 }
