@@ -7,6 +7,7 @@ import fr.inria.lille.commons.synthesis.operator.Operator;
 import fr.inria.lille.commons.synthesis.operator.OperatorVisitor;
 import fr.inria.lille.commons.synthesis.operator.TernaryOperator;
 import fr.inria.lille.commons.synthesis.operator.UnaryOperator;
+import fr.inria.lille.commons.synthesis.smt.SMTLib;
 
 public class OperationCodeLine extends CodeLine implements OperatorVisitor<String> {
 

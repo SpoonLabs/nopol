@@ -19,14 +19,17 @@ import static java.lang.String.format;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
+import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
+import fr.inria.lille.commons.synthesis.operator.Operator;
 import fr.inria.lille.repair.Main;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.synth.DefaultSynthesizer;
 import fr.inria.lille.repair.nopol.synth.SynthesizerFactory;
 import fr.inria.lille.repair.common.synth.StatementType;
+import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtSimpleType;
 
 public class NoPolLauncher {
 	
@@ -53,10 +56,10 @@ public class NoPolLauncher {
 				patches = nopol.build();
 			}
 		} catch (Exception e) {
-
+			e.printStackTrace();
 		} finally {
 			executionTime = System.currentTimeMillis() - executionTime;
-			displayResult(patches, executionTime);
+			displayResult(nopol, patches, executionTime);
 		}
 		return patches;
 	}
@@ -64,12 +67,41 @@ public class NoPolLauncher {
 	public static ArrayList<Integer> nbFailingTestExecution = new ArrayList<>();
 	public static ArrayList<Integer> nbPassedTestExecution = new ArrayList<>();
 
-	private static void displayResult(List<Patch> patches, long executionTime){
+	private static void displayResult(NoPol nopol, List<Patch> patches, long executionTime){
 		System.out.println("----INFORMATION----");
+		List<CtSimpleType<?>> allClasses = nopol.getSpooner().spoonFactory().Class().getAll();
+		int nbMethod = 0;
+		for (int i = 0; i < allClasses.size(); i++) {
+			CtSimpleType<?> ctSimpleType = allClasses.get(i);
+			if(ctSimpleType instanceof CtClass) {
+				Set methods = ((CtClass) ctSimpleType).getMethods();
+				nbMethod+= methods.size();
+			}
+		}
+		System.out.println("Nb classes : " + allClasses.size());
+		System.out.println("Nb methods : " + nbMethod);
+		System.out.println("Nb unit tests : " + nopol.getgZoltar().getGzoltar().getTestResults().size());
 		System.out.println("Nb Statements Analyzed : "+SynthesizerFactory.getNbStatementsAnalysed());
 		System.out.println("Nb Statements with Angelic Value Found : "+DefaultSynthesizer.getNbStatementsWithAngelicValue());
         System.out.println("Nb inputs in SMT : "+DefaultSynthesizer.getDataSize());
-        System.out.println("Nb variables in SMT : "+DefaultSynthesizer.getNbVariables());
+		System.out.println("Nb SMT level: "+ ConstraintBasedSynthesis.level);
+		System.out.println("Nb SMT components: [" + ConstraintBasedSynthesis.operators.size() + "] " + ConstraintBasedSynthesis.operators);
+		Iterator<Operator<?>> iterator = ConstraintBasedSynthesis.operators.iterator();
+		Map<Class, Integer> mapType = new HashMap<>();
+		while (iterator.hasNext()) {
+			Operator<?> next = iterator.next();
+			if(!mapType.containsKey(next.type())) {
+				mapType.put(next.type(), 1);
+			} else {
+				mapType.put(next.type(), mapType.get(next.type()) + 1);
+			}
+		}
+		for (Iterator<Class> patchIterator = mapType.keySet().iterator(); patchIterator.hasNext(); ) {
+			Class next = patchIterator.next();
+			System.out.println("                  "  + next + ": " + mapType.get(next));
+		}
+
+		System.out.println("Nb variables in SMT : "+DefaultSynthesizer.getNbVariables());
 		System.out.println("Nb run failing test  : " + nbFailingTestExecution);
 		System.out.println("Nb run passing test : " + nbPassedTestExecution);
 		System.out.println("Nopol Execution time : "+ executionTime +"ms");

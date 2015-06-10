@@ -29,7 +29,9 @@ import fr.inria.lille.commons.synthesis.theory.OperatorTheory;
 import fr.inria.lille.commons.trace.Specification;
 
 public class ConstraintBasedSynthesis {
-	
+
+	public static int level = 0;
+	public static Collection<Operator<?>> operators;
 	public ConstraintBasedSynthesis() {
 		this(SolverFactory.solverLogic());
 	}
@@ -43,6 +45,7 @@ public class ConstraintBasedSynthesis {
 		this.theories = theories;
 		this.constants = constants;
 		scriptBuilder = new SynthesisScriptBuilder();
+		level = 0;
 	}
 	
 	public <T> CodeGenesis codesSynthesisedFrom(Class<T> outputClass, Collection<Specification<T>> specifications) {
@@ -51,6 +54,8 @@ public class ConstraintBasedSynthesis {
 		Collection<Map<String, Object>> synthesisInputs = synthesisInputValues(specifications, outputExpression);
 		Collection<Expression<?>> inputs = inputExpressions(synthesisInputs, outputExpression);
 		for (OperatorTheory theory : theories()) {
+			level++;
+			ConstraintBasedSynthesis.operators = operators;
 			operators.addAll(theory.operators());
 			LocationVariableContainer container = variableContainerFor(outputExpression, operators, inputs);
 			Map<String, Integer> toInteger = satisfyingSolution(container, synthesisInputs);

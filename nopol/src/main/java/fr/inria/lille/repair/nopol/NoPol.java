@@ -253,9 +253,18 @@ public class NoPol {
 		} catch (MalformedURLException e) {
 			throw new RuntimeException("JPF dependencies not found");
 		}
-		for (int i = 0; i <clpath.length; i++) {
+		for (int i = 0; i < clpath.length; i++) {
 			classpath[i] = clpath[i];
 		}
 
 		return classpath;
-	}}
+	}
+
+	public SpoonedProject getSpooner() {
+		return spooner;
+	}
+
+	public GZoltarSuspiciousProgramStatements getgZoltar() {
+		return gZoltar;
+	}
+}
