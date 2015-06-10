@@ -1,0 +1,27 @@
+diff --git a/src/test/org/apache/commons/math/stat/univariate/rank/PercentileTest.java b/src/test/org/apache/commons/math/stat/univariate/rank/PercentileTest.java
+index 20e9861..41b050f 100644
+--- a/src/test/org/apache/commons/math/stat/univariate/rank/PercentileTest.java
++++ b/src/test/org/apache/commons/math/stat/univariate/rank/PercentileTest.java
+@@ -104,4 +104,22 @@ public class PercentileTest extends UnivariateStatisticAbstractTest{
+         Percentile p = new Percentile(75);
+         assertEquals(3.0, p.evaluate(d), 1.0e-5);
+     }
++
++    public void testHighPercentile2(){
++        double[] d = new double[]{1, 2, 10, 15, 75};
++        Percentile p = new Percentile(75);
++        assertEquals(10.0, p.evaluate(d, 0, 3, 75), 1.0e-5);
++    }
++
++    public void testHighPercentile3(){
++        double[] d = new double[]{1, 2, 10, 15, 75};
++        Percentile p = new Percentile(100);
++        assertEquals(75.0, p.evaluate(d, 0, 5, 100), 1.0e-5);
++    }
++
++    public void testHighPercentile4(){
++        double[] d = new double[101];
++        Percentile p = new Percentile(95);
++        assertEquals(0, p.evaluate(d, 0, 95, 75), 1.0e-5);
++    }
+ }

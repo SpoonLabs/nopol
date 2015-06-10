@@ -1,0 +1,55 @@
+diff --git a/src/test/org/apache/commons/math/util/MathUtilsTest.java b/src/test/org/apache/commons/math/util/MathUtilsTest.java
+index 72f6248..9327cbb 100644
+--- a/src/test/org/apache/commons/math/util/MathUtilsTest.java
++++ b/src/test/org/apache/commons/math/util/MathUtilsTest.java
+@@ -76,37 +76,47 @@ public final class MathUtilsTest extends TestCase {
+     /** Verify that b(0,0) = 1 */
+     public void test0Choose0() {
+         assertEquals(MathUtils.binomialCoefficientDouble(0, 0), 1d, 0);
++    }
++    public void test0Choose1() {
+         assertEquals(MathUtils.binomialCoefficientLog(0, 0), 0d, 0);
++    }
++    public void test0Choose2() {
+         assertEquals(MathUtils.binomialCoefficient(0, 0), 1);
+     }
+     
+-    public void testBinomialCoefficientFail() {
++    public void testBinomialCoefficientFail_1() {
+         try {
+             long x = MathUtils.binomialCoefficient(4,5);
+             fail ("expecting IllegalArgumentException");
+         } catch (IllegalArgumentException ex) {
+             ;
+         }
+-        
++    }
++    public void testBinomialCoefficientFail_2() {
+         try {
+             double x = MathUtils.binomialCoefficientDouble(4,5);
+             fail ("expecting IllegalArgumentException");
+         } catch (IllegalArgumentException ex) {
+             ;
+         }
+-        
++    }
++    public void testBinomialCoefficientFail_3() {        
+         try {
+             double x = MathUtils.binomialCoefficientLog(4,5);
+             fail ("expecting IllegalArgumentException");
+         } catch (IllegalArgumentException ex) {
+             ;
+         }
++    }
++    public void testBinomialCoefficientFail_4() {
+         try {
+             long x = MathUtils.binomialCoefficient(67,34);
+             fail ("expecting ArithmeticException");
+         } catch (ArithmeticException ex) {
+             ;
+         }
++    }
++    public void testBinomialCoefficientFail_5() {
+         double x = MathUtils.binomialCoefficientDouble(1030,515);
+         assertTrue("expecting infinite binomial coefficient",
+             Double.isInfinite(x));

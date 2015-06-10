@@ -1,0 +1,20 @@
+diff --git a/src/test/org/apache/commons/math/util/MathUtilsTest.java b/src/test/org/apache/commons/math/util/MathUtilsTest.java
+index 766853f..10e72e5 100644
+--- a/src/test/org/apache/commons/math/util/MathUtilsTest.java
++++ b/src/test/org/apache/commons/math/util/MathUtilsTest.java
+@@ -162,7 +162,15 @@ public final class MathUtilsTest extends TestCase {
+             Double.isInfinite(MathUtils.factorialDouble(171)));
+     }
+ 
++    public void testFactorialFail_6() {
++        try {
++            double x = MathUtils.factorialLog(-100);
++            fail("expecting IllegalArgumentException");
++        } catch (IllegalArgumentException ex) {
++            ;
++        }
++    }
+ 
+     /**
+      * Exact recursive implementation to test against
+      */

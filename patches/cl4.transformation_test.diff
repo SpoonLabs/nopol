@@ -1,0 +1,139 @@
+diff --git a/src/test/org/apache/commons/lang/text/StrBuilderTest.java b/src/test/org/apache/commons/lang/text/StrBuilderTest.java
+index 0474ed6..8a17f49 100644
+--- a/src/test/org/apache/commons/lang/text/StrBuilderTest.java
++++ b/src/test/org/apache/commons/lang/text/StrBuilderTest.java
+@@ -1660,25 +1660,46 @@ public class StrBuilderTest extends TestCase {
+         assertEquals (-1, sb.lastIndexOf('z', 1));
+     }
+     
+-    public void testIndexOfString() {
++    public void testIndexOfString_1() {
+         StrBuilder sb = new StrBuilder("abab");
+-        
+         assertEquals(0, sb.indexOf("a"));
++    }
++    public void testIndexOfString_2() {
++        StrBuilder sb = new StrBuilder("abab");
+         //should work like String#indexOf
+         assertEquals("abab".indexOf("a"), sb.indexOf("a"));
+-        
++    }
++    public void testIndexOfString_3() {
++        StrBuilder sb = new StrBuilder("abab");        
+         assertEquals(0, sb.indexOf("ab"));
++    }
++    public void testIndexOfString_4() {
++        StrBuilder sb = new StrBuilder("abab");
+         //should work like String#indexOf
+         assertEquals("abab".indexOf("ab"), sb.indexOf("ab"));
+-        
++    }
++    public void testIndexOfString_5() {
++        StrBuilder sb = new StrBuilder("abab");
+         assertEquals(1, sb.indexOf("b"));
++    }
++    public void testIndexOfString_6() {
++        StrBuilder sb = new StrBuilder("abab");
+         assertEquals("abab".indexOf("b"), sb.indexOf("b"));
+-        
++    }
++    public void testIndexOfString_7() {
++        StrBuilder sb = new StrBuilder("abab");
+         assertEquals(1, sb.indexOf("ba"));
++    }
++    public void testIndexOfString_8() {
++        StrBuilder sb = new StrBuilder("abab");
+         assertEquals("abab".indexOf("ba"), sb.indexOf("ba"));
+-        
++    }
++    public void testIndexOfString_9() {
++        StrBuilder sb = new StrBuilder("abab");
+         assertEquals(-1, sb.indexOf("z"));
+-        
++    }
++    public void testIndexOfString_10() {
++        StrBuilder sb = new StrBuilder("abab");
+         assertEquals(-1, sb.indexOf((String) null));
+     }
+     
+@@ -1704,29 +1725,54 @@ public class StrBuilderTest extends TestCase {
+         assertEquals(-1, sb.lastIndexOf((String) null));
+     }
+     
+-    public void testIndexOfStringInt() {
++    public void testIndexOfStringInt_1() {
+         StrBuilder sb = new StrBuilder("abab");
+-        
+         assertEquals(2, sb.indexOf("a", 1));
++    }
++    public void testIndexOfStringInt_2() {
++        StrBuilder sb = new StrBuilder("abab");
+         //should work like String#indexOf
+         assertEquals ("abab".indexOf("a", 1), sb.indexOf("a", 1));
+-        
++    }
++    public void testIndexOfStringInt_3() {
++        StrBuilder sb = new StrBuilder("abab");
+         assertEquals(2, sb.indexOf("ab", 1));
++    }
++    public void testIndexOfStringInt_4() {
++        StrBuilder sb = new StrBuilder("abab");
+         //should work like String#indexOf
+         assertEquals("abab".indexOf("ab", 1), sb.indexOf("ab", 1));
+-        
++    }
++    public void testIndexOfStringInt_5() {
++        StrBuilder sb = new StrBuilder("abab");
+         assertEquals(3, sb.indexOf("b", 2));
++    }
++    public void testIndexOfStringInt_6() {
++        StrBuilder sb = new StrBuilder("abab");
+         assertEquals("abab".indexOf("b", 2), sb.indexOf("b", 2));
+-        
++    }
++    public void testIndexOfStringInt_7() {
++        StrBuilder sb = new StrBuilder("abab");
+         assertEquals(1, sb.indexOf("ba", 1));
++    }
++    public void testIndexOfStringInt_8() {
++        StrBuilder sb = new StrBuilder("abab");
+         assertEquals("abab".indexOf("ba", 2), sb.indexOf("ba", 2));
+-        
++    }
++    public void testIndexOfStringInt_9() {
++        StrBuilder sb = new StrBuilder("abab");
+         assertEquals(-1, sb.indexOf("z", 2));
+-        
+-        sb = new StrBuilder("xyzabc");
++    }
++    public void testIndexOfStringInt_10() {
++        StrBuilder sb = new StrBuilder("xyzabc");
+         assertEquals(2, sb.indexOf("za", 0));
++    }
++    public void testIndexOfStringInt_11() {
++        StrBuilder sb = new StrBuilder("xyzabc");
+         assertEquals(-1, sb.indexOf("za", 3));
+-        
++    }
++    public void testIndexOfStringInt_12() {
++        StrBuilder sb = new StrBuilder("xyzabc");
+         assertEquals(-1, sb.indexOf((String) null, 2));
+     }
+     
+@@ -1849,7 +1895,7 @@ public class StrBuilderTest extends TestCase {
+     }
+ 
+     //-----------------------------------------------------------------------
+-    public void testAsWriter() throws Exception {
++    /*public void testAsWriter() throws Exception {
+         StrBuilder sb = new StrBuilder ("base");
+         Writer writer = sb.asWriter();
+         
+@@ -1880,6 +1926,6 @@ public class StrBuilderTest extends TestCase {
+         sb.setLength(4);  // mix and match
+         writer.write('d');
+         assertEquals("based", sb.toString());
+-    }
++    }*/
+ 
+ }

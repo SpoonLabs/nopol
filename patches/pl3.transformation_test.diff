@@ -1,0 +1,90 @@
+diff --git a/src/test/org/apache/commons/lang/WordUtilsTest.java b/src/test/org/apache/commons/lang/WordUtilsTest.java
+index be8698f..e292d55 100644
+--- a/src/test/org/apache/commons/lang/WordUtilsTest.java
++++ b/src/test/org/apache/commons/lang/WordUtilsTest.java
+@@ -363,40 +363,79 @@ public class WordUtilsTest extends TestCase {
+     }
+ 
+     // -----------------------------------------------------------------------
+-    public void testAbbreviate() {
++    public void testAbbreviate_1() {
+         // check null and empty are returned respectively
+         assertNull(WordUtils.abbreviate(null, 1,-1,""));
++    }
++    public void testAbbreviate_2() {
+         assertEquals(StringUtils.EMPTY, WordUtils.abbreviate("", 1,-1,""));
+-
++    }
++    public void testAbbreviate_3() {
+         // test upper limit
+         assertEquals("01234", WordUtils.abbreviate("0123456789", 0,5,""));
++    }
++    public void testAbbreviate_4() {
+         assertEquals("01234", WordUtils.abbreviate("0123456789", 5, 2,""));
++    }
++    public void testAbbreviate_5() {
+         assertEquals("012", WordUtils.abbreviate("012 3456789", 2, 5,""));
++    }
++    public void testAbbreviate_6() {
+         assertEquals("012 3", WordUtils.abbreviate("012 3456789", 5, 2,""));
++    }
++    public void testAbbreviate_7() {
+         assertEquals("0123456789", WordUtils.abbreviate("0123456789", 0,-1,""));
+-
++    }
++    public void testAbbreviate_8() {
+         // test upper limit + append string
+         assertEquals("01234-", WordUtils.abbreviate("0123456789", 0,5,"-"));
++    }
++    public void testAbbreviate_9() {
+         assertEquals("01234-", WordUtils.abbreviate("0123456789", 5, 2,"-"));
++    }
++    public void testAbbreviate_10() {
+         assertEquals("012", WordUtils.abbreviate("012 3456789", 2, 5, null));
++    }
++    public void testAbbreviate_11() {
+         assertEquals("012 3", WordUtils.abbreviate("012 3456789", 5, 2,""));
++    }
++    public void testAbbreviate_12() {
+         assertEquals("0123456789", WordUtils.abbreviate("0123456789", 0,-1,""));
+-
++    }
++    public void testAbbreviate_13() {
+         // test lower value
+         assertEquals("012", WordUtils.abbreviate("012 3456789", 0,5, null));
++    }
++    public void testAbbreviate_14() {
+         assertEquals("01234", WordUtils.abbreviate("01234 56789", 5, 10, null));
++    }
++    public void testAbbreviate_15() {
+         assertEquals("01 23 45 67", WordUtils.abbreviate("01 23 45 67 89", 9, -1, null));
++    }
++    public void testAbbreviate_16() {
+         assertEquals("01 23 45 6", WordUtils.abbreviate("01 23 45 67 89", 9, 10, null));
++    }
++    public void testAbbreviate_17() {
+         assertEquals("0123456789", WordUtils.abbreviate("0123456789", 15, 20, null));
+-
++    }
++    public void testAbbreviate_18() {
+         // test lower value + append
+         assertEquals("012", WordUtils.abbreviate("012 3456789", 0,5, null));
++    }
++    public void testAbbreviate_19() {
+         assertEquals("01234-", WordUtils.abbreviate("01234 56789", 5, 10, "-"));
++    }
++    public void testAbbreviate_20() {
+         assertEquals("01 23 45 67abc", WordUtils.abbreviate("01 23 45 67 89", 9, -1, "abc"));
++    }
++    public void testAbbreviate_21() {
+         assertEquals("01 23 45 6", WordUtils.abbreviate("01 23 45 67 89", 9, 10, ""));
+-
++    }
++    public void testAbbreviate_22() {
+         // others
+         assertEquals("", WordUtils.abbreviate("0123456790", 0,0,""));
++    }
++    public void testAbbreviate_23() {
+         assertEquals("", WordUtils.abbreviate(" 0123456790", 0,-1,""));
+     }
+ 
