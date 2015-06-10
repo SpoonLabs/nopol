@@ -95,6 +95,9 @@ public class CollectableValueFinder {
 	
 	protected void addVariableNames(Collection<CtVariable<?>> reachedVariables) {
 		for (CtVariable<?> variable : reachedVariables) {
+			if(variable.getSimpleName().equals("serialVersionUID")) {
+				continue;
+			}
 			reachableVariables().add(nameFor(variable));
 		}
 	}
