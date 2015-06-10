@@ -4,15 +4,7 @@ import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.hasChildrenO
 
 import java.util.Collection;
 
-import spoon.reflect.code.BinaryOperatorKind;
-import spoon.reflect.code.CtAssignment;
-import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtExpression;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtThisAccess;
-import spoon.reflect.code.CtUnaryOperator;
-import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtCatchVariableReference;
 import spoon.reflect.visitor.CtAbstractVisitor;
@@ -43,7 +35,12 @@ public class SubconditionVisitor extends CtAbstractVisitor {
 	public <T> void visitCtLiteral(CtLiteral<T> literal) {
 		addFrom(literal);
 	}
-	
+
+	@Override
+	public <T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess) {
+		addFrom(arrayAccess);
+	}
+
 	@Override
 	public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
 		addFrom(variableAccess);
