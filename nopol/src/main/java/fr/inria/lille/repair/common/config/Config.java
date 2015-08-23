@@ -3,6 +3,7 @@ package fr.inria.lille.repair.common.config;
 import fr.inria.lille.repair.common.synth.StatementType;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Properties;
 
 /**
@@ -44,6 +45,7 @@ public class Config {
     private boolean sortExpressions;
     private int maxLineInvocationPerTest;
     private int timeoutMethodInvocation;
+    private int maxTime = 60;
 
     private double addWeight;
     private double subWeight;
@@ -59,6 +61,8 @@ public class Config {
     private double fieldAccessWeight;
     private double constantWeight;
     private double variableWeight;
+    private long timeoutTestExecution;
+    private long maxTimeBuildPatch;
 
     private NopolMode mode = NopolMode.REPAIR;
     private StatementType type = StatementType.CONDITIONAL;
@@ -101,10 +105,11 @@ public class Config {
             fieldAccessWeight = Double.parseDouble(p.getProperty("fieldAccess", "0"));
             constantWeight = Double.parseDouble(p.getProperty("constant", "0"));
             variableWeight = Double.parseDouble(p.getProperty("variable", "0"));
-
+            timeoutTestExecution = Long.parseLong(p.getProperty("timeoutTestExecution", "5"));
+            maxTimeBuildPatch = Long.parseLong(p.getProperty("maxTimeBuildPatch", "15L"));
             complianceLevel = Integer.parseInt(p.getProperty("complianceLevel", "7"));
         } catch (IOException e) {
-            throw new RuntimeException("Unable to load config file");
+            throw new RuntimeException("Unable to load config file", e);
         }
     }
 
@@ -362,5 +367,68 @@ public class Config {
 
     public void setComplianceLevel(int complianceLevel) {
         this.complianceLevel = complianceLevel;
+    }
+
+    public int getMaxTime() {
+        return maxTime;
+    }
+
+    public void setMaxTime(int maxTime) {
+        this.maxTime = maxTime;
+    }
+
+
+    public long getTimeoutTestExecution() {
+        return timeoutTestExecution;
+    }
+
+    public void setTimeoutTestExecution(long timeoutTestExecution) {
+        this.timeoutTestExecution = timeoutTestExecution;
+    }
+
+    public long getMaxTimeBuildPatch() {
+        return maxTimeBuildPatch;
+    }
+
+    public void setMaxTimeBuildPatch(long maxTimeBuildPatch) {
+        this.maxTimeBuildPatch = maxTimeBuildPatch;
+    }
+
+    @Override
+    public String toString() {
+        return "Config{" +
+                "synthesisDepth=" + synthesisDepth +
+                ", collectStaticMethods=" + collectStaticMethods +
+                ", collectStaticFields=" + collectStaticFields +
+                ", collectLiterals=" + collectLiterals +
+                ", onlyOneSynthesisResult=" + onlyOneSynthesisResult +
+                ", sortExpressions=" + sortExpressions +
+                ", maxLineInvocationPerTest=" + maxLineInvocationPerTest +
+                ", timeoutMethodInvocation=" + timeoutMethodInvocation +
+                ", addWeight=" + addWeight +
+                ", subWeight=" + subWeight +
+                ", mulWeight=" + mulWeight +
+                ", divWeight=" + divWeight +
+                ", andWeight=" + andWeight +
+                ", orWeight=" + orWeight +
+                ", eqWeight=" + eqWeight +
+                ", nEqWeight=" + nEqWeight +
+                ", lessEqWeight=" + lessEqWeight +
+                ", lessWeight=" + lessWeight +
+                ", methodCallWeight=" + methodCallWeight +
+                ", fieldAccessWeight=" + fieldAccessWeight +
+                ", constantWeight=" + constantWeight +
+                ", variableWeight=" + variableWeight +
+                ", mode=" + mode +
+                ", type=" + type +
+                ", synthesis=" + synthesis +
+                ", oracle=" + oracle +
+                ", solver=" + solver +
+                ", solverPath='" + solverPath + '\'' +
+                ", projectSourcePath=" + Arrays.toString(projectSourcePath) +
+                ", projectClasspath='" + projectClasspath + '\'' +
+                ", projectTests=" + Arrays.toString(projectTests) +
+                ", complianceLevel=" + complianceLevel +
+                '}';
     }
 }
