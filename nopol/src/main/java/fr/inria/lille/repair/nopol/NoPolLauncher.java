@@ -21,15 +21,19 @@ import java.io.File;
 import java.net.URL;
 import java.util.*;
 
+import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.synthesis.operator.Operator;
 import fr.inria.lille.repair.Main;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.synth.DefaultSynthesizer;
 import fr.inria.lille.repair.nopol.synth.SynthesizerFactory;
 import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.spirals.repair.vm.VMAcquirer;
+import org.apache.commons.io.FileUtils;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 
 public class NoPolLauncher {
 	
@@ -69,10 +73,10 @@ public class NoPolLauncher {
 
 	private static void displayResult(NoPol nopol, List<Patch> patches, long executionTime){
 		System.out.println("----INFORMATION----");
-		List<CtSimpleType<?>> allClasses = nopol.getSpooner().spoonFactory().Class().getAll();
+		List<CtType<?>> allClasses = nopol.getSpooner().spoonFactory().Class().getAll();
 		int nbMethod = 0;
 		for (int i = 0; i < allClasses.size(); i++) {
-			CtSimpleType<?> ctSimpleType = allClasses.get(i);
+			CtType<?> ctSimpleType = allClasses.get(i);
 			if(ctSimpleType instanceof CtClass) {
 				Set methods = ((CtClass) ctSimpleType).getMethods();
 				nbMethod+= methods.size();

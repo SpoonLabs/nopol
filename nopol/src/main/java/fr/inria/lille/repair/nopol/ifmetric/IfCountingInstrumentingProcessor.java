@@ -160,11 +160,6 @@ public class IfCountingInstrumentingProcessor extends
 							new Filter<CtIf>() {
 
 								@Override
-								public Class<?> getType() {
-									return CtIf.class;
-								}
-
-								@Override
 								public boolean matches(CtIf arg0) {
 									if (!(arg0 instanceof CtIf)) {
 										return false;

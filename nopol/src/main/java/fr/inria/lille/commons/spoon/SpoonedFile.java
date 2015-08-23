@@ -21,7 +21,7 @@ import spoon.compiler.Environment;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
@@ -39,7 +39,7 @@ import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 
 public abstract class SpoonedFile {
 	
-	protected abstract Collection<? extends CtSimpleType<?>> modelledClasses();
+	protected abstract Collection<? extends CtType<?>> modelledClasses();
 	
 	public SpoonedFile(File[] sourceFiles, URL[] projectClasspath) {
 		logDebug(logger(), format("[Building Spoon model from %s]", sourceFiles));
@@ -128,9 +128,9 @@ public abstract class SpoonedFile {
 		processModelledClasses(modelledClasses(), processors);
 	}
 	
-	protected synchronized void processModelledClasses(Collection<? extends CtSimpleType<?>> modelledClasses, Collection<? extends Processor<?>> processors) {
+	protected synchronized void processModelledClasses(Collection<? extends CtType<?>> modelledClasses, Collection<? extends Processor<?>> processors) {
 		setProcessors(processors);
-		for (CtSimpleType<?> modelledClass : modelledClasses) {
+		for (CtType<?> modelledClass : modelledClasses) {
 			String qualifiedName = modelledClass.getQualifiedName();
 			logDebug(logger(), format("[Spoon processing of %s]", qualifiedName));
 			processingManager().process(modelledClass);
@@ -145,18 +145,18 @@ public abstract class SpoonedFile {
 		}
 	}
 	
-	protected byte[] compileModelledClass(CtSimpleType<?> modelledClass) {
+	protected byte[] compileModelledClass(CtType<?> modelledClass) {
 		return compileModelledClasses(asList(modelledClass)).get(modelledClass.getQualifiedName());
 	}
 	
-	protected Map<String, byte[]> compileModelledClasses(Collection<? extends CtSimpleType<?>> modelledClasses) {
+	protected Map<String, byte[]> compileModelledClasses(Collection<? extends CtType<?>> modelledClasses) {
 		Map<String, String> processedSources = sourcesForModelledClasses(modelledClasses);
 		Map<String, byte[]> newBytecodes = compilationFor(processedSources);
 		compiledClasses().putAll(newBytecodes);
 		return newBytecodes;
 	}
 
-	protected synchronized String sourceForModelledClass(CtSimpleType<?> modelledClass) {
+	protected synchronized String sourceForModelledClass(CtType<?> modelledClass) {
 		logDebug(logger(), format("[Scanning source code of %s]", modelledClass.getQualifiedName()));
 		prettyPrinter().scan(modelledClass);
 		String packageDeclaration = "package " + modelledClass.getPackage().getQualifiedName() + ";";
@@ -165,9 +165,9 @@ public abstract class SpoonedFile {
 		return sourceCode;
 	}
 	
-	protected Map<String, String> sourcesForModelledClasses(Collection<? extends CtSimpleType<?>> modelledClasses) {
+	protected Map<String, String> sourcesForModelledClasses(Collection<? extends CtType<?>> modelledClasses) {
 		Map<String, String> processedClasses = MetaMap.newHashMap();
-		for (CtSimpleType<?> modelledClass : modelledClasses) {
+		for (CtType<?> modelledClass : modelledClasses) {
 			processedClasses.put(modelledClass.getQualifiedName(), sourceForModelledClass(modelledClass));
 		}
 		return processedClasses;

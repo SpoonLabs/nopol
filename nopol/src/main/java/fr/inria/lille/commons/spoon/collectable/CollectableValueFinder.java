@@ -145,7 +145,7 @@ public class CollectableValueFinder {
 	
 	protected String nameForField(CtField<?> field, String fieldOwner) {
 		String fieldName = field.getSimpleName();
-		CtSimpleType<?> declaringType = field.getDeclaringType();
+		CtType<?> declaringType = field.getDeclaringType();
 		String declaringClass = declaringType.getQualifiedName().replace('$', '.');
 		if (hasStaticModifier(field)) {
 			fieldName = declaringClass + "." + fieldName;
