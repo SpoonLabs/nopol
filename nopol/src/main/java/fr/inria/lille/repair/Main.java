@@ -69,6 +69,7 @@ public class Main {
 			e.printStackTrace();
 			showUsage();
 		}
+		System.exit(1);
 	}
 
 	private static void showUsage() {
