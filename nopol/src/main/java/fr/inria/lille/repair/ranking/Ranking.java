@@ -1,10 +1,13 @@
 package fr.inria.lille.repair.ranking;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
 import com.gzoltar.core.components.count.ComponentCount;
+import fr.inria.lille.localization.StatementExt;
+import fr.inria.lille.localization.WGzoltar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,36 +47,8 @@ public class Ranking {
 		int successfulTests = 0;
 		int nbTest = 0;
 
-		Collection<SuspiciousStatement> suspiciousStatements = this
-				.getSuspisiousStatements();
-		List<TestResult> gzoloarTestResults = this.gZoltar.getGzoltar()
-				.getSpectra().getTestResults();
-		Map<Statement, Integer> executedAndPassed = new HashMap<>();
-		Map<Statement, Integer> executedAndFailed = new HashMap<>();
-		nbTest = gzoloarTestResults.size();
-		for (int i = 0; i < gzoloarTestResults.size(); i++) {
-			TestResult testResult = gzoloarTestResults.get(i);
-			if (!testResult.wasSuccessful()) {
-				nbFailingTest++;
-			}
-			List<ComponentCount> components = testResult.getCoveredComponents();
-			for (Iterator<ComponentCount> iterator = components.iterator(); iterator.hasNext();) {
-				Statement component = (Statement) iterator.next().getComponent();
-				//String key = component.getMethod().getParent().getLabel() + ":"  + component.getLineNumber();
-				if (testResult.wasSuccessful()) {
-					if (!executedAndPassed.containsKey(component)) {
-						executedAndPassed.put(component, 0);
-					}
-					executedAndPassed.put(component, executedAndPassed.get(component) + 1);
-				} else {
-					if (!executedAndFailed.containsKey(component)) {
-						executedAndFailed.put(component, 0);
-					}
-					executedAndFailed.put(component, executedAndFailed.get(component) + 1);
-				}
-			}
-		}
-		successfulTests = nbTest - nbFailingTest;
+		List<Statement> suspiciousStatements = gZoltar.sortBySuspiciousness(this.testClasses);
+
 
 		String output = "";
 		output += "/************************/\n";
@@ -83,7 +58,7 @@ public class Ranking {
 		output += "Successful tests: " + successfulTests + "\n";
 		output += "Failed tests:     " + (nbFailingTest) + "\n\n";
 
-		for (TestResult testResult : gzoloarTestResults) {
+		for (TestResult testResult : gZoltar.getGzoltar().getTestResults()) {
 			if (!testResult.wasSuccessful()) {
 				output += testResult.getName() + "\n";
 				output += testResult.getTrace() + "\n";
@@ -93,28 +68,25 @@ public class Ranking {
 		output += "\n/************************/\n";
 		output += "/* Suspicious statement */\n";
 		output += "/************************/\n";
-		for (SuspiciousStatement statement : suspiciousStatements) {
-			int executedAndPassedCount = (executedAndPassed.containsKey(statement.getStatement()) ? executedAndPassed
-					.get(statement.getStatement()) : 0);
-			int executedAndFailedCount = (executedAndFailed.containsKey(statement.getStatement()) ? executedAndFailed
-					.get(statement.getStatement()) : 0);
-
-			String cl = statement.getStatement().getMethod().getParent().getLabel();
-			int line = statement.getStatement().getLineNumber();
+		for (Statement st : suspiciousStatements) {
+			StatementExt statement = (StatementExt) st;
+			String cl = statement.getMethod().getParent().getLabel();
+			int line = statement.getLineNumber();
 
 			output += String.format(
 					"%s:%d -> %s (ep: %d, ef: %d, np: %d, nf: %d)\n",
 					cl,
 					line,
 					statement.getSuspiciousness(),
-					executedAndPassedCount, executedAndFailedCount,
-					successfulTests - executedAndPassedCount,
-					nbFailingTest - executedAndFailedCount);
+					statement.getEp(),
+					statement.getEf(),
+					statement.getNp(),
+					statement.getNf());
 		}
 		return output;
 	}
 
-	public Collection<SuspiciousStatement> getSuspisiousStatements() {
+	public Collection<Statement> getSuspisiousStatements() {
 		// get suspicious statement of the current project
 		return gZoltar.sortBySuspiciousness(testClasses);
 	}

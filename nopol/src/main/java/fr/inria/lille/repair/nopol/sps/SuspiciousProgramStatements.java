@@ -27,5 +27,5 @@ public interface SuspiciousProgramStatements {
 	/**
 	 * @return a ranked list of potential bug root-cause.
 	 */
-	List<SuspiciousStatement> sortBySuspiciousness(final String... testClasses);
+	List<Statement> sortBySuspiciousness(final String... testClasses);
 }

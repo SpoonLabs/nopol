@@ -56,6 +56,7 @@ import fr.inria.lille.repair.common.synth.StatementType;
  */
 public class NoPol {
 
+	public static Statement currentStatement;
 	private URL[] classpath;
 	private GZoltarSuspiciousProgramStatements gZoltar;
 	private final TestPatch testPatch;
@@ -90,10 +91,10 @@ public class NoPol {
 		this.testClasses = new TestClassesFinder().findIn(classpath, false);
 		return build(testClasses);
 	}
-	
+
 	public List<Patch> build(String[] testClasses) {
 		gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath, testClasses);
-		Collection<SuspiciousStatement> statements = gZoltar.sortBySuspiciousness(testClasses);
+		Collection<Statement> statements = gZoltar.sortBySuspiciousness(testClasses);
 		if (statements.isEmpty()) {
 			throw new RuntimeException("No suspicious statements found.");
 		}
@@ -147,14 +148,19 @@ public class NoPol {
 	 * build
 	 * try to find patch
 	 */
-	private List<Patch> solveWithMultipleBuild(Collection<SuspiciousStatement> statements, Map<SourceLocation, List<TestResult>> testListPerStatement){
+	private List<Patch> solveWithMultipleBuild(Collection<Statement> statements, Map<SourceLocation, List<TestResult>> testListPerStatement) {
 		List<Patch> patches = new ArrayList<>();
-		for (SuspiciousStatement statement : statements) {
+
+		for (Iterator<Statement> iterator = statements.iterator(); iterator.hasNext() &&
+				// limit the execution time
+				System.currentTimeMillis() - startTime <= TimeUnit.MINUTES.toMillis(Config.INSTANCE.getMaxTime()); ) {
+			Statement statement = iterator.next();
 			try {
 				if (isInTest(statement))
 					continue;
+				NoPol.currentStatement = statement;
 				logger.debug("Analysing {}", statement);
-				SourceLocation sourceLocation = new SourceLocation(statement.getSourceLocation().getContainingClassName(), statement.getSourceLocation().getLineNumber());
+				SourceLocation sourceLocation = new SourceLocation(statement.getMethod().getParent().getName(), statement.getLineNumber());
 				Synthesizer synth = new SynthesizerFactory(sourceFiles, spooner, type).getFor(sourceLocation);
 
 				if (synth == Synthesizer.NO_OP_SYNTHESIZER) {

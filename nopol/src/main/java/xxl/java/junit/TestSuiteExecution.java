@@ -57,10 +57,23 @@ public class TestSuiteExecution {
 	public static CompoundResult runTestResult(Collection<TestResult> testCases, ClassLoader classLoaderForTestThread) {
 		return runTestResult(testCases, classLoaderForTestThread, nullRunListener());
 	}
+	public static Result runTest(String[] testClasses, ClassLoader loader) {
+		return runTest(testClasses, loader, nullRunListener());
+	}
+	public static Result runTest(String[] testClasses, ClassLoader classLoaderForTestThread, RunListener listener) {
+		List<Result> results = MetaList.newArrayList(testClasses.length);
+		for (String testCase : testClasses) {
+			results.add(runTest(testCase, classLoaderForTestThread, listener));
+		}
+		return new CompoundResult(results);
+	}
 
 	public static CompoundResult runTestResult(Collection<TestResult> testCases, ClassLoader classLoaderForTestThread, RunListener listener) {
 		List<Result> results = MetaList.newArrayList(testCases.size());
 		for (TestResult testCase : testCases) {
+			if(testCase.getName().startsWith("junit.")) {
+				continue;
+			}
 			results.add(runTestCase(testCase, classLoaderForTestThread, listener));
 		}
 		return new CompoundResult(results);

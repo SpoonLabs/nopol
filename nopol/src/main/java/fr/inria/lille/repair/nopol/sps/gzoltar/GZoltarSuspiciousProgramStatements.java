@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.*;
 
 import com.google.common.collect.Lists;
+import fr.inria.lille.localization.WGzoltar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +90,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 	private GZoltarSuspiciousProgramStatements(final URL[] classpath, Collection<String> packageNames) {
 		try {
 			//gzoltar = new GZoltarJava7();
-			gzoltar = new GZoltar(System.getProperty("user.dir"));
+			gzoltar = new WGzoltar(System.getProperty("user.dir"));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -106,6 +107,8 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		gzoltar.setClassPaths(classpaths);
 		gzoltar.addPackageNotToInstrument("org.junit");
 		gzoltar.addPackageNotToInstrument("junit.framework");
+		gzoltar.addTestPackageNotToExecute("junit.framework");
+		gzoltar.addTestPackageNotToExecute("org.junit");
 		for (String packageName : packageNames) {
 			gzoltar.addPackageToInstrument(packageName);
 		}
@@ -114,10 +117,10 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 	/**
 	 * @param testClasses
 	 * @return a ranked list of potential bug root-cause.
-	 * @see fr.inria.lille.jsemfix.sps.SuspiciousProgramStatements#sortBySuspiciousness()
+	 * @see fr.inria.lille.repair.nopol.sps.SuspiciousProgramStatements#sortBySuspiciousness(String...)
 	 */
-	@Override
-	public List<SuspiciousStatement> sortBySuspiciousness(final String... testClasses) {
+
+	public List<Statement> sortBySuspiciousness(final String... testClasses) {
 
 		for (String className : checkNotNull(testClasses)) {
 			gzoltar.addTestToExecute(className); // we want to execute the test
@@ -126,15 +129,14 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
 		}
 		gzoltar.run();
 
-		List<SuspiciousStatement> statements = from(gzoltar.getSuspiciousStatements())
-				.filter(IsSuspicious.INSTANCE).transform(GZoltarStatementWrapperFunction.INSTANCE).toList();
+		List<Statement> statements = gzoltar.getSuspiciousStatements();
 		
-		Logger logger = LoggerFactory.getLogger(this.getClass());
+		/*Logger logger = LoggerFactory.getLogger(this.getClass());
 		if (logger.isDebugEnabled()) {
 			logger.debug("Suspicious statements:\n{}", Joiner.on('\n').join(statements));
-		}
+		}*/
 
-		return sortByDescendingOrder(statements);
+		return statements;
 	}
 	
 	public GZoltar getGzoltar() {
