@@ -1,7 +1,7 @@
 package fr.inria.lille.spirals.repair.commons;
 
+
 import com.sun.jdi.Type;
-import com.sun.jdi.Value;
 import fr.inria.lille.spirals.repair.expression.*;
 
 import java.util.*;
@@ -23,22 +23,23 @@ public class Candidates extends ArrayList<Expression> {
         if (expression == null) {
             return false;
         }
-        if(this.cache.contains(expression.toString())) {
+        String key = expression.toString().intern();
+        if(this.cache.contains(key)) {
             return false;
         }
-        if (cacheValues.containsKey(expression.toString())) {
+
+        if (cacheValues.containsKey(key)) {
             return false;
         }
         addToCache(expression);
 
         if (!this.contains(expression)) {
             return super.add(expression);
-        } else {
-            Expression parent = this.get(this.indexOf(expression));
-            List<Expression> alternatives = parent.getAlternatives();
-            expression.getInAlternativesOf().add(parent);
-            return alternatives.add(expression);
         }
+        Expression parent = this.get(this.indexOf(expression));
+        List<Expression> alternatives = parent.getAlternatives();
+        expression.getInAlternativesOf().add(parent);
+        return alternatives.add(expression);
     }
 
     public boolean addAll(Candidates candidates) {
@@ -52,6 +53,7 @@ public class Candidates extends ArrayList<Expression> {
                 Expression expression1 = expression.getAlternatives().get(j);
                 this.add(expression1);
             }
+
         }
         cache.addAll(candidates.cache);
         cacheValues.putAll(candidates.cacheValues);
@@ -78,6 +80,7 @@ public class Candidates extends ArrayList<Expression> {
                 Class type = types[j];
                 if (expression.getType() != null && type.isAssignableFrom(expression.getType())) {
                     exps.add(expression);
+
                 }
             }
         }
@@ -86,8 +89,10 @@ public class Candidates extends ArrayList<Expression> {
 
     public Candidates filter(Class type, Object value) {
         Candidates exps = new Candidates();
+
         Set<String> tmpCache = new HashSet<>();
         Map<String, Object> tmpCacheValues = new HashMap<>();
+
         for (int i = 0; i < this.size(); i++) {
             Expression expression = this.get(i);
             if (expression.getType() != null && type.isAssignableFrom(expression.getType()) && (expression.getValue().equals(value) || (expression.getValue() == null && value == null))) {
@@ -104,20 +109,8 @@ public class Candidates extends ArrayList<Expression> {
         Candidates exps = new Candidates();
         for (int i = 0; i < this.size(); i++) {
             Expression expression = this.get(i);
-            if (expression instanceof Variable) {
-                Value value = ((Variable) expression).getJdiValue();
-                if (value != null && value.type().equals(type)) {
-                    exps.add(expression);
-                }
-            } else if (expression instanceof FieldAccess) {
-                Value value = ((FieldAccess) expression).getJdiValue();
-                if (value != null && value.type().equals(type)) {
-                    exps.add(expression);
-                }
-            } else if (expression instanceof MethodInvocation) {
-                if (((MethodInvocation) expression).getJdiValue().type().equals(type)) {
-                    exps.add(expression);
-                }
+            if(expression.isAssignableTo(type)) {
+                exps.add(expression);
             }
         }
         return exps;
@@ -128,11 +121,12 @@ public class Candidates extends ArrayList<Expression> {
     }
 
     private void addToCache(Expression expression, Set<String> tmpCache, Map<String, Object> tmpCacheValue) {
-        if (tmpCacheValue.containsKey(expression.toString())) {
+        String key = expression.toString().intern();
+        if (tmpCacheValue.containsKey(key)) {
             return;
         }
-        tmpCache.add(expression.toString());
-        tmpCacheValue.put(expression.toString(), expression.getValue());
+        tmpCache.add(key);
+        tmpCacheValue.put(key, expression.getValue());
     }
 
     public Candidates intersection(Candidates filtredCandidates, boolean checkValue) {
@@ -168,15 +162,16 @@ public class Candidates extends ArrayList<Expression> {
     }
 
     public boolean containsExpression(Expression o) {
-        return this.cache.contains(o.toString());
+        return this.cache.contains(o.toString().intern());
     }
 
     public boolean containsExpressionValue(Expression o) {
-        if (this.cacheValues.containsKey(o.toString())) {
-            if (this.cacheValues.get(o.toString()) == null) {
-                return this.cacheValues.get(o.toString()) == o.getValue();
+        String key = o.toString().intern();
+        if (this.cacheValues.containsKey(key)) {
+            if (this.cacheValues.get(key) == null) {
+                return this.cacheValues.get(key) == o.getValue();
             }
-            return this.cacheValues.get(o.toString()).equals(o.getValue());
+            return this.cacheValues.get(key).equals(o.getValue());
         }
         return false;
     }

@@ -29,6 +29,11 @@ public class StatCollector extends AbstractProcessor<CtElement> {
     }
 
     @Override
+    public boolean isToBeProcessed(CtElement candidate) {
+        return isMethod(candidate);
+    }
+
+    @Override
     public void process(CtElement ctElement) {
         if (ctElement instanceof CtBinaryOperator) {
             if (!isMethod(ctElement)) {

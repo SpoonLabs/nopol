@@ -1,13 +1,13 @@
 package fr.inria.lille.spirals.repair.vm;
 
-import com.sun.jdi.ThreadReference;
-import com.sun.jdi.VirtualMachine;
+import com.sun.jdi.*;
 import com.sun.jdi.request.BreakpointRequest;
 import fr.inria.lille.spirals.repair.MethodTestRunner;
 
 import java.io.*;
 import java.net.ConnectException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +38,22 @@ public class DebugJUnitRunner {
                 }
             }
         }).start();
+    }
+
+    public static boolean loadClass(String className, VirtualMachine vm) {
+        boolean result = false;
+        ClassType classReference = (ClassType) vm.classesByName("java.lang.Class").get(0);
+        for (int i = 0; i < vm.allThreads().size(); i++) {
+            ThreadReference thread =  vm.allThreads().get(i);
+            try {
+                classReference.invokeMethod(thread, classReference.methodsByName("forName").get(0), Arrays.asList(vm.mirrorOf(className)), ObjectReference.INVOKE_SINGLE_THREADED);
+            } catch (Exception e) {
+                continue;
+            }
+            result = true;
+            break;
+        }
+        return result;
     }
 
     public static VirtualMachine run(String[] testClasses, URL[] classpath) throws IOException {
@@ -87,20 +103,23 @@ public class DebugJUnitRunner {
             // kill process when the program exit
             Runtime.getRuntime().addShutdownHook( new Thread() {
                 public void run() {
-
-                    try {
-                        vm.exit(0);
-                        process.destroy();
-                        process.waitFor();
-                    } catch (InterruptedException e) {
-                        // ignore
-                    }
+                    shutdown(vm);
                 }
             });
             return vm;
         } catch (ConnectException e) {
             process.destroy();
             throw e;
+        }
+    }
+
+    public static void shutdown(VirtualMachine vm) {
+        try {
+            process.destroy();
+            // process.waitFor();
+            vm.exit(0);
+        } catch (Exception e) {
+            // ignore
         }
     }
 }

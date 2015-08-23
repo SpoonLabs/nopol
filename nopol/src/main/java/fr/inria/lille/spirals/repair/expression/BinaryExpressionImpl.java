@@ -102,11 +102,11 @@ public abstract class BinaryExpressionImpl extends ExpressionImpl implements Bin
     @Override
     public String toString() {
         if(strExpression == null) {
-            String first = getFirstExpression().toString();
+            String first = getFirstExpression().toString().intern();
             if (getFirstExpression() instanceof BinaryExpression) {
                 first = "(" + first + ")";
             }
-            String second = getSecondExpression().toString();
+            String second = getSecondExpression().toString().intern();
             if (getSecondExpression() instanceof BinaryExpression) {
                 second = "(" + second + ")";
             }
@@ -118,11 +118,11 @@ public abstract class BinaryExpressionImpl extends ExpressionImpl implements Bin
 
     @Override
     public String asPatch() {
-        String first = getFirstExpression().asPatch();
+        String first = getFirstExpression().asPatch().intern();
         if (getFirstExpression() instanceof BinaryExpression) {
             first = "(" + first + ")";
         }
-        String second = getSecondExpression().asPatch();
+        String second = getSecondExpression().asPatch().intern();
         if (getSecondExpression() instanceof BinaryExpression) {
             second = "(" + second + ")";
         }

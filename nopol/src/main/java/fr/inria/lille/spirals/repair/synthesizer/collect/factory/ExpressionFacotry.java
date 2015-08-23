@@ -3,6 +3,7 @@ package fr.inria.lille.spirals.repair.synthesizer.collect.factory;
 import com.sun.jdi.*;
 import com.sun.jdi.BooleanValue;
 import fr.inria.lille.spirals.repair.expression.*;
+import fr.inria.lille.spirals.repair.vm.DebugJUnitRunner;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -14,6 +15,12 @@ public class ExpressionFacotry {
 
     public static Variable create(LocalVariable variable, Value value) {
         try {
+            try {
+                variable.type();
+            } catch (ClassNotLoadedException e1) {
+                DebugJUnitRunner.loadClass(variable.typeName(), variable.virtualMachine());
+                variable.type();
+            }
             if (variable.type() instanceof ReferenceType) {
                 return new ComplexValueImpl(variable.name(), value);
             } else if (variable.type() instanceof PrimitiveType) {
@@ -30,11 +37,7 @@ public class ExpressionFacotry {
                     java.lang.reflect.Method valueMethod = value.getClass().getMethod("value");
                     Object result = valueMethod.invoke(value);
                     return new NumericalValueImpl(variable.name(), value, result, result.getClass());
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -55,6 +58,12 @@ public class ExpressionFacotry {
                 return new ComplexFieldAccessImpl(field.name(), exp, value, Object.class);
             }
         } else try {
+            try {
+                field.type();
+            } catch (ClassNotLoadedException e1) {
+                DebugJUnitRunner.loadClass(field.typeName(), field.virtualMachine());
+                field.type();
+            }
             if (value == null || field.type() instanceof PrimitiveType) {
                 if (field.type() instanceof BooleanType) {
                     if (value == null) {
@@ -81,13 +90,7 @@ public class ExpressionFacotry {
                         return null;
                     }
                     return new PrimitiveFieldAccessImpl(field.name(), exp, value, result, result.getClass());
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (NullPointerException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -97,12 +100,21 @@ public class ExpressionFacotry {
         return null;
     }
 
-    public static MethodInvocation create(ComplexTypeExpression exp, Method method, List<Expression> parameters, Value value) {
+    public static MethodInvocation create(ComplexTypeExpression exp, Method method, List<Expression> parameters, Value value, boolean isTocast) {
         String[] castSplit = method.declaringType().name().split("\\$");
         String cast = castSplit[0];
+        if(!isTocast) {
+            cast = null;
+        }
         if (value == null || value instanceof ObjectReference) {
             return new ComplexMethodInvocationImpl(method.name(), cast, exp, parameters, value, Object.class);
         } else try {
+            try {
+                method.returnType();
+            } catch (ClassNotLoadedException e1) {
+                DebugJUnitRunner.loadClass(method.returnTypeName(), method.virtualMachine());
+                method.returnType();
+            }
             if (method.returnType() instanceof PrimitiveType) {
                 if (method.returnType() instanceof BooleanType) {
                     return new PrimitiveMethodInvocationImpl(method.name(), cast, exp, parameters, value, ((BooleanValue) value).value(), Boolean.class);
@@ -126,4 +138,7 @@ public class ExpressionFacotry {
     }
 
 
+    public static Expression create(ComplexTypeExpression exp, Method method, List<Expression> expressions, Value result) {
+        return create(exp, method, expressions, result, true);
+    }
 }

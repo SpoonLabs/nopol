@@ -1,8 +1,12 @@
 package fr.inria.lille.spirals.repair.expression;
 
 
+import com.sun.jdi.*;
+import com.sun.tools.jdi.ClassTypeImpl;
 import fr.inria.lille.spirals.repair.commons.Candidates;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,6 +74,65 @@ public abstract class ExpressionImpl implements Expression {
         return inExpressions;
     }
 
+    private static final Class<?> getPrimitiveClass(String typeName) {
+        if (typeName.equals("byte"))
+            return Byte.class;
+        if (typeName.equals("short"))
+            return Short.class;
+        if (typeName.equals("int"))
+            return Integer.class;
+        if (typeName.equals("long"))
+            return Long.class;
+        if (typeName.equals("char"))
+            return Character.class;
+        if (typeName.equals("float"))
+            return Float.class;
+        if (typeName.equals("double"))
+            return Double.class;
+        if (typeName.equals("boolean"))
+            return Boolean.class;
+        if (typeName.equals("void"))
+            return void.class;
+        throw new IllegalArgumentException("Not primitive type : " + typeName);
+    }
+
+    @Override
+    public boolean isAssignableTo(Type refAss) {
+        ReferenceType ref;
+        if (this.getValue() instanceof ObjectReference) {
+            ref = ((ObjectReference) this.getValue()).referenceType();
+        } else if (this.getValue() instanceof ReferenceType) {
+            ref = (ReferenceType) this.getValue();
+        } else if(getValue() == null) {
+            return false;
+        } else {
+            Class classRefAss;
+            try {
+                classRefAss = Class.forName(refAss.name());
+            } catch (ClassNotFoundException e) {
+                try {
+                    classRefAss = getPrimitiveClass(refAss.name());
+                } catch (IllegalArgumentException e1) {
+                    return false;
+                }
+                if(this.toString().equals("null")) {
+                    return false;
+                }
+            }
+            return classRefAss.isAssignableFrom(getValue().getClass());
+        }
+        if(refAss instanceof ReferenceType && ref instanceof ClassTypeImpl) {
+            try {
+                java.lang.reflect.Method isAssignableTo = ref.getClass().getDeclaredMethod("isAssignableTo", ReferenceType.class);
+                isAssignableTo.setAccessible(true);
+                return (boolean) isAssignableTo.invoke(ref, refAss);
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return false;
+    }
+
     @Override
     public double getPriority() {
         return priority;
@@ -128,6 +191,16 @@ public abstract class ExpressionImpl implements Expression {
     @Override
     public String asPatch() {
         return this.toString();
+    }
+
+    public byte[] getMD5() {
+        try {
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            md5.update(this.toString().getBytes());
+            return md5.digest();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

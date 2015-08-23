@@ -13,10 +13,7 @@ import fr.inria.lille.spirals.repair.expression.*;
 import fr.inria.lille.spirals.repair.synthesizer.collect.DataCollector;
 import fr.inria.lille.spirals.repair.synthesizer.collect.DataCombiner;
 import fr.inria.lille.spirals.repair.synthesizer.collect.SpoonElementsCollector;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.ClassCollector;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.ConstantCollector;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.StatCollector;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.VariablesInSuspiciousCollector;
+import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.*;
 import fr.inria.lille.spirals.repair.vm.DebugJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Thomas Durieux on 06/03/15.
@@ -58,6 +56,9 @@ public class SynthesizerImpl implements Synthesizer {
     private Set<CtTypedElement> variablesInSuspicious = new HashSet<>();
     private SpoonElementsCollector spoonElementsCollector;
     private StatCollector statCollector;
+    private Map<String, String> variableType;
+    private Set<String> calledMethods;
+    private long remainingTime;
 
     public SynthesizerImpl(SpoonedProject spoon, File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests) {
         this(projectRoots, location, classpath, oracle, tests);
@@ -96,15 +97,41 @@ public class SynthesizerImpl implements Synthesizer {
     }
 
     @Override
-    public Candidates run() {
+    public Candidates run(long remainingTime) {
+        this.remainingTime = remainingTime;
         this.startTime = System.currentTimeMillis();
+        Iterator<Object[]> iterator = oracle.values().iterator();
+        Object last = null;
+        boolean same = false;
+        while (iterator.hasNext() && !same) {
+            Object[] next = iterator.next();
+
+            for (int i = 0; i < next.length; i++) {
+                Object o = next[i];
+                if(last == null) {
+                    last = o;
+                    continue;
+                }
+                if(o != last) {
+                    same =false;
+                    break;
+                }
+            }
+        }
+        if(same) {
+            Candidates candidates = new Candidates();
+            candidates.add(new PrimitiveConstantImpl(last, null , last.getClass()));
+            return candidates;
+        }
         try {
             vm = DebugJUnitRunner.run(tests, classpath);
             watchBuggyClass();
             vm.resume();
             processVMEvents();
             this.collectExecutionTime = System.currentTimeMillis();
-            return combineValues();
+            Candidates expressions = combineValues();
+            DebugJUnitRunner.shutdown(vm);
+            return expressions;
         } catch (IOException e) {
             throw new RuntimeException("Unable to communicate with the project", e);
         }
@@ -115,7 +142,7 @@ public class SynthesizerImpl implements Synthesizer {
             // process events
             EventQueue eventQueue = vm.eventQueue();
             while (true) {
-                EventSet eventSet = eventQueue.remove();
+                EventSet eventSet = eventQueue.remove(TimeUnit.MINUTES.toMillis(5));
                 for (Event event : eventSet) {
                     if (event instanceof VMDeathEvent || event instanceof VMDisconnectEvent) {
                         // exit
@@ -132,11 +159,12 @@ public class SynthesizerImpl implements Synthesizer {
                 }
                 eventSet.resume();
             }
-        } catch (InterruptedException | IncompatibleThreadStateException e) {
-            throw new RuntimeException("Error during the synthesizing", e);
-        } catch (AbsentInformationException e) {
-            throw new RuntimeException("The project is not compiled with the debug flag", e);
+        } catch (Exception e) {
+           // ignore
+        } finally {
+            DebugJUnitRunner.process.destroy();
         }
+        return;
     }
 
     private void processClassPrepareEvent() throws AbsentInformationException {
@@ -303,6 +331,9 @@ public class SynthesizerImpl implements Synthesizer {
             classes = collectUsedClasses();
         }
 
+        Map<String, String> variableType = collectVariableType();
+        this.calledMethods = collectMethod();
+        this.variableType = variableType;
         try {
             StatCollector statCollector = new StatCollector(buggyMethod);
             spoon.processClass(location.getContainingClassName(), statCollector);
@@ -328,8 +359,9 @@ public class SynthesizerImpl implements Synthesizer {
                 return new Candidates();
             }
         }
-        DataCollector dataCollect = new DataCollector(threadRef, constants, location, buggyMethod, classes, statCollector);
-        return dataCollect.collect();
+        DataCollector dataCollect = new DataCollector(threadRef, constants, location, buggyMethod, classes, statCollector, this.variableType, this.calledMethods);
+        Candidates eexps = dataCollect.collect(TimeUnit.MINUTES.toMillis(7));
+        return eexps;
     }
 
     private Candidates collectLiterals() {
@@ -351,6 +383,24 @@ public class SynthesizerImpl implements Synthesizer {
             logger.warn("Unable to collect used classes", e);
         }
         return new HashSet<>();
+    }
+
+    private Set<String> collectMethod() {
+        MethodCollector methodCollector = new MethodCollector();
+        spoon.process(methodCollector);
+
+        return methodCollector.getMethods();
+    }
+
+    private Map<String, String> collectVariableType() {
+        try {
+            VariableTypeCollector variableTypeCollector = new VariableTypeCollector(buggyMethod, this.location.getLineNumber());
+            spoon.processClass(location.getContainingClassName(), variableTypeCollector);
+            return variableTypeCollector.getVariableType();
+        } catch (Exception e) {
+            logger.warn("Unable to collect used classes", e);
+        }
+        return new HashMap<>();
     }
 
     private Candidates getValuesIntersection() {
@@ -386,30 +436,38 @@ public class SynthesizerImpl implements Synthesizer {
                 return values.get(t1).get(0).size() - values.get(s).get(0).size();
             }
         });
-
-        for (int k = 0; k < collectedTests.size(); k++) {
+        long currentTime = System.currentTimeMillis();
+        Candidates lastCollectedValues = null;
+        for (int k = 0; k < collectedTests.size() && currentTime - startTime <= remainingTime; k++) {
             final String key =  collectedTests.get(k);
             List<Candidates> listValue = values.get(key);
-            for (int i = 0; i < listValue.size(); i++) {
-                Candidates value = listValue.get(i);
-                if (Config.INSTANCE.isSortExpressions()) {
-                    Collections.sort(value, Collections.reverseOrder());
-                }
-                if (value == null) {
+            currentTime = System.currentTimeMillis();
+            for (int i = 0; i < listValue.size() && currentTime - startTime <= remainingTime; i++) {
+                Candidates eexps = listValue.get(i);
+                if (eexps == null) {
                     continue;
                 }
-                final Object v;
-                if (i < oracle.get(key).length) {
-                    v = oracle.get(key)[i];
-                } else {
-                    v = oracle.get(key)[oracle.get(key).length - 1];
+                if(lastCollectedValues != null && lastCollectedValues.intersection(eexps, false).size() == eexps.size()) {
+                    continue;
                 }
-                for (int j = 0; j < value.size(); j++) {
-                    Expression expression = value.get(j);
+                lastCollectedValues = eexps;
+                if (Config.INSTANCE.isSortExpressions()) {
+                    Collections.sort(eexps, Collections.reverseOrder());
+                }
+                final Object angelicValue;
+                if (i < oracle.get(key).length) {
+                    angelicValue = oracle.get(key)[i];
+                } else {
+                    angelicValue = oracle.get(key)[oracle.get(key).length - 1];
+                }
+                currentTime = System.currentTimeMillis();
+                // check if one of the collected value can be a patch
+                for (int j = 0; j < eexps.size() && currentTime - startTime <= remainingTime; j++) {
+                    Expression expression = eexps.get(j);
                     if (expression == null || expression.getValue() == null) {
                         continue;
                     }
-                    if (expression.getValue().equals(v) && checkExpression(key, i, expression)) {
+                    if (expression.getValue().equals(angelicValue) && checkExpression(key, i, expression)) {
                         result.add(expression);
                         if (Config.INSTANCE.isOnlyOneSynthesisResult()) {
                             printSummery(result);
@@ -424,7 +482,7 @@ public class SynthesizerImpl implements Synthesizer {
                 combiner.addCombineListener(new DataCombiner.CombineListener() {
                     @Override
                     public boolean check(Expression expression) {
-                        if (!expression.getValue().equals(v)) {
+                        if (!expression.getValue().equals(angelicValue)) {
                             return false;
                         }
                         if (checkExpression(key, iterationNumber, expression)) {
@@ -434,14 +492,19 @@ public class SynthesizerImpl implements Synthesizer {
                         return false;
                     }
                 });
-                combiner.combine(value, v);
+                currentTime = System.currentTimeMillis();
+                // combine eexps
+                long maxCombinerTime = remainingTime - (currentTime - startTime);
+                combiner.combine(eexps, angelicValue, maxCombinerTime);
                 if (result.size() > 0) {
                     if (Config.INSTANCE.isOnlyOneSynthesisResult()) {
                         printSummery(result);
                         return result;
                     }
                 }
+                currentTime = System.currentTimeMillis();
             }
+            currentTime = System.currentTimeMillis();
         }
         printSummery(result);
         return result;
@@ -484,6 +547,7 @@ public class SynthesizerImpl implements Synthesizer {
     }
 
     private void printSummery(Candidates result) {
+        if(values.values().isEmpty()) return;
         List<Candidates> next = values.values().iterator().next();
         Candidates candidate = next.get(0);
         int nbValueToCombine = candidate.size();

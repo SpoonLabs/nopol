@@ -1,7 +1,13 @@
 package fr.inria.lille.spirals.repair.expression;
 
 
+import com.sun.jdi.IntegerValue;
+import com.sun.jdi.ObjectReference;
+import com.sun.jdi.ReferenceType;
+import com.sun.jdi.Value;
+import com.sun.tools.jdi.ClassTypeImpl;
 import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.spirals.repair.commons.Candidates;
 
 /**
  * is the generic type of a primitive value
@@ -18,6 +24,15 @@ public class PrimitiveConstantImpl extends VariableImpl implements PrimitiveCons
 
     public PrimitiveConstantImpl(Constant exp, String name, Object value, Class<?> type) {
         super(exp.toString() + "." + name, null, value, type);
+    }
+
+    public PrimitiveConstantImpl(Object value, Value integerValue, Class<?> type) {
+        super(value + "", integerValue, value, type);
+    }
+
+    @Override
+    public Object evaluate(Candidates values) {
+        return this.getValue();
     }
 
     @Override

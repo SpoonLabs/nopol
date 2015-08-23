@@ -4,6 +4,7 @@ package fr.inria.lille.spirals.repair.expression;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.Value;
 import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.spirals.repair.commons.Candidates;
 
 /**
  * is the generic type of a primitive value
@@ -37,6 +38,11 @@ public class ComplexConstantImpl extends ComplexValueImpl implements ComplexCons
             return false;
         }
         return super.equals(o);
+    }
+
+    @Override
+    public Object evaluate(Candidates values) {
+        return this.getValue();
     }
 }
 

@@ -15,11 +15,11 @@ public class ComplexBinaryExpressionImpl extends BinaryExpressionImpl implements
      *
      */
     public ComplexBinaryExpressionImpl(Operator operator, Expression first, Expression second, Object value, Class type) {
-        super(operator, first, second, value, type);
+        super(operator, first, second, value, Boolean.class);
     }
 
     public ComplexBinaryExpressionImpl(Operator operator, Expression first, Expression second) {
-        super(operator, first, second, null, null);
+        super(operator, first, second, null, Boolean.class);
         evaluate();
     }
 

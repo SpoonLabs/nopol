@@ -18,6 +18,7 @@ public abstract class PrimitiveValueImpl extends VariableImpl implements Primiti
         super(variableName, jdiValue, value, type);
     }
 
+
     /*@Override
     public boolean equals(Object o) {
         if (this == o) return true;

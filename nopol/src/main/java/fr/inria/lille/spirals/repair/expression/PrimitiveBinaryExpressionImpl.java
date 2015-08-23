@@ -19,7 +19,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
     }
 
     public PrimitiveBinaryExpressionImpl(Operator operator, Expression first, Expression second) {
-        super(operator, first, second, null, null);
+        super(operator, first, second, null, operator.getReturnType());
         evaluate();
     }
 
@@ -86,10 +86,10 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 if (val == 0 && (getOperator() == Operator.MULT || getOperator() == Operator.DIV)) {
                     return null;
                 }
-                if (val == 1 && (getOperator() == Operator.MULT || getOperator() == Operator.DIV)) {
+                if (val == 1 && (getOperator() == Operator.MULT)) {
                     return null;
                 }
-                if (val == 0 && (getOperator() == Operator.ADD || getOperator() == Operator.SUB)) {
+                if (val == 0 && (getOperator() == Operator.ADD)) {
                     return null;
                 }
             }
@@ -162,22 +162,6 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 return null;
             }
         }
-        if (getFirstExpression() instanceof Constant && getFirstExpression().getValue() == 0) {
-            if (getSecondExpression() instanceof BinaryExpression) {
-                BinaryExpression b2 = ((BinaryExpression) getSecondExpression());
-                if (b2.getOperator() == Operator.SUB) {
-                    return null;
-                }
-            }
-        }
-        if (getSecondExpression() instanceof Constant && getSecondExpression().getValue() == 0) {
-            if (getSecondExpression() instanceof BinaryExpression) {
-                BinaryExpression b2 = ((BinaryExpression) getFirstExpression());
-                if (b2.getOperator() == Operator.SUB) {
-                    return null;
-                }
-            }
-        }
 
         Object value = null;
         if (getFirstExpression().getValue() instanceof Integer) {
@@ -194,8 +178,27 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
             value = executeOperatorByte();
         } else if (getFirstExpression().getValue() instanceof Boolean) {
             value = executeOperatorBoolean();
+        }  else if (getFirstExpression() instanceof ComplexTypeExpression) {
+            value = executeOperatorComplex();
         }
         return value;
+    }
+
+    private Object executeOperatorComplex() {
+        if(getSecondExpression().getValue() == null) {
+            if(getOperator() == Operator.EQ) {
+                return getFirstExpression().getValue() == null;
+            } else if(getOperator() == Operator.NEQ) {
+                return getFirstExpression().getValue() != null;
+            }
+        } else {
+            if(getOperator() == Operator.EQ) {
+                return getFirstExpression().getValue() == getSecondExpression().getValue();
+            } else if(getOperator() == Operator.NEQ) {
+                return getFirstExpression().getValue() != getSecondExpression().getValue();
+            }
+        }
+        return null;
     }
 
     private Object executeOperatorInteger() {

@@ -57,14 +57,14 @@ public abstract class FieldAccessImpl extends ExpressionImpl implements FieldAcc
     @Override
     public String toString() {
         if(strExpression == null) {
-            strExpression = this.getExpression().toString() + "." + fieldName;
+            strExpression = this.getExpression().toString().intern() + "." + fieldName;
         }
         return strExpression;
     }
 
     @Override
     public String asPatch() {
-        return this.getExpression().asPatch() + "." + fieldName;
+        return this.getExpression().asPatch().intern() + "." + fieldName;
     }
 }
 

@@ -11,6 +11,7 @@ public interface Synthesizer {
      * Run the synthesizer
      *
      * @return the patch
+     * @param remainingTime
      */
-    Candidates run();
+    Candidates run(long remainingTime);
 }
