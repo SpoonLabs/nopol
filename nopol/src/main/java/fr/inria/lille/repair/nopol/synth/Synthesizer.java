@@ -9,14 +9,13 @@ import java.util.List;
 import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
-import fr.inria.lille.repair.nopol.spoon.smt.ConditionalProcessor;
 import xxl.java.junit.TestCase;
 
 public interface Synthesizer {
 
 	Synthesizer NO_OP_SYNTHESIZER = new Synthesizer() {
 		@Override
-		public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
+		public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
 			return NO_PATCH;
 		}
 
@@ -26,7 +25,7 @@ public interface Synthesizer {
 		}
 	};
 
-	Patch buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures);
+	Patch buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch);
 
 	NopolProcessor getProcessor();
 }

@@ -31,6 +31,7 @@ import xxl.java.junit.TestSuiteExecution;
 import java.io.File;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
 
@@ -57,7 +58,8 @@ public class BrutSynthesizer<T> implements Synthesizer {
     }
 
     @Override
-    public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
+    public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
+        long startTime = System.currentTimeMillis();
         Collection<Specification<T>> collection = angelicValue.buildFor(classpath, testClasses, failures);
 
         for (Iterator<Specification<T>> iterator = collection.iterator(); iterator.hasNext(); ) {
@@ -121,8 +123,9 @@ public class BrutSynthesizer<T> implements Synthesizer {
                     oracle.put(next, values);
                 }
             }
+            long remainingTime = TimeUnit.MINUTES.toMillis(maxTimeBuildPatch) - (System.currentTimeMillis() - startTime);
             SynthesizerImpl synthesizer = new SynthesizerImpl(spooner, sourceFolders,sourceLocation,classpath,oracle, oracle.keySet().toArray(new String[0]));
-            Candidates run = synthesizer.run();
+            Candidates run = synthesizer.run(remainingTime);
             if(run.size() > 0) {
                 return new ExpressionPatch(run.get(0), sourceLocation, type);
             }

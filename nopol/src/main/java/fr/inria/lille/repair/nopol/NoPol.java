@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import com.gzoltar.core.components.Statement;
 import com.gzoltar.core.components.count.ComponentCount;
@@ -64,6 +65,7 @@ public class NoPol {
 	private final StatementType type;
 	private static boolean singlePatch = true;
 	private String[] testClasses;
+	public long startTime;
 
 	public NoPol(ProjectReference project, StatementType type) {
 		this.classpath = project.classpath();
@@ -72,11 +74,12 @@ public class NoPol {
 		this.type = type;
 
 		// get all test classes of the current project
-		if (this.testClasses == null || this.testClasses.length == 0) {
+		/*if (this.testClasses == null || this.testClasses.length == 0) {
 			this.testClasses = new TestClassesFinder().findIn(classpath, false);
-		}
+		}*/
 		spooner = new SpoonedProject(this.sourceFiles, classpath);
 		testPatch = new TestPatch(sourceFiles[0], spooner);
+		startTime = System.currentTimeMillis();
 	}
 
 	public NoPol(final File[] sourceFiles, final URL[] classpath, StatementType type) {
