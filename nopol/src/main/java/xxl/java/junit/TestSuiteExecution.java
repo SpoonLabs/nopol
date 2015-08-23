@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.gzoltar.core.instr.testing.TestResult;
+import fr.inria.lille.repair.common.config.Config;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
@@ -110,5 +111,5 @@ public class TestSuiteExecution {
 		return loggerFor(TestSuiteExecution.class);
 	}
 	
-	private static long secondsForTimeout = MINUTES.toSeconds(60L);
+	private static long secondsForTimeout = MINUTES.toSeconds(Config.INSTANCE.getTimeoutTestExecution());
 }

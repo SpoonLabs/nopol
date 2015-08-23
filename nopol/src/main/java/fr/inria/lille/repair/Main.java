@@ -103,6 +103,7 @@ public class Main {
 		Config.INSTANCE.setProjectSourcePath(config.getStringArray("source"));
 		Config.INSTANCE.setProjectTests(config.getStringArray("test"));
 		Config.INSTANCE.setComplianceLevel(config.getInt("complianceLevel", 7));
+		Config.INSTANCE.setMaxTime(config.getInt("maxTime", 60));
 		return true;
 	}
 
@@ -257,5 +258,14 @@ public class Main {
 		complianceLevelOpt.setDefault("7");
 		complianceLevelOpt.setHelp("The compliance level of the project.");
 		jsap.registerParameter(complianceLevelOpt);
+
+		FlaggedOption maxTime = new FlaggedOption("maxTime");
+		maxTime.setRequired(false);
+		maxTime.setAllowMultipleDeclarations(false);
+		maxTime.setLongFlag("maxTime");
+		maxTime.setStringParser(JSAP.INTEGER_PARSER);
+		maxTime.setDefault("60");
+		maxTime.setHelp("The maximum time execution in minute.");
+		jsap.registerParameter(maxTime);
 	}
 }
