@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 public abstract class TestUtility {
     private String solver = "z3";
     private String solverPath =  "lib/z3/z3_for_linux";
-    private String realBugPath = "../../nopol-dataset/";
+    private String realBugPath = "../../spirals-dataset/bugs/";
     private String executionType;
 
     public TestUtility(String executionType) {
@@ -100,12 +100,12 @@ public abstract class TestUtility {
         String rootFolder = realBugPath + projectName + "/";
         String srcFolder = rootFolder + "src/";
         String binFolder = rootFolder + "bin/";
-        if(isMaven) {
+        if(isMaven || true) {
             binFolder = rootFolder + "target/classes:" + rootFolder + "target/test-classes";
         }
-        String libFolder = rootFolder + "lib/";
+        String libFolder = rootFolder + "../../data/lib/";
 
-        String classpath = binFolder + ":" + "misc/nopol-example/junit-4.11.jar:";
+        String classpath = binFolder + ":";
         for (int i = 0; i<dependencies.length; i++) {
             classpath += libFolder + dependencies[i];
             if(i<dependencies.length -1) {

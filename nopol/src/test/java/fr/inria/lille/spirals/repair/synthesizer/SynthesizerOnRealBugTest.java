@@ -12,6 +12,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by spirals on 06/03/15.
@@ -31,11 +32,7 @@ public class SynthesizerOnRealBugTest {
                 "",
                 oracle,
                 location,
-                new String[] {"commons-beanutils-1.7.0.jar",
-                "commons-collections-2.0.jar",
-                "commons-discovery-0.4.jar",
-                "commons-lang-2.1.jar",
-                "commons-logging-1.1.1.jar"},
+                new String[] {},
                 "n <= pos");
     }
 
@@ -57,11 +54,7 @@ public class SynthesizerOnRealBugTest {
                 "",
                 oracle,
                 location,
-                new String[] {"commons-beanutils-1.5.jar",
-                        "commons-collections-3.0.jar",
-                        "commons-discovery-SNAPSHOT.jar",
-                        "commons-lang-2.0.jar",
-                        "commons-logging-1.0.3.jar"},
+                new String[] {},
                 "n < 0", "n < 0.0");
     }
 
@@ -142,7 +135,6 @@ public class SynthesizerOnRealBugTest {
     }
 
     @Test
-    @Ignore
     public void CM8() throws InterruptedException {
         Map<String, Object[]> oracle = new HashMap<>();
         oracle.put("org.apache.commons.math3.fraction.FractionTest#testIntegerOverflow", new Object[]{true, true, true, true});
@@ -195,10 +187,11 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                "(nRows < 2) || (nCols < 1)");
+                "(nRows < 2) || (nCols < 1)", "matrix.isSquare()");
     }
 
     @Test
+    @Ignore
     public void CL1() throws InterruptedException {
         Map<String, Object[]> oracle = new HashMap<>();
         oracle.put("org.apache.commons.lang.StringUtilsTest#testReplaceFunctions1", new Object[]{false});
@@ -302,7 +295,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                "str == null || startIndex >= size");
+                "str == null || startIndex >= size", "(startIndex == this.size) || (str == null)");
     }
 
     @Test
@@ -313,7 +306,7 @@ public class SynthesizerOnRealBugTest {
         oracle.put("org.apache.commons.lang.ClassUtilsTest#test_getPackageName_Object3", new Object[]{false});
         oracle.put("org.apache.commons.lang.ClassUtilsTest#test_getPackageName_Class1", new Object[]{false});
         oracle.put("org.apache.commons.lang.ClassUtilsTest#test_getPackageName_Class2", new Object[]{false});
-
+        oracle.put("org.apache.commons.lang.ClassUtilsTest#test_getPackageName_Class3", new Object[]{true});
         oracle.put("org.apache.commons.lang.ClassUtilsTest#test_getPackageName_Class4", new Object[]{false});
         oracle.put("org.apache.commons.lang.ClassUtilsTest#test_getPackageName_String4", new Object[]{true});
 
@@ -380,7 +373,8 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                "this.runningState == STATE_RUNNING");
+                "this.runningState == STATE_RUNNING",
+                "this.stopTime <= 0");
     }
     @Test
     public void PL2() throws InterruptedException {
@@ -475,7 +469,8 @@ public class SynthesizerOnRealBugTest {
                 location,
                 new String[] {"commons-discovery-0.4.jar",
                         "commons-logging-1.1.1.jar"},
-                "0 < getN()", "0 < this.getResult()",
+                "0 < getN()", "0 < this.getResult()", "0 <= this.getResult()",
+                "0 <= ((org.apache.commons.math.stat.descriptive.moment.GeometricMean)this).getResult()",
                 "0 < ((org.apache.commons.math.stat.descriptive.moment.GeometricMean)this).getResult()");
     }
 
@@ -494,11 +489,11 @@ public class SynthesizerOnRealBugTest {
                 location,
                 new String[] {},
                 "specific != null",
-                "null != specific");
+                "null != specific",
+                "0 != sb.length()");
     }
 
     @Test
-    @Ignore
     public void AM1() throws InterruptedException {
         Map<String, Object[]> oracle = new HashMap<>();
         oracle.put("org.apache.commons.math3.complex.QuaternionTest#testAccessors3", new Object[]{2.0});
@@ -532,12 +527,12 @@ public class SynthesizerOnRealBugTest {
             }
         }
         Synthesizer synthesizer = new SynthesizerImpl(new File[]{new File(srcFolder + sourceFolder)},location, JavaLibrary.classpathFrom(classpath), oracle, oracle.keySet().toArray(new String[0]));
-        Candidates result = synthesizer.run();
-        check(result, patch);
+        Candidates expression = synthesizer.run(TimeUnit.MINUTES.toMillis(15));
+        check(expression, patch);
     }
 
     private void check(Candidates expression , String... patch) {
-        if(expression == null) {
+        if(expression == null || expression.size() == 0) {
             Assert.fail("No patch found");
         }
         int position = 0;

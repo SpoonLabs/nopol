@@ -9,6 +9,7 @@ import xxl.java.library.JavaLibrary;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by spirals on 06/03/15.
@@ -131,7 +132,7 @@ public class SynthesizerTest {
         oracle.put("test_3", new Object[]{true});
         oracle.put("test_4", new Object[]{false});
 
-        test(12, oracle, 4, "list == null || list.size() == 0", "(list == null) || list.isEmpty()");
+        test(12, oracle, 4, "(list == null) || (0 == list.size())", "(list == null) || list.isEmpty()");
     }
 
     private void test(int nopolExampleNumber, Map<String, Object[]> o, int line, String... patch) {
@@ -154,7 +155,7 @@ public class SynthesizerTest {
         SourceLocation location = new SourceLocation(className, line);
         File[] files = new File []{new File("../test-projects/src/main/java/"), new File("../test-projects/src/test/java/")};
         Synthesizer synthesizer = new SynthesizerImpl(files, location, JavaLibrary.classpathFrom(classpath), oracle, tests.toArray(new String[0]));
-        Candidates expression = synthesizer.run();
+        Candidates expression = synthesizer.run(TimeUnit.MINUTES.toMillis(15));
         check(expression, patch);
     }
 
