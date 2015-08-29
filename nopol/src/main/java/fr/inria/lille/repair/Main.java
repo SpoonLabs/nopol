@@ -17,6 +17,7 @@ package fr.inria.lille.repair;
 
 
 import com.martiansoftware.jsap.*;
+import com.sun.jdi.IncompatibleThreadStateException;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.synth.StatementType;
@@ -39,7 +40,6 @@ public class Main {
 			if (!parseArguments(args)) {
 				return;
 			}
-
 			File[] sourceFiles = new File[Config.INSTANCE.getProjectSourcePath().length];
 			for (int i = 0; i < Config.INSTANCE.getProjectSourcePath().length; i++) {
 				String path = Config.INSTANCE.getProjectSourcePath()[i];

@@ -15,7 +15,7 @@
  */
 package fr.inria.lille.repair.nopol.synth;
 
-import java.io.File;
+
 import java.net.URL;
 import java.util.Collection;
 import java.util.List;
@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spoon.processing.Processor;
+import xxl.java.compiler.DynamicCompilationException;
 import xxl.java.junit.CompoundResult;
 import xxl.java.junit.TestCase;
 import xxl.java.junit.TestSuiteExecution;
@@ -54,7 +55,12 @@ public final class ConstraintModelBuilder implements AngelicValue<Boolean>{
 		this.sourceLocation = sourceLocation;
 		String qualifiedName = sourceLocation.getRootClassName();
         SpoonedClass fork = spooner.forked(qualifiedName);
-		classLoader = fork.processedAndDumpedToClassLoader(processor);
+		try {
+			classLoader = fork.processedAndDumpedToClassLoader(processor);
+		} catch(DynamicCompilationException e) {
+			logger.error("Unable to compile the change: \n" + fork.getSimpleType());
+			throw e;
+		}
 		this.runtimeValues = runtimeValues;
 	}
 

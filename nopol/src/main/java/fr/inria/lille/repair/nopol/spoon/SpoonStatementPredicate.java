@@ -15,17 +15,12 @@
  */
 package fr.inria.lille.repair.nopol.spoon;
 
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtCase;
-import spoon.reflect.code.CtFor;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtLoop;
-import spoon.reflect.code.CtReturn;
-import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
 
 import com.google.common.base.Predicate;
+import spoon.reflect.declaration.CtMethod;
+import spoon.support.reflect.code.CtBlockImpl;
 
 /**
  * @author Favio D. DeMarco
@@ -47,15 +42,25 @@ public enum SpoonStatementPredicate implements Predicate<CtElement>{
 		boolean isCtReturn = input instanceof CtReturn;
 		boolean isInsideIf = parent.getParent() instanceof CtIf; // Checking parent isn't enough, parent will be CtBlock and grandpa will be CtIf
 		boolean isCtLocalVariable = input instanceof CtLocalVariable;
+		boolean isInBlock = parent instanceof CtBlock;
+		if(isInBlock) {
+			boolean isInMethod = parent.getParent() instanceof CtMethod;
+			if(isInMethod) {
+				if(((CtBlock) parent).getLastStatement() == input && !((CtMethod)parent.getParent()).getType().box().equals(input.getFactory().Class().VOID)){
+					return false;
+				}
+			}
+		}
 		boolean isInsideIfLoopCaseBlock = (parent instanceof CtIf || parent instanceof CtLoop || parent instanceof CtCase || parent instanceof CtBlock);
 		boolean isInsideForDeclaration = parent instanceof CtFor ? ((CtFor)(parent)).getForUpdate().contains(input) || ((CtFor)(parent)).getForInit().contains(input): false ;
-		
+		boolean isCtSynchronized = input instanceof CtSynchronized;
+
 		boolean result = isCtStamement 
 				// input instanceof CtClass ||
 
 				// cannot insert code before '{}', for example would try to add code between 'Constructor()' and '{}'
 				// input instanceof CtBlock ||
-
+				&& !isCtSynchronized
 				// cannot insert a conditional before 'return', it won't compile. 
 				&& !(isCtReturn && !( isInsideIf ))
 				// cannot insert a conditional before a variable declaration, it won't compile if the variable is used

@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtStatement;
+import xxl.java.compiler.DynamicCompilationException;
 import xxl.java.junit.CompoundResult;
 import xxl.java.junit.TestCase;
 import xxl.java.junit.TestSuiteExecution;
@@ -68,7 +69,13 @@ public class BrutSynthesizer<T> implements Synthesizer {
         }
         Processor<CtStatement> processor = new ConditionalInstrumenter(nopolProcessor, type.getType());
         SpoonedClass fork = spooner.forked(sourceLocation.getContainingClassName());
-        ClassLoader classLoader = fork.processedAndDumpedToClassLoader(processor);
+        ClassLoader classLoader;
+        try {
+            classLoader = fork.processedAndDumpedToClassLoader(processor);
+        } catch (DynamicCompilationException e) {
+            e.printStackTrace();
+            return NO_PATCH;
+        }
         Map<String, Object[]> oracle = new HashMap<>();
 
         AngelicExecution.enable();
@@ -108,6 +115,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
                         break;
                     }
                 }
+                // ignore the test if the result of the test is not dependant of the condition value
                 if (isSame) {
                     AngelicExecution.enable();
                     boolean flippedValue = !(Boolean) values[0];

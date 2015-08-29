@@ -6,6 +6,7 @@ import static xxl.java.library.LoggerLibrary.logCollection;
 import static xxl.java.library.LoggerLibrary.logDebug;
 import static xxl.java.library.LoggerLibrary.loggerFor;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,15 @@ public class ConstraintBasedSynthesis {
 
 	public static int level = 0;
 	public static Collection<Operator<?>> operators;
+
+	public ConstraintBasedSynthesis(Map<String, Integer> constants) {
+		this.logic = SolverFactory.solverLogic();
+		this.theories = SynthesisTheoriesBuilder.theoriesForConstraintBasedSynthesis(logic);
+		this.constants = constants;
+		scriptBuilder = new SynthesisScriptBuilder();
+		level = 0;
+	}
+
 	public ConstraintBasedSynthesis() {
 		this(SolverFactory.solverLogic());
 	}

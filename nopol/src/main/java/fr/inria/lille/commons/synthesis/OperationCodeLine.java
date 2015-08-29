@@ -33,7 +33,14 @@ public class OperationCodeLine extends CodeLine implements OperatorVisitor<Strin
 
 	@Override
 	public String visitBinaryOperator(BinaryOperator<?, ?, ?> operator) {
-		return String.format("(%s)%s(%s)", subContent(0), operator.symbol(), subContent(1));
+		if (operator.smtlibIdentifier() == SMTLib.addition() ||
+				operator.smtlibIdentifier() == SMTLib.subtraction() ||
+				operator.smtlibIdentifier() == SMTLib.lessThan() ||
+				operator.smtlibIdentifier() == SMTLib.lessOrEqualThan() ||
+				operator.smtlibIdentifier() == SMTLib.equality()) {
+			return String.format("%s %s %s", subContent(0), operator.symbol(), subContent(1));
+		}
+		return String.format("(%s) %s (%s)", subContent(0), operator.symbol(), subContent(1));
 	}
 
 	@Override

@@ -66,7 +66,12 @@ public final class SynthesizerFactory {
 	public Synthesizer getFor(final SourceLocation statement) {
 		nbStatementsAnalysed++;
 		SpoonedClass spoonCl = spooner.forked(statement.getRootClassName());
-
+		if(spoonCl == null) {
+			return NO_OP_SYNTHESIZER;
+		}
+		if(spoonCl.getSimpleType() == null) {
+			return NO_OP_SYNTHESIZER;
+		}
         StatementTypeDetector detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), statement.getLineNumber(), type);
 		spoonCl.process(detector);
 
@@ -129,16 +134,16 @@ public final class SynthesizerFactory {
 		if (Integer.class.equals(detector.getType().getType())) {
 			RuntimeValues<Integer> runtimeValuesInstance = RuntimeValues.newInstance();
 			constraintModelBuilder = new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner);
-			return new DefaultSynthesizer<>(constraintModelBuilder, statement, detector.getType(), nopolProcessor);
+			return new DefaultSynthesizer<>(spooner, constraintModelBuilder, statement, detector.getType(), nopolProcessor);
 		}
 		if (Double.class.equals(detector.getType().getType())) {
 			RuntimeValues<Double> runtimeValuesInstance = RuntimeValues.newInstance();
 			constraintModelBuilder = new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner);
-			return new DefaultSynthesizer<>(constraintModelBuilder, statement, detector.getType(), nopolProcessor);
+			return new DefaultSynthesizer<>(spooner, constraintModelBuilder, statement, detector.getType(), nopolProcessor);
 		}
 		switch (Config.INSTANCE.getSynthesis()) {
 			case SMT:
-				return new DefaultSynthesizer(constraintModelBuilder, statement, detector.getType(), nopolProcessor);
+				return new DefaultSynthesizer(spooner, constraintModelBuilder, statement, detector.getType(), nopolProcessor);
 			case BRUTPOL:
 				return new BrutSynthesizer(constraintModelBuilder, sourceFolders, statement, detector.getType(), nopolProcessor, spooner);
 		}

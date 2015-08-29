@@ -22,6 +22,7 @@ import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +66,11 @@ public final class TestPatch {
 			return true;
 		} else {
 			logger.info("Failing tests {}", result.getFailures());
+			for (int i = 0; i < result.getFailures().size(); i++) {
+				Failure failure = result.getFailures().get(i);
+				System.out.println(failure.getTestHeader());
+				System.out.println(failure.getTrace());
+			}
 		}
 		return false;
 	}

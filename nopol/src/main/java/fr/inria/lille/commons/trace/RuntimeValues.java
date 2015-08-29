@@ -45,7 +45,7 @@ public class RuntimeValues<T> extends GlobalToggle {
 	
 	public String invocationOnCollectionOf(String codeSource, String executableCode) {
 		String quoatationSafeName = quoted(codeSource.replace("\"", "\\\""));
-		return invocationMessageFor("collectInput", asList(String.class, Object.class), asList(quoatationSafeName, executableCode));
+		return "try{" + invocationMessageFor("collectInput", asList(String.class, Object.class), asList(quoatationSafeName, executableCode))+ ";} catch (Exception ex1) {ex1.printStackTrace();}";
 	}
 	
 	public String invocationOnOutputCollection(String outputName) {

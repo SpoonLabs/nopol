@@ -4,6 +4,7 @@ import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtClass;
 
 public class ConditionalReplacer extends ConditionalProcessor {
 
@@ -13,7 +14,6 @@ public class ConditionalReplacer extends ConditionalProcessor {
 	
 	@Override
 	public CtIf processCondition(CtStatement element, String newCondition) {
-		logger.debug("Replacing:\n{}", element);
 		CtCodeSnippetExpression<Boolean> snippet = element.getFactory().Core().createCodeSnippetExpression();
 		snippet.setValue(newCondition);
 		CtExpression<Boolean> condition = getCondition(element);

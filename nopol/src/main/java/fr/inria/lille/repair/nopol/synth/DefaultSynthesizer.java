@@ -18,11 +18,13 @@ package fr.inria.lille.repair.nopol.synth;
 import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import com.gzoltar.core.instr.testing.TestResult;
+import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
+import fr.inria.lille.spirals.repair.commons.Candidates;
+import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.ConstantCollector;
 import org.slf4j.LoggerFactory;
 
 import fr.inria.lille.commons.synthesis.CodeGenesis;
@@ -31,7 +33,6 @@ import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.patch.StringPatch;
-import fr.inria.lille.repair.nopol.spoon.smt.ConditionalProcessor;
 import fr.inria.lille.repair.common.synth.StatementType;
 import xxl.java.junit.TestCase;
 
@@ -47,12 +48,14 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
 	public static int nbStatementsWithAngelicValue = 0;
     private static int dataSize = 0;
     private static int nbVariables;
+	private final SpoonedProject spoonedProject;
 	private NopolProcessor conditionalProcessor;
 
-	public DefaultSynthesizer(AngelicValue constraintModelBuilder, SourceLocation sourceLocation, StatementType type, NopolProcessor processor) {
+	public DefaultSynthesizer(SpoonedProject spoonedProject, AngelicValue constraintModelBuilder, SourceLocation sourceLocation, StatementType type, NopolProcessor processor) {
 		this.constraintModelBuilder = constraintModelBuilder;
 		this.sourceLocation = sourceLocation;
 		this.type = type;
+		this.spoonedProject = spoonedProject;
 		conditionalProcessor = processor;
 	}
 
@@ -62,7 +65,7 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
 	 * @see fr.inria.lille.jefix.synth.Synthesizer#buildPatch(java.net.URL[], java.lang.String[])
 	 */
 	@Override
-	public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
+	public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
 		Collection<Specification<T>> data = constraintModelBuilder.buildFor(classpath, testClasses, failures);
 
 		// XXX FIXME TODO move this
@@ -73,6 +76,14 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
 					dataSize, sourceLocation);
 			return NO_PATCH;
 		}
+		// the synthesizer do an infinite loop when all data does not have the same input size
+		int firstDataSize = data.iterator().next().inputs().size();
+		for (Iterator<Specification<T>> iterator = data.iterator(); iterator.hasNext(); ) {
+			Specification<T> next = iterator.next();
+			if(next.inputs().size() != firstDataSize) {
+				return NO_PATCH;
+			}
+		}
 
 		// and it should be a viable patch, ie. fix the bug
 		if (!constraintModelBuilder.isAViablePatch()) {
@@ -80,8 +91,23 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
 			return NO_PATCH;
 		}
 		nbStatementsWithAngelicValue++;
-
-		ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis();
+		Candidates constantes = new Candidates();
+		ConstantCollector constantCollector = new ConstantCollector(constantes, null);
+		spoonedProject.forked(sourceLocation.getContainingClassName()).process(constantCollector);
+		Map<String, Integer> intConstants = new HashMap();
+		intConstants.put("-1", -1);
+		intConstants.put("0", 0);
+		intConstants.put("1", 1);
+		/*for (int i = 0; i < constantes.size(); i++) {
+			Expression expression = constantes.get(i);
+			if(expression instanceof PrimitiveConstant) {
+				if(expression.getType() == Integer.class) {
+					intConstants.put(expression.getValue() + "", expression.getValue());
+				}
+			}
+		}*/
+		System.out.println(intConstants);
+		ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis(intConstants);
 		CodeGenesis genesis = synthesis.codesSynthesisedFrom(
 				(Class<T>) (type.getType()), data);
 		if (! genesis.isSuccessful()) {

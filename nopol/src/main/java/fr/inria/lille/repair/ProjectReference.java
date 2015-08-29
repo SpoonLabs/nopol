@@ -25,7 +25,7 @@ public class ProjectReference {
 	public ProjectReference(File[] sourceFile, URL[] classpath) {
 		this.sourceFiles = sourceFile;
 		this.classpath = classpath;
-		testClasses = new TestClassesFinder().findIn(classpath(), false);
+		//testClasses = new TestClassesFinder().findIn(classpath(), false);
 	}
 
 	public ProjectReference(File[] sourceFile, URL[] classpath,

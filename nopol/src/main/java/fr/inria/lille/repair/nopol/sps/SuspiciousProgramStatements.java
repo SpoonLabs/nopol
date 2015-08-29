@@ -15,6 +15,8 @@
  */
 package fr.inria.lille.repair.nopol.sps;
 
+import com.gzoltar.core.components.Statement;
+
 import java.util.List;
 
 /**

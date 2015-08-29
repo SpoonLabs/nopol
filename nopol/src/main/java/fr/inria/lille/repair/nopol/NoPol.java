@@ -33,6 +33,7 @@ import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.spoon.symbolic.AssertReplacer;
 import fr.inria.lille.repair.nopol.spoon.symbolic.TestExecutorProcessor;
+import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.MethodCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,7 +131,6 @@ public class NoPol {
 			List<ComponentCount> components = testResult.getCoveredComponents();
 			for (int j = 0; j < components.size(); j++) {
 				Statement component = (Statement) components.get(j).getComponent();
-
 				SourceLocation sourceLocation = new SourceLocation(component.getMethod().getParent().getLabel(), component.getLineNumber());
 				if(!results.containsKey(sourceLocation)) {
 					results.put(sourceLocation, new ArrayList<TestResult>());
@@ -140,7 +140,7 @@ public class NoPol {
 		}
 		return results;
 	}
-	
+
 	/*
 	 * First algorithm of Nopol,
 	 * build the initial model
@@ -170,7 +170,7 @@ public class NoPol {
 				List<TestResult> tests = testListPerStatement.get(sourceLocation);
 
 
-				List<String> failingClassTest =  new ArrayList<>();
+				Set<String> failingClassTest = new HashSet<>();
 				for (int i = 0; i < tests.size(); i++) {
 					TestResult testResult = tests.get(i);
 					if(!testResult.wasSuccessful()) {
@@ -182,7 +182,7 @@ public class NoPol {
 				if(failingTest.isEmpty()) {
 					continue;
 				}
-				Patch patch = synth.buildPatch(classpath, tests, failingTest);
+				Patch patch = synth.buildPatch(classpath, tests, failingTest, Config.INSTANCE.getMaxTimeBuildPatch());
 				if (isOk(patch, gZoltar.getGzoltar().getTestResults(), synth.getProcessor())) {
 					patches.add(patch);
 					if ( isSinglePatch() ){
@@ -199,8 +199,8 @@ public class NoPol {
 		return patches;
 	}
 
-	private boolean isInTest(SuspiciousStatement statement) {
-		if (statement.getSourceLocation().getContainingClassName()
+	private boolean isInTest(Statement statement) {
+		if (statement.getMethod().getParent().getName()
 				.contains("Test")) {
 			return true;
 		}
@@ -218,7 +218,7 @@ public class NoPol {
 	public static boolean isSinglePatch() {
 		return singlePatch;
 	}
-	
+
 	public static boolean setSinglePatch(boolean singlePatch) {
 		return NoPol.singlePatch = singlePatch;
 	}
@@ -244,6 +244,7 @@ public class NoPol {
 
 	/**
 	 * Add JPF library to class path
+	 *
 	 * @param clpath
 	 */
 	private URL[] addJPFLibraryToCassPath(URL[] clpath) {
