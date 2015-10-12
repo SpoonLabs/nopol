@@ -7,11 +7,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 
 import fr.inria.lille.repair.TestUtility;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
 
+@Ignore
 public class SymbolicTest extends TestUtility {
 
     public SymbolicTest() {

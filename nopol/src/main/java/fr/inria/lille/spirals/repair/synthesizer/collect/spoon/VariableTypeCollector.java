@@ -30,11 +30,11 @@ public class VariableTypeCollector extends AbstractProcessor<CtVariable> {
     }
 
     public void process(CtVariable ctVariable) {
-        if(ctVariable instanceof CtField) {
+        if (ctVariable instanceof CtField) {
             this.variableType.put("this." + ctVariable.getSimpleName(), ctVariable.getType().getQualifiedName());
-        } else if(ctVariable instanceof CtParameter) {
+        } else if (ctVariable instanceof CtParameter) {
             this.variableType.put(ctVariable.getSimpleName(), ctVariable.getType().getQualifiedName());
-        } else if(ctVariable.getPosition().getLine() <= this.line) {
+        } else if (ctVariable.getPosition().getLine() <= this.line) {
             this.variableType.put(ctVariable.getSimpleName(), ctVariable.getType().getQualifiedName());
         }
     }

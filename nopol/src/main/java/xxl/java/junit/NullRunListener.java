@@ -7,31 +7,39 @@ import org.junit.runner.notification.RunListener;
 
 public class NullRunListener extends RunListener {
 
-	public static NullRunListener firstInstance() {
-		/* Refer to: Singleton#createSingleton() */
-		return new NullRunListener();
-	}
-	
-	protected NullRunListener() {}
-	
+    public static NullRunListener firstInstance() {
+        /* Refer to: Singleton#createSingleton() */
+        return new NullRunListener();
+    }
+
+    protected NullRunListener() {
+    }
+
     @Override
-    public void testRunStarted(Description description) throws Exception {}
-    
+    public void testRunStarted(Description description) throws Exception {
+    }
+
     @Override
-    public void testIgnored(Description description) throws Exception {}
-    
+    public void testIgnored(Description description) throws Exception {
+    }
+
     @Override
-    public void testStarted(Description description) throws Exception {}
-	
+    public void testStarted(Description description) throws Exception {
+    }
+
     @Override
-    public void testFinished(Description description) throws Exception {}
-    
+    public void testFinished(Description description) throws Exception {
+    }
+
     @Override
-    public void testAssumptionFailure(Failure failure) {}
-    
+    public void testAssumptionFailure(Failure failure) {
+    }
+
     @Override
-    public void testFailure(Failure failure) throws Exception {}
-    
+    public void testFailure(Failure failure) throws Exception {
+    }
+
     @Override
-    public void testRunFinished(Result result) throws Exception {}
+    public void testRunFinished(Result result) throws Exception {
+    }
 }

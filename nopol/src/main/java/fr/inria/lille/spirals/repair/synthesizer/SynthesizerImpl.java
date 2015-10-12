@@ -6,9 +6,9 @@ import com.sun.jdi.request.BreakpointRequest;
 import com.sun.jdi.request.ClassPrepareRequest;
 import com.sun.jdi.request.EventRequestManager;
 import fr.inria.lille.commons.spoon.SpoonedProject;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.spirals.repair.expression.*;
 import fr.inria.lille.spirals.repair.synthesizer.collect.DataCollector;
 import fr.inria.lille.spirals.repair.synthesizer.collect.DataCombiner;
@@ -108,19 +108,19 @@ public class SynthesizerImpl implements Synthesizer {
 
             for (int i = 0; i < next.length; i++) {
                 Object o = next[i];
-                if(last == null) {
+                if (last == null) {
                     last = o;
                     continue;
                 }
-                if(o != last) {
-                    same =false;
+                if (o != last) {
+                    same = false;
                     break;
                 }
             }
         }
-        if(same) {
+        if (same) {
             Candidates candidates = new Candidates();
-            candidates.add(new PrimitiveConstantImpl(last, null , last.getClass()));
+            candidates.add(new PrimitiveConstantImpl(last, null, last.getClass()));
             return candidates;
         }
         try {
@@ -160,7 +160,7 @@ public class SynthesizerImpl implements Synthesizer {
                 eventSet.resume();
             }
         } catch (Exception e) {
-           // ignore
+            // ignore
         } finally {
             DebugJUnitRunner.process.destroy();
         }
@@ -186,6 +186,7 @@ public class SynthesizerImpl implements Synthesizer {
     private boolean jumpEnabled = false;
     private BreakpointRequest breakpointJump;
     private BreakpointRequest breakpointSuspicious;
+
     private void jumpEndTest(ThreadReference threadRef) {
         try {
             List<StackFrame> frames = threadRef.frames();
@@ -228,7 +229,7 @@ public class SynthesizerImpl implements Synthesizer {
     }
 
     private void processBreakPointEvents(BreakpointEvent breakpointEvent) throws IncompatibleThreadStateException {
-        if(jumpEnabled) {
+        if (jumpEnabled) {
             breakpointJump.setEnabled(false);
             jumpEnabled = false;
             breakpointSuspicious.setEnabled(true);
@@ -311,7 +312,7 @@ public class SynthesizerImpl implements Synthesizer {
         for (int i = 0; i < projectRoots.length; i++) {
             File projectRoot = projectRoots[i];
             classFile = new File(projectRoot.getAbsoluteFile() + "/" + this.location.getContainingClassName().replaceAll("\\.", "/") + ".java");
-            if(classFile.exists()) {
+            if (classFile.exists()) {
                 break;
             }
             classFile = null;
@@ -439,7 +440,7 @@ public class SynthesizerImpl implements Synthesizer {
         long currentTime = System.currentTimeMillis();
         Candidates lastCollectedValues = null;
         for (int k = 0; k < collectedTests.size() && currentTime - startTime <= remainingTime; k++) {
-            final String key =  collectedTests.get(k);
+            final String key = collectedTests.get(k);
             List<Candidates> listValue = values.get(key);
             currentTime = System.currentTimeMillis();
             for (int i = 0; i < listValue.size() && currentTime - startTime <= remainingTime; i++) {
@@ -447,7 +448,7 @@ public class SynthesizerImpl implements Synthesizer {
                 if (eexps == null) {
                     continue;
                 }
-                if(lastCollectedValues != null && lastCollectedValues.intersection(eexps, false).size() == eexps.size()) {
+                if (lastCollectedValues != null && lastCollectedValues.intersection(eexps, false).size() == eexps.size()) {
                     continue;
                 }
                 lastCollectedValues = eexps;
@@ -547,7 +548,7 @@ public class SynthesizerImpl implements Synthesizer {
     }
 
     private void printSummery(Candidates result) {
-        if(values.values().isEmpty()) return;
+        if (values.values().isEmpty()) return;
         List<Candidates> next = values.values().iterator().next();
         Candidates candidate = next.get(0);
         int nbValueToCombine = candidate.size();
@@ -586,7 +587,7 @@ public class SynthesizerImpl implements Synthesizer {
         String patchResult = "";
         for (int i = 0; i < result.size(); i++) {
             Expression expression = result.get(i);
-            patchResult+= expression.asPatch() + ", ";
+            patchResult += expression.asPatch() + ", ";
         }
         System.out.println("Result                   " + patchResult);
         System.out.println();

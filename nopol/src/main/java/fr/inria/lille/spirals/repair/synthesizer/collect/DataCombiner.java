@@ -1,13 +1,15 @@
 package fr.inria.lille.spirals.repair.synthesizer.collect;
 
-import fr.inria.lille.spirals.repair.commons.Candidates;
 import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.spirals.repair.commons.Candidates;
 import fr.inria.lille.spirals.repair.expression.*;
 import fr.inria.lille.spirals.repair.expression.operator.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Thomas Durieux on 12/03/15.
@@ -36,7 +38,7 @@ public class DataCombiner {
         executionTime = System.currentTimeMillis() - startTime;
         for (int i = 0; i < maxDepth - 1 && !stop && executionTime <= maxTime; i++) {
             lastTurn.addAll(combinePrimitives(lastTurn, previousSize, i == maxDepth - 2 ? angelicValue : null));
-            if(stop)  {
+            if (stop) {
                 return result;
             }
             lastTurn.addAll(combineComplex(lastTurn, previousSize, i == maxDepth - 2 ? angelicValue : null));
@@ -64,7 +66,7 @@ public class DataCombiner {
             if (expression.getType() == null) {
                 continue;
             }
-            if(expression instanceof ComplexTypeExpression) {
+            if (expression instanceof ComplexTypeExpression) {
                 continue;
             }
             executionTime = System.currentTimeMillis() - startTime;
@@ -80,7 +82,7 @@ public class DataCombiner {
                 if (expression instanceof Constant && expression1 instanceof Constant) {
                     continue;
                 }
-                if(expression1 instanceof ComplexTypeExpression) {
+                if (expression1 instanceof ComplexTypeExpression) {
                     continue;
                 }
                 executionTime = System.currentTimeMillis() - startTime;
@@ -93,7 +95,7 @@ public class DataCombiner {
                         continue;
                     }
                     List returnValue = combineExpressionOperator(expression, expression1, operator, value, result);
-                    if(returnValue != null) {
+                    if (returnValue != null) {
                         return returnValue;
                     }
                     executionTime = System.currentTimeMillis() - startTime;
@@ -150,7 +152,7 @@ public class DataCombiner {
             if (expression.getType() != null && (Number.class.isAssignableFrom(expression.getType()) || Boolean.class.isAssignableFrom(expression.getType()))) {
                 continue;
             }
-            if(expression instanceof PrimitiveTypeExpression) {
+            if (expression instanceof PrimitiveTypeExpression) {
                 continue;
             }
 

@@ -1,13 +1,8 @@
 package fr.inria.lille.spirals.repair.expression;
 
 
-import com.sun.jdi.ObjectReference;
-import com.sun.jdi.ReferenceType;
 import com.sun.jdi.Value;
-import com.sun.tools.jdi.ClassTypeImpl;
 import fr.inria.lille.repair.common.config.Config;
-
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * is the generic type of an unary expression

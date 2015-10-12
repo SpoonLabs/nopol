@@ -22,14 +22,14 @@ public class NopolTest extends TestUtility{
 	public void example1Fix() {
 		Collection<String> failedTests = asList("test5", "test6");
 		Patch patch = test(1, 12, StatementType.CONDITIONAL, failedTests);
-		fixComparison(patch, "(index)<=(0)", "(index)<(1)", "(index)<=(-1)", "index <= 0");
+		fixComparison(patch, "index <= 0", "index < 1", "index <= -1", "index <= 0");
 	}
 	
 	@Test
 	public void example2Fix() {
 		Collection<String> failedTests = asList("test1", "test2", "test4", "test5", "test6", "test7");
 		Patch patch = test(2, 11, StatementType.CONDITIONAL, failedTests);
-		fixComparison(patch, "(a)<=(b)", "(a)<(b)", "(1)<=((b - a))", "(0)<=((b - a))", "(1)<((b - a))", "(0)<((b - a))", "a < b");
+		fixComparison(patch, "a <= b", "a < b", "1 <= (b - a)", "0 <= (b - a)", "1 <(b - a)", "0 < (b - a)", "a < b");
 	}
 	
 	@Test
@@ -50,7 +50,7 @@ public class NopolTest extends TestUtility{
 	public void example5Fix() {
 		Collection<String> failedTests = asList("test4", "test5");
 		Patch patch = test(5, 20, StatementType.PRECONDITION, failedTests);
-		fixComparison(patch, "(-1)<=(a)", "(1)<=(a)", "(r)<=(a)", "(-1)<(a)", "(0)<=(a)", "0 <= a");
+		fixComparison(patch, "-1 <= a", "1 <= a", "(r)<=(a)", "(-1)<(a)", "(0)<=(a)", "0 <= a");
 	}
 	
 	@Test
@@ -64,14 +64,16 @@ public class NopolTest extends TestUtility{
 	public void example7Fix() {
 		Collection<String> failedTests = asList("test1");
 		Patch patch = test(7, 21, StatementType.CONDITIONAL, failedTests);
-		fixComparison(patch, "(intermediaire == 0)&&((1)<=((-1)+((a)-(1))))", 
-				"(intermediaire == 0)&&((!(((a)+(-1))<=(1)))||((((a)+(-1))-(-1))==(intermediaire)))",
+		fixComparison(patch, "(intermediaire == 0) && ((1)<=((-1)+((a)-(1))))",
+				"(intermediaire == 0) && ((!(((a)+(-1))<=(1)))||((((a)+(-1))-(-1))==(intermediaire)))",
 				"((1)<=((1)-(a)))||((intermediaire == 0)&&((intermediaire)!=(((1)-(a))+(1))))",
 				"(intermediaire == 0)&&((((1)-((a)+(0)))<(-1))||(((a)+(0))!=((a)+(0))))",
 				"!((((a)+(-1))<=(1))||((0)!=(intermediaire)))",
 				"(!(((1)==(intermediaire))||(((a)+(-1))<=(1))))&&(!(((1)==(intermediaire))||(((a)+(-1))<=(1))))",
 				"!(((intermediaire)!=(0))||(((1)-(-1))==(a)))",
-                "((a)!=((1)+(1)))&&(intermediaire == 0)");
+                "((a)!=((1)+(1)))&&(intermediaire == 0)",
+				"(intermediaire == 0) && (!(a + -1 <= intermediaire - -1))",
+				"(-1 + 1 == intermediaire) && (1 < a - 1)");
 	}
 	
 	@Test

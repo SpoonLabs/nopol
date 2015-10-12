@@ -81,7 +81,7 @@ public class CodeSynthesisTest {
 		Specification secondSpecification = new Specification<Integer>(secondValues, 20);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Number.class, (List) asList(firstSpecification, secondSpecification));
 		assertTrue(genesis.isSuccessful());
-		assertTrue(asList("(iterations)+(array.length)", "(array.length)+(iterations)").contains(genesis.returnStatement()));
+		assertTrue(genesis.returnStatement(), asList("iterations + array.length", "array.length + iterations").contains(genesis.returnStatement()));
 	}
 	
 	@Test
@@ -96,7 +96,7 @@ public class CodeSynthesisTest {
 		Specification<Boolean> thirdSpecification = new Specification<>(thirdValues, true);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Boolean.class, (List) asList(firstSpecification, secondSpecification, thirdSpecification));
 		assertTrue(genesis.isSuccessful());
-		assertEquals("(iterations)<=(array.length)", genesis.returnStatement());
+		assertEquals(genesis.returnStatement(), "iterations <= array.length", genesis.returnStatement());
 	}
 	
 	@Test
@@ -109,7 +109,7 @@ public class CodeSynthesisTest {
 		Specification secondSpecification = new Specification<>(secondValues, 10);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Number.class, (List) asList(firstSpecification, secondSpecification));
 		assertTrue(genesis.isSuccessful());
-		assertTrue(asList("(array.length)-((isEmpty)?((1)+(1)):(1))", "((isEmpty)?(iterations):(array.length))-(1)").contains(genesis.returnStatement()));
+		assertTrue(genesis.returnStatement(), asList("(array.length)-((isEmpty)?((1)+(1)):(1))", "(isEmpty)?(iterations):(array.length) - 1").contains(genesis.returnStatement()));
 	}
 	
 	@Test
@@ -126,7 +126,7 @@ public class CodeSynthesisTest {
 		Specification fourthS = new Specification<>(fourth, false);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Boolean.class, (List) asList(firstS, secondS, thirdS, fourthS));
 		assertTrue(genesis.isSuccessful());
-		assertTrue(asList("((q)+(p))==(n)").contains(genesis.returnStatement()));
+		assertTrue(asList("(q + p) == n", "p == n - q").contains(genesis.returnStatement()));
 	}
 	
 	@Test
@@ -143,7 +143,7 @@ public class CodeSynthesisTest {
 		Specification fourthS = new Specification<>(fourth, false);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Boolean.class, (List) asList(firstS, secondS, thirdS, fourthS));
 		assertTrue(genesis.isSuccessful());
-		assertTrue(asList("(letter)==(value)", "(value)==(letter)").contains(genesis.returnStatement()));
+		assertTrue(genesis.returnStatement(), asList("letter == value", "value == letter").contains(genesis.returnStatement()));
 	}
 	
 	@Test
@@ -212,7 +212,7 @@ public class CodeSynthesisTest {
 		locations.put("L@op<3><0>", 4);
 		locations.put("L@op<3><1>", 0);
 		CodeGenesis synthesis = new CodeGenesis(exampleWithOperators(), locations);
-		assertEquals("(0)!=(up_sep)", synthesis.returnStatement());
+		assertEquals("(0) != (up_sep)", synthesis.returnStatement());
 	}
 	
 	@Test
@@ -232,7 +232,7 @@ public class CodeSynthesisTest {
 		locations.put("L@op<3><0>", 4);
 		locations.put("L@op<3><1>", 0);
 		CodeGenesis synthesis = new CodeGenesis(exampleWithOperators(), locations);
-		assertEquals("((0)!=(up_sep))==(((0)<=(inhibit))<(inhibit))", synthesis.returnStatement());
+		assertEquals("(0) != (up_sep) == 0 <= inhibit < inhibit", synthesis.returnStatement());
 	}
 	
 	private LocationVariableContainer exampleWithoutOperators() {

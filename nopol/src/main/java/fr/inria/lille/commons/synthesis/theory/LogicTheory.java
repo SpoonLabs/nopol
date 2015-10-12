@@ -5,8 +5,8 @@ import fr.inria.lille.commons.synthesis.operator.UnaryOperator;
 
 public class LogicTheory extends OperatorTheory {
 
-	public LogicTheory() {
-		super(UnaryOperator.not(), BinaryOperator.or(), BinaryOperator.and());
-	}
-	
+    public LogicTheory() {
+        super(UnaryOperator.not(), BinaryOperator.or(), BinaryOperator.and());
+    }
+
 }

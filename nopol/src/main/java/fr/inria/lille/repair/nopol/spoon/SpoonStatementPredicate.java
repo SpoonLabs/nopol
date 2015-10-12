@@ -15,67 +15,64 @@
  */
 package fr.inria.lille.repair.nopol.spoon;
 
+import com.google.common.base.Predicate;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
-
-import com.google.common.base.Predicate;
 import spoon.reflect.declaration.CtMethod;
-import spoon.support.reflect.code.CtBlockImpl;
 
 /**
  * @author Favio D. DeMarco
- * 
  */
-public enum SpoonStatementPredicate implements Predicate<CtElement>{
-	INSTANCE;
+public enum SpoonStatementPredicate implements Predicate<CtElement> {
+    INSTANCE;
 
-	@Override
-	public boolean apply(final CtElement input) {
-		CtElement parent = input.getParent();
-		if ( parent == null ){
-			return false;
-		}
-		if(input.toString().startsWith("super(")){
-			return false;
-		}
-		boolean isCtStamement = input instanceof CtStatement && !(input instanceof CtBlock);
-		boolean isCtReturn = input instanceof CtReturn;
-		boolean isInsideIf = parent.getParent() instanceof CtIf; // Checking parent isn't enough, parent will be CtBlock and grandpa will be CtIf
-		boolean isCtLocalVariable = input instanceof CtLocalVariable;
-		boolean isInBlock = parent instanceof CtBlock;
-		if(isInBlock) {
-			boolean isInMethod = parent.getParent() instanceof CtMethod;
-			if(isInMethod) {
-				if(((CtBlock) parent).getLastStatement() == input && !((CtMethod)parent.getParent()).getType().box().equals(input.getFactory().Class().VOID)){
-					return false;
-				}
-			}
-		}
-		boolean isInsideIfLoopCaseBlock = (parent instanceof CtIf || parent instanceof CtLoop || parent instanceof CtCase || parent instanceof CtBlock);
-		boolean isInsideForDeclaration = parent instanceof CtFor ? ((CtFor)(parent)).getForUpdate().contains(input) || ((CtFor)(parent)).getForInit().contains(input): false ;
-		boolean isCtSynchronized = input instanceof CtSynchronized;
+    @Override
+    public boolean apply(final CtElement input) {
+        CtElement parent = input.getParent();
+        if (parent == null) {
+            return false;
+        }
+        if (input.toString().startsWith("super(")) {
+            return false;
+        }
+        boolean isCtStamement = input instanceof CtStatement && !(input instanceof CtBlock);
+        boolean isCtReturn = input instanceof CtReturn;
+        boolean isInsideIf = parent.getParent() instanceof CtIf; // Checking parent isn't enough, parent will be CtBlock and grandpa will be CtIf
+        boolean isCtLocalVariable = input instanceof CtLocalVariable;
+        boolean isInBlock = parent instanceof CtBlock;
+        if (isInBlock) {
+            boolean isInMethod = parent.getParent() instanceof CtMethod;
+            if (isInMethod) {
+                if (((CtBlock) parent).getLastStatement() == input && !((CtMethod) parent.getParent()).getType().box().equals(input.getFactory().Class().VOID)) {
+                    return false;
+                }
+            }
+        }
+        boolean isInsideIfLoopCaseBlock = (parent instanceof CtIf || parent instanceof CtLoop || parent instanceof CtCase || parent instanceof CtBlock);
+        boolean isInsideForDeclaration = parent instanceof CtFor ? ((CtFor) (parent)).getForUpdate().contains(input) || ((CtFor) (parent)).getForInit().contains(input) : false;
+        boolean isCtSynchronized = input instanceof CtSynchronized;
 
-		boolean result = isCtStamement 
-				// input instanceof CtClass ||
+        boolean result = isCtStamement
+                // input instanceof CtClass ||
 
-				// cannot insert code before '{}', for example would try to add code between 'Constructor()' and '{}'
-				// input instanceof CtBlock ||
-				&& !isCtSynchronized
-				// cannot insert a conditional before 'return', it won't compile. 
-				&& !(isCtReturn && !( isInsideIf ))
-				// cannot insert a conditional before a variable declaration, it won't compile if the variable is used
-				// later on.
-				&& !isCtLocalVariable 
-				// Avoids ClassCastException's. @see spoon.support.reflect.code.CtStatementImpl#insertBefore(CtStatement
-				// target, CtStatementList<?> statements)
-				&& isInsideIfLoopCaseBlock
-				// cannot insert if inside update statement in for loop declaration
-				&& !isInsideForDeclaration;
-		return  result;
-	}
-	
-	/** Nopol.oneBuild() is now disabled, in case it is enabled back again here are some prevention for compilation errors */
-	/*
+                // cannot insert code before '{}', for example would try to add code between 'Constructor()' and '{}'
+                // input instanceof CtBlock ||
+                && !isCtSynchronized
+                // cannot insert a conditional before 'return', it won't compile.
+                && !(isCtReturn && !(isInsideIf))
+                // cannot insert a conditional before a variable declaration, it won't compile if the variable is used
+                // later on.
+                && !isCtLocalVariable
+                // Avoids ClassCastException's. @see spoon.support.reflect.code.CtStatementImpl#insertBefore(CtStatement
+                // target, CtStatementList<?> statements)
+                && isInsideIfLoopCaseBlock
+                // cannot insert if inside update statement in for loop declaration
+                && !isInsideForDeclaration;
+        return result;
+    }
+
+    /** Nopol.oneBuild() is now disabled, in case it is enabled back again here are some prevention for compilation errors */
+    /*
 	if ( NoPol.isOneBuild() ){
 		if (input.toString().contains("super(") || input.toString().contains("this(")){
 			// big workaround in order to catch super() call or this() in constructor, could be more efficient

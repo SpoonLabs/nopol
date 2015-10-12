@@ -2,7 +2,8 @@ package fr.inria.lille.spirals.repair.commons;
 
 
 import com.sun.jdi.Type;
-import fr.inria.lille.spirals.repair.expression.*;
+import fr.inria.lille.spirals.repair.expression.Constant;
+import fr.inria.lille.spirals.repair.expression.Expression;
 
 import java.util.*;
 
@@ -24,7 +25,7 @@ public class Candidates extends ArrayList<Expression> {
             return false;
         }
         String key = expression.toString().intern();
-        if(this.cache.contains(key)) {
+        if (this.cache.contains(key)) {
             return false;
         }
 
@@ -109,7 +110,7 @@ public class Candidates extends ArrayList<Expression> {
         Candidates exps = new Candidates();
         for (int i = 0; i < this.size(); i++) {
             Expression expression = this.get(i);
-            if(expression.isAssignableTo(type)) {
+            if (expression.isAssignableTo(type)) {
                 exps.add(expression);
             }
         }

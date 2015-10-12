@@ -15,75 +15,73 @@
  */
 package fr.inria.lille.repair.nopol.synth;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.base.Predicate;
 import spoon.processing.AbstractProcessor;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtElement;
 
-import com.google.common.base.Predicate;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Favio D. DeMarco
- * 
  */
 public class DelegatingProcessor extends AbstractProcessor<CtStatement> {
 
-	private final File file;
-	private final int line;
-	private final List<Processor> processors = new ArrayList<>();
-	private final Predicate<CtElement> predicate;
-	private boolean process = true;
+    private final File file;
+    private final int line;
+    private final List<Processor> processors = new ArrayList<>();
+    private final Predicate<CtElement> predicate;
+    private boolean process = true;
 
-	/**
-	 * @param file
-	 * @param line
-	 */
-	public DelegatingProcessor(final Predicate<CtElement> instance, final File file, final int line) {
-		this.file = file;
-		this.line = line;
-		this.predicate = instance;
-	}
+    /**
+     * @param file
+     * @param line
+     */
+    public DelegatingProcessor(final Predicate<CtElement> instance, final File file, final int line) {
+        this.file = file;
+        this.line = line;
+        this.predicate = instance;
+    }
 
-	public DelegatingProcessor addProcessor(final Processor<CtElement> processor) {
-		this.processors.add(processor);
-		return this;
-	}
+    public DelegatingProcessor addProcessor(final Processor<CtElement> processor) {
+        this.processors.add(processor);
+        return this;
+    }
 
-	/**
-	 * @see spoon.processing.AbstractProcessor#isToBeProcessed(spoon.reflect.declaration.CtElement)
-	 */
-	@Override
-	public boolean isToBeProcessed(final CtStatement candidate) {
-		boolean isPracticable =	this.predicate.apply(candidate);
-		if (isPracticable){
-			SourcePosition position = candidate.getPosition();
-			if (position == null){
-				return false;
-			}
-			boolean isSameFile = false;
-			boolean isSameLine = position.getLine() == this.line;
-			try {
-				File f1 = position.getFile().getCanonicalFile().getAbsoluteFile();
-				File f2 = file.getCanonicalFile();
-				isSameFile = f1.getAbsolutePath().equals(f2.getAbsolutePath());
-			} catch (Exception e){
-				throw new IllegalStateException(e);
-			}
-			isPracticable = this.process && isSameLine && isSameFile;
-		}
-		return isPracticable;
-	}
+    /**
+     * @see spoon.processing.AbstractProcessor#isToBeProcessed(spoon.reflect.declaration.CtElement)
+     */
+    @Override
+    public boolean isToBeProcessed(final CtStatement candidate) {
+        boolean isPracticable = this.predicate.apply(candidate);
+        if (isPracticable) {
+            SourcePosition position = candidate.getPosition();
+            if (position == null) {
+                return false;
+            }
+            boolean isSameFile = false;
+            boolean isSameLine = position.getLine() == this.line;
+            try {
+                File f1 = position.getFile().getCanonicalFile().getAbsoluteFile();
+                File f2 = file.getCanonicalFile();
+                isSameFile = f1.getAbsolutePath().equals(f2.getAbsolutePath());
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+            isPracticable = this.process && isSameLine && isSameFile;
+        }
+        return isPracticable;
+    }
 
-	@Override
-	public void process(CtStatement element) {
-		for (Processor processor : this.processors) {
-			processor.process(element);
-		}
-		this.process = false;
-	}
+    @Override
+    public void process(CtStatement element) {
+        for (Processor processor : this.processors) {
+            processor.process(element);
+        }
+        this.process = false;
+    }
 }

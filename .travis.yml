@@ -2,10 +2,6 @@ language: java
 
 sudo: false
 
-cache:
-  directories:
-  - z3
-
 install: "./.travis_install.sh"
 script: "./.travis_run_tests.sh"
 

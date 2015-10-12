@@ -2,9 +2,6 @@ package spoon.example;
 
 import java.util.Collection;
 
-import fr.inria.lille.repair.ClassToSpoon;
-import fr.inria.lille.repair.ClassToSpoon.NestedClassToSpoon;
-
 public class ClassToSpoon {
 	
 	private class NestedClassToSpoon {

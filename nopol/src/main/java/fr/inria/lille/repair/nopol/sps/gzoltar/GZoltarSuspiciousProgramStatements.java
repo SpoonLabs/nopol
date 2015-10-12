@@ -15,143 +15,135 @@
  */
 package fr.inria.lille.repair.nopol.sps.gzoltar;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.FluentIterable.from;
+import com.google.common.base.Predicate;
+import com.gzoltar.core.GZoltar;
+import com.gzoltar.core.components.Statement;
+import fr.inria.lille.localization.WGzoltar;
+import fr.inria.lille.repair.nopol.sps.SuspiciousProgramStatements;
+import fr.inria.lille.repair.nopol.sps.SuspiciousStatement;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
-import com.google.common.collect.Lists;
-import fr.inria.lille.localization.WGzoltar;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Predicate;
-import com.gzoltar.core.GZoltar;
-import com.gzoltar.core.components.Statement;
-
-import fr.inria.lille.repair.nopol.sps.SuspiciousProgramStatements;
-import fr.inria.lille.repair.nopol.sps.SuspiciousStatement;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * 
  * A list of potential bug root-cause.
- * 
+ *
  * @author Favio D. DeMarco
  */
 public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgramStatements {
 
-	private enum IsSuspicious implements Predicate<Statement> {
-		INSTANCE;
-		@Override
-		public boolean apply(final Statement input) {
-			return input.getSuspiciousness() > 0D;
-		}
-	}
+    private enum IsSuspicious implements Predicate<Statement> {
+        INSTANCE;
 
-	/**
-	 * @param classpath
-	 * @return
-	 */
-	public static GZoltarSuspiciousProgramStatements create( URL[] classpath, Collection<String> packageNames) {
-		return new GZoltarSuspiciousProgramStatements(checkNotNull(classpath), checkNotNull(packageNames));
-	}
+        @Override
+        public boolean apply(final Statement input) {
+            return input.getSuspiciousness() > 0D;
+        }
+    }
 
-	/**
-	 * @param classpath
-	 * @return
-	 */
-	public static GZoltarSuspiciousProgramStatements create( URL[] classpath, String[] tests) {
-		return new GZoltarSuspiciousProgramStatements(checkNotNull(classpath), checkNotNull(Arrays.asList("")));//getRootPackage(tests))));
-	}
+    /**
+     * @param classpath
+     * @return
+     */
+    public static GZoltarSuspiciousProgramStatements create(URL[] classpath, Collection<String> packageNames) {
+        return new GZoltarSuspiciousProgramStatements(checkNotNull(classpath), checkNotNull(packageNames));
+    }
 
-	private static String getRootPackage(String [] classes) {
-		String rootPackage = classes[0].substring(0, classes[0].lastIndexOf('.'));
-		for (int i = 1; i < classes.length; i++) {
-			String aClass = classes[i];
-			for (int j = 0; j < aClass.length(); j++) {
-				if(j >= rootPackage.length()) {
-					break;
-				}
-				if(rootPackage.charAt(j) != aClass.charAt(j)) {
-					rootPackage = rootPackage.substring(0, j -1);
-					break;
-				}
-			}
-		}
-		return rootPackage;
-	}
+    /**
+     * @param classpath
+     * @return
+     */
+    public static GZoltarSuspiciousProgramStatements create(URL[] classpath, String[] tests) {
+        return new GZoltarSuspiciousProgramStatements(checkNotNull(classpath), checkNotNull(Arrays.asList("")));//getRootPackage(tests))));
+    }
 
-	private final GZoltar gzoltar;
+    private static String getRootPackage(String[] classes) {
+        String rootPackage = classes[0].substring(0, classes[0].lastIndexOf('.'));
+        for (int i = 1; i < classes.length; i++) {
+            String aClass = classes[i];
+            for (int j = 0; j < aClass.length(); j++) {
+                if (j >= rootPackage.length()) {
+                    break;
+                }
+                if (rootPackage.charAt(j) != aClass.charAt(j)) {
+                    rootPackage = rootPackage.substring(0, j - 1);
+                    break;
+                }
+            }
+        }
+        return rootPackage;
+    }
 
-	private GZoltarSuspiciousProgramStatements(final URL[] classpath, Collection<String> packageNames) {
-		try {
-			//gzoltar = new GZoltarJava7();
-			gzoltar = new WGzoltar(System.getProperty("user.dir"));
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+    private final GZoltar gzoltar;
 
-		ArrayList<String> classpaths = new ArrayList<>();
-		for (URL url : classpath) {
-			if ("file".equals(url.getProtocol())) {
-				classpaths.add(url.getPath());
-			} else {
-				classpaths.add(url.toExternalForm());
-			}
-		}
-		
-		gzoltar.setClassPaths(classpaths);
-		gzoltar.addPackageNotToInstrument("org.junit");
-		gzoltar.addPackageNotToInstrument("junit.framework");
-		gzoltar.addTestPackageNotToExecute("junit.framework");
-		gzoltar.addTestPackageNotToExecute("org.junit");
-		for (String packageName : packageNames) {
-			gzoltar.addPackageToInstrument(packageName);
-		}
-	}
+    private GZoltarSuspiciousProgramStatements(final URL[] classpath, Collection<String> packageNames) {
+        try {
+            //gzoltar = new GZoltarJava7();
+            gzoltar = new WGzoltar(System.getProperty("user.dir"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-	/**
-	 * @param testClasses
-	 * @return a ranked list of potential bug root-cause.
-	 * @see fr.inria.lille.repair.nopol.sps.SuspiciousProgramStatements#sortBySuspiciousness(String...)
-	 */
+        ArrayList<String> classpaths = new ArrayList<>();
+        for (URL url : classpath) {
+            if ("file".equals(url.getProtocol())) {
+                classpaths.add(url.getPath());
+            } else {
+                classpaths.add(url.toExternalForm());
+            }
+        }
 
-	public List<Statement> sortBySuspiciousness(final String... testClasses) {
+        gzoltar.setClassPaths(classpaths);
+        gzoltar.addPackageNotToInstrument("org.junit");
+        gzoltar.addPackageNotToInstrument("junit.framework");
+        gzoltar.addTestPackageNotToExecute("junit.framework");
+        gzoltar.addTestPackageNotToExecute("org.junit");
+        for (String packageName : packageNames) {
+            gzoltar.addPackageToInstrument(packageName);
+        }
+    }
 
-		for (String className : checkNotNull(testClasses)) {
-			gzoltar.addTestToExecute(className); // we want to execute the test
-			gzoltar.addClassNotToInstrument(className); // we don't want to include the test as root-cause
-			// candidate
-		}
-		gzoltar.run();
+    /**
+     * @param testClasses
+     * @return a ranked list of potential bug root-cause.
+     * @see fr.inria.lille.repair.nopol.sps.SuspiciousProgramStatements#sortBySuspiciousness(String...)
+     */
 
-		List<Statement> statements = gzoltar.getSuspiciousStatements();
-		
+    public List<Statement> sortBySuspiciousness(final String... testClasses) {
+
+        for (String className : checkNotNull(testClasses)) {
+            gzoltar.addTestToExecute(className); // we want to execute the test
+            gzoltar.addClassNotToInstrument(className); // we don't want to include the test as root-cause
+            // candidate
+        }
+        gzoltar.run();
+
+        List<Statement> statements = gzoltar.getSuspiciousStatements();
+
 		/*Logger logger = LoggerFactory.getLogger(this.getClass());
 		if (logger.isDebugEnabled()) {
 			logger.debug("Suspicious statements:\n{}", Joiner.on('\n').join(statements));
 		}*/
 
-		return statements;
-	}
-	
-	public GZoltar getGzoltar() {
-		return gzoltar;
-	}
-	
-	private List<SuspiciousStatement> sortByDescendingOrder(List<SuspiciousStatement> statements) {
-		List<SuspiciousStatement> tmp = new ArrayList<>(statements);
-		Collections.sort(tmp, new Comparator<SuspiciousStatement>() {
-			@Override
-			public int compare(final SuspiciousStatement o1, final SuspiciousStatement o2) {
-				// reversed parameters because we want a descending order list
-				return Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness());
-			}
-		});
-		return tmp;
-	}
+        return statements;
+    }
+
+    public GZoltar getGzoltar() {
+        return gzoltar;
+    }
+
+    private List<SuspiciousStatement> sortByDescendingOrder(List<SuspiciousStatement> statements) {
+        List<SuspiciousStatement> tmp = new ArrayList<>(statements);
+        Collections.sort(tmp, new Comparator<SuspiciousStatement>() {
+            @Override
+            public int compare(final SuspiciousStatement o1, final SuspiciousStatement o2) {
+                // reversed parameters because we want a descending order list
+                return Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness());
+            }
+        });
+        return tmp;
+    }
 }

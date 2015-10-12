@@ -103,7 +103,7 @@ public class ExpressionFacotry {
     public static MethodInvocation create(ComplexTypeExpression exp, Method method, List<Expression> parameters, Value value, boolean isTocast) {
         String[] castSplit = method.declaringType().name().split("\\$");
         String cast = castSplit[0];
-        if(!isTocast) {
+        if (!isTocast) {
             cast = null;
         }
         if (value == null || value instanceof ObjectReference) {

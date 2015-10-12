@@ -37,7 +37,7 @@ public abstract class MethodInvocationImpl extends ExpressionImpl implements Met
 
     @Override
     public double getWeight() {
-        return Config.INSTANCE.getMethodCallWeight() * getPriority() * getExpression().getWeight() / (getParameters().size() == 0? 1: getParameters().size());
+        return Config.INSTANCE.getMethodCallWeight() * getPriority() * getExpression().getWeight() / (getParameters().size() == 0 ? 1 : getParameters().size());
     }
 
     @Override
@@ -52,7 +52,7 @@ public abstract class MethodInvocationImpl extends ExpressionImpl implements Met
 
     @Override
     public String toString() {
-        if(strExpression == null) {
+        if (strExpression == null) {
             String arguments = "";
             for (int i = 0; i < parameters.size(); i++) {
                 Expression expression1 = parameters.get(i);
@@ -76,7 +76,7 @@ public abstract class MethodInvocationImpl extends ExpressionImpl implements Met
                 arguments += ", ";
             }
         }
-        if(cast == null) {
+        if (cast == null) {
             return getExpression().asPatch() + "." + getMethod() + "(" + arguments + ")";
         }
         return "((" + cast + ")" + getExpression().asPatch() + ")." + getMethod() + "(" + arguments + ")";

@@ -1,13 +1,10 @@
 package fr.inria.lille.spirals.repair.synthesizer.collect;
 
 import com.sun.jdi.*;
-import com.sun.jdi.Field;
-import com.sun.jdi.Method;
-import com.sun.jdi.Type;
 import com.sun.jdi.request.BreakpointRequest;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.spirals.repair.expression.*;
 import fr.inria.lille.spirals.repair.synthesizer.collect.factory.ExpressionFacotry;
 import fr.inria.lille.spirals.repair.synthesizer.collect.filter.FieldFilter;
@@ -151,7 +148,6 @@ public class DataCollector {
     }
 
 
-
     private Candidates collect(ComplexTypeExpression exp, ThreadReference threadRef, Candidates candidates) {
         Candidates results = new Candidates();
         collectFields(exp, results);
@@ -191,7 +187,7 @@ public class DataCollector {
         }
 
         executionTime = System.currentTimeMillis() - startTime;
-        for (Iterator<Field> iterator = fieldValues.keySet().iterator(); iterator.hasNext()  && executionTime < maxTime; ) {
+        for (Iterator<Field> iterator = fieldValues.keySet().iterator(); iterator.hasNext() && executionTime < maxTime; ) {
             Field field = iterator.next();
             // collect only public fields
             if (!exp.toString().equals("this") && !field.isPublic()) {
@@ -229,7 +225,7 @@ public class DataCollector {
                 String s = strings.get(i);
                 isClassLoaded = isClassLoaded && DebugJUnitRunner.loadClass(s, method.virtualMachine());
             }
-            if(isClassLoaded){
+            if (isClassLoaded) {
                 return createAllPossibleArgsListForMethod(method, argsCandidates);
             }
             return new ArrayList<>();
@@ -240,7 +236,7 @@ public class DataCollector {
         if (exp.getValue() instanceof ObjectReference) {
             return ((ObjectReference) exp.getValue()).referenceType();
         } else if (exp.getValue() instanceof ReferenceType) {
-            return  (ReferenceType) exp.getValue();
+            return (ReferenceType) exp.getValue();
         }
         return null;
     }
@@ -260,6 +256,7 @@ public class DataCollector {
 
     /**
      * Call static methods on imported class
+     *
      * @param ctExecutableReferences
      * @param threadRef
      * @param candidates
@@ -280,16 +277,18 @@ public class DataCollector {
             callMethods(exp, threadRef, methods, candidates, argsCandidates);
         }
     }
+
     private List<Method> getMethods(ComplexTypeExpression exp, ReferenceType ref, boolean isStatic, ThreadReference threadRef) {
         return getMethods(exp, ref, isStatic, threadRef, null);
     }
+
     private List<Method> getMethods(ComplexTypeExpression exp, ReferenceType ref, boolean isStatic, ThreadReference threadRef, String methodNameFilter) {
         List<Method> methods = new ArrayList<>();
         // if the expression is a List use a specific method invocation
         List<ReferenceType> listReferences = threadRef.virtualMachine().classesByName(List.class.getCanonicalName());
-        if(listReferences.size() > 0) {
+        if (listReferences.size() > 0) {
             InterfaceType listReference = (InterfaceType) listReferences.get(0);
-            if( exp.isAssignableTo(listReference)) {
+            if (exp.isAssignableTo(listReference)) {
                 methods.addAll(ref.methodsByName("size"));
                 methods.addAll(ref.methodsByName("contains"));
                 methods.addAll(ref.methodsByName("equals"));
@@ -297,18 +296,18 @@ public class DataCollector {
                 return methods;
             }
         }
-        if(variableType.containsKey(exp.toString())) {
+        if (variableType.containsKey(exp.toString())) {
             List<ReferenceType> referenceTypes = threadRef.virtualMachine().classesByName(String.valueOf(variableType.get(exp.toString())));
-            if(referenceTypes.size() > 0) {
+            if (referenceTypes.size() > 0) {
                 ref = referenceTypes.get(0);
             }
         }
         List<Method> visibleMethods = ref.visibleMethods();
         for (int i = 0; i < visibleMethods.size(); i++) {
             Method method = visibleMethods.get(i);
-            if(!isToCall(exp, ref, method, isStatic))
+            if (!isToCall(exp, ref, method, isStatic))
                 continue;
-            if(methodNameFilter == null || method.name().equals(methodNameFilter))
+            if (methodNameFilter == null || method.name().equals(methodNameFilter))
                 methods.add(method);
         }
         Collections.sort(methods, new Comparator<Method>() {
@@ -346,7 +345,7 @@ public class DataCollector {
         if (!calledMethods.contains(qualifiedMethodName)) {
             return false;
         }
-        return  true;
+        return true;
     }
 
     private void callMethods(ComplexTypeExpression exp, ThreadReference threadRef, List<Method> methods, Candidates candidates, Candidates argsCandidates) {
@@ -367,16 +366,16 @@ public class DataCollector {
                 if (expressions.size() != numberOfArgs) {
                     break;
                 }
-                if(method.name().equals("equals"))  {
+                if (method.name().equals("equals")) {
                     Expression parameter = expressions.get(0);
                     if (parameter instanceof Constant) {
                         continue;
                     }
                 }
                 Expression expression = callMethod(threadRef, exp, method, expressions);
-                if(expression == null) {
-                    countFailCall ++;
-                    if(countFailCall >= 5) {
+                if (expression == null) {
+                    countFailCall++;
+                    if (countFailCall >= 5) {
                         break;
                     }
                 }
@@ -413,7 +412,7 @@ public class DataCollector {
                     } catch (InvalidTypeException | IncompatibleThreadStateException | InvocationException e) {
                         logger.error("Unable to invoke the method " + method + " " + argumentValue, e);
                     } catch (ClassNotLoadedException e) {
-                        if(DebugJUnitRunner.loadClass(method.returnTypeName(), threadRef.virtualMachine())) {
+                        if (DebugJUnitRunner.loadClass(method.returnTypeName(), threadRef.virtualMachine())) {
                             call();
                         }
                     }
@@ -426,7 +425,7 @@ public class DataCollector {
                 Value result = future.get(Config.INSTANCE.getTimeoutMethodInvocation(), TimeUnit.SECONDS);
                 if (result != null) {
                     expression = ExpressionFacotry.create(exp, method, expressions, result, cast);
-                    logger.debug("[data] " + expression );
+                    logger.debug("[data] " + expression);
                 }
             } catch (Exception ex) {
                 logger.error("Unable to call the method " + method, ex);
@@ -476,8 +475,8 @@ public class DataCollector {
             Expression expression = a.get(i);
             for (int j = 0; j < b.size(); j++) {
                 Expression expression1 = b.get(j);
-                if(expression.equals(expression1)) continue;
-                if(expression instanceof Constant && expression1 instanceof Constant) continue;
+                if (expression.equals(expression1)) continue;
+                if (expression instanceof Constant && expression1 instanceof Constant) continue;
                 List<Expression> list = new ArrayList<>();
                 list.add(expression);
                 list.add(expression1);

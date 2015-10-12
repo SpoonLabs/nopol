@@ -37,7 +37,7 @@ public class ConstantCollector extends AbstractProcessor<CtLiteral> {
         if (parent == null) {
             return false;
         }
-        if(buggyMethod != null) {
+        if (buggyMethod != null) {
             return parent.getSimpleName().equals(buggyMethod);
         }
         return true;

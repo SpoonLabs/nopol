@@ -1,7 +1,6 @@
 package fr.inria.lille.spirals.repair.expression;
 
 
-import com.sun.jdi.ReferenceType;
 import com.sun.jdi.Type;
 import fr.inria.lille.spirals.repair.commons.Candidates;
 

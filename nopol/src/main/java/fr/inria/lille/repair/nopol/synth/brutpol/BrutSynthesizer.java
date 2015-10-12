@@ -110,7 +110,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
                 for (int i = 1; i < values.length; i++) {
                     Object value = values[i - 1];
                     Object value1 = values[i];
-                    if(!value.equals(value1)) {
+                    if (!value.equals(value1)) {
                         isSame = false;
                         break;
                     }
@@ -122,7 +122,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
                     AngelicExecution.setBooleanValue(flippedValue);
                     testCasesListener = new TestRunListener();
                     Result result = TestSuiteExecution.runTest(next, classLoader, testCasesListener);
-                    if(!result.wasSuccessful()) {
+                    if (!result.wasSuccessful()) {
                         oracle.put(next, values);
                     } else {
                         testsOutput.debug("Ignore the test {}", next);
@@ -132,9 +132,9 @@ public class BrutSynthesizer<T> implements Synthesizer {
                 }
             }
             long remainingTime = TimeUnit.MINUTES.toMillis(maxTimeBuildPatch) - (System.currentTimeMillis() - startTime);
-            SynthesizerImpl synthesizer = new SynthesizerImpl(spooner, sourceFolders,sourceLocation,classpath,oracle, oracle.keySet().toArray(new String[0]));
+            SynthesizerImpl synthesizer = new SynthesizerImpl(spooner, sourceFolders, sourceLocation, classpath, oracle, oracle.keySet().toArray(new String[0]));
             Candidates run = synthesizer.run(remainingTime);
-            if(run.size() > 0) {
+            if (run.size() > 0) {
                 return new ExpressionPatch(run.get(0), sourceLocation, type);
             }
         }
@@ -163,6 +163,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
     private class TestRunListener extends RunListener {
         private Map<String, List<T>> failedTests = new HashMap<>();
         private Map<String, List<T>> passedTests = new HashMap<>();
+
         @Override
         public void testFailure(Failure failure) throws Exception {
             Description description = failure.getDescription();
@@ -173,7 +174,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
         @Override
         public void testFinished(Description description) throws Exception {
             String key = description.getClassName() + "#" + description.getMethodName();
-            if(!failedTests.containsKey(key)) {
+            if (!failedTests.containsKey(key)) {
                 passedTests.put(key, AngelicExecution.previousValue);
             }
             AngelicExecution.previousValue = new ArrayList<>();

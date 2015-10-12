@@ -2,5 +2,5 @@ package xxl.java.support;
 
 public interface Observer<T> {
 
-	public void notify(T object);
+    public void notify(T object);
 }

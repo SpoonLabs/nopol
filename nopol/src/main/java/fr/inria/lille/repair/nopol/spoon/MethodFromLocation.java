@@ -16,6 +16,7 @@ public class MethodFromLocation extends AbstractProcessor<CtStatement> {
     public MethodFromLocation(SourceLocation location) {
         this.location = location;
     }
+
     @Override
     public boolean isToBeProcessed(CtStatement candidate) {
         CtClass parent = candidate.getParent(CtClass.class);

@@ -5,6 +5,7 @@ import static fr.inria.lille.repair.infinitel.loop.implant.LoopStatistics.median
 import static fr.inria.lille.repair.infinitel.loop.implant.LoopStatistics.sumOf;
 import static fr.inria.lille.repair.infinitel.loop.implant.LoopStatistics.thirdQuartileOf;
 import static java.util.Arrays.asList;
+import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static xxl.java.container.various.Bag.newHashBag;
@@ -56,4 +57,9 @@ public class LoopStatisticsTest {
 		bag.addAll(asList(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 		assertEquals(70, sumOf(bag));
 	}
+
+	public static String absolutePathOf(int exampleNumber) {
+		return format("../test-projects/src/main/java/infinitel_examples/infinitel_example_%d/InfinitelExample.java", exampleNumber);
+	}
+
 }

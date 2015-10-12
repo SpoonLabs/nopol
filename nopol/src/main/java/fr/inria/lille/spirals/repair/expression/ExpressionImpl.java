@@ -1,7 +1,9 @@
 package fr.inria.lille.spirals.repair.expression;
 
 
-import com.sun.jdi.*;
+import com.sun.jdi.ObjectReference;
+import com.sun.jdi.ReferenceType;
+import com.sun.jdi.Type;
 import com.sun.tools.jdi.ClassTypeImpl;
 import fr.inria.lille.spirals.repair.commons.Candidates;
 
@@ -103,7 +105,7 @@ public abstract class ExpressionImpl implements Expression {
             ref = ((ObjectReference) this.getValue()).referenceType();
         } else if (this.getValue() instanceof ReferenceType) {
             ref = (ReferenceType) this.getValue();
-        } else if(getValue() == null) {
+        } else if (getValue() == null) {
             return false;
         } else {
             Class classRefAss;
@@ -115,13 +117,13 @@ public abstract class ExpressionImpl implements Expression {
                 } catch (IllegalArgumentException e1) {
                     return false;
                 }
-                if(this.toString().equals("null")) {
+                if (this.toString().equals("null")) {
                     return false;
                 }
             }
             return classRefAss.isAssignableFrom(getValue().getClass());
         }
-        if(refAss instanceof ReferenceType && ref instanceof ClassTypeImpl) {
+        if (refAss instanceof ReferenceType && ref instanceof ClassTypeImpl) {
             try {
                 java.lang.reflect.Method isAssignableTo = ref.getClass().getDeclaredMethod("isAssignableTo", ReferenceType.class);
                 isAssignableTo.setAccessible(true);

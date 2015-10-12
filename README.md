@@ -21,7 +21,7 @@ It requires an SMT solver installed on the machine (e.g. Z3)
 
 ## Getting started
 
-To compile using maven: First execute 'mvn clean' and then 'mvn install'
+To compile using maven: First execute 'mvn clean test'
 
 ## Usage
 

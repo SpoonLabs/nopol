@@ -54,7 +54,7 @@ public class MethodFilter {
         if (method.name().startsWith("append")) {
             return false;
         }
-        if(method.name().contains("remove") || method.name().contains("delete")) {
+        if (method.name().contains("remove") || method.name().contains("delete")) {
             return false;
         }
         try {

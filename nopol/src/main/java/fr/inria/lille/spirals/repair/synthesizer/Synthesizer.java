@@ -10,8 +10,8 @@ public interface Synthesizer {
     /**
      * Run the synthesizer
      *
-     * @return the patch
      * @param remainingTime
+     * @return the patch
      */
     Candidates run(long remainingTime);
 }

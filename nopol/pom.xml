@@ -93,7 +93,7 @@
     <dependency>
       <groupId>fr.inria.gforge.spoon</groupId>
       <artifactId>spoon-core</artifactId>
-      <version>4.2.0</version>
+      <version>4.3.0</version>
     </dependency>
     <dependency>
       <groupId>org.smtlib</groupId>
@@ -117,6 +117,11 @@
           <groupId>fr.inria.gforge.spoon</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.gzoltar</groupId>
+      <artifactId>gzoltar</artifactId>
+      <version>0.1.1</version>
     </dependency>
   </dependencies>
 

@@ -15,74 +15,74 @@
  */
 package fr.inria.lille.repair.common.patch;
 
-import java.io.File;
-
 import fr.inria.lille.repair.common.synth.StatementType;
+
+import java.io.File;
 
 /**
  * @author Favio D. DeMarco
- *
  */
 public interface Patch {
 
-	/**
-	 * Class that represents the inability to find a working patch.
-	 * 
-	 * @author Favio D. DeMarco
-	 */
-	static final class NoPatch implements Patch {
+    /**
+     * Class that represents the inability to find a working patch.
+     *
+     * @author Favio D. DeMarco
+     */
+    static final class NoPatch implements Patch {
 
-		private NoPatch() {}
+        private NoPatch() {
+        }
 
-		@Override
-		public String asString() {
-			throw new UnsupportedOperationException(toString());
-		}
+        @Override
+        public String asString() {
+            throw new UnsupportedOperationException(toString());
+        }
 
-		@Override
-		public String getRootClassName() {
-			throw new UnsupportedOperationException(toString());
-		}
+        @Override
+        public String getRootClassName() {
+            throw new UnsupportedOperationException(toString());
+        }
 
-		@Override
-		public File getFile(final File sourcePath) {
-			throw new UnsupportedOperationException(toString());
-		}
+        @Override
+        public File getFile(final File sourcePath) {
+            throw new UnsupportedOperationException(toString());
+        }
 
-		@Override
-		public int getLineNumber() {
-			throw new UnsupportedOperationException(toString());
-		}
+        @Override
+        public int getLineNumber() {
+            throw new UnsupportedOperationException(toString());
+        }
 
-		@Override
-		public StatementType getType() {
-			throw new UnsupportedOperationException(toString());
-		}
+        @Override
+        public StatementType getType() {
+            throw new UnsupportedOperationException(toString());
+        }
 
-		/**
-		 * @see java.lang.Object#toString()
-		 */
-		@Override
-		public String toString() {
-			return "No viable patch found.";
-		}
-	}
+        /**
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString() {
+            return "No viable patch found.";
+        }
+    }
 
-	/**
-	 * Singleton that represents the inability to find a working patch.
-	 */
-	static final Patch NO_PATCH = new NoPatch();
+    /**
+     * Singleton that represents the inability to find a working patch.
+     */
+    static final Patch NO_PATCH = new NoPatch();
 
-	String asString();
+    String asString();
 
-	/**
-	 * @return the containingClassName
-	 */
-	String getRootClassName();
+    /**
+     * @return the containingClassName
+     */
+    String getRootClassName();
 
-	File getFile(File sourcePath);
+    File getFile(File sourcePath);
 
-	int getLineNumber();
+    int getLineNumber();
 
-	StatementType getType();
+    StatementType getType();
 }

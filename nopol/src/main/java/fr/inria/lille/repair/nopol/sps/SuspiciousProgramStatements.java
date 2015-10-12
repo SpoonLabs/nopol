@@ -21,13 +21,13 @@ import java.util.List;
 
 /**
  * A list of potential bug root-cause.
- * 
+ *
  * @author Favio D. DeMarco
  */
 public interface SuspiciousProgramStatements {
 
-	/**
-	 * @return a ranked list of potential bug root-cause.
-	 */
-	List<Statement> sortBySuspiciousness(final String... testClasses);
+    /**
+     * @return a ranked list of potential bug root-cause.
+     */
+    List<Statement> sortBySuspiciousness(final String... testClasses);
 }

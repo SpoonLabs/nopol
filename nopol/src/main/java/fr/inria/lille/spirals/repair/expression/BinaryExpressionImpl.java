@@ -101,7 +101,7 @@ public abstract class BinaryExpressionImpl extends ExpressionImpl implements Bin
 
     @Override
     public String toString() {
-        if(strExpression == null) {
+        if (strExpression == null) {
             String first = getFirstExpression().toString().intern();
             if (getFirstExpression() instanceof BinaryExpression) {
                 first = "(" + first + ")";

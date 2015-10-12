@@ -1,14 +1,15 @@
 package fr.inria.lille.spirals.repair.vm;
 
-import com.sun.jdi.*;
-import com.sun.jdi.request.BreakpointRequest;
+import com.sun.jdi.ClassType;
+import com.sun.jdi.ObjectReference;
+import com.sun.jdi.ThreadReference;
+import com.sun.jdi.VirtualMachine;
 import fr.inria.lille.spirals.repair.MethodTestRunner;
 
 import java.io.*;
 import java.net.ConnectException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,7 +45,7 @@ public class DebugJUnitRunner {
         boolean result = false;
         ClassType classReference = (ClassType) vm.classesByName("java.lang.Class").get(0);
         for (int i = 0; i < vm.allThreads().size(); i++) {
-            ThreadReference thread =  vm.allThreads().get(i);
+            ThreadReference thread = vm.allThreads().get(i);
             try {
                 classReference.invokeMethod(thread, classReference.methodsByName("forName").get(0), Arrays.asList(vm.mirrorOf(className)), ObjectReference.INVOKE_SINGLE_THREADED);
             } catch (Exception e) {
@@ -75,11 +76,11 @@ public class DebugJUnitRunner {
             testList += testClass + " ";
         }
         ProcessBuilder processBuilder = new ProcessBuilder("java",
-            "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y",
-            "-cp",
-            strClasspath,
-            MethodTestRunner.class.getCanonicalName(),
-            testList
+                "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y",
+                "-cp",
+                strClasspath,
+                MethodTestRunner.class.getCanonicalName(),
+                testList
         );
         System.out.println("java -cp " + strClasspath + " " + MethodTestRunner.class.getCanonicalName() + " " + testList);
         File log = new File("log");
@@ -101,7 +102,7 @@ public class DebugJUnitRunner {
             copy(process.getInputStream(), out);
             copy(process.getErrorStream(), out);
             // kill process when the program exit
-            Runtime.getRuntime().addShutdownHook( new Thread() {
+            Runtime.getRuntime().addShutdownHook(new Thread() {
                 public void run() {
                     shutdown(vm);
                 }

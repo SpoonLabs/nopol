@@ -178,23 +178,23 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
             value = executeOperatorByte();
         } else if (getFirstExpression().getValue() instanceof Boolean) {
             value = executeOperatorBoolean();
-        }  else if (getFirstExpression() instanceof ComplexTypeExpression) {
+        } else if (getFirstExpression() instanceof ComplexTypeExpression) {
             value = executeOperatorComplex();
         }
         return value;
     }
 
     private Object executeOperatorComplex() {
-        if(getSecondExpression().getValue() == null) {
-            if(getOperator() == Operator.EQ) {
+        if (getSecondExpression().getValue() == null) {
+            if (getOperator() == Operator.EQ) {
                 return getFirstExpression().getValue() == null;
-            } else if(getOperator() == Operator.NEQ) {
+            } else if (getOperator() == Operator.NEQ) {
                 return getFirstExpression().getValue() != null;
             }
         } else {
-            if(getOperator() == Operator.EQ) {
+            if (getOperator() == Operator.EQ) {
                 return getFirstExpression().getValue() == getSecondExpression().getValue();
-            } else if(getOperator() == Operator.NEQ) {
+            } else if (getOperator() == Operator.NEQ) {
                 return getFirstExpression().getValue() != getSecondExpression().getValue();
             }
         }

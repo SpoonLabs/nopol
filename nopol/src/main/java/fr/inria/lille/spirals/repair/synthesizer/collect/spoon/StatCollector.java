@@ -4,7 +4,6 @@ import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
-import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtVariableReference;
@@ -96,7 +95,7 @@ public class StatCollector extends AbstractProcessor<CtElement> {
                 return;
             }
             CtExecutableReference executable = ((CtInvocation) ctElement).getExecutable();
-            if(executable.isConstructor()) {
+            if (executable.isConstructor()) {
                 return;
             }
             if (!statMethod.containsKey(executable)) {
@@ -143,8 +142,8 @@ public class StatCollector extends AbstractProcessor<CtElement> {
             }
         });
         for (int i = 0; i < ops.size(); i++) {
-            BinaryOperatorKind binaryOperatorKind =  ops.get(i);
-            content += binaryOperatorKind + " "  + statOperator.get(binaryOperatorKind) + "\n";
+            BinaryOperatorKind binaryOperatorKind = ops.get(i);
+            content += binaryOperatorKind + " " + statOperator.get(binaryOperatorKind) + "\n";
         }
         content += "Methods: \n";
         List<CtExecutableReference> methods = new ArrayList<>(this.statMethod.keySet());
@@ -155,8 +154,8 @@ public class StatCollector extends AbstractProcessor<CtElement> {
             }
         });
         for (int i = 0; i < methods.size(); i++) {
-            CtExecutableReference elem =  methods.get(i);
-            content += elem + " "  + statMethod.get(elem) + "\n";
+            CtExecutableReference elem = methods.get(i);
+            content += elem + " " + statMethod.get(elem) + "\n";
         }
 
         content += "Variable: \n";
@@ -168,8 +167,8 @@ public class StatCollector extends AbstractProcessor<CtElement> {
             }
         });
         for (int i = 0; i < variables.size(); i++) {
-            CtVariableReference elem =  variables.get(i);
-            content += elem + " "  + statVariable.get(elem) + "\n";
+            CtVariableReference elem = variables.get(i);
+            content += elem + " " + statVariable.get(elem) + "\n";
         }
         return content;
     }

@@ -15,24 +15,22 @@
  */
 package fr.inria.lille.repair.nopol.spoon;
 
+import com.google.common.base.Predicate;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.declaration.CtElement;
 
-import com.google.common.base.Predicate;
-
 /**
  * @author Favio D. DeMarco
- *
  */
 public enum SpoonConditionalPredicate implements Predicate<CtElement> {
 
-	INSTANCE;
+    INSTANCE;
 
-	@Override
-	public boolean apply(final CtElement input) {
-		boolean isCtIf = input instanceof CtIf;
-		boolean isCtConditional = input instanceof CtConditional;	
-		return isCtIf || isCtConditional;
-	}
+    @Override
+    public boolean apply(final CtElement input) {
+        boolean isCtIf = input instanceof CtIf;
+        boolean isCtConditional = input instanceof CtConditional;
+        return isCtIf || isCtConditional;
+    }
 }
