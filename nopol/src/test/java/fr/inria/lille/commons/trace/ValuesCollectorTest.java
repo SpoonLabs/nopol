@@ -342,7 +342,7 @@ public class ValuesCollectorTest {
 	public void replaceQuotationMarksToCollectSubconditions() {
 		RuntimeValues<Boolean> runtimeValues = RuntimeValues.newInstance();
 		String invocation = runtimeValues.invocationOnCollectionOf("\"aaaa\".startsWith(\"b\")");
-		String toMatch = "try{fr.inria.lille.commons.trace.RuntimeValues.instance(0).collectInput(\"\\\"aaaa\\\".startsWith(\\\"b\\\")\",\"aaaa\".startsWith(\"b\"));} catch (Exception ex1) {ex1.printStackTrace();}";
+		String toMatch = "try{"+runtimeValues.globallyAccessibleName()+".collectInput(\"\\\"aaaa\\\".startsWith(\\\"b\\\")\",\"aaaa\".startsWith(\"b\"));} catch (Exception ex1) {ex1.printStackTrace();}";
 		assertTrue(invocation + " ends with " + toMatch, invocation.endsWith(toMatch));
 	}
 	
