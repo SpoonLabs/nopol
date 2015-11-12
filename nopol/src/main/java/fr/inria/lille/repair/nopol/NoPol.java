@@ -249,26 +249,30 @@ public class NoPol {
      * @param clpath
      */
     private URL[] addJPFLibraryToCassPath(URL[] clpath) {
-        URL[] classpath = new URL[clpath.length + 4];
+
+        List<URL> classpath = new ArrayList<>();
+        for (int i = 0; i < clpath.length; i++) {
+            classpath.add(clpath[i]);
+        }
         try {
-            File file = new File("lib/jpf/jpf.jar");
-            classpath[classpath.length - 3] = file.toURL();
+            File file = new File("lib/jpf/jpf-classes.jar");
+            if(!classpath.contains(file.toURL())) {
+                classpath.add(file.toURL());
+            }
             // file = new File("lib/jpf/gov.nasa-0.0.1.jar");
             // classpath[classpath.length - 3] = file.toURL();
             file = new File("lib/jpf/jpf-annotations.jar");
-            classpath[classpath.length - 2] = file.toURL();
-            file = new File("lib/jpf/jpf.jar");
-            classpath[classpath.length - 1] = file.toURL();
+            if(!classpath.contains(file.toURL())) {
+                classpath.add(file.toURL());
+            }
             file = new File("misc/nopol-example/junit-4.11.jar");
-            classpath[classpath.length - 4] = file.toURL();
+            if(!classpath.contains(file.toURL())) {
+                classpath.add(file.toURL());
+            }
         } catch (MalformedURLException e) {
             throw new RuntimeException("JPF dependencies not found");
         }
-        for (int i = 0; i < clpath.length; i++) {
-            classpath[i] = clpath[i];
-        }
-
-        return classpath;
+        return classpath.toArray(new URL[]{});
     }
 
     public SpoonedProject getSpooner() {

@@ -123,7 +123,7 @@ public final class JPFRunner<T> implements AngelicValue<T> {
 
     private String createClassPath(final URL[] classpath) {
         String stringClassPath = outputCompiledFile.getAbsolutePath() + ":";
-        for (int i = 2; i < classpath.length; i++) {
+        for (int i = 0; i < classpath.length; i++) {
             URL url = classpath[i];
             stringClassPath += url.getPath() + ":";
         }
