@@ -27,7 +27,6 @@ To compile using maven: First execute 'mvn clean test'
 
 ```
 Usage: java -jar nopol.jar
-                          [(-m|--mode) <repair|ranking>] [(-e|--type) <loop|condition|precondition|arithmetic>] [(-o|--oracle) <angelic|symbolic>] [(-y|--synthesis) <smt|brutpol>] [(-l|--solver) <z3|cvc4>] [(-p|--solver-path) <solverPath>] (-s|--source) source1:source2:...:sourceN  (-c|--classpath) <classpath> [(-t|--test) test1:test2:...:testN ] [--complianceLevel <complianceLevel>] [--maxTime <maxTime>]
 
   [(-m|--mode) <repair|ranking>]
         Define the mode of execution. (default: repair)
@@ -58,7 +57,7 @@ Usage: java -jar nopol.jar
         Define the tests of the project.
 
   [--complianceLevel <complianceLevel>]
-        The compliance level of the project. (default: 7)
+        The Java version of the project. (default: 7)
 
   [--maxTime <maxTime>]
         The maximum time execution in minute. (default: 60)
