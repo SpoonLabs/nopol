@@ -13,9 +13,9 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix.examples.bool.constant;
+package fr.inria.lille.examples.bool.constant;
 
-import static fr.inria.lille.jsemfix.examples.bool.constant.Neg.neg;
+import static fr.inria.lille.examples.bool.constant.Neg.neg;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
@@ -27,7 +27,7 @@ import org.junit.Test;
 public class NegTest {
 
 	/**
-	 * Test method for {@link fr.inria.lille.jsemfix.examples.bool.constant.Neg#neg(int)}.
+	 * Test method for {@link fr.inria.lille.examples.bool.constant.Neg#neg(int)}.
 	 */
 	@Test
 	public final void a_positive_value_should_be_returned_negative() {
@@ -38,7 +38,7 @@ public class NegTest {
 	}
 
 	/**
-	 * Test method for {@link fr.inria.lille.jsemfix.examples.bool.constant.Neg#neg(int)}.
+	 * Test method for {@link fr.inria.lille.examples.bool.constant.Neg#neg(int)}.
 	 */
 	@Test
 	public final void a_negative_value_should_be_returned_positive() {
@@ -49,7 +49,7 @@ public class NegTest {
 	}
 
 	/**
-	 * Test method for {@link fr.inria.lille.jsemfix.examples.bool.constant.Neg#neg(int)}.
+	 * Test method for {@link fr.inria.lille.examples.bool.constant.Neg#neg(int)}.
 	 */
 	@Test
 	public final void zero_should_be_zero() {

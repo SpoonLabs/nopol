@@ -13,22 +13,31 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix.examples.nullpointer;
+package fr.inria.lille.examples.tcas;
 
-import static java.lang.Integer.MIN_VALUE;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
+import fr.inria.lille.examples.tcas.Tcas;
+import fr.inria.lille.examples.tcas.TcasTest;
 
 /**
  * @author Favio D. DeMarco
- *
+ * 
  */
-public final class NullPointer {
+public class TcasCoverageTest extends TcasTest {
 
-	public int toStringLength(final Object maybeNull) {
+	@Test
+	@Ignore
+	public void _7() {
 
-		int length = MIN_VALUE;
+		// GIVEN
+		// WHEN
+		int actual = new Tcas().is_upward_preferred(0, 0, 99);
 
-		length = maybeNull.toString().length();
-
-		return length;
+		// THEN
+		assertEquals(0, actual);
 	}
 }

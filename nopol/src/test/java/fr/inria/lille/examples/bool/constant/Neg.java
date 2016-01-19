@@ -13,28 +13,25 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix.examples.tcas;
-
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Ignore;
-import org.junit.Test;
+package fr.inria.lille.examples.bool.constant;
 
 /**
  * @author Favio D. DeMarco
- * 
+ *
  */
-public class TcasCoverageTest extends TcasTest {
+public final class Neg {
 
-	@Test
-	@Ignore
-	public void _7() {
+	public static int neg(final int value) {
 
-		// GIVEN
-		// WHEN
-		int actual = new Tcas().is_upward_preferred(0, 0, 99);
-
-		// THEN
-		assertEquals(0, actual);
+		if (value < 0) {
+			return -1 * value;
+		} else {
+			return value;
+		}
 	}
+
+	/**
+	 * 
+	 */
+	private Neg() {}
 }

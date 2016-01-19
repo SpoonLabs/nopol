@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix.examples.nullpointer;
+package fr.inria.lille.examples.nullpointer;
 
 import static java.lang.Integer.MIN_VALUE;
 import static org.junit.Assert.assertEquals;
@@ -31,7 +31,7 @@ public class NullPointerTest {
 	private NullPointer nullPointer;
 
 	/**
-	 * Test method for {@link fr.inria.lille.jsemfix.examples.nullpointer.NullPointer#toStringLength(java.lang.Object)}.
+	 * Test method for {@link fr.inria.lille.examples.nullpointer.NullPointer#toStringLength(java.lang.Object)}.
 	 */
 	@Test
 	public final void null_should_return_Integer_MIN_VALUE() {
@@ -40,7 +40,7 @@ public class NullPointerTest {
 	}
 
 	/**
-	 * Test method for {@link fr.inria.lille.jsemfix.examples.nullpointer.NullPointer#toStringLength(java.lang.Object)}.
+	 * Test method for {@link fr.inria.lille.examples.nullpointer.NullPointer#toStringLength(java.lang.Object)}.
 	 */
 	@Test
 	public final void should_return_toString_length() {

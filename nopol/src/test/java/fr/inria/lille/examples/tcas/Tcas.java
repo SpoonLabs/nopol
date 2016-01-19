@@ -13,25 +13,27 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.jsemfix.examples.bool.constant;
+package fr.inria.lille.examples.tcas;
 
 /**
+ * Example method from <a href="http://www.comp.nus.edu.sg/~abhik/pdf/ICSE13-SEMFIX.pdf">SemFix: Program Repair via
+ * Semantic Analysis</a>.
+ * 
  * @author Favio D. DeMarco
- *
  */
-public final class Neg {
+public final class Tcas {
 
-	public static int neg(final int value) {
-
-		if (value < 0) {
-			return -1 * value;
+	public int is_upward_preferred(final int inhibit, final int up_sep, final int down_sep) {
+		int bias;
+		if (0 != inhibit) {
+			bias = down_sep; // fix: bias=up_sep+100
 		} else {
-			return value;
+			bias = up_sep;
+		}
+		if (bias > down_sep) {
+			return 1;
+		} else {
+			return 0;
 		}
 	}
-
-	/**
-	 * 
-	 */
-	private Neg() {}
 }
