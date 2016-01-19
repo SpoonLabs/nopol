@@ -29,7 +29,7 @@ public class NopolTest extends TestUtility{
 	public void example2Fix() {
 		Collection<String> failedTests = asList("test1", "test2", "test4", "test5", "test6", "test7");
 		Patch patch = test(2, 11, StatementType.CONDITIONAL, failedTests);
-		fixComparison(patch, "a <= b", "a < b", "1 <= (b - a)", "0 <= (b - a)", "1 <(b - a)", "0 < (b - a)", "a < b");
+		fixComparison(patch, "a <= b", "a < b", "1 <= (b - a)", "0 <= (b - a)", "1 < (b - a)", "0 < (b - a)", "a < b");
 	}
 	
 	@Test
