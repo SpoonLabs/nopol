@@ -142,8 +142,12 @@ public class SynthesizerImpl implements Synthesizer {
             // process events
             EventQueue eventQueue = vm.eventQueue();
             while (true) {
-                EventSet eventSet = eventQueue.remove(TimeUnit.MINUTES.toMillis(5));
+            	// we timeout after 5 seconds
+            	// this means that the test execution can continue another 5 seconds
+                EventSet eventSet = eventQueue.remove(TimeUnit.SECONDS.toMillis(5));
+            	if (eventSet==null) return; // timeout
                 for (Event event : eventSet) {
+                	System.out.println(event);
                     if (event instanceof VMDeathEvent || event instanceof VMDisconnectEvent) {
                         // exit
                         DebugJUnitRunner.process.destroy();
@@ -158,9 +162,9 @@ public class SynthesizerImpl implements Synthesizer {
                     }
                 }
                 eventSet.resume();
-            }
+            } //end while true
         } catch (Exception e) {
-            // ignore
+        	e.printStackTrace();
         } finally {
             DebugJUnitRunner.process.destroy();
         }
@@ -269,6 +273,7 @@ public class SynthesizerImpl implements Synthesizer {
         }
 
         values.get(currentTestClass + "#" + currentTestMethod).add(value);
+        System.out.println(values);
     }
 
     private void getCurrentTest(ThreadReference threadRef) {
