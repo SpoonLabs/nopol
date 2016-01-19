@@ -120,13 +120,13 @@ public class CodeSynthesisTest {
 		Map<String, Object> second  = (Map) MetaMap.newHashMap(asList("p", "q", "n"), asList(13, 5, 18));
 		Map<String, Object> third = (Map) MetaMap.newHashMap(asList("p", "q", "n"), asList(2, 5, 6));
 		Map<String, Object> fourth = (Map) MetaMap.newHashMap(asList("p", "q", "n"), asList(13, 5, 12));
-		Specification firstS = new Specification<>(first, true);
-		Specification secondS = new Specification<>(second, true);
-		Specification thirdS = new Specification<>(third, false);
-		Specification fourthS = new Specification<>(fourth, false);
+		Specification firstS = new Specification<Boolean>(first, true); // true is the expected value
+		Specification secondS = new Specification<Boolean>(second, true);
+		Specification thirdS = new Specification<Boolean>(third, false); // false is the expected value
+		Specification fourthS = new Specification<Boolean>(fourth, false);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Boolean.class, (List) asList(firstS, secondS, thirdS, fourthS));
 		assertTrue(genesis.isSuccessful());
-		assertTrue(asList("(q + p) == n", "p == n - q").contains(genesis.returnStatement()));
+		assertTrue(asList("(q + p) == n", "p == n - q", "q + p <= n").contains(genesis.returnStatement()));
 	}
 	
 	@Test
