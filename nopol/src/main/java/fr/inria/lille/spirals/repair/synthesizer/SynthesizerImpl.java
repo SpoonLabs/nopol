@@ -40,6 +40,8 @@ public class SynthesizerImpl implements Synthesizer {
     private final URL[] classpath;
     private final Map<String, Object[]> oracle;
     private final String[] tests;
+    
+    /** key: test name, value: list of runtime contexts (if a statement is executed several times in the same test */
     private final SortedMap<String, List<Candidates>> values;
     private SpoonedProject spoon;
     private final Set<String> checkedExpression = new HashSet<>();
@@ -56,7 +58,6 @@ public class SynthesizerImpl implements Synthesizer {
     private long initExecutionTime;
     private long collectExecutionTime;
     private String buggyMethod;
-    private Set<CtTypedElement> variablesInSuspicious = new HashSet<>();
     private SpoonElementsCollector spoonElementsCollector;
     private StatCollector statCollector;
     private Map<String, String> variableType;
@@ -137,9 +138,9 @@ public class SynthesizerImpl implements Synthesizer {
             if (values.size()==0) {
             	throw new RuntimeException("should not happen, no value collected");
             }
-            Candidates expressions = combineValues();
+            validExpressions = combineValues();
             DebugJUnitRunner.shutdown(vm);
-            return expressions;
+            return validExpressions;
         } catch (IOException e) {
             throw new RuntimeException("Unable to communicate with the project", e);
         }
@@ -153,7 +154,6 @@ public class SynthesizerImpl implements Synthesizer {
                 EventSet eventSet = eventQueue.remove(TimeUnit.SECONDS.toMillis(this.dataCollectionTimeoutInSeconds ));
             	if (eventSet==null) return; // timeout
                 for (Event event : eventSet) {
-                	System.out.println(event);
                     if (event instanceof VMDeathEvent || event instanceof VMDisconnectEvent) {
                         // exit
                         DebugJUnitRunner.process.destroy();
@@ -189,13 +189,14 @@ public class SynthesizerImpl implements Synthesizer {
         breakpointSuspicious = erm.createBreakpointRequest(jdiLocation);
         breakpointSuspicious.setEnabled(true);
         initSpoon();
-        spoonElementsCollector = new SpoonElementsCollector(variablesInSuspicious);
         this.initExecutionTime = System.currentTimeMillis();
     }
 
     private boolean jumpEnabled = false;
     private BreakpointRequest breakpointJump;
     private BreakpointRequest breakpointSuspicious;
+
+	private Candidates validExpressions;
 
     private void jumpEndTest(ThreadReference threadRef) {
         try {
@@ -261,25 +262,22 @@ public class SynthesizerImpl implements Synthesizer {
                 return;
             }
         }
-        Candidates candidates = spoonElementsCollector.collect(threadRef);
-        Candidates value = collectValues(threadRef);
-        for (int i = 0; i < candidates.size(); i++) {
-            Expression expression = candidates.get(i);
-            int index = value.indexOf(expression);
-            if (index < 0) {
-                expression.setPriority(5);
-                value.add(expression);
-            } else {
-                value.get(index).setPriority(5);
-            }
-        }
-
+        
         if (!values.containsKey(currentTestClass + "#" + currentTestMethod)) {
             values.put(currentTestClass + "#" + currentTestMethod, new ArrayList<Candidates>());
         }
 
-        values.get(currentTestClass + "#" + currentTestMethod).add(value);
-        System.out.println(values);
+        Candidates allValues = new Candidates();
+        
+        Candidates expressionCollectedBySpoon = spoonElementsCollector.collect(threadRef);        
+        Candidates expressionsCollectedAtRuntime = collectRuntimeValues(threadRef);
+        
+        allValues.addAll(expressionCollectedBySpoon);
+        allValues.addAll(expressionsCollectedAtRuntime);
+        
+//        System.out.println("expressionCollectedBySpoon "+expressionCollectedBySpoon);
+//        System.out.println("expressionsCollectedAtRuntime "+expressionsCollectedAtRuntime);
+        values.get(currentTestClass + "#" + currentTestMethod).add(allValues);
     }
 
     private void getCurrentTest(ThreadReference threadRef) {
@@ -350,9 +348,9 @@ public class SynthesizerImpl implements Synthesizer {
             StatCollector statCollector = new StatCollector(buggyMethod);
             spoon.processClass(location.getContainingClassName(), statCollector);
             this.statCollector = statCollector;
-            VariablesInSuspiciousCollector variablesInSuspicious = new VariablesInSuspiciousCollector(location);
-            spoon.processClass(location.getContainingClassName(), variablesInSuspicious);
-            this.variablesInSuspicious = variablesInSuspicious.getVariables();
+            VariablesInSuspiciousCollector variablesInSuspiciousCollector = new VariablesInSuspiciousCollector(location);
+            spoon.processClass(location.getContainingClassName(), variablesInSuspiciousCollector);
+            spoonElementsCollector = new SpoonElementsCollector(variablesInSuspiciousCollector.getVariables());
         } catch (Exception e) {
             logger.warn("Unable to collect used classes", e);
         }
@@ -365,7 +363,7 @@ public class SynthesizerImpl implements Synthesizer {
         classPrepareRequest.setEnabled(true);
     }
 
-    private Candidates collectValues(ThreadReference threadRef) {
+    private Candidates collectRuntimeValues(ThreadReference threadRef) {
         if (values.containsKey(currentTestClass + "#" + currentTestMethod)) {
             if (values.get(currentTestClass + "#" + currentTestMethod).size() > Config.INSTANCE.getMaxLineInvocationPerTest()) {
                 return new Candidates();
@@ -415,29 +413,6 @@ public class SynthesizerImpl implements Synthesizer {
         return new HashMap<>();
     }
 
-    private Candidates getValuesIntersection() {
-        Iterator<String> it = values.keySet().iterator();
-        if (!it.hasNext()) {
-            return null;
-        }
-
-        Candidates intersection = new Candidates();
-        List<Candidates> c = values.get(it.next());
-        for (int i = 0; i < c.size(); i++) {
-            Candidates candidates = c.get(i);
-            intersection.addAll(candidates);
-            while (it.hasNext()) {
-                String key = it.next();
-                List<Candidates> value = values.get(key);
-                for (int j = 0; j < value.size(); j++) {
-                    Candidates expressions = value.get(j);
-                    intersection = intersection.intersection(expressions, true);
-                }
-            }
-        }
-        return intersection;
-    }
-
     private Candidates combineValues() {
         final Candidates result = new Candidates();
         List<String> collectedTests = new ArrayList<>(values.keySet());
@@ -482,7 +457,7 @@ public class SynthesizerImpl implements Synthesizer {
                     if (expression.getValue().equals(angelicValue) && checkExpression(key, i, expression)) {
                         result.add(expression);
                         if (Config.INSTANCE.isOnlyOneSynthesisResult()) {
-                            printSummery(result);
+                            printSummary(result);
                             return result;
                         }
                     }
@@ -510,7 +485,7 @@ public class SynthesizerImpl implements Synthesizer {
                 combiner.combine(eexps, angelicValue, maxCombinerTime);
                 if (result.size() > 0) {
                     if (Config.INSTANCE.isOnlyOneSynthesisResult()) {
-                        printSummery(result);
+                        printSummary(result);
                         return result;
                     }
                 }
@@ -518,7 +493,7 @@ public class SynthesizerImpl implements Synthesizer {
             }
             currentTime = System.currentTimeMillis();
         }
-        printSummery(result);
+        printSummary(result);
         return result;
     }
 
@@ -558,7 +533,7 @@ public class SynthesizerImpl implements Synthesizer {
         return true;
     }
 
-    private void printSummery(Candidates result) {
+    private void printSummary(Candidates result) {
         if (values.values().isEmpty()) return;
         List<Candidates> next = values.values().iterator().next();
         Candidates candidate = next.get(0);
@@ -608,4 +583,25 @@ public class SynthesizerImpl implements Synthesizer {
 
         System.out.println(" & " + nbConstant + " & " + nbMethodInvocation + " & " + nbFieldAccess + " & " + nbVariable + " & " + nbValueToCombine + " & " + nbExpressionEvaluated + " & " + (System.currentTimeMillis() - startTime) + " ms" + " & " + nbBreakPointCalls + " & " + patchResult.replaceAll("&", "\\&") + " &");
     }
+
+	@Override
+	public Candidates getCollectedExpressions() {
+        Iterator<String> it = values.keySet().iterator();
+        if (!it.hasNext()) {
+            return null;
+        }
+
+        Candidates intersection = new Candidates();
+        List<Candidates> c = values.get(it.next());
+        for (int i = 0; i < c.size(); i++) {
+            Candidates candidates = c.get(i);
+            intersection.addAll(candidates);
+        }
+        return intersection;
+	}
+
+	@Override
+	public Candidates getValidExpressions() {
+		return validExpressions;
+	}
 }

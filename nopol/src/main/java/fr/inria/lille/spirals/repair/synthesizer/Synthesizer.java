@@ -14,4 +14,9 @@ public interface Synthesizer {
      * @return the patch
      */
     Candidates run(long remainingTime);
+    
+    Candidates getCollectedExpressions();
+    
+    Candidates getValidExpressions();
+
 }

@@ -39,6 +39,7 @@ public class DataCollector {
     private long executionTime;
     private long startTime;
     private long maxTime;
+    public final Candidates candidates = new Candidates();
 
     public DataCollector(ThreadReference threadRef,
                          Candidates constants,
@@ -58,11 +59,15 @@ public class DataCollector {
         this.variableType = variableType;
         this.calledMethods = calledMethods;
     }
-
+    
+    /**
+     * variables are collected at runtime
+     * @param maxTime
+     * @return
+     */
     public Candidates collect(long maxTime) {
         this.maxTime = maxTime;
         this.startTime = System.currentTimeMillis();
-        Candidates candidates = new Candidates();
         try {
             StackFrame stackFrame = threadRef.frame(0);
 
@@ -89,60 +94,21 @@ public class DataCollector {
             executionTime = System.currentTimeMillis() - startTime;
             stackFrame = threadRef.frame(0);
 
-            collectVariables(stackFrame, candidates);
+            // collect variables at runtime
+            candidates.addAll(collectVariables(stackFrame));
+
+            // special values;
             candidates.add(new PrimitiveConstantImpl(0, threadRef.virtualMachine().mirrorOf(0), Integer.class));
             candidates.add(new PrimitiveConstantImpl(1, threadRef.virtualMachine().mirrorOf(1), Integer.class));
+            
             // collect literals
             if (Config.INSTANCE.isCollectLiterals()) {
                 candidates.addAll(constants);
             }
-            Candidates previousLevel = new Candidates();
-            previousLevel.addAll(candidates);
-            // collect static methods
-            if (Config.INSTANCE.isCollectStaticMethods()) {
-                // collectStaticMethods(statCollector.getStatMethod().keySet(), threadRef, candidates, previousLevel);
-            }
-            executionTime = System.currentTimeMillis() - startTime;
-            for (int depth = 1; depth < Config.INSTANCE.getSynthesisDepth() && executionTime <= maxTime; depth++) {
-                Candidates nextLevel = new Candidates();
-                logger.debug("Collect Level " + (depth + 1));
-                for (int i = 0; i < previousLevel.size() && executionTime <= maxTime; i++) {
-                    executionTime = System.currentTimeMillis() - startTime;
-                    Expression expression = previousLevel.get(i);
-                    // collect fields and methods
-                    if (expression.getValue() instanceof ObjectReference) {
-                        Candidates current = collect((ComplexTypeExpression) expression, threadRef, candidates);
-                        for (int j = 0; j < current.size(); j++) {
-                            Expression o = current.get(j);
-                            if (!nextLevel.contains(o)) {
-                                nextLevel.add(o);
-                            } else {
-                                List<Expression> alternatives = nextLevel.get(nextLevel.indexOf(o)).getAlternatives();
-                                alternatives.addAll(o.getAlternatives());
-                                o.getAlternatives().clear();
-                                alternatives.add(o);
-                            }
-                        }
-                    }
-                }
-                previousLevel = new Candidates();
-                executionTime = System.currentTimeMillis() - startTime;
-                // add collected results in the final results
-                for (int j = 0; j < nextLevel.size(); j++) {
-                    Expression o = nextLevel.get(j);
-                    if (!candidates.contains(o)) {
-                        candidates.add(o);
-                        previousLevel.add(o);
-                    } else {
-                        List<Expression> alternatives = candidates.get(candidates.indexOf(o)).getAlternatives();
-                        alternatives.addAll(o.getAlternatives());
-                        o.getAlternatives().clear();
-                        alternatives.add(o);
-                    }
-                    executionTime = System.currentTimeMillis() - startTime;
-                }
-                executionTime = System.currentTimeMillis() - startTime;
-            }
+            
+            
+            recurse();
+            
         } catch (IncompatibleThreadStateException e) {
             logger.error("Unable to collect eexp", e);
         }
@@ -151,15 +117,35 @@ public class DataCollector {
     }
 
 
-    private Candidates collect(ComplexTypeExpression exp, ThreadReference threadRef, Candidates candidates) {
-        Candidates results = new Candidates();
-        collectFields(exp, results);
-        collectMethods(exp, threadRef, results, candidates);
+    private void recurse() {
+        for (int depth = 1; depth < Config.INSTANCE.getSynthesisDepth() && executionTime <= maxTime; depth++) {
+            Candidates copy = new Candidates(); // to avoid java.util.ConcurrentModificationException
+            copy.addAll(candidates);
+            executionTime = System.currentTimeMillis() - startTime;
+            for (Expression expression : copy) {
+            	if (expression instanceof ComplexTypeExpression && expression.getValue() instanceof ObjectReference) {
+            		candidates.addAll(collectFieldAndMethodOnTheValueOf((ComplexTypeExpression) expression, threadRef));
+            	}
+            }
+        }
+        
+	}
 
+	private Candidates collectFieldAndMethodOnTheValueOf(ComplexTypeExpression exp, ThreadReference threadRef) {
+    	Candidates results = new Candidates();
+		if (!(exp.getValue() instanceof ObjectReference)) {
+			throw new IllegalArgumentException();
+		}
+		
+		results.addAll(collectFields(exp));
+		
+		// the current set of expressions can be passed as parameters
+		results.addAll(collectMethods(exp, threadRef, candidates));
         return results;
     }
 
-    private void collectVariables(StackFrame stackFrame, Candidates candidates) {
+    private Candidates collectVariables(StackFrame stackFrame) {
+    	Candidates results = new Candidates();
         try {
             List<LocalVariable> variables = stackFrame.visibleVariables();
             executionTime = System.currentTimeMillis() - startTime;
@@ -168,17 +154,19 @@ public class DataCollector {
                 Value value = stackFrame.getValue(localVariable);
                 Expression expression = ExpressionFacotry.create(localVariable, value);
                 logger.debug("[data] " + expression);
-                candidates.add(expression);
+                results.add(expression);
                 executionTime = System.currentTimeMillis() - startTime;
             }
         } catch (AbsentInformationException e) {
             logger.error("Unable to collect variable on " + stackFrame, e);
         }
+        return results;
     }
 
-    private void collectFields(ComplexTypeExpression exp, Candidates candidates) {
+    private Candidates collectFields(ComplexTypeExpression exp) {
+    	Candidates results = new Candidates();
         if (exp instanceof Constant) {
-            return;
+            return results;
         }
         ObjectReference ref = ((ObjectReference) exp.getValue());
         Map<Field, Value> fieldValues;
@@ -186,7 +174,7 @@ public class DataCollector {
             List<Field> fields = ref.referenceType().visibleFields();
             fieldValues = ref.getValues(fields);
         } catch (Exception e) {
-            return;
+            return results;
         }
 
         executionTime = System.currentTimeMillis() - startTime;
@@ -206,9 +194,11 @@ public class DataCollector {
                 continue;
             }
             logger.debug("[data] " + expression);
-            candidates.add(expression);
+            results.add(expression);
             executionTime = System.currentTimeMillis() - startTime;
         }
+        return results;
+
     }
 
     private List<List<Expression>> createAllPossibleArgsListForMethod(Method method, Candidates argsCandidates) {
@@ -244,17 +234,19 @@ public class DataCollector {
         return null;
     }
 
-    private void collectMethods(ComplexTypeExpression exp, ThreadReference threadRef, Candidates candidates, Candidates argsCandidates) {
+    private Candidates collectMethods(ComplexTypeExpression exp, ThreadReference threadRef, Candidates argsCandidates) {
+    	Candidates results = new Candidates();
         ReferenceType ref = getReferenceType(exp);
         if (ref == null) {
-            return;
+            return results;
         }
         boolean isStatic = exp.getValue() instanceof ReferenceType;
 
         // get all method of the reference
         List<Method> methods = getMethods(exp, ref, isStatic, threadRef);
 
-        callMethods(exp, threadRef, methods, candidates, argsCandidates);
+        results.addAll(callMethods(exp, threadRef, methods, argsCandidates));
+        return results;
     }
 
     /**
@@ -265,7 +257,7 @@ public class DataCollector {
      * @param candidates
      * @param argsCandidates
      */
-    private void collectStaticMethods(Set<CtExecutableReference> ctExecutableReferences, ThreadReference threadRef, Candidates candidates, Candidates argsCandidates) {
+    private void collectStaticMethods(Set<CtExecutableReference> ctExecutableReferences, ThreadReference threadRef, Candidates argsCandidates) {
         Iterator<CtExecutableReference> it = ctExecutableReferences.iterator();
         while (it.hasNext()) {
             CtExecutableReference next = it.next();
@@ -277,7 +269,7 @@ public class DataCollector {
             ReferenceType ref = refs.get(0);
             ComplexValue exp = new ComplexValueImpl(next.getDeclaringType().getQualifiedName(), ref);
             List<Method> methods = getMethods(exp, ref, true, threadRef, next.getSimpleName());
-            callMethods(exp, threadRef, methods, candidates, argsCandidates);
+            callMethods(exp, threadRef, methods, argsCandidates);
         }
     }
 
@@ -343,19 +335,19 @@ public class DataCollector {
     }
 
     /** modifiy "candidates" in place */
-    private void callMethods(ComplexTypeExpression exp, ThreadReference threadRef, List<Method> methods, Candidates candidates, Candidates argsCandidates) {
+    private Candidates callMethods(ComplexTypeExpression exp, ThreadReference threadRef, List<Method> methods, Candidates argsCandidates) {
+    	Candidates results = new Candidates();
         executionTime = System.currentTimeMillis() - startTime;
         // call all methods
         for (int i = 0; i < methods.size() && executionTime < maxTime; i++) {
             Method method = methods.get(i);
-//            System.out.println("calling "+method);
             int numberOfArgs = method.argumentTypeNames().size();
             if (0 == numberOfArgs) {
                 Expression returnValue = callMethod(threadRef, exp, method, Collections.EMPTY_LIST);
-//                System.out.println("rv: "+returnValue);
-				candidates.add(returnValue);
+                results.add(returnValue);
                 continue;
             }
+            
             List<List<Expression>> allPossibleMethodArgs = createAllPossibleArgsListForMethod(method, argsCandidates);
             executionTime = System.currentTimeMillis() - startTime;
             int countFailCall = 0;
@@ -377,11 +369,12 @@ public class DataCollector {
                         break;
                     }
                 }
-                candidates.add(expression);
+                results.add(expression);
                 executionTime = System.currentTimeMillis() - startTime;
             }
             executionTime = System.currentTimeMillis() - startTime;
         }
+        return results;
     }
 
     private Expression callMethod(final ThreadReference threadRef, final ComplexTypeExpression exp, final Method method, List<Expression> expressions) {

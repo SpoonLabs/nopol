@@ -7,6 +7,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import xxl.java.library.JavaLibrary;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +28,7 @@ public class SynthesizerTest {
         oracle.put("test5", new Object[]{true});
         oracle.put("test9", new Object[]{false});
 
-        test(1, oracle, 12, "index <= 0", "index < 1");
+        test(1, oracle, 12, new String[] {"index <= 0", "index < 1"});
     }
 
     @Test
@@ -42,7 +44,7 @@ public class SynthesizerTest {
         oracle.put("test8", new Object[]{false});
         oracle.put("test9", new Object[]{false});
 
-        test(2, oracle, 11, "a < b");
+        test(2, oracle, 11, new String[] {"a < b"});
     }
 
     @Test
@@ -58,7 +60,7 @@ public class SynthesizerTest {
         oracle.put("test8", new Object[]{false});
         oracle.put("test9", new Object[]{false});
 
-        test(3, oracle, 11, "tmp == 0", "0 == tmp");
+        test(3, oracle, 11, new String[] {"tmp == 0", "0 == tmp"});
     }
 
     @Test
@@ -76,7 +78,11 @@ public class SynthesizerTest {
         oracle.put("test10", new Object[]{false});
         oracle.put("test11", new Object[]{false});
 
-        test(4, oracle, 27, "1 <= a.length()", "1 != a.length()");
+        Synthesizer synthesizer = createSynthesizer(4, oracle, 27);
+        System.out.println("basic: "+synthesizer.getCollectedExpressions());    
+        check(synthesizer.getCollectedExpressions(), "initializedVariableShouldBeCollected");
+        check(synthesizer.getCollectedExpressions(), "otherInitializedVariableShouldBeCollected");
+        check(synthesizer.getValidExpressions(), new String[] {"1 <= a.length()", "1 != a.length()"});
     }
 
     @Test
@@ -89,7 +95,7 @@ public class SynthesizerTest {
         oracle.put("test5", new Object[]{false});
         oracle.put("test6", new Object[]{true});
 
-        test(5, oracle, 20, "0 <= a", "1 <= a");
+        test(5, oracle, 20, new String[] {"0 <= a", "1 <= a"});
     }
 
     @Test
@@ -102,7 +108,7 @@ public class SynthesizerTest {
         oracle.put("test5", new Object[]{false});
         oracle.put("test6", new Object[]{false});
 
-        test(6, oracle, 7, "a < b");
+        test(6, oracle, 7, new String[] {"a < b"});
     }
 
 
@@ -121,7 +127,7 @@ public class SynthesizerTest {
         oracle.put("test_10", new Object[]{false});
         oracle.put("test_11", new Object[]{false});
 
-        test(8, oracle, 12, "(a * b) <= 100", "a <= (100 / b)", "b <= (100 / a)");
+        test(8, oracle, 12, new String[] {"(a * b) <= 100", "a <= (100 / b)", "b <= (100 / a)"});
     }
 
     @Test
@@ -132,10 +138,27 @@ public class SynthesizerTest {
         oracle.put("test_3", new Object[]{true});
         oracle.put("test_4", new Object[]{false});
 
-        test(12, oracle, 4, "(list == null) || (0 == list.size())", "(list == null) || list.isEmpty()");
+        Synthesizer synthesizer = createSynthesizer(12, oracle, 5);
+        System.out.println("basic: "+synthesizer.getCollectedExpressions());
+        assertEquals(12,synthesizer.getCollectedExpressions().size());
+        assertEquals(1,synthesizer.getValidExpressions().size());
+        
+        check(synthesizer.getCollectedExpressions(), "list");
+        
+        // other constants of the program
+        check(synthesizer.getCollectedExpressions(), "3");
+
+        // other variables
+        check(synthesizer.getCollectedExpressions(), "list2");
+        
+        // method calls
+        check(synthesizer.getCollectedExpressions(), "this.foo(list)");
+        check(synthesizer.getCollectedExpressions(), "this.foo(list2)");
+        
+        check(synthesizer.getValidExpressions(), "(list == null) || (0 == list.size())", "(list == null) || list.isEmpty()");
     }
 
-    private void test(int nopolExampleNumber, Map<String, Object[]> o, int line, String... patch) {
+    private Synthesizer createSynthesizer(int nopolExampleNumber, Map<String, Object[]> o, int line) {
         String executionType = "nopol";
         String pack = executionType + "_examples." + executionType + "_example_" + nopolExampleNumber;
         String className = pack + ".NopolExample";
@@ -155,8 +178,15 @@ public class SynthesizerTest {
         SourceLocation location = new SourceLocation(className, line);
         File[] files = new File []{new File("../test-projects/src/main/java/"), new File("../test-projects/src/test/java/")};
         Synthesizer synthesizer = new SynthesizerImpl(files, location, JavaLibrary.classpathFrom(classpath), oracle, tests.toArray(new String[0]),5 /* seconds, a goood value for tests */);
-        Candidates expression = synthesizer.run(TimeUnit.MINUTES.toMillis(15));
-        check(expression, patch);
+        synthesizer.run(TimeUnit.MINUTES.toMillis(15));
+        return synthesizer;
+    }
+    
+    private Synthesizer test(int nopolExampleNumber, Map<String, Object[]> o, int line, String[] patch) {
+    	Synthesizer synthesizer = createSynthesizer(nopolExampleNumber, o, line);
+        Candidates expressions = synthesizer.getValidExpressions();
+        check(expressions, patch);
+        return synthesizer;
     }
 
 
@@ -172,8 +202,7 @@ public class SynthesizerTest {
             for (int j = 0; j < patch.length; j++) {
                 String s = patch[j];
                 if (o.toString().equals(s)) {
-                    printSynt(o, position);
-                    return;
+                    return; // found!
                 }
             }
             for (int j = 0; j < o.getAlternatives().size(); j++) {
@@ -182,8 +211,7 @@ public class SynthesizerTest {
                 for (int k = 0; k < patch.length; k++) {
                     String s = patch[k];
                     if (expression1.toString().equals(s)) {
-                        printSynt(expression1, position);
-                        return;
+                        return; // found!
                     }
                 }
             }
@@ -192,10 +220,4 @@ public class SynthesizerTest {
         Assert.fail("No valid patch in candidates: " + expression);
     }
 
-    private void printSynt(Expression expression, int position) {
-        int size  = 1;
-        size += expression.getAlternatives().size();
-        System.out.println("# candidate: " + size);
-        System.out.println("Candidate: " + expression);
-    }
 }

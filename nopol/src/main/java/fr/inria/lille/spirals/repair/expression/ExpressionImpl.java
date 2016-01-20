@@ -152,7 +152,7 @@ public abstract class ExpressionImpl implements Expression {
 
     @Override
     public int hashCode() {
-        return value != null ? value.hashCode() : 0;
+        return -1;
     }
 
     @Override
@@ -165,6 +165,7 @@ public abstract class ExpressionImpl implements Expression {
         Expression that = (Expression) o;
 
         if (returnType != null ? !returnType.equals(that.getType()) : that.getType() != null) return false;
+        if (!sameExpression(that)) { return false; }
         return !(value != null ? !value.equals(that.getValue()) : that.getValue() != null);
 
     }

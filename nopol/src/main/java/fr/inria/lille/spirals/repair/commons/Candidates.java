@@ -8,7 +8,7 @@ import fr.inria.lille.spirals.repair.expression.Expression;
 import java.util.*;
 
 /**
- * Created by Thomas Durieux on 05/03/15.
+ * Todo: explain the two levels of cache
  */
 public class Candidates extends ArrayList<Expression> {
 
@@ -37,10 +37,15 @@ public class Candidates extends ArrayList<Expression> {
         if (!this.contains(expression)) {
             return super.add(expression);
         }
+        
+        // todo what happens here?
         Expression parent = this.get(this.indexOf(expression));
         List<Expression> alternatives = parent.getAlternatives();
         expression.getInAlternativesOf().add(parent);
-        return alternatives.add(expression);
+        alternatives.add(expression);
+        
+        return true;
+
     }
 
     public boolean addAll(Candidates candidates) {
