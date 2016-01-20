@@ -5,6 +5,7 @@ import com.sun.jdi.ObjectReference;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.Type;
 import com.sun.tools.jdi.ClassTypeImpl;
+
 import fr.inria.lille.spirals.repair.commons.Candidates;
 
 import java.security.MessageDigest;
@@ -27,7 +28,7 @@ public abstract class ExpressionImpl implements Expression {
      *
      */
     public ExpressionImpl(Object value, Class returnType) {
-        this.value = value;
+        setValue(value);
         this.returnType = returnType;
         this.alternatives = new ArrayList<>();
         this.inAlternativesOf = new ArrayList<>();
@@ -44,6 +45,9 @@ public abstract class ExpressionImpl implements Expression {
     }
 
     protected void setValue(Object value) {
+    	if (value instanceof ReferenceType) {
+    		throw new IllegalArgumentException();
+    	}
         this.value = value;
     }
 
@@ -103,33 +107,29 @@ public abstract class ExpressionImpl implements Expression {
         ReferenceType ref;
         if (this.getValue() instanceof ObjectReference) {
             ref = ((ObjectReference) this.getValue()).referenceType();
-        } else if (this.getValue() instanceof ReferenceType) {
+        } 
+        /* else if (this.getValue() instanceof ReferenceType) {
             ref = (ReferenceType) this.getValue();
-        } else if (getValue() == null) {
+        } */ 
+        else  if (this instanceof PrimitiveConstant) {        	
+        	// constants are never handled in isAssignableTo
+            return false;
+        } else  if (getValue() == null) {
             return false;
         } else {
-            Class classRefAss;
-            try {
-                classRefAss = Class.forName(refAss.name());
-            } catch (ClassNotFoundException e) {
-                try {
-                    classRefAss = getPrimitiveClass(refAss.name());
-                } catch (IllegalArgumentException e1) {
-                    return false;
-                }
-                if (this.toString().equals("null")) {
-                    return false;
-                }
-            }
-            return classRefAss.isAssignableFrom(getValue().getClass());
+        	// the static case is disabled
+        	// value is a refType in the static case
+            throw new RuntimeException("value:"+getValue()+" class:"+getValue()+"-"+value.getClass().getCanonicalName()+ " in a "+getClass().getSimpleName());
         }
+    	System.out.println(ref+ " "+ refAss);
+
         if (refAss instanceof ReferenceType && ref instanceof ClassTypeImpl) {
             try {
                 java.lang.reflect.Method isAssignableTo = ref.getClass().getDeclaredMethod("isAssignableTo", ReferenceType.class);
                 isAssignableTo.setAccessible(true);
                 return (boolean) isAssignableTo.invoke(ref, refAss);
             } catch (Exception e) {
-                return false;
+            	throw new RuntimeException(e);
             }
         }
         return false;

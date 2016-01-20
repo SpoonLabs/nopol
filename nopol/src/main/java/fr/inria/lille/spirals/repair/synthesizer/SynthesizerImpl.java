@@ -5,6 +5,7 @@ import com.sun.jdi.event.*;
 import com.sun.jdi.request.BreakpointRequest;
 import com.sun.jdi.request.ClassPrepareRequest;
 import com.sun.jdi.request.EventRequestManager;
+
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
@@ -15,8 +16,10 @@ import fr.inria.lille.spirals.repair.synthesizer.collect.DataCombiner;
 import fr.inria.lille.spirals.repair.synthesizer.collect.SpoonElementsCollector;
 import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.*;
 import fr.inria.lille.spirals.repair.vm.DebugJUnitRunner;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import spoon.reflect.declaration.CtTypedElement;
 
 import java.io.File;
@@ -129,6 +132,9 @@ public class SynthesizerImpl implements Synthesizer {
             vm.resume();
             processVMEvents();
             this.collectExecutionTime = System.currentTimeMillis();
+            if (values.size()==0) {
+            	throw new RuntimeException("should not happen, no value collected");
+            }
             Candidates expressions = combineValues();
             DebugJUnitRunner.shutdown(vm);
             return expressions;

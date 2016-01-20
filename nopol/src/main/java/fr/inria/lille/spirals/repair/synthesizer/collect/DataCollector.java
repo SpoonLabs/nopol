@@ -2,6 +2,7 @@ package fr.inria.lille.spirals.repair.synthesizer.collect;
 
 import com.sun.jdi.*;
 import com.sun.jdi.request.BreakpointRequest;
+
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.spirals.repair.commons.Candidates;
@@ -11,8 +12,10 @@ import fr.inria.lille.spirals.repair.synthesizer.collect.filter.FieldFilter;
 import fr.inria.lille.spirals.repair.synthesizer.collect.filter.MethodFilter;
 import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.StatCollector;
 import fr.inria.lille.spirals.repair.vm.DebugJUnitRunner;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import spoon.reflect.reference.CtExecutableReference;
 
 import java.util.*;
@@ -97,7 +100,7 @@ public class DataCollector {
             previousLevel.addAll(candidates);
             // collect static methods
             if (Config.INSTANCE.isCollectStaticMethods()) {
-                collectStaticMethods(statCollector.getStatMethod().keySet(), threadRef, candidates, previousLevel);
+                // collectStaticMethods(statCollector.getStatMethod().keySet(), threadRef, candidates, previousLevel);
             }
             executionTime = System.currentTimeMillis() - startTime;
             for (int depth = 1; depth < Config.INSTANCE.getSynthesisDepth() && executionTime <= maxTime; depth++) {
@@ -284,28 +287,19 @@ public class DataCollector {
 
     private List<Method> getMethods(ComplexTypeExpression exp, ReferenceType ref, boolean isStatic, ThreadReference threadRef, String methodNameFilter) {
         List<Method> methods = new ArrayList<>();
-        // if the expression is a List use a specific method invocation
-        List<ReferenceType> listReferences = threadRef.virtualMachine().classesByName(List.class.getCanonicalName());
-        if (listReferences.size() > 0) {
-            InterfaceType listReference = (InterfaceType) listReferences.get(0);
-            if (exp.isAssignableTo(listReference)) {
-                methods.addAll(ref.methodsByName("size"));
-                methods.addAll(ref.methodsByName("contains"));
-                methods.addAll(ref.methodsByName("equals"));
-                methods.addAll(ref.methodsByName("isEmpty"));
-                return methods;
-            }
-        }
+        
         if (variableType.containsKey(exp.toString())) {
             List<ReferenceType> referenceTypes = threadRef.virtualMachine().classesByName(String.valueOf(variableType.get(exp.toString())));
             if (referenceTypes.size() > 0) {
                 ref = referenceTypes.get(0);
             }
         }
+        
         List<Method> visibleMethods = ref.visibleMethods();
         for (int i = 0; i < visibleMethods.size(); i++) {
             Method method = visibleMethods.get(i);
-            if (!isToCall(exp, ref, method, isStatic))
+            boolean toCall = isToCall(exp, ref, method, isStatic);
+			if (!toCall)
                 continue;
             if (methodNameFilter == null || method.name().equals(methodNameFilter))
                 methods.add(method);
@@ -343,19 +337,23 @@ public class DataCollector {
         String className = method.declaringType().name();
         String qualifiedMethodName = className.substring(0, className.lastIndexOf(".")) + "." + method.name();
         if (!calledMethods.contains(qualifiedMethodName)) {
-            return false;
+             return false;
         }
         return true;
     }
 
+    /** modifiy "candidates" in place */
     private void callMethods(ComplexTypeExpression exp, ThreadReference threadRef, List<Method> methods, Candidates candidates, Candidates argsCandidates) {
         executionTime = System.currentTimeMillis() - startTime;
         // call all methods
         for (int i = 0; i < methods.size() && executionTime < maxTime; i++) {
             Method method = methods.get(i);
+//            System.out.println("calling "+method);
             int numberOfArgs = method.argumentTypeNames().size();
             if (0 == numberOfArgs) {
-                candidates.add(callMethod(threadRef, exp, method, Collections.EMPTY_LIST));
+                Expression returnValue = callMethod(threadRef, exp, method, Collections.EMPTY_LIST);
+//                System.out.println("rv: "+returnValue);
+				candidates.add(returnValue);
                 continue;
             }
             List<List<Expression>> allPossibleMethodArgs = createAllPossibleArgsListForMethod(method, argsCandidates);
@@ -429,6 +427,7 @@ public class DataCollector {
                 }
             } catch (Exception ex) {
                 logger.error("Unable to call the method " + method, ex);
+            	throw new RuntimeException(ex);
             } finally {
                 future.cancel(true);
             }
