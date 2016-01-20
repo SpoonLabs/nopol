@@ -63,15 +63,17 @@ public class SynthesizerImpl implements Synthesizer {
     private Set<String> calledMethods;
     private long remainingTime;
 
+	private final int dataCollectionTimeoutInSeconds;
+
     public SynthesizerImpl(SpoonedProject spoon, File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests) {
-        this(projectRoots, location, classpath, oracle, tests);
+        this(projectRoots, location, classpath, oracle, tests,5*60 /* 5 minutes, default in repair mode */);
         this.spoon = spoon;
     }
 
-    public SynthesizerImpl(File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests) {
+    public SynthesizerImpl(File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, int dataCollectionTimeoutInSeconds) {
         this.projectRoots = projectRoots;
         this.location = location;
-
+        this.dataCollectionTimeoutInSeconds=dataCollectionTimeoutInSeconds;
         this.oracle = oracle;
         this.tests = tests;
         this.values = new TreeMap<>();
@@ -148,9 +150,7 @@ public class SynthesizerImpl implements Synthesizer {
             // process events
             EventQueue eventQueue = vm.eventQueue();
             while (true) {
-            	// we timeout after 5 seconds
-            	// this means that the test execution can continue another 5 seconds
-                EventSet eventSet = eventQueue.remove(TimeUnit.SECONDS.toMillis(5));
+                EventSet eventSet = eventQueue.remove(TimeUnit.SECONDS.toMillis(this.dataCollectionTimeoutInSeconds ));
             	if (eventSet==null) return; // timeout
                 for (Event event : eventSet) {
                 	System.out.println(event);
