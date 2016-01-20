@@ -1,5 +1,6 @@
 package fr.inria.lille.spirals.repair.synthesizer;
 
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.spirals.repair.expression.Expression;
 import fr.inria.lille.spirals.repair.commons.Candidates;
@@ -138,10 +139,11 @@ public class SynthesizerTest {
         oracle.put("test_3", new Object[]{true});
         oracle.put("test_4", new Object[]{false});
 
+        Config.INSTANCE.setOnlyOneSynthesisResult(false);
+        
         Synthesizer synthesizer = createSynthesizer(12, oracle, 5);
         System.out.println("basic: "+synthesizer.getCollectedExpressions());
         assertEquals(12,synthesizer.getCollectedExpressions().size());
-        assertEquals(1,synthesizer.getValidExpressions().size());
         
         check(synthesizer.getCollectedExpressions(), "list");
         
@@ -155,7 +157,9 @@ public class SynthesizerTest {
         check(synthesizer.getCollectedExpressions(), "this.foo(list)");
         check(synthesizer.getCollectedExpressions(), "this.foo(list2)");
         
-        check(synthesizer.getValidExpressions(), "(list == null) || (0 == list.size())", "(list == null) || list.isEmpty()");
+        // the valid patches
+        check(synthesizer.getValidExpressions(), "(list == null) || (0 == list.size())");
+        check(synthesizer.getValidExpressions(), "(list == null) || list.isEmpty()");
     }
 
     private Synthesizer createSynthesizer(int nopolExampleNumber, Map<String, Object[]> o, int line) {
