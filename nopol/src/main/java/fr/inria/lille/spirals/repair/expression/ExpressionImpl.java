@@ -18,6 +18,10 @@ import java.util.List;
  */
 public abstract class ExpressionImpl implements Expression {
     private double priority;
+    
+    /**
+     *  for primitive expressions, a com.sun.PrimitiveType or an Integer/Boolean
+     */
     private Object value;
     private Class returnType;
     private List<Expression> alternatives;
@@ -102,38 +106,39 @@ public abstract class ExpressionImpl implements Expression {
         throw new IllegalArgumentException("Not primitive type : " + typeName);
     }
 
+    /** if the value of this expression compatible with type refAss? */
     @Override
     public boolean isAssignableTo(Type refAss) {
-        ReferenceType ref;
-        if (this.getValue() instanceof ObjectReference) {
-            ref = ((ObjectReference) this.getValue()).referenceType();
-        } 
-        /* else if (this.getValue() instanceof ReferenceType) {
-            ref = (ReferenceType) this.getValue();
-        } */ 
-        else  if (this instanceof PrimitiveConstant) {        	
-        	// constants are never handled in isAssignableTo
-            return false;
-        } else  if (getValue() == null) {
-            return false;
-        } else {
-        	// the static case is disabled
-        	// value is a refType in the static case
-            throw new RuntimeException("value:"+getValue()+" class:"+getValue()+"-"+value.getClass().getCanonicalName()+ " in a "+getClass().getSimpleName());
-        }
-    	System.out.println(ref+ " "+ refAss);
-
-        if (refAss instanceof ReferenceType && ref instanceof ClassTypeImpl) {
-            try {
-                java.lang.reflect.Method isAssignableTo = ref.getClass().getDeclaredMethod("isAssignableTo", ReferenceType.class);
-                isAssignableTo.setAccessible(true);
-                return (boolean) isAssignableTo.invoke(ref, refAss);
-            } catch (Exception e) {
-            	throw new RuntimeException(e);
-            }
-        }
-        return false;
-    }
+		try {
+			ReferenceType ref;
+			
+			if (getValue() == null) {
+				// this should result in never passing null as method parameters
+				return false;
+			}
+			// either it is a debug object
+			else if (this.getValue() instanceof com.sun.jdi.Value) {
+				// big hack
+				// isAssignableTo is not in the API, so we have to set it accessible
+				ref = ((ObjectReference) this.getValue()).referenceType();
+				java.lang.reflect.Method isAssignableTo = ref.getClass()
+						.getDeclaredMethod("isAssignableTo",
+								ReferenceType.class);
+				isAssignableTo.setAccessible(true);
+				return (boolean) isAssignableTo.invoke(ref, refAss);
+			}
+			// or it is an actual value, a real object
+			else {
+				// classical isAssignableFrom
+				// constants are never handled in isAssignableTo
+				return Class.forName(refAss.name()).isAssignableFrom(
+						value.getClass());
+			}
+			
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}	
+	}
 
     @Override
     public double getPriority() {
