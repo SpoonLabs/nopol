@@ -1,32 +1,60 @@
 package fr.inria.lille.spirals.repair.synthesizer;
 
-import com.sun.jdi.*;
-import com.sun.jdi.event.*;
+import com.sun.jdi.AbsentInformationException;
+import com.sun.jdi.IncompatibleThreadStateException;
+import com.sun.jdi.ObjectReference;
+import com.sun.jdi.ReferenceType;
+import com.sun.jdi.StackFrame;
+import com.sun.jdi.ThreadReference;
+import com.sun.jdi.VirtualMachine;
+import com.sun.jdi.event.BreakpointEvent;
+import com.sun.jdi.event.ClassPrepareEvent;
+import com.sun.jdi.event.Event;
+import com.sun.jdi.event.EventQueue;
+import com.sun.jdi.event.EventSet;
+import com.sun.jdi.event.VMDeathEvent;
+import com.sun.jdi.event.VMDisconnectEvent;
 import com.sun.jdi.request.BreakpointRequest;
 import com.sun.jdi.request.ClassPrepareRequest;
 import com.sun.jdi.request.EventRequestManager;
-
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.expression.*;
+import fr.inria.lille.spirals.repair.expression.Constant;
+import fr.inria.lille.spirals.repair.expression.Expression;
+import fr.inria.lille.spirals.repair.expression.FieldAccess;
+import fr.inria.lille.spirals.repair.expression.MethodInvocation;
+import fr.inria.lille.spirals.repair.expression.PrimitiveConstantImpl;
+import fr.inria.lille.spirals.repair.expression.Variable;
 import fr.inria.lille.spirals.repair.synthesizer.collect.DataCollector;
 import fr.inria.lille.spirals.repair.synthesizer.collect.DataCombiner;
 import fr.inria.lille.spirals.repair.synthesizer.collect.SpoonElementsCollector;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.*;
+import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.ClassCollector;
+import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.ConstantCollector;
+import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.MethodCollector;
+import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.StatCollector;
+import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.VariableTypeCollector;
+import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.VariablesInSuspiciousCollector;
 import fr.inria.lille.spirals.repair.vm.DebugJUnitRunner;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import spoon.reflect.declaration.CtTypedElement;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -66,11 +94,28 @@ public class SynthesizerImpl implements Synthesizer {
 
 	private final int dataCollectionTimeoutInSeconds;
 
+	/**
+     * Create a new DynaMoth synthesizer
+     * @param spoon the spoon intance of the project
+     * @param projectRoots the root folders of the project
+     * @param location the location of the code to synthesiz
+     * @param classpath the classpath of the project
+     * @param oracle the oracle of the project Map<testClass#testMethod, {value iteration 1, value iteration 2, ...}>
+     * @param tests tests to execute
+     */
     public SynthesizerImpl(SpoonedProject spoon, File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests) {
         this(projectRoots, location, classpath, oracle, tests,5*60 /* 5 minutes, default in repair mode */);
         this.spoon = spoon;
     }
 
+	/**
+	 * Create a new DynaMoth synthesizer
+     * @param projectRoots the root folders of the project
+     * @param location the location of the code to synthesiz
+     * @param classpath the classpath of the project
+     * @param oracle the oracle of the project Map<testClass#testMethod, {value iteration 1, value iteration 2, ...}>
+     * @param tests tests to execute
+     */
     public SynthesizerImpl(File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, int dataCollectionTimeoutInSeconds) {
         this.projectRoots = projectRoots;
         this.location = location;

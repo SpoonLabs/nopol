@@ -2,17 +2,21 @@ package fr.inria.lille.spirals.repair.synthesizer;
 
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
-import fr.inria.lille.spirals.repair.expression.Expression;
 import fr.inria.lille.spirals.repair.commons.Candidates;
+import fr.inria.lille.spirals.repair.expression.Expression;
 import org.junit.Assert;
 import org.junit.Test;
 import xxl.java.library.JavaLibrary;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by spirals on 06/03/15.
@@ -159,6 +163,23 @@ public class SynthesizerTest {
         
         // the valid patches
         check(synthesizer.getValidExpressions(), "(list == null) || (0 == list.size())");
+        check(synthesizer.getValidExpressions(), "(list == null) || list.isEmpty()");
+    }
+
+    @Test
+    public void test13() throws InterruptedException {
+        Map<String, Object[]> oracle = new HashMap<>();
+        oracle.put("test_1", new Object[]{true, true});
+        oracle.put("test_2", new Object[]{false});
+        oracle.put("test_3", new Object[]{false});
+
+        Config.INSTANCE.setOnlyOneSynthesisResult(false);
+
+        Synthesizer synthesizer = createSynthesizer(13, oracle, 4);
+        System.out.println("basic: "+synthesizer.getCollectedExpressions());
+        //assertEquals(12,synthesizer.getCollectedExpressions().size());
+
+        // the valid patches
         check(synthesizer.getValidExpressions(), "(list == null) || list.isEmpty()");
     }
 
