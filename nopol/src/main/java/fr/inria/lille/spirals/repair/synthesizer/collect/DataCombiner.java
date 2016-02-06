@@ -217,10 +217,10 @@ public class DataCombiner {
             CombineListener combineListener = listeners.get(i);
             if (combineListener.check(expression)) {
                 stop = true;
-                return stop;
+                return true;
             }
         }
-        return stop;
+        return false;
     }
 
     public interface CombineListener {

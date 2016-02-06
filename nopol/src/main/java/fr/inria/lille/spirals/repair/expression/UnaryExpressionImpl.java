@@ -1,6 +1,7 @@
 package fr.inria.lille.spirals.repair.expression;
 
 
+import fr.inria.lille.spirals.repair.commons.Candidates;
 import fr.inria.lille.spirals.repair.expression.operator.UnaryOperator;
 
 /**
@@ -56,6 +57,28 @@ public class UnaryExpressionImpl extends ExpressionImpl implements UnaryExpressi
         }
     }
 
+    @Override
+    public Object evaluate(Candidates values) {
+
+        Object expValue = this.getExpression().getValue();
+
+        try {
+            ((ExpressionImpl) this.getExpression()).setValue(this.getExpression().evaluate(values));
+        } catch (RuntimeException e) {
+            ((ExpressionImpl) this.getExpression()).setValue(null);
+        }
+        Object value = null;
+        try {
+            value = getValueFromOperation();
+        } catch (ArithmeticException e) {
+            // ignore
+        }
+
+        ((ExpressionImpl) this.getExpression()).setValue(expValue);
+
+        return value;
+    }
+
     private Object getValueFromOperation() {
         if (!getOperator().getReturnType().isAssignableFrom(getExpression().getType())) {
             return null;
@@ -79,7 +102,7 @@ public class UnaryExpressionImpl extends ExpressionImpl implements UnaryExpressi
                 return !(Boolean)value;
             }
             return null;
-        case PREINC:
+        /*case PREINC:
         case POSTINC:
             if (value instanceof Integer) {
                 return ((Integer) value).intValue() + 1;
@@ -110,7 +133,7 @@ public class UnaryExpressionImpl extends ExpressionImpl implements UnaryExpressi
             } else if (value instanceof Byte) {
                 return ((Byte) value).byteValue() - 1;
             }
-            return null;
+            return null;*/
         }
         return null;
     }

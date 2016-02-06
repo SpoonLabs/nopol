@@ -3,12 +3,12 @@ package fr.inria.lille.spirals.repair.expression.operator;
 
 
 public enum UnaryOperator {
-    INV(Boolean.class, "!", OperatorPosition.PRE),
+    INV(Boolean.class, "!", OperatorPosition.PRE);
 
-    PREINC(Number.class, "++", OperatorPosition.PRE),
+    /*PREINC(Number.class, "++", OperatorPosition.PRE),
     POSTINC(Number.class, "++", OperatorPosition.POST),
     PREDEC(Number.class, "--", OperatorPosition.PRE),
-    POSTDEC(Number.class, "--", OperatorPosition.POST);
+    POSTDEC(Number.class, "--", OperatorPosition.POST)*/
 
     private final Class returnType;
     private final String symbol;
