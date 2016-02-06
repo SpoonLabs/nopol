@@ -41,6 +41,7 @@ public class Config {
     private boolean collectStaticMethods;
     private boolean collectStaticFields;
     private boolean collectLiterals;
+    private boolean collectOnlyUsedMethod;
     private boolean onlyOneSynthesisResult;
     private boolean sortExpressions;
     private int maxLineInvocationPerTest;
@@ -86,6 +87,7 @@ public class Config {
             collectStaticMethods = Boolean.parseBoolean(p.getProperty("collectStaticMethod", "false"));
             collectStaticFields = Boolean.parseBoolean(p.getProperty("collectStaticFields", "false"));
             collectLiterals = Boolean.parseBoolean(p.getProperty("collectLiteral", "false"));
+            collectOnlyUsedMethod = Boolean.parseBoolean(p.getProperty("collectOnlyUsedMethod", "true"));
             onlyOneSynthesisResult = Boolean.parseBoolean(p.getProperty("onlyOneSynthesisResult", "true"));
             sortExpressions = Boolean.parseBoolean(p.getProperty("sortExpression", "true"));
             maxLineInvocationPerTest = Integer.parseInt(p.getProperty("maxLineInvocationPerTest", "150"));
@@ -143,6 +145,14 @@ public class Config {
 
     public void setCollectLiterals(boolean collectLiterals) {
         this.collectLiterals = collectLiterals;
+    }
+
+    public boolean isCollectOnlyUsedMethod() {
+        return collectOnlyUsedMethod;
+    }
+
+    public void setCollectOnlyUsedMethod(boolean collectOnlyUsedMethod) {
+        this.collectOnlyUsedMethod = collectOnlyUsedMethod;
     }
 
     public boolean isOnlyOneSynthesisResult() {

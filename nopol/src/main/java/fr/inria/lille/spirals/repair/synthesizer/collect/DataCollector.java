@@ -325,11 +325,13 @@ public class DataCollector {
         if (method.isObsolete()) {
             return false;
         }
-        // ignore all methods not previously used
-        String className = method.declaringType().name();
-        String qualifiedMethodName = className.substring(0, className.lastIndexOf(".")) + "." + method.name();
-        if (!calledMethods.contains(qualifiedMethodName)) {
-             return false;
+        if(Config.INSTANCE.isCollectOnlyUsedMethod()) {
+            // ignore all methods not previously used
+            String className = method.declaringType().name();
+            String qualifiedMethodName =  className.substring(0, className.lastIndexOf(".")) + "." + method.name();
+            if (!calledMethods.contains(qualifiedMethodName)) {
+                return false;
+            }
         }
         return true;
     }
