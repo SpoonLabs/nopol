@@ -2,10 +2,9 @@ package fr.inria.lille.spirals.repair.expression;
 
 
 import com.sun.jdi.ObjectReference;
+import com.sun.jdi.PrimitiveType;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.Type;
-import com.sun.tools.jdi.ClassTypeImpl;
-
 import fr.inria.lille.spirals.repair.commons.Candidates;
 
 import java.security.MessageDigest;
@@ -84,7 +83,7 @@ public abstract class ExpressionImpl implements Expression {
         return inExpressions;
     }
 
-    private static final Class<?> getPrimitiveClass(String typeName) {
+    private static final Class<?> getClass(String typeName) {
         if (typeName.equals("byte"))
             return Byte.class;
         if (typeName.equals("short"))
@@ -103,7 +102,11 @@ public abstract class ExpressionImpl implements Expression {
             return Boolean.class;
         if (typeName.equals("void"))
             return void.class;
-        throw new IllegalArgumentException("Not primitive type : " + typeName);
+        try {
+            return Class.forName(typeName);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException("Class not found : " + typeName);
+        }
     }
 
     /** if the value of this expression compatible with type refAss? */
@@ -111,7 +114,14 @@ public abstract class ExpressionImpl implements Expression {
     public boolean isAssignableTo(Type refAss) {
 		try {
 			ReferenceType ref;
-			
+
+            if(this instanceof PrimitiveTypeExpression && !(refAss instanceof PrimitiveType)) {
+                return false;
+            }
+            if(this instanceof ComplexTypeExpression && (refAss instanceof PrimitiveType)) {
+                return false;
+            }
+
 			if (getValue() == null) {
 				// this should result in never passing null as method parameters
 				return false;
@@ -125,13 +135,18 @@ public abstract class ExpressionImpl implements Expression {
 						.getDeclaredMethod("isAssignableTo",
 								ReferenceType.class);
 				isAssignableTo.setAccessible(true);
-				return (boolean) isAssignableTo.invoke(ref, refAss);
+                try {
+                    return (boolean) isAssignableTo.invoke(ref, refAss);
+                } catch (IllegalArgumentException e) {
+                    // the two types are not compatible
+                    return false;
+                }
 			}
 			// or it is an actual value, a real object
 			else {
 				// classical isAssignableFrom
 				// constants are never handled in isAssignableTo
-				return Class.forName(refAss.name()).isAssignableFrom(
+				return getClass(refAss.name()).isAssignableFrom(
 						value.getClass());
 			}
 			
