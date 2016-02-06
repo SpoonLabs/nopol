@@ -12,3 +12,4 @@ jdk:
 cache:
   directories:
     - $HOME/.m2
+    - z3
