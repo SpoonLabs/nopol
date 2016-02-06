@@ -7,3 +7,8 @@ script: "./.travis_run_tests.sh"
 
 jdk:
   - oraclejdk7
+
+
+cache:
+  directories:
+    - $HOME/.m2
