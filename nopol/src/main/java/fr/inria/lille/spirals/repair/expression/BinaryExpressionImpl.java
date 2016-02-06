@@ -48,6 +48,21 @@ public abstract class BinaryExpressionImpl extends ExpressionImpl implements Bin
         return second;
     }
 
+    @Override
+    public void evaluate() {
+        try {
+            Object value = getValueFromOperation();
+            this.setValue(value);
+            if (value != null) {
+                this.setType(value.getClass());
+            }
+        } catch (ArithmeticException e) {
+            // ignore
+        }
+    }
+
+    protected abstract Object getValueFromOperation();
+
     public void setFirst(Expression first) {
         this.first = first;
     }

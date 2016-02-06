@@ -24,19 +24,6 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
     }
 
     @Override
-    public void evaluate() {
-        try {
-            Object value = getValueFromOperation();
-            this.setValue(value);
-            if (value != null) {
-                this.setType(value.getClass());
-            }
-        } catch (ArithmeticException e) {
-            // ignore
-        }
-    }
-
-    @Override
     public Object evaluate(Candidates values) {
 
         Object exp1Value = this.getFirstExpression().getValue();
@@ -66,7 +53,8 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
     }
 
 
-    private Object getValueFromOperation() {
+    @Override
+    protected Object getValueFromOperation() {
         if (!getOperator().getParam1().isAssignableFrom(getFirstExpression().getType())) {
             return null;
         }
@@ -218,6 +206,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue + ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case SUB:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue - ((Number) getSecondExpression().getValue()).intValue();
@@ -232,6 +221,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue - ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case MULT:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue * ((Number) getSecondExpression().getValue()).intValue();
@@ -246,6 +236,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue * ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case DIV:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue / ((Number) getSecondExpression().getValue()).intValue();
@@ -260,6 +251,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue / ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case EQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue == ((Number) getSecondExpression().getValue()).intValue();
@@ -274,6 +266,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue == ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case NEQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue != ((Number) getSecondExpression().getValue()).intValue();
@@ -288,6 +281,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue != ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case LESS:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue < ((Number) getSecondExpression().getValue()).intValue();
@@ -302,6 +296,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue < ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case LESSEQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue <= ((Number) getSecondExpression().getValue()).intValue();
@@ -316,6 +311,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue <= ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
         }
         return null;
     }
@@ -337,6 +333,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue + ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case SUB:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue - ((Number) getSecondExpression().getValue()).intValue();
@@ -351,6 +348,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue - ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case MULT:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue * ((Number) getSecondExpression().getValue()).intValue();
@@ -365,6 +363,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue * ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case DIV:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue / ((Number) getSecondExpression().getValue()).intValue();
@@ -379,6 +378,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue / ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case EQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue == ((Number) getSecondExpression().getValue()).intValue();
@@ -393,6 +393,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue == ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case NEQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue != ((Number) getSecondExpression().getValue()).intValue();
@@ -407,6 +408,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue != ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case LESS:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue < ((Number) getSecondExpression().getValue()).intValue();
@@ -421,6 +423,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue < ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case LESSEQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue <= ((Number) getSecondExpression().getValue()).intValue();
@@ -435,6 +438,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue <= ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
         }
         return null;
     }
@@ -456,6 +460,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue + ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case SUB:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue - ((Number) getSecondExpression().getValue()).intValue();
@@ -470,6 +475,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue - ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case MULT:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue * ((Number) getSecondExpression().getValue()).intValue();
@@ -484,6 +490,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue * ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case DIV:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue / ((Number) getSecondExpression().getValue()).intValue();
@@ -498,6 +505,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue / ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case EQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue == ((Number) getSecondExpression().getValue()).intValue();
@@ -512,6 +520,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue == ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case NEQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue != ((Number) getSecondExpression().getValue()).intValue();
@@ -526,6 +535,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue != ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case LESS:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue < ((Number) getSecondExpression().getValue()).intValue();
@@ -540,6 +550,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue < ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case LESSEQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue <= ((Number) getSecondExpression().getValue()).intValue();
@@ -554,6 +565,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue <= ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
         }
         return null;
     }
@@ -575,6 +587,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue + ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case SUB:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue - ((Number) getSecondExpression().getValue()).intValue();
@@ -589,6 +602,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue - ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case MULT:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue * ((Number) getSecondExpression().getValue()).intValue();
@@ -603,6 +617,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue * ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case DIV:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue / ((Number) getSecondExpression().getValue()).intValue();
@@ -617,6 +632,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue / ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case EQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue == ((Number) getSecondExpression().getValue()).intValue();
@@ -631,6 +647,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue == ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case NEQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue != ((Number) getSecondExpression().getValue()).intValue();
@@ -645,6 +662,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue != ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case LESS:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue < ((Number) getSecondExpression().getValue()).intValue();
@@ -659,6 +677,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue < ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case LESSEQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue <= ((Number) getSecondExpression().getValue()).intValue();
@@ -673,6 +692,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue <= ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
         }
         return null;
     }
@@ -694,6 +714,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue + ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case SUB:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue - ((Number) getSecondExpression().getValue()).intValue();
@@ -708,6 +729,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue - ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case MULT:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue * ((Number) getSecondExpression().getValue()).intValue();
@@ -722,6 +744,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue * ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case DIV:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue / ((Number) getSecondExpression().getValue()).intValue();
@@ -736,6 +759,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue / ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case EQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue == ((Number) getSecondExpression().getValue()).intValue();
@@ -750,6 +774,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue == ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case NEQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue != ((Number) getSecondExpression().getValue()).intValue();
@@ -764,6 +789,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue != ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case LESS:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue < ((Number) getSecondExpression().getValue()).intValue();
@@ -778,6 +804,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue < ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case LESSEQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue <= ((Number) getSecondExpression().getValue()).intValue();
@@ -792,6 +819,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue <= ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
         }
         return null;
     }
@@ -813,6 +841,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue + ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case SUB:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue - ((Number) getSecondExpression().getValue()).intValue();
@@ -827,6 +856,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue - ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case MULT:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue * ((Number) getSecondExpression().getValue()).intValue();
@@ -841,6 +871,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue * ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case DIV:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue / ((Number) getSecondExpression().getValue()).intValue();
@@ -855,6 +886,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue / ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case EQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue == ((Number) getSecondExpression().getValue()).intValue();
@@ -869,6 +901,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue == ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case NEQ:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue != ((Number) getSecondExpression().getValue()).intValue();
@@ -883,6 +916,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue != ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
             case LESS:
                 if (getSecondExpression().getValue() instanceof Integer) {
                     return firstValue < ((Number) getSecondExpression().getValue()).intValue();
@@ -911,6 +945,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 } else if (getSecondExpression().getValue() instanceof Byte) {
                     return firstValue <= ((Number) getSecondExpression().getValue()).byteValue();
                 }
+                break;
         }
         return null;
     }
@@ -925,6 +960,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 if (getSecondExpression().getValue() instanceof Boolean) {
                     return getSecondExpression().getValue();
                 }
+                break;
             case OR:
                 if (firstValue) {
                     return true;
@@ -932,6 +968,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 if (getSecondExpression().getValue() instanceof Boolean) {
                     return getSecondExpression().getValue();
                 }
+                break;
         }
         return null;
     }

@@ -83,7 +83,7 @@ public abstract class ExpressionImpl implements Expression {
         return inExpressions;
     }
 
-    private static final Class<?> getClass(String typeName) {
+    private Class<?> getClass(String typeName) {
         if (typeName.equals("byte"))
             return Byte.class;
         if (typeName.equals("short"))
