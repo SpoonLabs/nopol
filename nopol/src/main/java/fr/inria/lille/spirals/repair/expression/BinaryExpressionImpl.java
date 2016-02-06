@@ -2,14 +2,14 @@ package fr.inria.lille.spirals.repair.expression;
 
 
 import fr.inria.lille.repair.common.config.Config;
-import fr.inria.lille.spirals.repair.expression.operator.Operator;
+import fr.inria.lille.spirals.repair.expression.operator.BinaryOperator;
 
 /**
  * is the generic type of a binary expression
  */
 
 public abstract class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpression {
-    private Operator operator;
+    private BinaryOperator operator;
     private Expression first;
     private Expression second;
     private String strExpression = null;
@@ -17,7 +17,7 @@ public abstract class BinaryExpressionImpl extends ExpressionImpl implements Bin
     /**
      *
      */
-    public BinaryExpressionImpl(Operator operator, Expression first, Expression second, Object value, Class type) {
+    public BinaryExpressionImpl(BinaryOperator operator, Expression first, Expression second, Object value, Class type) {
         super(value, type);
         this.operator = operator;
         this.first = first;
@@ -28,7 +28,7 @@ public abstract class BinaryExpressionImpl extends ExpressionImpl implements Bin
      *
      */
 
-    public Operator getOperator() {
+    public BinaryOperator getOperator() {
         return operator;
     }
 

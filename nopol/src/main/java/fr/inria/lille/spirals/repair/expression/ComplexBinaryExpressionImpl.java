@@ -2,15 +2,15 @@ package fr.inria.lille.spirals.repair.expression;
 
 
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.expression.operator.Operator;
+import fr.inria.lille.spirals.repair.expression.operator.BinaryOperator;
 
 public class ComplexBinaryExpressionImpl extends BinaryExpressionImpl implements ComplexBinaryExpression {
 
-    public ComplexBinaryExpressionImpl(Operator operator, Expression first, Expression second, Object value, Class type) {
+    public ComplexBinaryExpressionImpl(BinaryOperator operator, Expression first, Expression second, Object value, Class type) {
         super(operator, first, second, value, Boolean.class);
     }
 
-    public ComplexBinaryExpressionImpl(Operator operator, Expression first, Expression second) {
+    public ComplexBinaryExpressionImpl(BinaryOperator operator, Expression first, Expression second) {
         super(operator, first, second, null, Boolean.class);
         evaluate();
     }
@@ -46,10 +46,10 @@ public class ComplexBinaryExpressionImpl extends BinaryExpressionImpl implements
         if (!getOperator().getParam2().isAssignableFrom(getSecondExpression().getType())) {
             return null;
         }
-        if (getFirstExpression().getValue() == null && !(getOperator() == Operator.EQ || getOperator() == Operator.NEQ)) {
+        if (getFirstExpression().getValue() == null && !(getOperator() == BinaryOperator.EQ || getOperator() == BinaryOperator.NEQ)) {
             return null;
         }
-        if (getSecondExpression().getValue() == null && !(getOperator() == Operator.EQ || getOperator() == Operator.NEQ || getOperator() == Operator.OR)) {
+        if (getSecondExpression().getValue() == null && !(getOperator() == BinaryOperator.EQ || getOperator() == BinaryOperator.NEQ || getOperator() == BinaryOperator.OR)) {
             return null;
         }
 

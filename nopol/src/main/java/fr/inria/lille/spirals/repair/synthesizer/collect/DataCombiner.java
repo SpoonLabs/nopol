@@ -3,7 +3,8 @@ package fr.inria.lille.spirals.repair.synthesizer.collect;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.spirals.repair.commons.Candidates;
 import fr.inria.lille.spirals.repair.expression.*;
-import fr.inria.lille.spirals.repair.expression.operator.Operator;
+import fr.inria.lille.spirals.repair.expression.operator.BinaryOperator;
+import fr.inria.lille.spirals.repair.expression.operator.UnaryOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +70,22 @@ public class DataCombiner {
             if (expression instanceof ComplexTypeExpression) {
                 continue;
             }
+            for (int j = 0; j < UnaryOperator.values().length; j++) {
+                UnaryOperator operator = UnaryOperator.values()[j];
+                if (value != null && operator.getReturnType() != value.getClass()) {
+                    continue;
+                }
+                if (!operator.getReturnType().isAssignableFrom(expression.getType())) {
+                    continue;
+                }
+                UnaryExpression unaryExpression = new UnaryExpressionImpl(operator, expression);
+                if (addExpressionIn(unaryExpression, result, value != null)) {
+                    expression.getInExpressions().add(unaryExpression);
+                    if (callListerner(unaryExpression) && Config.INSTANCE.isOnlyOneSynthesisResult()) {
+                        return result;
+                    }
+                }
+            }
             executionTime = System.currentTimeMillis() - startTime;
             for (int j = Math.max(i, previousSize); j < toCombine.size() && executionTime <= maxTime; j++) {
                 if (i == j) {
@@ -86,8 +103,8 @@ public class DataCombiner {
                     continue;
                 }
                 executionTime = System.currentTimeMillis() - startTime;
-                for (int k = 0; k < Operator.values().length && executionTime <= maxTime; k++) {
-                    Operator operator = Operator.values()[k];
+                for (int k = 0; k < BinaryOperator.values().length && executionTime <= maxTime; k++) {
+                    BinaryOperator operator = BinaryOperator.values()[k];
                     if (value != null && operator.getReturnType() != value.getClass()) {
                         continue;
                     }
@@ -107,7 +124,7 @@ public class DataCombiner {
         return result;
     }
 
-    private List<Expression> combineExpressionOperator(Expression expression, Expression expression1, Operator operator, Object value, List<Expression> result) {
+    private List<Expression> combineExpressionOperator(Expression expression, Expression expression1, BinaryOperator operator, Object value, List<Expression> result) {
         BinaryExpression binaryExpression = new PrimitiveBinaryExpressionImpl(operator, expression, expression1);
         if (addExpressionIn(binaryExpression, result, value != null)) {
             expression.getInExpressions().add(binaryExpression);
@@ -156,7 +173,8 @@ public class DataCombiner {
                 continue;
             }
 
-            BinaryExpression binaryExpression = new ComplexBinaryExpressionImpl(Operator.EQ, expression, nullExpression);
+            BinaryExpression binaryExpression = new ComplexBinaryExpressionImpl(
+                    BinaryOperator.EQ, expression, nullExpression);
             if (addExpressionIn(binaryExpression, result, value != null)) {
                 expression.getInExpressions().add(binaryExpression);
                 if (!expression.sameExpression(nullExpression)) {
@@ -167,7 +185,7 @@ public class DataCombiner {
                 }
             }
 
-            binaryExpression = new ComplexBinaryExpressionImpl(Operator.NEQ, expression, nullExpression);
+            binaryExpression = new ComplexBinaryExpressionImpl(BinaryOperator.NEQ, expression, nullExpression);
             if (addExpressionIn(binaryExpression, result, value != null)) {
                 expression.getInExpressions().add(binaryExpression);
                 if (!expression.sameExpression(nullExpression)) {

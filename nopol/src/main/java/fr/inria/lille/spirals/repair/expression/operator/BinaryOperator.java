@@ -4,7 +4,7 @@ package fr.inria.lille.spirals.repair.expression.operator;
 /**
  *
  */
-public enum Operator {
+public enum BinaryOperator {
     AND(Boolean.class, "&&", Boolean.class, Boolean.class, false),
     OR(Boolean.class, "||", Boolean.class, Boolean.class, false),
     EQ(Boolean.class, "==", Object.class, Object.class, true),
@@ -29,7 +29,7 @@ public enum Operator {
     /**
      *
      */
-    Operator(Class returnType, String symbol, Class param1, Class param2, boolean isCommutative) {
+    BinaryOperator(Class returnType, String symbol, Class param1, Class param2, boolean isCommutative) {
         this.returnType = returnType;
         this.symbol = symbol;
         this.param1 = param1;

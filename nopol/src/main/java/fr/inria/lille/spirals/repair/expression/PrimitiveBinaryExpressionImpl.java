@@ -2,7 +2,7 @@ package fr.inria.lille.spirals.repair.expression;
 
 
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.expression.operator.Operator;
+import fr.inria.lille.spirals.repair.expression.operator.BinaryOperator;
 
 /**
  *
@@ -14,11 +14,11 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
     /**
      *
      */
-    public PrimitiveBinaryExpressionImpl(Operator operator, Expression first, Expression second, Object value, Class type) {
+    public PrimitiveBinaryExpressionImpl(BinaryOperator operator, Expression first, Expression second, Object value, Class type) {
         super(operator, first, second, value, type);
     }
 
-    public PrimitiveBinaryExpressionImpl(Operator operator, Expression first, Expression second) {
+    public PrimitiveBinaryExpressionImpl(BinaryOperator operator, Expression first, Expression second) {
         super(operator, first, second, null, operator.getReturnType());
         evaluate();
     }
@@ -61,23 +61,23 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
         if (!getOperator().getParam2().isAssignableFrom(getSecondExpression().getType())) {
             return null;
         }
-        if (getFirstExpression().getValue() == null && !(getOperator() == Operator.EQ || getOperator() == Operator.NEQ)) {
+        if (getFirstExpression().getValue() == null && !(getOperator() == BinaryOperator.EQ || getOperator() == BinaryOperator.NEQ)) {
             return null;
         }
-        if (getSecondExpression().getValue() == null && !(getOperator() == Operator.EQ || getOperator() == Operator.NEQ || getOperator() == Operator.OR)) {
+        if (getSecondExpression().getValue() == null && !(getOperator() == BinaryOperator.EQ || getOperator() == BinaryOperator.NEQ || getOperator() == BinaryOperator.OR)) {
             return null;
         }
         if (Number.class.isAssignableFrom(getFirstExpression().getType()) && getFirstExpression() instanceof Constant) {
             Number value = ((Number) getFirstExpression().getValue());
             if (value != null) {
                 int val = value.intValue();
-                if (val == 0 && (getOperator() == Operator.MULT || getOperator() == Operator.DIV)) {
+                if (val == 0 && (getOperator() == BinaryOperator.MULT || getOperator() == BinaryOperator.DIV)) {
                     return null;
                 }
-                if (val == 1 && (getOperator() == Operator.MULT)) {
+                if (val == 1 && (getOperator() == BinaryOperator.MULT)) {
                     return null;
                 }
-                if (val == 0 && (getOperator() == Operator.ADD)) {
+                if (val == 0 && (getOperator() == BinaryOperator.ADD)) {
                     return null;
                 }
             }
@@ -86,22 +86,22 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
             Number value = ((Number) getSecondExpression().getValue());
             if (value != null) {
                 int val = value.intValue();
-                if (val == 0 && (getOperator() == Operator.MULT || getOperator() == Operator.DIV)) {
+                if (val == 0 && (getOperator() == BinaryOperator.MULT || getOperator() == BinaryOperator.DIV)) {
                     return null;
                 }
-                if (val == 1 && (getOperator() == Operator.MULT || getOperator() == Operator.DIV)) {
+                if (val == 1 && (getOperator() == BinaryOperator.MULT || getOperator() == BinaryOperator.DIV)) {
                     return null;
                 }
-                if (val == 0 && (getOperator() == Operator.ADD || getOperator() == Operator.SUB)) {
+                if (val == 0 && (getOperator() == BinaryOperator.ADD || getOperator() == BinaryOperator.SUB)) {
                     return null;
                 }
             }
         }
-        if (getOperator() == Operator.SUB) {
+        if (getOperator() == BinaryOperator.SUB) {
             if (getFirstExpression().sameExpression(getSecondExpression())) {
                 return null;
             }
-            if (getFirstExpression() instanceof BinaryExpression && ((BinaryExpression) getFirstExpression()).getOperator() == Operator.ADD) {
+            if (getFirstExpression() instanceof BinaryExpression && ((BinaryExpression) getFirstExpression()).getOperator() == BinaryOperator.ADD) {
                 if (((BinaryExpression) getFirstExpression()).getFirstExpression().sameExpression(getSecondExpression()) ||
                         ((BinaryExpression) getFirstExpression()).getSecondExpression().sameExpression(getSecondExpression())) {
                     return null;
@@ -125,11 +125,11 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
                 }
             }
 
-            if ((getOperator() == Operator.AND || getOperator() == Operator.OR) && b1.getFirstExpression().sameExpression(b2.getFirstExpression()) && b1.getSecondExpression().sameExpression(b2.getSecondExpression())) {
-                if (b1.getOperator() == Operator.EQ && (b2.getOperator() == Operator.LESSEQ || b2.getOperator() == Operator.NEQ)) {
+            if ((getOperator() == BinaryOperator.AND || getOperator() == BinaryOperator.OR) && b1.getFirstExpression().sameExpression(b2.getFirstExpression()) && b1.getSecondExpression().sameExpression(b2.getSecondExpression())) {
+                if (b1.getOperator() == BinaryOperator.EQ && (b2.getOperator() == BinaryOperator.LESSEQ || b2.getOperator() == BinaryOperator.NEQ)) {
                     return null;
                 }
-                if (b2.getOperator() == Operator.EQ && (b1.getOperator() == Operator.LESSEQ || b1.getOperator() == Operator.NEQ)) {
+                if (b2.getOperator() == BinaryOperator.EQ && (b1.getOperator() == BinaryOperator.LESSEQ || b1.getOperator() == BinaryOperator.NEQ)) {
                     return null;
                 }
             }
@@ -138,7 +138,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
             BinaryExpression b1 = ((BinaryExpression) getFirstExpression());
             Variable v2 = ((Variable) getSecondExpression());
 
-            if (b1.getOperator() == Operator.ADD && (b1.getFirstExpression().sameExpression(v2) || b1.getSecondExpression().sameExpression(v2))) {
+            if (b1.getOperator() == BinaryOperator.ADD && (b1.getFirstExpression().sameExpression(v2) || b1.getSecondExpression().sameExpression(v2))) {
                 return null;
             }
         }
@@ -146,7 +146,7 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
             BinaryExpression b1 = ((BinaryExpression) getSecondExpression());
             Variable v2 = ((Variable) getFirstExpression());
 
-            if (b1.getOperator() == Operator.ADD && (b1.getFirstExpression().sameExpression(v2) || b1.getSecondExpression().sameExpression(v2))) {
+            if (b1.getOperator() == BinaryOperator.ADD && (b1.getFirstExpression().sameExpression(v2) || b1.getSecondExpression().sameExpression(v2))) {
                 return null;
             }
         }
@@ -174,15 +174,15 @@ public class PrimitiveBinaryExpressionImpl extends BinaryExpressionImpl implemen
 
     private Object executeOperatorComplex() {
         if (getSecondExpression().getValue() == null) {
-            if (getOperator() == Operator.EQ) {
+            if (getOperator() == BinaryOperator.EQ) {
                 return getFirstExpression().getValue() == null;
-            } else if (getOperator() == Operator.NEQ) {
+            } else if (getOperator() == BinaryOperator.NEQ) {
                 return getFirstExpression().getValue() != null;
             }
         } else {
-            if (getOperator() == Operator.EQ) {
+            if (getOperator() == BinaryOperator.EQ) {
                 return getFirstExpression().getValue() == getSecondExpression().getValue();
-            } else if (getOperator() == Operator.NEQ) {
+            } else if (getOperator() == BinaryOperator.NEQ) {
                 return getFirstExpression().getValue() != getSecondExpression().getValue();
             }
         }
