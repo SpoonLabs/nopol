@@ -1,6 +1,7 @@
 package fr.inria.lille.repair.nopol.spoon.symbolic;
 
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
+import fr.inria.lille.repair.nopol.spoon.smt.ConditionalProcessor;
 import gov.nasa.jpf.symbc.Debug;
 import spoon.reflect.code.*;
 
@@ -13,16 +14,7 @@ public class SymbolicConditionalReplacer extends NopolProcessor {
     }
 
     public static CtExpression<Boolean> getCondition(CtStatement element) {
-        CtExpression<Boolean> condition;
-        if (element instanceof CtIf) {
-            condition = ((CtIf) element).getCondition();
-        } else if (element instanceof CtConditional) {
-            condition = ((CtConditional<?>) element).getCondition();
-        } else {
-            throw new IllegalStateException("Unknown conditional class: "
-                    + element.getClass());
-        }
-        return condition;
+        return ConditionalProcessor.getCondition(element);
     }
 
     @Override
