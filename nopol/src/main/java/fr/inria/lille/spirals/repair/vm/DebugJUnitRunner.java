@@ -66,7 +66,7 @@ public class DebugJUnitRunner {
             }
             File file = new File(url.getFile());
             if (file.exists()) {
-                strClasspath += file.getAbsoluteFile() + ":";
+                strClasspath += file.getAbsolutePath() + File.pathSeparatorChar;
             }
         }
 
