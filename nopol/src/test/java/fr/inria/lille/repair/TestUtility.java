@@ -36,7 +36,7 @@ public abstract class TestUtility {
 
     public ProjectReference projectForExample(int nopolExampleNumber) {
         String sourceFile = "../test-projects/src/";
-        String classpath = "../test-projects/target/test-classes:../test-projects/target/classes:misc/nopol-example/junit-4.11.jar";
+        String classpath = "../test-projects/target/test-classes"+File.pathSeparatorChar+"../test-projects/target/classes"+File.pathSeparatorChar+"misc/nopol-example/junit-4.11.jar";
         String[] testClasses = new String[] { executionType + "_examples." + executionType + "_example_"
                 + nopolExampleNumber + ".NopolExampleTest" };
         return new ProjectReference(sourceFile, classpath, testClasses);
@@ -101,15 +101,15 @@ public abstract class TestUtility {
         String srcFolder = rootFolder + "src/";
         String binFolder = rootFolder + "bin/";
         if(isMaven || true) {
-            binFolder = rootFolder + "target/classes:" + rootFolder + "target/test-classes";
+            binFolder = rootFolder + "target/classes" + File.pathSeparatorChar + rootFolder + "target/test-classes";
         }
         String libFolder = rootFolder + "../../data/lib/";
 
-        String classpath = binFolder + ":";
+        String classpath = binFolder + File.pathSeparatorChar;
         for (int i = 0; i<dependencies.length; i++) {
             classpath += libFolder + dependencies[i];
             if(i<dependencies.length -1) {
-                classpath += ":";
+                classpath += File.pathSeparatorChar;
             }
         }
         SolverFactory.setSolver(solver, solverPath);
