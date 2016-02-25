@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,6 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.evosuite.EvoSuite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,12 +44,12 @@ public class Main {
     public final static StatementType nopolType = StatementType.CONDITIONAL;
     public final static int maxTime = 10;
     public final static Logger logger = LoggerFactory.getLogger(Main.class);
-    
+
     public static String solverPath =  null; //"lib/z3/z3_for_linux";
     public static String evosuitePath =  null; //"misc/evo/evosuite-1.0.2.jar";
-    
-    public static List<CtMethod>  keptMethods = new ArrayList<CtMethod>();
-    public static List<CtMethod>  removedMethods = new ArrayList<CtMethod>();
+
+    public static List<CtMethod<?>>  keptMethods = new ArrayList<CtMethod<?>>();
+    public static List<CtMethod<?>>  removedMethods = new ArrayList<CtMethod<?>>();
     public static Map<String, List<Patch>> patches = new LinkedHashMap<String,List<Patch>>();
 
     public static void main(String[] args) throws IOException, ParseException {
@@ -65,11 +63,9 @@ public class Main {
         String newTestFolder = null;
         String dependencies = null;
         String testClasses = null;
-        
-        
+
+
         Options options = new Options();
-        //options.addOption("typeOfBug", true, "type of bug (Chart, Math, Lang or Time");
-        //options.addOption("numberOfBug", true, "number of bug (ex: 85 for Math85)");
         options.addOption("cpClassFolder", true, "classes files (ex: project/target/classes)");
         options.addOption("cpTestFolder", true, "classes test files (ex: project/target/test-classes)");
         options.addOption("srcClassFolder", true, "location of project files (ex: project/src/java)");
@@ -79,7 +75,7 @@ public class Main {
         options.addOption("destCpTestFolder", true, "java files where new tests will be compiled after validation. (ex: project/target/test-classes) default: cpTestFolder");
         options.addOption("dependencies", true, "all other class or jar required for the news tests. cpClassFolde & cpTestFolder are not necessary. (ex: junit, hamcrest, evosuite)");
         options.addOption("testClasses", true, "test classes used to generate patch (default : null = all classes)");
-        
+
         options.addOption("solverPath", true, "path for the solver");
         options.addOption("evosuitePath", true, "path of evosuite jar");
 
@@ -133,7 +129,7 @@ public class Main {
         if (cmd.getOptionValue("evosuitePath") != null) {
             evosuitePath = cmd.getOptionValue("evosuitePath");
         }
-        
+
         if(!cmd.hasOption("cpClassFolder") || !cmd.hasOption("cpTestFolder") ||
                 !cmd.hasOption("srcClassFolder") || !cmd.hasOption("srcTestFolder")
                 || !cmd.hasOption("solverPath") || !cmd.hasOption("evosuitePath")) {
@@ -149,10 +145,10 @@ public class Main {
 
 
     /**
-     * this method analyze all java class in generatedTestDir and return paths composed of package + class
+     * this method analyze all java class in generatedTestDir and return java paths composed of packages.class
      * @param generatedTestDir
      * @param classPath
-     * @return
+     * @return List<String> list of class ({package.package.classname})
      */
     public static List<String> getNewTestClasses(String generatedTestFolder, String classPath){
 
@@ -180,10 +176,10 @@ public class Main {
      * this method analyze all java class in generatedTestDir and return a list of all Junit method
      * @param generatedTestDir
      * @param classPath
-     * @return
+     * @return List<CtMethod> list of methods
      */
-    public static List<CtMethod> getNewTestsMethods(String generatedTestFolder, String classPath){
-        List<CtMethod>  testsMethods = new ArrayList<CtMethod>();
+    public static List<CtMethod<?>> getNewTestsMethods(String generatedTestFolder, String classPath){
+        List<CtMethod<?>>  testsMethods = new ArrayList<CtMethod<?>>();
 
         logger.debug("--------------------------------------------------");
         logger.debug(" ##### Search tests methods ##### ");
@@ -211,18 +207,22 @@ public class Main {
 
 
     /**
-     * 
-     * @param typeOfBug
-     * @param numberOfBug
-     * @param bugFolder
-     * @param numberOfTurn
-     * @return
-     * @throws PatchNotFoundException 
+     * Launch nopol on project
+     * @param cpClassFolder : location of project's compiled java
+     * @param cpTestFolder : location of project's compiled tests
+     * @param srcClassFolder : location of project's java
+     * @param srcTestFolder : location of project's tests
+     * @param destSrcTestFolder : location for the kept tests
+     * @param destCpTestFolder : location to compile the kept tests
+     * @param dependencies : all dependencies for the project and evosuite tests
+     * @param testClasses : test class used to generate patch (null for all tests)
+     * @return  the list of patch found by nopol
      */
     public static List<Patch> NopolPatchGeneration(String cpClassFolder,String  cpTestFolder, 
             String srcClassFolder, String srcTestFolder, String destSrcTestFolder, 
             String destCpTestFolder, String dependencies, String[] testClasses) {
 
+        //sources contain main java and test java.
         String sources = srcClassFolder+File.pathSeparatorChar+srcTestFolder+File.pathSeparatorChar+destSrcTestFolder;
         String cp = cpClassFolder+File.pathSeparatorChar+cpTestFolder+File.pathSeparatorChar+destCpTestFolder+File.pathSeparatorChar+dependencies;
 
@@ -233,17 +233,17 @@ public class Main {
             sourceFiles[i] = FileLibrary.openFrom(sourcesArray[i]);	
         }
 
-        
+
         //create classpath
         //URL[] classPath = FileUtils.getURLs(sources.split(File.pathSeparator));
         URL[] classPath = JavaLibrary.classpathFrom(cp);
 
-        
-        System.out.println("SOURCES = "+sources);
-        System.out.println("CLASSPATH = "+cp);
-        System.out.println("testClasses = "+testClasses);
-        
-        
+        logger.debug("Launch nopol with:");
+        logger.debug("sources = "+sources);
+        logger.debug("classpath = "+cp);
+        logger.debug("testClasses = "+testClasses);
+
+
         Config.INSTANCE.setMaxTime(maxTime);
         NoPol nopol = new NoPol(sourceFiles, classPath, nopolType);
         List<Patch> currentPatches;
@@ -253,19 +253,23 @@ public class Main {
         else{
             currentPatches = nopol.build(testClasses);
         }
-        
+
         return currentPatches;
     }
 
+
     /**
-     * 
-     * @param cpClassFolder
-     * @param cpTestFolder
-     * @param srcClassFolder
-     * @param srcTestFolder
-     * @param destSrcTestDir
-     * @param newTestDir
-     * @param dependencies
+     * Launch nopol with all tests added one by one on the project
+     * @param cpClassFolder : location of project's compiled java
+     * @param cpTestFolder : location of project's compiled tests
+     * @param srcClassFolder : location of project's java
+     * @param srcTestFolder : location of project's tests
+     * @param destSrcTestFolder : location for the kept tests
+     * @param destCpTestFolder : location to compile the kept tests
+     * @param newTestFolder : location to generate news tests
+     * @param dependencies : all dependencies for the project and evosuite tests
+     * @param generateTest : boolean, false if tests are already generated in newTestFolder
+     * @param firstTestClasses : tests class used to generate patch
      */
     public static void tryAllTests(String cpClassFolder, String cpTestFolder, 
             String srcClassFolder, String srcTestFolder, String destSrcTestFolder, 
@@ -299,7 +303,7 @@ public class Main {
             logger.debug(patch.toString());
         }
         className = currentPatches.get(0).getRootClassName();
-        
+
         className = "org.apache.commons.math.analysis.solvers.UnivariateRealSolverUtils";
         if(generateTest){
             logger.debug(" #### run EvoSuite jar #### ");
@@ -307,26 +311,27 @@ public class Main {
         }
 
         List<String> newTestClasses = getNewTestClasses(newTestFolder, classPath);
-        
+
         if(testClasses != null){
             testClasses = concat(testClasses, newTestClasses.toArray(new String[newTestClasses.size()]));
         }
 
-        List<CtMethod> testsMethods = getNewTestsMethods(newTestFolder, classPath);
+        List<CtMethod<?>> testsMethods = getNewTestsMethods(newTestFolder, classPath);
 
 
         logger.debug("###########################################");
         logger.debug("######## start to try each methods ########");
         logger.debug("###########################################");
-        int numberOfTurn = 0;
-        for(CtMethod method : testsMethods){
+        for(CtMethod<?> method : testsMethods){
             logger.debug("--------------------------------------------------");
             logger.debug("# TEST METHOD : "+method.getSignature());
             logger.debug("--------------------------------------------------");
 
+            keptMethods.add(method);
+
             logger.debug("### Remove EvoSuite &  Recompile Tests ");
             Launcher spoonLauncher = new Launcher();
-            spoonLauncher.addProcessor(new TestSelectionProcessor(method, keptMethods));
+            spoonLauncher.addProcessor(new TestSelectionProcessor(keptMethods));
             spoonLauncher.addProcessor(new RemoveEvosuiteEffectsProcessor());
             spoonLauncher.addInputResource(newTestFolder);
             spoonLauncher.getEnvironment().setSourceClasspath(classPath.split(File.pathSeparator));
@@ -344,24 +349,23 @@ public class Main {
                     logger.debug(patch.toString());
                 }
                 logger.debug("### METHOD KEPT : "+method.getSignature());
-                keptMethods.add(method);
             }
             else{
                 logger.debug("### ----- NO PATCH FOUND -----");
                 logger.debug("### METHOD REMOVED : "+method.getSignature());
+                keptMethods.remove(method);
                 removedMethods.add(method);
             }
             patches.put(method.getSimpleName(), currentPatches);
 
             displayHistory();
 
-            numberOfTurn++;
         }
-        
+
 
         logger.debug("### End of program. Recompile keeping all good tests");
         Launcher lastLauncher = new Launcher();
-        lastLauncher.addProcessor(new TestSelectionProcessor(null, keptMethods));
+        lastLauncher.addProcessor(new TestSelectionProcessor(keptMethods));
         lastLauncher.addProcessor(new RemoveEvosuiteEffectsProcessor());
         lastLauncher.addInputResource(newTestFolder);
         lastLauncher.getEnvironment().setSourceClasspath(classPath.split(File.pathSeparator));
@@ -369,13 +373,16 @@ public class Main {
         lastLauncher.getEnvironment().setShouldCompile(true);
         lastLauncher.setBinaryOutputDirectory(destCpTestFolder);
         lastLauncher.run();
-        
+
         displayHistory();
     }
 
 
 
 
+    /**
+     * Display all patches generated for each method
+     */
     private static void displayHistory() {
         for (Map.Entry<String, List<Patch>> entry : patches.entrySet()) {
             String method = entry.getKey();
@@ -385,33 +392,16 @@ public class Main {
             }
             logger.debug(method+" <===> "+patch);
         }  
-        
+
     }
 
-
     /**
-     * 
+     * Generate evosuite test on newTestFolder for the class ClassName on the project classPath
      * @param newTestFolder
      * @param classPath
      * @param className
-     * @return
+     * @return newTestFolder
      */
-    /*public static String generateEvoSuiteTests(String newTestFolder, String classPath, String className){
-
-        String[] cmd = new String[]{"-class",className,"-projectCP",classPath,"-generateSuite",
-                "-Dsearch_budget=30","-Dstopping_condition=MaxTime","-Dno_runtime_dependency=true",
-                "-Dtest_dir="+newTestFolder};
-        try {
-            EvoSuite evosuite = new EvoSuite();
-            evosuite.parseCommandLine(cmd);
-        } catch (Throwable t) {
-            logger.debug("Fatal crash on main EvoSuite process");
-            System.exit(-1);
-        }
-        
-
-        return newTestFolder;
-    }*/
     public static String generateEvoSuiteTests(String newTestFolder, String classPath, String className){
         List<String> cmd = new ArrayList<String>();
         cmd.add("java");
@@ -426,58 +416,29 @@ public class Main {
         cmd.add("-Dstopping_condition=MaxTime");
         cmd.add("-Dno_runtime_dependency=true");
         cmd.add("-Dtest_dir="+newTestFolder);
-        
+
         ProcessBuilder pb = new ProcessBuilder(cmd);
-        Map<String, String> env = pb.environment();
+        //Map<String, String> env = pb.environment();
         Process p = null;
         try {
-                //pb.inheritIO(); //doesnt work caus maven http://stackoverflow.com/questions/17525441/redirect-i-o-of-subprocess-in-java-why-doesnt-processbuilder-inheritio-work
-                p = pb.start();
+            pb.inheritIO();
+            p = pb.start();
+            p.waitFor();
         } catch (IOException e1) {
-                e1.printStackTrace();
-        }
-        
-        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-        StringBuilder builder = new StringBuilder();
-        String line = null;
-        try {
-                while ( (line = reader.readLine()) != null) {
-                        builder.append(line);
-                        builder.append(System.getProperty("line.separator"));
-                }
-        } catch (IOException e) {
-                e.printStackTrace();
-        }
-        String result = builder.toString();
-        
-        try{
-                File file = new File("evoOutput.txt");
-                FileWriter fileWriter = new FileWriter(file);
-                fileWriter.write(result);
-                fileWriter.flush();
-                fileWriter.close();
-        } catch (IOException e) {
-                e.printStackTrace();
-        }
-        
-        
+            e1.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } 
+       
         return newTestFolder;
     }
 
-    public static void SaveResult(String result, String fileName){
-        try{
-            new File(outputsDir).mkdirs();
-            File file = new File(outputsDir+fileSeparator+fileName+".txt");
-            FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write(result);
-            fileWriter.flush();
-            fileWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
+    /**
+     * concatenate a & b String array
+     * @param a
+     * @param b
+     * @return a concatenated with b
+     */
     public static String[] concat(String[] a, String[] b) {
         int aLen = a.length;
         int bLen = b.length;

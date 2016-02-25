@@ -39,6 +39,7 @@ public class TestPatchEvo {
 		FileUtils.deleteDirectory(new File(destSrcTestFolder));
 		FileUtils.deleteDirectory(new File(destCpTestFolder));
 		
+		Main.solverPath = "lib/z3/z3_for_linux";
 		Main.tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, generateTest, testClasses);
 		
 		for(Map.Entry entry : Main.patches.entrySet()){
@@ -49,7 +50,7 @@ public class TestPatchEvo {
 		assertEquals("evo_examples.evo_example_1.EvoExample:9: CONDITIONAL number < evo_examples.evo_example_1.EvoExample.this.value", Main.patches.get("basic").get(0).toString());
 		assertEquals("evo_examples.evo_example_1.EvoExample:9: CONDITIONAL number <= 0",Main.patches.get("test_evo_example_generated_0").get(0).toString());
 		assertEquals(0,Main.patches.get("test_evo_example_generated_1").size());
-		
+		assertEquals(1,Main.keptMethods.size());
 	}
 
 }
