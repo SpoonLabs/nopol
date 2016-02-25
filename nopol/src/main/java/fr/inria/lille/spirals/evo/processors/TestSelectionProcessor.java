@@ -10,50 +10,44 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
 
 /**
- * This processor remove all method which are not contains in keptMethod and methodTested
+ * This processor remove all methods that are not methodTested and not in keptMethods list.
  * just compare the signatures of methods.
  * @author dufaux
  *
  */
-public class TestSelectionProcessor extends AbstractProcessor<CtMethod>{
+public class TestSelectionProcessor extends AbstractProcessor<CtMethod<?>>{
 
-	private CtMethod methodTested;
-	private List<CtMethod> keptMethods;
+    private List<CtMethod<?>> keptMethods;
 
-	public TestSelectionProcessor(CtMethod methodTested, List<CtMethod> keptMethods ){
-		this.methodTested = methodTested;
-		this.keptMethods = keptMethods;
-	}
+    public TestSelectionProcessor(List<CtMethod<?>> keptMethods ){
+        this.keptMethods = keptMethods;
+    }
 
-	public void process(CtMethod element) {
-		
-		//getEnvironment().setAutoImports(true);
-		boolean isTest = false;
-		for(CtAnnotation<? extends Annotation> annotation : element.getAnnotations()){
-			if(annotation.getSignature().equals("@org.junit.Test")){
-				isTest = true;
-			}
-		}
-		
-		if(!isTest){
-			//System.out.println("keep '"+element.getSignature()+"'");
-			return; //keep this one
-		}
-		
-		if(methodTested != null && element.getSignature().equals(methodTested.getSignature())){
-			//System.out.println("keep '"+element.getSignature()+"'");
-			return; //keep this one
-		}
-		
-		for(CtMethod method : keptMethods){
-			if(element.getSignature().equals(method.getSignature())){
-				//System.out.println("keep '"+element.getSignature()+"'");
-				return; //keep this one
-			}
-		}
-		
-		//System.out.println("remove "+element.getSignature());
-		element.getParent(CtClass.class).removeMethod(element);
-	}
+    public void process(CtMethod<?> element) {
+        element.getParent(CtClass.class).removeMethod(element);
+    }
+
+    @Override
+    public boolean isToBeProcessed(CtMethod element){
+
+        boolean isTest = false;
+        for(CtAnnotation<? extends Annotation> annotation : element.getAnnotations()){
+            if(annotation.getSignature().equals("@org.junit.Test")){
+                isTest = true;
+            }
+        }
+
+        if(!isTest){
+            return false; //keep this one
+        }
+
+        for(CtMethod<?> method : keptMethods){
+            if(element.getSignature().equals(method.getSignature())){
+                return false; //keep this one
+            }
+        }
+
+        return super.isToBeProcessed(element);
+    }
 
 }
