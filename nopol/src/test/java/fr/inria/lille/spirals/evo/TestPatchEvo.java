@@ -51,6 +51,10 @@ public class TestPatchEvo {
 		assertEquals("evo_examples.evo_example_1.EvoExample:9: CONDITIONAL number <= 0",Main.patches.get("test_evo_example_generated_0").get(0).toString());
 		assertEquals(0,Main.patches.get("test_evo_example_generated_1").size());
 		assertEquals(1,Main.keptMethods.size());
+
+                //remove java tests
+                FileUtils.deleteDirectory(new File(destSrcTestFolder));
+                FileUtils.deleteDirectory(new File(destCpTestFolder));
 	}
 
 }
