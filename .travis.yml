@@ -1,6 +1,6 @@
 language: java
 
-sudo: false
+sudo: true
 
 install: "./.travis_install.sh"
 script: "./.travis_run_tests.sh"
