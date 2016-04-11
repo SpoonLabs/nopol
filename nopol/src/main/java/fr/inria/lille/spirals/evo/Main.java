@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -303,8 +304,6 @@ public class Main {
             logger.debug(patch.toString());
         }
         className = currentPatches.get(0).getRootClassName();
-
-        className = "org.apache.commons.math.analysis.solvers.UnivariateRealSolverUtils";
         if(generateTest){
             logger.debug(" #### run EvoSuite jar #### ");
             generateEvoSuiteTests(newTestFolder, classPath, className);
@@ -338,6 +337,7 @@ public class Main {
             spoonLauncher.setOutputDirectory(destSrcTestFolder);
             spoonLauncher.getEnvironment().setShouldCompile(true);
             spoonLauncher.setBinaryOutputDirectory(destCpTestFolder);
+            spoonLauncher.getEnvironment().setComplianceLevel(7);
             spoonLauncher.run();
 
 

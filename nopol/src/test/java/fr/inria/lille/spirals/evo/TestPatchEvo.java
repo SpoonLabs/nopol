@@ -1,15 +1,13 @@
 package fr.inria.lille.spirals.evo;
 
-import static org.junit.Assert.*;
+import org.apache.commons.io.FileUtils;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.Test;
-
-import spoon.Launcher;
+import static org.junit.Assert.assertEquals;
 
 public class TestPatchEvo {
 
@@ -48,13 +46,13 @@ public class TestPatchEvo {
 
 		//check if we got the rights patches
 		assertEquals("evo_examples.evo_example_1.EvoExample:9: CONDITIONAL number < evo_examples.evo_example_1.EvoExample.this.value", Main.patches.get("basic").get(0).toString());
-		assertEquals("evo_examples.evo_example_1.EvoExample:9: CONDITIONAL number <= 0",Main.patches.get("test_evo_example_generated_0").get(0).toString());
+		assertEquals("evo_examples.evo_example_1.EvoExample:9: CONDITIONAL number < 1",Main.patches.get("test_evo_example_generated_0").get(0).toString());
 		assertEquals(0,Main.patches.get("test_evo_example_generated_1").size());
 		assertEquals(1,Main.keptMethods.size());
 
-                //remove java tests
-                FileUtils.deleteDirectory(new File(destSrcTestFolder));
-                FileUtils.deleteDirectory(new File(destCpTestFolder));
+		//remove java tests
+		FileUtils.deleteDirectory(new File(destSrcTestFolder));
+		FileUtils.deleteDirectory(new File(destCpTestFolder));
 	}
 
 }
