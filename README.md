@@ -36,7 +36,8 @@ mvn package -DskipTests
 
 ```
 cd ../test-projects/
-mvn compile
+# compiling app (in target/classes) and tests (in target/test-classes), but don't run the tests (they obviously fail, because the goal is to repair them)
+mvn test -DskipTests 
 ```
 
 3) Execute Nopol (parameters explained below)
