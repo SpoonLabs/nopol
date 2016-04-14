@@ -36,7 +36,8 @@ mvn package -DskipTests
 
 ```
 cd ../test-projects/
-mvn compile
+# compiling app (in target/classes) and tests (in target/test-classes), but don't run the tests (they obviously fail, because the goal is to repair them)
+mvn test -DskipTests 
 ```
 
 3) Execute Nopol (parameters explained below)
@@ -45,8 +46,8 @@ mvn compile
 cd ../test-projects/
 java -jar ../nopol/target/nopol-0.0.3-SNAPSHOT-jar-with-dependencies.jar \
 -s src/main/java/ \
--c target/classes:target/test-classes:/home/martin/.m2/repository/junit/junit/4.11/junit-4.11.jar:/home/martin/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar\
--t symbolic_examples.symbolic_example_1.NopolExampleTest\
+-c target/classes:target/test-classes:/home/martin/.m2/repository/junit/junit/4.11/junit-4.11.jar:/home/martin/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar \
+-t symbolic_examples.symbolic_example_1.NopolExampleTest \
 -p ../nopol/lib/z3/z3_for_linux
 
 ```
