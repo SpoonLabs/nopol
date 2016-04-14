@@ -1,21 +1,5 @@
 package fr.inria.lille.commons.synthesis;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Test;
-import org.smtlib.ISort;
-
-import xxl.java.container.classic.MetaMap;
-import xxl.java.container.classic.MetaSet;
-import xxl.java.container.map.Multimap;
 import fr.inria.lille.commons.synthesis.expression.Expression;
 import fr.inria.lille.commons.synthesis.expression.ObjectTemplate;
 import fr.inria.lille.commons.synthesis.operator.BinaryOperator;
@@ -29,6 +13,21 @@ import fr.inria.lille.commons.synthesis.theory.LinearTheory;
 import fr.inria.lille.commons.synthesis.theory.NumberComparisonTheory;
 import fr.inria.lille.commons.synthesis.theory.OperatorTheory;
 import fr.inria.lille.commons.trace.Specification;
+import org.junit.Test;
+import org.smtlib.ISort;
+import xxl.java.container.classic.MetaMap;
+import xxl.java.container.classic.MetaSet;
+import xxl.java.container.map.Multimap;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class CodeSynthesisTest {
@@ -109,7 +108,7 @@ public class CodeSynthesisTest {
 		Specification secondSpecification = new Specification<>(secondValues, 10);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Number.class, (List) asList(firstSpecification, secondSpecification));
 		assertTrue(genesis.isSuccessful());
-		assertTrue(genesis.returnStatement(), asList("(array.length)-((isEmpty)?((1)+(1)):(1))", "(isEmpty)?(iterations):(array.length) - 1").contains(genesis.returnStatement()));
+		assertTrue(genesis.returnStatement(), asList("(array.length)-((isEmpty)?((1)+(1)):(1))", "((isEmpty)?(iterations):(array.length)) - (1)").contains(genesis.returnStatement()));
 	}
 	
 	@Test
@@ -126,7 +125,7 @@ public class CodeSynthesisTest {
 		Specification fourthS = new Specification<Boolean>(fourth, false);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Boolean.class, (List) asList(firstS, secondS, thirdS, fourthS));
 		assertTrue(genesis.isSuccessful());
-		assertTrue(asList("(q + p) == n", "p == n - q", "q + p <= n").contains(genesis.returnStatement()));
+		assertTrue(asList("(q + p) == n", "p == (n) - (q)", "q + p <= n").contains(genesis.returnStatement()));
 	}
 	
 	@Test

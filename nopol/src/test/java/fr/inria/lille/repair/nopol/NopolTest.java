@@ -1,16 +1,14 @@
 package fr.inria.lille.repair.nopol;
 
-import static java.util.Arrays.asList;
+import fr.inria.lille.repair.TestUtility;
+import fr.inria.lille.repair.common.patch.Patch;
+import fr.inria.lille.repair.common.synth.StatementType;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.util.Collection;
 
-import fr.inria.lille.repair.TestUtility;
-import org.junit.Test;
-import org.junit.Ignore;
-
-import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
-import fr.inria.lille.repair.common.patch.Patch;
-import fr.inria.lille.repair.common.synth.StatementType;
+import static java.util.Arrays.asList;
 
 public class NopolTest extends TestUtility{
 
@@ -72,7 +70,7 @@ public class NopolTest extends TestUtility{
 				"(!(((1)==(intermediaire))||(((a)+(-1))<=(1))))&&(!(((1)==(intermediaire))||(((a)+(-1))<=(1))))",
 				"!(((intermediaire)!=(0))||(((1)-(-1))==(a)))",
                 "((a)!=((1)+(1)))&&(intermediaire == 0)",
-				"(intermediaire == 0) && (!(a + -1 <= intermediaire - -1))",
+				"(intermediaire == 0) && (!(a + -1 <= (intermediaire) - (-1)))",
 				"(-1 + 1 == intermediaire) && (1 < a - 1)");
 	}
 	
