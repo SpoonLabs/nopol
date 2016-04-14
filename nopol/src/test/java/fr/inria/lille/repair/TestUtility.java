@@ -70,7 +70,7 @@ public abstract class TestUtility {
 
     protected void fixComparison(Patch foundPatch, String... expectedFixes) {
         Collection<String> possibleFixes = MetaSet.newHashSet(expectedFixes);
-        assertTrue(foundPatch + "is not a valid patch",
+        assertTrue(foundPatch + " is not a valid patch",
                 possibleFixes.contains(foundPatch.asString()));
     }
 

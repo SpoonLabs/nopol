@@ -5,6 +5,7 @@ import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.spirals.repair.commons.Candidates;
 import fr.inria.lille.spirals.repair.expression.Expression;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import xxl.java.library.JavaLibrary;
 
@@ -22,6 +23,11 @@ import static org.junit.Assert.assertEquals;
  * Created by spirals on 06/03/15.
  */
 public class SynthesizerTest {
+
+    @Before
+    public void before() {
+        Config.INSTANCE.reset();
+    }
 
     @Test
     public void test1() throws InterruptedException {

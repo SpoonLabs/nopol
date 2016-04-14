@@ -30,7 +30,6 @@ public class OperationCodeLine extends CodeLine implements OperatorVisitor<Strin
     @Override
     public String visitBinaryOperator(BinaryOperator<?, ?, ?> operator) {
         if (operator.smtlibIdentifier() == SMTLib.addition() ||
-                operator.smtlibIdentifier() == SMTLib.subtraction() ||
                 operator.smtlibIdentifier() == SMTLib.lessThan() ||
                 operator.smtlibIdentifier() == SMTLib.lessOrEqualThan() ||
                 operator.smtlibIdentifier() == SMTLib.equality()) {

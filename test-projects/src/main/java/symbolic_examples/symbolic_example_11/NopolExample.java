@@ -16,21 +16,3 @@ public class NopolExample {
 	}
 
 }
-
-interface Calculator {
-	int compute(int x);
-}
-
-class C1 implements Calculator {
-	public int compute(int x) {
-		return x + 1;
-	}
-}
-
-class C2 implements Calculator {
-	public int compute(int x) {
-		// bug: should be x+2
-		int resC2 = x + 3;
-		return resC2;
-	}
-}

@@ -1,17 +1,14 @@
 package fr.inria.lille.repair.symbolic;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Collection;
-
 import fr.inria.lille.repair.TestUtility;
+import fr.inria.lille.repair.common.patch.Patch;
+import fr.inria.lille.repair.common.synth.StatementType;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import fr.inria.lille.repair.common.patch.Patch;
-import fr.inria.lille.repair.common.synth.StatementType;
+import java.util.Collection;
+
+import static java.util.Arrays.asList;
 
 @Ignore
 public class SymbolicTest extends TestUtility {
@@ -24,7 +21,7 @@ public class SymbolicTest extends TestUtility {
 	public void example1Fix() {
 		Collection<String> failedTests = asList("test5", "test6");
 		Patch patch = test(1, 12, StatementType.CONDITIONAL, failedTests);
-		fixComparison(patch, "(index)<=(0)", "(index)<(1)", "(index)<=(-1)");
+		fixComparison(patch, "index <= 0", "index < 1", "index <= -1");
 	}
 
 	@Test
@@ -32,8 +29,8 @@ public class SymbolicTest extends TestUtility {
 		Collection<String> failedTests = asList("test1", "test2", "test4",
 				"test5", "test6", "test7");
 		Patch patch = test(2, 11, StatementType.CONDITIONAL, failedTests);
-		fixComparison(patch, "(a)<=(b)", "(a)<(b)", "(1)<=((b - a))",
-				"(0)<=((b - a))", "(1)<((b - a))", "(-1)<((b - a))", "(0)<((b - a))");
+		fixComparison(patch, "a <= b", "a < b", "1 <= (b - a)",
+				"0 <= (b - a)", "1 < (b - a)", "-1< (b - a)", "0 < (b - a)");
 	}
 
 	@Test
@@ -41,7 +38,7 @@ public class SymbolicTest extends TestUtility {
 		Collection<String> failedTests = asList("test1", "test2", "test3",
 				"test4", "test5", "test6", "test7", "test8", "test9");
 		Patch patch = test(3, 11, StatementType.CONDITIONAL, failedTests);
-		fixComparison(patch, "(tmp)==(0)", "(0)==(tmp)");
+		fixComparison(patch, "tmp == 0", "0 == tmp");
 	}
 
 	@Test
@@ -50,18 +47,18 @@ public class SymbolicTest extends TestUtility {
 		Patch patch = test(4, 23, StatementType.PRECONDITION, failedTests);
 		fixComparison(
 				patch,
-				"(-1)<=(a)",
-				"(a.length())!=(4)",
-				"(((-1)-(initializedVariableShouldBeCollected))<(-1))&&(((1)!=((a.length())+((-1)-(initializedVariableShouldBeCollected))))||(a.length()==0))",
-                "(((-1)+(a.length()))-(1))!=(initializedVariableShouldBeCollected)");
+				"-1 <= a",
+				"a.length() != 4",
+				"((-1 - initializedVariableShouldBeCollected) < -1) && ((1 != (a.length() + (-1 - initializedVariableShouldBeCollected))) || a.length() == 0)",
+                "(((-1)+(a.length()))-(1))!=(initializedVariableShouldBeCollected)",
+				"(a.length()) != (initializedVariableShouldBeCollected + (initializedVariableShouldBeCollected) - (0))");
 	}
 
 	@Test
 	public void example5Fix() {
 		Collection<String> failedTests = asList("test4", "test5");
 		Patch patch = test(5, 20, StatementType.PRECONDITION, failedTests);
-		fixComparison(patch, "(-1)<=(a)", "(1)<=(a)", "(r)<=(a)", "(-1)<(a)",
-				"(0)<=(a)");
+		fixComparison(patch, "-1 <= a", "1 <= a", "r <= a", "-1 < a", "0 <= a");
 	}
 
 	@Test
@@ -69,7 +66,7 @@ public class SymbolicTest extends TestUtility {
 		Collection<String> failedTests = asList("test1", "test2", "test3",
 				"test4", "test6");
 		Patch patch = test(6, 7, StatementType.CONDITIONAL, failedTests);
-		fixComparison(patch, "(a)<(b)", "(a)<=(b)", "(4)<=(b)");
+		fixComparison(patch, "a < b", "a <= b", "(4)<= b");
 	}
 
 	@Test
@@ -86,41 +83,42 @@ public class SymbolicTest extends TestUtility {
 				"!(((intermediaire)!=(0))||((intermediaire == 0)&&((2)==(a))))",
 				"(!(((1)==(intermediaire))||(((a)+(-1))<=(1))))&&(!(((1)==(intermediaire))||(((a)+(-1))<=(1))))",
 				"!(((intermediaire)!=(0))||(((1)-(-1))==(a)))",
-                "((a)!=((1)+(1)))&&(intermediaire == 0)");
+                "((a)!=((1)+(1)))&&(intermediaire == 0)",
+				"(intermediaire == 0) && (!(a + -1 <= (intermediaire) - (-1)))");
 	}
 
 	@Test
 	public void example8Fix() {
 		Collection<String> failedTests = asList("test_2");
 		Patch patch = test(8, 12, StatementType.CONDITIONAL, failedTests);
-		fixComparison(patch, "((a * b))<=(100)");
+		fixComparison(patch, "(a * b) <= 100");
 	}
 
 	@Test
 	public void example9Fix() {
 		Collection<String> failedTests = asList("test_f");
 		Patch patch = test(9, 11, StatementType.INTEGER_LITERAL, failedTests);
-		fixComparison(patch, "x + 2", "(x)-((-1)+(-1))");
+		fixComparison(patch, "x + 2", "(x) - (-1 + -1)");
 	}
 
 	@Test
 	public void example10Fix() {
 		Collection<String> failedTests = asList("test_g", "test_g_4");
 		Patch patch = test(10, 9, StatementType.INTEGER_LITERAL, failedTests);
-		fixComparison(patch, "2*(x)", "(x)+(x)", "(resg)-((x)*((2)*(-1)))");
+		fixComparison(patch, "2 * x", "x + x", "resg - (x *(2 * -1))");
 	}
 
 	@Test
 	public void example11Fix() {
 		Collection<String> failedTests = asList("test3_h");
 		Patch patch = test(11, 10, StatementType.INTEGER_LITERAL, failedTests);
-		fixComparison(patch, "x % 5", "1");
+		fixComparison(patch, "x % 5", "(x < ((-1) - (1)) * ((-1) - (1) + (-1) - (1)))?(1):(0)");
 	}
 
 	@Test
 	public void example12Fix() {
 		Collection<String> failedTests = asList("test3_i");
 		Patch patch = test(12, 28, StatementType.INTEGER_LITERAL, failedTests);
-		fixComparison(patch, "(x)+((1)-(-1))", "((x)+(1))-(-1)");
+		fixComparison(patch, "(x + 1) - (-1)");
 	}
 }
