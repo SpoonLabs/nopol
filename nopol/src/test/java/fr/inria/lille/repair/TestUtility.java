@@ -2,16 +2,14 @@ package fr.inria.lille.repair;
 
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.common.config.Config;
-import fr.inria.lille.repair.nopol.NoPol;
-import fr.inria.lille.repair.nopol.NoPolLauncher;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.nopol.NoPol;
 import xxl.java.container.classic.MetaSet;
 import xxl.java.junit.TestCase;
 import xxl.java.junit.TestCasesListener;
 import xxl.java.junit.TestSuiteExecution;
 import xxl.java.library.FileLibrary;
-import xxl.java.library.JavaLibrary;
 
 import java.io.File;
 import java.net.URLClassLoader;
@@ -25,10 +23,9 @@ import static org.junit.Assert.assertTrue;
  * Created by Thomas Durieux on 03/03/15.
  */
 public abstract class TestUtility {
-    private String solver = "z3";
-    private String solverPath =  "lib/z3/z3_for_linux";
-    private String realBugPath = "../../spirals-dataset/bugs/";
-    private String executionType;
+    String solver = "z3";
+    String solverPath =  "lib/z3/z3_for_linux";
+    String executionType;
 
     public TestUtility(String executionType) {
         this.executionType = executionType;
@@ -96,49 +93,7 @@ public abstract class TestUtility {
         return patch;
     }
 
-    protected Patch testRealBug(String projectName, boolean isMaven, StatementType statementType, String[] tests, String... dependencies) {
-        String rootFolder = realBugPath + projectName + "/";
-        String srcFolder = rootFolder + "src/";
-        String binFolder = rootFolder + "bin/";
-        if(isMaven || true) {
-            binFolder = rootFolder + "target/classes" + File.pathSeparatorChar + rootFolder + "target/test-classes";
-        }
-        String libFolder = rootFolder + "../../data/lib/";
-
-        String classpath = binFolder + File.pathSeparatorChar;
-        for (int i = 0; i<dependencies.length; i++) {
-            classpath += libFolder + dependencies[i];
-            if(i<dependencies.length -1) {
-                classpath += File.pathSeparatorChar;
-            }
-        }
-        SolverFactory.setSolver(solver, solverPath);
-        List<Patch> patches;
-        switch (this.executionType) {
-            case "symbolic":
-                Config.INSTANCE.setOracle(Config.NopolOracle.SYMBOLIC);
-                break;
-            case "nopol":
-                Config.INSTANCE.setOracle(Config.NopolOracle.ANGELIC);
-                break;
-            default:
-                throw new RuntimeException("Execution type not found");
-        }
-        patches = NoPolLauncher
-                .launch(new File[]{FileLibrary.openFrom(srcFolder)},
-                        JavaLibrary.classpathFrom(classpath),
-                        statementType,
-                        tests);
-        assertEquals(patches.toString(), 1, patches.size());
-        Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
-        System.out.println(String.format("Patch for real bug %s: %s",
-                projectName, patch.asString()));
-        clean(srcFolder);
-        return patch;
-    }
-
-    private void clean(String folderPath) {
+    void clean(String folderPath) {
         String path = folderPath + "/spooned";
         if (FileLibrary.isValidPath(path)) {
             FileLibrary.deleteDirectory(path);
