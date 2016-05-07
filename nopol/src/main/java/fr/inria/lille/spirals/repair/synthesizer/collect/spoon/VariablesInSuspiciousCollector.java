@@ -36,6 +36,9 @@ public class VariablesInSuspiciousCollector extends AbstractProcessor<CtTypedEle
 
     @Override
     public boolean isToBeProcessed(CtTypedElement<?> candidate) {
+        if (candidate.getPosition() == null) {
+            return false;
+        }
         return candidate.getPosition().getLine() == location.getLineNumber();
     }
 

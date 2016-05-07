@@ -141,7 +141,7 @@ public abstract class SpoonedFile {
     }
 
     private void setProcessors(Collection<? extends Processor<?>> processors) {
-        processingManager().clear();
+        processingManager().getProcessors().clear();
         for (Processor<?> processor : processors) {
             processingManager().addProcessor(processor);
         }

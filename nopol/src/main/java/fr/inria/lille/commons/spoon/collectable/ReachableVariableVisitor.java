@@ -7,6 +7,7 @@ import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.declaration.*;
 import spoon.reflect.reference.CtCatchVariableReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.visitor.CtAbstractVisitor;
 import xxl.java.container.classic.MetaSet;
 
@@ -44,15 +45,45 @@ public class ReachableVariableVisitor extends CtAbstractVisitor {
 		/* ignore any code snippet, only work with what was originally in the code */
     }
 
-    @Override
+    /**
+     * Generically scans a collection of meta-model elements.
+     */
+    public void scan(Collection<? extends CtElement> elements) {
+        if (elements != null) {
+            for (CtElement e : elements) {
+                scan(e);
+            }
+        }
+    }
+
+    /**
+     * Generically scans a meta-model element.
+     */
+    public void superScan(CtElement element) {
+        if (element != null) {
+            element.accept(this);
+        }
+    }
+
+    /**
+     * Generically scans a meta-model element reference.
+     */
+    public void scan(CtReference reference) {
+        if (reference != null) {
+            reference.accept(this);
+        }
+    }
     public void scan(CtElement element) {
-        super.scan(element);
+        superScan(element);
         if (hasSafelyReachableParent(element)) {
             scan(element.getParent());
         }
     }
 
     private boolean hasSafelyReachableParent(CtElement element) {
+        if (element == null) {
+            return false;
+        }
         CtElement parent = element.getParent();
         if (parent != null) {
             return !(isAnonymousClass(element) || isInitializationBlock(element) || isConstructor(element) || isSimpleType(element) && isBlock(parent));
@@ -102,7 +133,7 @@ public class ReachableVariableVisitor extends CtAbstractVisitor {
 
     private void scanElementsIn(Collection<? extends CtElement> elements) {
         for (CtElement element : elements) {
-            super.scan(element);
+            superScan(element);
         }
     }
 

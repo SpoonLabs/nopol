@@ -5,7 +5,6 @@ import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.reference.CtExecutableReference;
-import spoon.reflect.reference.CtParameterReference;
 import spoon.reflect.reference.CtVariableReference;
 
 import java.util.*;
@@ -50,28 +49,6 @@ public class StatCollector extends AbstractProcessor<CtElement> {
                 return;
             }
             CtVariableReference variable = ((CtVariableAccess) ctElement).getVariable();
-            if (!statVariable.containsKey(variable)) {
-                statVariable.put(variable, 1);
-            } else {
-                statVariable.put(variable, statVariable.get(variable) + 1);
-            }
-            totalVariable++;
-        } else if (ctElement instanceof CtFieldAccess) {
-            if (!isMethod(ctElement)) {
-                return;
-            }
-            CtVariableReference variable = ((CtFieldAccess) ctElement).getVariable();
-            if (!statVariable.containsKey(variable)) {
-                statVariable.put(variable, 1);
-            } else {
-                statVariable.put(variable, statVariable.get(variable) + 1);
-            }
-            totalVariable++;
-        } else if (ctElement instanceof CtParameterReference) {
-            if (!isMethod(ctElement)) {
-                return;
-            }
-            CtVariableReference variable = ((CtFieldAccess) ctElement).getVariable();
             if (!statVariable.containsKey(variable)) {
                 statVariable.put(variable, 1);
             } else {

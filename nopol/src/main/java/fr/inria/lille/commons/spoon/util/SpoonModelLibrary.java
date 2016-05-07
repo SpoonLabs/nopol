@@ -31,7 +31,7 @@ public class SpoonModelLibrary {
     }
 
     public static Factory modelFor(Factory factory, File[] sourceFiles, URL[] classpath) {
-        factory.getEnvironment().setDebug(true);
+        factory.getEnvironment().setLevel("OFF");
         try {
             SpoonCompiler compiler = launcher().createCompiler(factory);
             if (classpath != null) {

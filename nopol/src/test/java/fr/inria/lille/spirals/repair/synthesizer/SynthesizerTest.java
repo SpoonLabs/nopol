@@ -138,7 +138,7 @@ public class SynthesizerTest {
         oracle.put("test_10", new Object[]{false});
         oracle.put("test_11", new Object[]{false});
 
-        test(8, oracle, 12, new String[] {"(a * b) <= 100", "a <= (100 / b)", "b <= (100 / a)"});
+        test(8, oracle, 12, new String[] {"(b * a) <= 100", "(a * b) <= 100", "a <= (100 / b)", "b <= (100 / a)"});
     }
 
     @Test

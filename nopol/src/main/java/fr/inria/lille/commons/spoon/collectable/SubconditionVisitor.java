@@ -3,14 +3,14 @@ package fr.inria.lille.commons.spoon.collectable;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtCatchVariableReference;
-import spoon.reflect.visitor.CtAbstractVisitor;
+import spoon.reflect.visitor.CtScanner;
 import xxl.java.container.classic.MetaSet;
 
 import java.util.Collection;
 
 import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.hasChildrenOfType;
 
-public class SubconditionVisitor extends CtAbstractVisitor {
+public class SubconditionVisitor extends CtScanner {
 
     public SubconditionVisitor(CtExpression<Boolean> expression) {
         this.expression = expression;
@@ -42,7 +42,7 @@ public class SubconditionVisitor extends CtAbstractVisitor {
     }
 
     @Override
-    public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
+    public <T> void visitCtVariableRead(CtVariableRead<T> variableAccess) {
         addFrom(variableAccess);
     }
 
