@@ -11,7 +11,6 @@ import xxl.java.container.classic.MetaSet;
 import java.util.Collection;
 
 import static java.lang.String.format;
-import static xxl.java.library.LoggerLibrary.logDebug;
 import static xxl.java.library.LoggerLibrary.loggerFor;
 
 
@@ -34,7 +33,7 @@ public class TestCasesListener extends RunListener {
     public void testStarted(Description description) throws Exception {
         incrementNumberOfTests();
         TestCase testCase = addTestCaseTo(allTests(), description);
-        logDebug(logger(), format("[#%d. %s started...]", numberOfTests(), testCase.toString()));
+        //logDebug(logger(), format("[#%d. %s started...]", numberOfTests(), testCase.toString()));
         processTestStarted(testCase);
     }
 
@@ -48,10 +47,10 @@ public class TestCasesListener extends RunListener {
     public void testFinished(Description description) throws Exception {
         TestCase testCase = testCaseOf(description);
         if (failedTests().contains(testCase)) {
-            logDebug(logger(), format("[#%d. FAILED]", numberOfTests()));
+            //logDebug(logger(), format("[#%d. FAILED]", numberOfTests()));
             processFailedRun(testCase);
         } else {
-            logDebug(logger(), format("[#%d. SUCCESS]", numberOfTests()));
+            //logDebug(logger(), format("[#%d. SUCCESS]", numberOfTests()));
             processSuccessfulRun(testCase);
         }
         processTestFinished(testCase);
@@ -59,7 +58,7 @@ public class TestCasesListener extends RunListener {
 
     @Override
     public void testRunFinished(Result result) throws Exception {
-        logTestRunFinished(result);
+        //logTestRunFinished(result);
         processAfterRun();
     }
 
@@ -139,7 +138,7 @@ public class TestCasesListener extends RunListener {
                 lines.add("    at " + element.toString());
             }
         }
-        logDebug(logger(), lines);
+        //logDebug(logger(), lines);
     }
 
     protected Logger logger() {

@@ -95,8 +95,9 @@ public class TestSuiteExecution {
         } catch (TimeoutException e) {
             logDebug(logger(), String.format("Timeout after %d seconds. Infinite loop?", secondsForTimeout()));
             throw new RuntimeException(e);
+        } finally {
+            executor.shutdownNow();
         }
-        executor.shutdownNow();
         return result;
     }
 
@@ -121,4 +122,6 @@ public class TestSuiteExecution {
     }
 
     private static long secondsForTimeout = MINUTES.toSeconds(Config.INSTANCE.getTimeoutTestExecution());
+
+
 }

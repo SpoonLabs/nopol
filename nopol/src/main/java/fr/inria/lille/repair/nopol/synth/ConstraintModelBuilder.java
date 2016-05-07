@@ -99,7 +99,9 @@ public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
         Collection<Description> secondFailures = TestSuiteExecution.collectDescription(secondResult.getFailures());
         firstFailures.retainAll(secondFailures);
         viablePatch = firstFailures.isEmpty();
-        if (!viablePatch) {
+        int nbFirstSuccess = firstResult.getRunCount() - firstResult.getFailureCount();
+        int nbSecondSuccess = firstResult.getRunCount() - firstResult.getFailureCount();
+        if (!viablePatch || (nbFirstSuccess == 0 && nbSecondSuccess == 0)) {
             logger.debug("Failing test(s): {}\n{}", sourceLocation, firstFailures);
             Logger testsOutput = LoggerFactory.getLogger("tests.output");
             testsOutput.debug("First set: \n{}", firstResult.getFailures());

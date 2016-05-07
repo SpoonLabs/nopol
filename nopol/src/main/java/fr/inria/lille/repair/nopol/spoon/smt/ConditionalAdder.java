@@ -13,7 +13,7 @@ public class ConditionalAdder extends ConditionalProcessor {
 
     @Override
     public CtIf processCondition(CtStatement element, String newCondition) {
-        logger.debug("##### {} ##### Before:\n{}", element, element.getParent());
+        //logger.debug("##### {} ##### Before:\n{}", element, element.getParent());
         CtElement parent = element.getParent();
         CtIf newIf = element.getFactory().Core().createIf();
         CtCodeSnippetExpression<Boolean> condition = element.getFactory().Core().createCodeSnippetExpression();
@@ -27,7 +27,7 @@ public class ConditionalAdder extends ConditionalProcessor {
         newIf.setThenStatement(element);
         // Fix : warning: ignoring inconsistent parent for [CtElem1] ( [CtElem2] != [CtElem3] )
         newIf.getThenStatement().setParent(newIf);
-        logger.debug("##### {} ##### After:\n{}", element, element.getParent().getParent());
+        //logger.debug("##### {} ##### After:\n{}", element, element.getParent().getParent());
         return newIf;
     }
 }

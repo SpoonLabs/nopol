@@ -9,14 +9,16 @@ import java.util.List;
 public abstract class MethodInvocationImpl extends ExpressionImpl implements MethodInvocation {
     private final String method;
     private final String cast;
+    private List<String> argumentTypes;
     private final Expression expression;
     private final List<Expression> parameters;
     private final Value jdiValue;
     private String strExpression = null;
 
-    public MethodInvocationImpl(String method, String declaringType, Expression expression, List<Expression> parameters, Value jdiValue, Object value, Class type) {
+    public MethodInvocationImpl(String method, List<String> argumentTypes, String declaringType, Expression expression, List<Expression> parameters, Value jdiValue, Object value, Class type) {
         super(value, type);
         this.method = method;
+        this.argumentTypes = argumentTypes;
         this.expression = expression;
         this.parameters = parameters;
         this.jdiValue = jdiValue;
@@ -56,6 +58,7 @@ public abstract class MethodInvocationImpl extends ExpressionImpl implements Met
             String arguments = "";
             for (int i = 0; i < parameters.size(); i++) {
                 Expression expression1 = parameters.get(i);
+                arguments += "(" + argumentTypes.get(i) + ") ";
                 arguments += expression1.toString();
                 if (i < parameters.size() - 1) {
                     arguments += ", ";
@@ -71,6 +74,7 @@ public abstract class MethodInvocationImpl extends ExpressionImpl implements Met
         String arguments = "";
         for (int i = 0; i < parameters.size(); i++) {
             Expression expression1 = parameters.get(i);
+            arguments += "(" + argumentTypes.get(i) + ") ";
             arguments += expression1.asPatch();
             if (i < parameters.size() - 1) {
                 arguments += ", ";
@@ -80,6 +84,11 @@ public abstract class MethodInvocationImpl extends ExpressionImpl implements Met
             return getExpression().asPatch() + "." + getMethod() + "(" + arguments + ")";
         }
         return "((" + cast + ")" + getExpression().asPatch() + ")." + getMethod() + "(" + arguments + ")";
+    }
+
+    @Override
+    public int hashCode() {
+        return method.hashCode() * this.cast.hashCode() * parameters.hashCode();
     }
 }
 

@@ -3,7 +3,8 @@ package fr.inria.lille.spirals.repair.commons;
 
 import com.sun.jdi.Type;
 import fr.inria.lille.spirals.repair.expression.Constant;
-import fr.inria.lille.spirals.repair.expression.Expression;
+import fr.inria.lille.spirals.repair.expressionV2.Expression;
+import fr.inria.lille.spirals.repair.expressionV2.access.Method;
 
 import java.util.*;
 
@@ -38,11 +39,11 @@ public class Candidates extends ArrayList<Expression> {
             return super.add(expression);
         }
         
-        // todo what happens here?
-        Expression parent = this.get(this.indexOf(expression));
+        // TODO what happens here?
+        /*Expression parent = this.get(this.indexOf(expression));
         List<Expression> alternatives = parent.getAlternatives();
         expression.getInAlternativesOf().add(parent);
-        alternatives.add(expression);
+        alternatives.add(expression);*/
         
         return true;
 
@@ -52,14 +53,12 @@ public class Candidates extends ArrayList<Expression> {
         if (candidates == null) {
             return false;
         }
-        for (int i = 0; i < candidates.size(); i++) {
-            Expression expression = candidates.get(i);
+        for (Expression expression : candidates) {
             this.add(expression);
-            for (int j = 0; j < expression.getAlternatives().size(); j++) {
+            /*for (int j = 0; j < expression.getAlternatives().size(); j++) {
                 Expression expression1 = expression.getAlternatives().get(j);
                 this.add(expression1);
-            }
-
+            }*/
         }
         cache.addAll(candidates.cache);
         cacheValues.putAll(candidates.cacheValues);
@@ -82,11 +81,9 @@ public class Candidates extends ArrayList<Expression> {
         Candidates exps = new Candidates();
         for (int i = 0; i < this.size(); i++) {
             Expression expression = this.get(i);
-            for (int j = 0; j < types.length; j++) {
-                Class type = types[j];
-                if (expression.getType() != null && type.isAssignableFrom(expression.getType())) {
+            for (Class type : types) {
+                if (expression.getValue().getType() != null && type.isAssignableFrom(expression.getValue().getType())) {
                     exps.add(expression);
-
                 }
             }
         }
@@ -101,7 +98,7 @@ public class Candidates extends ArrayList<Expression> {
 
         for (int i = 0; i < this.size(); i++) {
             Expression expression = this.get(i);
-            if (expression.getType() != null && type.isAssignableFrom(expression.getType()) && (expression.getValue().equals(value) || (expression.getValue() == null && value == null))) {
+            if (expression.getValue().getType() != null && type.isAssignableFrom(expression.getValue().getType()) && (expression.getValue().equals(value) || (expression.getValue() == null && value == null))) {
                 exps.add(expression);
                 addToCache(expression, tmpCache, tmpCacheValues);
             }
@@ -115,7 +112,10 @@ public class Candidates extends ArrayList<Expression> {
         Candidates exps = new Candidates();
         for (int i = 0; i < this.size(); i++) {
             Expression expression = this.get(i);
-            if (expression.isAssignableTo(type)) {
+            if (expression instanceof Method) {
+                continue;
+            }
+            if (expression.getValue().isAssignableTo(type)) {
                 exps.add(expression);
             }
         }

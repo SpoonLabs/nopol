@@ -3,7 +3,7 @@ package fr.inria.lille.spirals.repair.synthesizer;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.expression.Expression;
+import fr.inria.lille.spirals.repair.expressionV2.Expression;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,16 +12,12 @@ import xxl.java.library.JavaLibrary;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by spirals on 06/03/15.
- */
 public class SynthesizerTest {
 
     @Before
@@ -93,7 +89,7 @@ public class SynthesizerTest {
         System.out.println("basic: "+synthesizer.getCollectedExpressions());    
         check(synthesizer.getCollectedExpressions(), "initializedVariableShouldBeCollected");
         check(synthesizer.getCollectedExpressions(), "otherInitializedVariableShouldBeCollected");
-        check(synthesizer.getValidExpressions(), new String[] {"1 <= a.length()", "1 != a.length()"});
+        check(synthesizer.getValidExpressions(), new String[] {"1 != ((java.lang.String) a).length()", "a.length() != 1"});
     }
 
     @Test
@@ -153,7 +149,7 @@ public class SynthesizerTest {
         
         Synthesizer synthesizer = createSynthesizer(12, oracle, 5);
         System.out.println("basic: "+synthesizer.getCollectedExpressions());
-        assertEquals(12,synthesizer.getCollectedExpressions().size());
+        assertEquals(13, synthesizer.getCollectedExpressions().size());
         
         check(synthesizer.getCollectedExpressions(), "list");
         
@@ -164,12 +160,12 @@ public class SynthesizerTest {
         check(synthesizer.getCollectedExpressions(), "list2");
         
         // method calls
-        check(synthesizer.getCollectedExpressions(), "this.foo(list)");
-        check(synthesizer.getCollectedExpressions(), "this.foo(list2)");
+        check(synthesizer.getCollectedExpressions(), "this.foo((java.util.List) list)");
+        check(synthesizer.getCollectedExpressions(), "this.foo((java.util.List) list2)");
         
         // the valid patches
-        check(synthesizer.getValidExpressions(), "(list == null) || (0 == list.size())");
-        check(synthesizer.getValidExpressions(), "(list == null) || list.isEmpty()");
+        check(synthesizer.getValidExpressions(), "(null == list) || (0 == ((java.util.List) list).size())");
+        check(synthesizer.getValidExpressions(), "(null == list) || ((java.util.List) list).isEmpty()");
     }
 
     @Test
@@ -186,7 +182,7 @@ public class SynthesizerTest {
         //assertEquals(12,synthesizer.getCollectedExpressions().size());
 
         // the valid patches
-        check(synthesizer.getValidExpressions(), "(list == null) || list.isEmpty()");
+        check(synthesizer.getValidExpressions(), "(null == list) || ((java.util.List) list).isEmpty()");
     }
 
     private Synthesizer createSynthesizer(int nopolExampleNumber, Map<String, Object[]> o, int line) {
@@ -198,9 +194,7 @@ public class SynthesizerTest {
 
         Map<String, Object[]> oracle = new HashMap<>();
 
-        Iterator<String> it = o.keySet().iterator();
-        while (it.hasNext()) {
-            String next = it.next();
+        for (String next : o.keySet()) {
             oracle.put(testName + "#" + next, o.get(next));
             tests.add(testName + "#" + next);
         }
@@ -236,7 +230,7 @@ public class SynthesizerTest {
                     return; // found!
                 }
             }
-            for (int j = 0; j < o.getAlternatives().size(); j++) {
+            /*for (int j = 0; j < o.getAlternatives().size(); j++) {
                 Expression expression1 = o.getAlternatives().get(j);
                 position++;
                 for (int k = 0; k < patch.length; k++) {
@@ -245,7 +239,7 @@ public class SynthesizerTest {
                         return; // found!
                     }
                 }
-            }
+            }*/
         }
 
         Assert.fail("No valid patch in candidates: " + expression);

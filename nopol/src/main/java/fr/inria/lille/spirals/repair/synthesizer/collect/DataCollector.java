@@ -2,20 +2,21 @@ package fr.inria.lille.spirals.repair.synthesizer.collect;
 
 import com.sun.jdi.*;
 import com.sun.jdi.request.BreakpointRequest;
-
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.expression.*;
-import fr.inria.lille.spirals.repair.synthesizer.collect.factory.ExpressionFacotry;
+import fr.inria.lille.spirals.repair.expressionV2.Expression;
+import fr.inria.lille.spirals.repair.expressionV2.access.Literal;
+import fr.inria.lille.spirals.repair.expressionV2.access.Variable;
+import fr.inria.lille.spirals.repair.expressionV2.factory.AccessFactory;
+import fr.inria.lille.spirals.repair.expressionV2.value.ArrayValue;
+import fr.inria.lille.spirals.repair.expressionV2.value.TypeValue;
 import fr.inria.lille.spirals.repair.synthesizer.collect.filter.FieldFilter;
 import fr.inria.lille.spirals.repair.synthesizer.collect.filter.MethodFilter;
 import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.StatCollector;
 import fr.inria.lille.spirals.repair.vm.DebugJUnitRunner;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import spoon.reflect.reference.CtExecutableReference;
 
 import java.util.*;
@@ -74,7 +75,7 @@ public class DataCollector {
             logger.debug("Collect Level 1");
             // collect this
             if (stackFrame.thisObject() != null) {
-                ComplexValue variableThis = new ComplexValueImpl("this", stackFrame.thisObject());
+                Variable variableThis = AccessFactory.variable("this", stackFrame.thisObject());
                 candidates.add(variableThis);
                 logger.debug("[data] " + variableThis + "=" + variableThis.getValue());
             }
@@ -82,11 +83,10 @@ public class DataCollector {
             // collect static fields
             if (Config.INSTANCE.isCollectStaticFields()) {
                 List<Field> fields = stackFrame.location().declaringType().visibleFields();
-                for (int i = 0; i < fields.size(); i++) {
-                    Field field = fields.get(i);
+                for (Field field : fields) {
                     Value value = stackFrame.location().declaringType().getValue(field);
-                    ComplexTypeExpression complexConstant = new ComplexConstantImpl(stackFrame.location().declaringType().name(), stackFrame.location().declaringType());
-                    Expression expression = ExpressionFacotry.create(complexConstant, field, value);
+                    Variable complexConstant = AccessFactory.variable(stackFrame.location().declaringType().name(), stackFrame.location().declaringType());
+                    Variable expression = AccessFactory.variable(complexConstant, field.name(), value);
                     logger.debug("[data] " + expression);
                     candidates.add(expression);
                 }
@@ -98,14 +98,22 @@ public class DataCollector {
             candidates.addAll(collectVariables(stackFrame));
 
             // special values;
-            candidates.add(new PrimitiveConstantImpl(0, threadRef.virtualMachine().mirrorOf(0), Integer.class));
-            candidates.add(new PrimitiveConstantImpl(1, threadRef.virtualMachine().mirrorOf(1), Integer.class));
+            Literal literal0 = AccessFactory.literal(0);
+            literal0.getValue().setJDIValue(threadRef.virtualMachine().mirrorOf(0));
+            Literal literal1 = AccessFactory.literal(1);
+            literal1.getValue().setJDIValue(threadRef.virtualMachine().mirrorOf(1));
+            candidates.add(literal0);
+            candidates.add(literal1);
+            candidates.add(AccessFactory.literal(null));
             
             // collect literals
             if (Config.INSTANCE.isCollectLiterals()) {
                 candidates.addAll(constants);
             }
-            
+            // collect static methods
+            if (Config.INSTANCE.isCollectStaticMethods()) {
+                candidates.addAll(collectStaticMethods(statCollector.getStatMethod().keySet(), threadRef, candidates));
+            }
             
             recurse();
             
@@ -118,22 +126,22 @@ public class DataCollector {
 
 
     private void recurse() {
-        for (int depth = 1; depth < Config.INSTANCE.getSynthesisDepth() && executionTime <= maxTime; depth++) {
+        for (int depth = 1; depth < Config.INSTANCE.getSynthesisDepth() - 1 && executionTime <= maxTime; depth++) {
             Candidates copy = new Candidates(); // to avoid java.util.ConcurrentModificationException
             copy.addAll(candidates);
             executionTime = System.currentTimeMillis() - startTime;
             for (Expression expression : copy) {
-            	if (expression instanceof ComplexTypeExpression && expression.getValue() instanceof ObjectReference) {
-            		candidates.addAll(collectFieldAndMethodOnTheValueOf((ComplexTypeExpression) expression, threadRef));
+            	if (!expression.getValue().isPrimitive() && expression.getValue().getJDIValue() instanceof ObjectReference) {
+            		candidates.addAll(collectFieldAndMethodOnTheValueOf(expression, threadRef));
             	}
             }
         }
         
 	}
 
-	private Candidates collectFieldAndMethodOnTheValueOf(ComplexTypeExpression exp, ThreadReference threadRef) {
+	private Candidates collectFieldAndMethodOnTheValueOf(Expression exp, ThreadReference threadRef) {
     	Candidates results = new Candidates();
-		if (!(exp.getValue() instanceof ObjectReference)) {
+		if (!(exp.getValue().getJDIValue() instanceof ObjectReference)) {
 			throw new IllegalArgumentException();
 		}
 		
@@ -141,6 +149,14 @@ public class DataCollector {
 		
 		// the current set of expressions can be passed as parameters
 		results.addAll(collectMethods(exp, threadRef, candidates));
+
+        if (exp.getValue() instanceof ArrayValue) {
+            int length = ((ArrayValue) exp.getValue()).length();
+            results.add(AccessFactory.variable(exp, "length", length));
+            if (length > 0) {
+                results.add(AccessFactory.array(exp, AccessFactory.literal(0)));
+            }
+        }
         return results;
     }
 
@@ -152,7 +168,7 @@ public class DataCollector {
             for (int i = 0; i < variables.size() && executionTime < maxTime; i++) {
                 LocalVariable localVariable = variables.get(i);
                 Value value = stackFrame.getValue(localVariable);
-                Expression expression = ExpressionFacotry.create(localVariable, value);
+                Expression expression = AccessFactory.variable(localVariable.name(), value);
                 logger.debug("[data] " + expression);
                 results.add(expression);
                 executionTime = System.currentTimeMillis() - startTime;
@@ -163,15 +179,15 @@ public class DataCollector {
         return results;
     }
 
-    private Candidates collectFields(ComplexTypeExpression exp) {
+    private Candidates collectFields(Expression exp) {
     	Candidates results = new Candidates();
-        if (exp instanceof Constant) {
+        if (exp.getValue().isPrimitive()) {
             return results;
         }
-        ObjectReference ref = ((ObjectReference) exp.getValue());
+        ObjectReference ref = (ObjectReference) exp.getValue().getJDIValue();
         Map<Field, Value> fieldValues;
         try {
-            List<Field> fields = ref.referenceType().visibleFields();
+            List<Field> fields = ref.virtualMachine().classesByName(this.location.getContainingClassName()).get(0).visibleFields();
             fieldValues = ref.getValues(fields);
         } catch (Exception e) {
             return results;
@@ -181,17 +197,28 @@ public class DataCollector {
         for (Iterator<Field> iterator = fieldValues.keySet().iterator(); iterator.hasNext() && executionTime < maxTime; ) {
             Field field = iterator.next();
             // collect only public fields
-            if (!exp.toString().equals("this") && !field.isPublic()) {
-                continue;
+            if (!field.isPublic()) {
+                if (exp.toString().equals("this")) {
+                    if (!field.declaringType().name().equals(this.location.getContainingClassName())) {
+                        if (field.isPrivate()) {
+                            continue;
+                        }
+                    }
+                } else {
+                    continue;
+                }
             }
             if (!FieldFilter.toProcess(field)) {
                 continue;
             }
 
             Value value = fieldValues.get(field);
-            Expression expression = ExpressionFacotry.create(exp, field, value);
+            Expression expression = AccessFactory.variable(exp, field.name(), value);
             if (expression == null) {
                 continue;
+            }
+            if (field.isFinal() && field.isStatic()) {
+                expression.getValue().setConstant(true);
             }
             logger.debug("[data] " + expression);
             results.add(expression);
@@ -226,21 +253,24 @@ public class DataCollector {
     }
 
     private ReferenceType getReferenceType(Expression exp) {
-        if (exp.getValue() instanceof ObjectReference) {
-            return ((ObjectReference) exp.getValue()).referenceType();
-        } else if (exp.getValue() instanceof ReferenceType) {
-            return (ReferenceType) exp.getValue();
+        if (exp.getValue().getJDIValue() instanceof ObjectReference) {
+            return ((ObjectReference) exp.getValue().getJDIValue()).referenceType();
+        } else if (exp.getValue() instanceof TypeValue) {
+            return (ReferenceType) exp.getValue().getRealValue();
         }
         return null;
     }
 
-    private Candidates collectMethods(ComplexTypeExpression exp, ThreadReference threadRef, Candidates argsCandidates) {
+    private Candidates collectMethods(Expression exp, ThreadReference threadRef, Candidates argsCandidates) {
     	Candidates results = new Candidates();
         ReferenceType ref = getReferenceType(exp);
         if (ref == null) {
             return results;
         }
-        boolean isStatic = exp.getValue() instanceof ReferenceType;
+        if (exp.getValue().isConstant()) {
+            return results;
+        }
+        boolean isStatic = exp.getValue() instanceof TypeValue;
 
         // get all method of the reference
         List<Method> methods = getMethods(exp, ref, isStatic, threadRef);
@@ -251,13 +281,12 @@ public class DataCollector {
 
     /**
      * Call static methods on imported class
-     *
-     * @param ctExecutableReferences
+     *  @param ctExecutableReferences
      * @param threadRef
-     * @param candidates
      * @param argsCandidates
      */
-    private void collectStaticMethods(Set<CtExecutableReference> ctExecutableReferences, ThreadReference threadRef, Candidates argsCandidates) {
+    private Candidates collectStaticMethods(Set<CtExecutableReference> ctExecutableReferences, ThreadReference threadRef, Candidates argsCandidates) {
+        Candidates results = new Candidates();
         Iterator<CtExecutableReference> it = ctExecutableReferences.iterator();
         while (it.hasNext()) {
             CtExecutableReference next = it.next();
@@ -267,17 +296,18 @@ public class DataCollector {
             }
 
             ReferenceType ref = refs.get(0);
-            ComplexValue exp = new ComplexValueImpl(next.getDeclaringType().getQualifiedName(), ref);
+            Expression exp = AccessFactory.variable(next.getDeclaringType().getQualifiedName(), ref);
             List<Method> methods = getMethods(exp, ref, true, threadRef, next.getSimpleName());
-            callMethods(exp, threadRef, methods, argsCandidates);
+            results.addAll(callMethods(exp, threadRef, methods, argsCandidates));
         }
+        return results;
     }
 
-    private List<Method> getMethods(ComplexTypeExpression exp, ReferenceType ref, boolean isStatic, ThreadReference threadRef) {
+    private List<Method> getMethods(Expression exp, ReferenceType ref, boolean isStatic, ThreadReference threadRef) {
         return getMethods(exp, ref, isStatic, threadRef, null);
     }
 
-    private List<Method> getMethods(ComplexTypeExpression exp, ReferenceType ref, boolean isStatic, ThreadReference threadRef, String methodNameFilter) {
+    private List<Method> getMethods(Expression exp, ReferenceType ref, boolean isStatic, ThreadReference threadRef, String methodNameFilter) {
         List<Method> methods = new ArrayList<>();
         
         if (variableType.containsKey(exp.toString())) {
@@ -288,10 +318,9 @@ public class DataCollector {
         }
         
         List<Method> visibleMethods = ref.visibleMethods();
-        for (int i = 0; i < visibleMethods.size(); i++) {
-            Method method = visibleMethods.get(i);
+        for (Method method : visibleMethods) {
             boolean toCall = isToCall(exp, ref, method, isStatic);
-			if (!toCall)
+            if (!toCall)
                 continue;
             if (methodNameFilter == null || method.name().equals(methodNameFilter))
                 methods.add(method);
@@ -337,7 +366,7 @@ public class DataCollector {
     }
 
     /** modifiy "candidates" in place */
-    private Candidates callMethods(ComplexTypeExpression exp, ThreadReference threadRef, List<Method> methods, Candidates argsCandidates) {
+    private Candidates callMethods(Expression exp, ThreadReference threadRef, List<Method> methods, Candidates argsCandidates) {
     	Candidates results = new Candidates();
         executionTime = System.currentTimeMillis() - startTime;
         // call all methods
@@ -360,7 +389,7 @@ public class DataCollector {
                 }
                 if (method.name().equals("equals")) {
                     Expression parameter = expressions.get(0);
-                    if (parameter instanceof Constant) {
+                    if (parameter.getValue().isConstant()) {
                         continue;
                     }
                 }
@@ -379,27 +408,28 @@ public class DataCollector {
         return results;
     }
 
-    private Expression callMethod(final ThreadReference threadRef, final ComplexTypeExpression exp, final Method method, List<Expression> expressions) {
+    private Expression callMethod(final ThreadReference threadRef, final Expression exp, final Method method, List<Expression> expressions) {
         Expression expression = null;
         disableEventRequest();
         try {
             final List<Value> argumentValue = new ArrayList<>();
-            for (int k = 0; k < expressions.size(); k++) {
-                Expression e = expressions.get(k);
-                java.lang.reflect.Method m = e.getClass().getMethod("getJdiValue");
-                Value v = (Value) m.invoke(e);
-                argumentValue.add(v);
+            for (Expression e : expressions) {
+                argumentValue.add(e.getValue().getJDIValue());
             }
             final StackFrame stackFrame = threadRef.frame(0);
             ExecutorService executor = Executors.newSingleThreadExecutor();
             Callable<Value> task = new Callable<Value>() {
                 public Value call() {
                     try {
-                        if (exp.getValue() instanceof ObjectReference) {
-                            ObjectReference ref = ((ObjectReference) exp.getValue());
+                        Object jdiValue = exp.getValue().getJDIValue();
+                        if (exp.getValue() instanceof TypeValue) {
+                            jdiValue = exp.getValue().getRealValue();
+                        }
+                        if (jdiValue instanceof ObjectReference) {
+                            ObjectReference ref = ((ObjectReference) jdiValue);
                             return ref.invokeMethod(stackFrame.thread(), method, argumentValue, ObjectReference.INVOKE_SINGLE_THREADED);
-                        } else if (exp.getValue() instanceof ReferenceType) {
-                            ClassType ref = ((ClassType) exp.getValue());
+                        } else if (jdiValue instanceof ClassType) {
+                            ClassType ref = ((ClassType) jdiValue);
                             return ref.invokeMethod(stackFrame.thread(), method, argumentValue, ObjectReference.INVOKE_SINGLE_THREADED);
                         }
                     } catch (InvalidTypeException | IncompatibleThreadStateException | InvocationException e) {
@@ -412,12 +442,21 @@ public class DataCollector {
                     return null;
                 }
             };
-            boolean cast = !(variableType.containsKey(exp.toString()) || exp.toString().equals("this") || exp instanceof MethodInvocation);
+            boolean cast = !(variableType.containsKey(exp.toString()) || exp.toString().equals("this") || exp instanceof fr.inria.lille.spirals.repair.expressionV2.access.Method);
             Future<Value> future = executor.submit(task);
             try {
                 Value result = future.get(Config.INSTANCE.getTimeoutMethodInvocation(), TimeUnit.SECONDS);
                 if (result != null) {
-                    expression = ExpressionFacotry.create(exp, method, expressions, result, cast);
+                    List<String> argumentTypes = new ArrayList<String>();
+                    try {
+                        List<Type> types = method.argumentTypes();
+                        for (Type type : types) {
+                            argumentTypes.add(type.name());
+                        }
+                    } catch (ClassNotLoadedException e) {
+                        e.printStackTrace();
+                    }
+                    expression = AccessFactory.method(method.name(), argumentTypes, method.declaringType().name(), exp, expressions, result);
                     logger.debug("[data] " + expression);
                 }
             } catch (Exception ex) {
@@ -425,6 +464,7 @@ public class DataCollector {
             	throw new RuntimeException(ex);
             } finally {
                 future.cancel(true);
+                executor.shutdown();
             }
         } catch (Exception e) {
             // ignore this exception cannot be handled
@@ -470,7 +510,7 @@ public class DataCollector {
             for (int j = 0; j < b.size(); j++) {
                 Expression expression1 = b.get(j);
                 if (expression.equals(expression1)) continue;
-                if (expression instanceof Constant && expression1 instanceof Constant) continue;
+                if (expression.getValue().isConstant() && expression1.getValue().isConstant()) continue;
                 List<Expression> list = new ArrayList<>();
                 list.add(expression);
                 list.add(expression1);

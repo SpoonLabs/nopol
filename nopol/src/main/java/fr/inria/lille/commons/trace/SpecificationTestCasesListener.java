@@ -9,9 +9,6 @@ import xxl.java.junit.TestCasesListener;
 import java.util.Collection;
 import java.util.Map;
 
-import static xxl.java.library.LoggerLibrary.logDebug;
-import static xxl.java.library.LoggerLibrary.logWarning;
-
 public class SpecificationTestCasesListener<T> extends TestCasesListener {
 
     public SpecificationTestCasesListener(RuntimeValues<T> runtimeValues) {
@@ -33,7 +30,7 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
     @Override
     protected void processSuccessfulRun(TestCase testCase) {
         if (!runtimeValues().isEmpty()) {
-            logDebug(logger(), "Collecting specifications from " + testCase);
+            // logDebug(logger(), "Collecting specifications from " + testCase);
             for (Specification<T> specification : runtimeValues().specifications()) {
                 T output = specification.output();
                 Map<String, Object> inputs = specification.inputs();
@@ -52,7 +49,7 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
             } else {
                 consistentInputs().remove(inputs);
                 inconsistentInputs().add(inputs);
-                logWarning(logger(), "Inconsistent input found when collecting specifications");
+                // logWarning(logger(), "Inconsistent input found when collecting specifications");
             }
         }
         return false;

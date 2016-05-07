@@ -34,10 +34,7 @@ public class ComplexConstantImpl extends ComplexValueImpl implements ComplexCons
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Constant)) {
-            return false;
-        }
-        return super.equals(o);
+        return o instanceof Constant && super.equals(o);
     }
 
     @Override

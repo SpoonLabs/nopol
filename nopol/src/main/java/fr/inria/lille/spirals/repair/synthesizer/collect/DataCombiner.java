@@ -2,13 +2,21 @@ package fr.inria.lille.spirals.repair.synthesizer.collect;
 
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.expression.*;
-import fr.inria.lille.spirals.repair.expression.operator.BinaryOperator;
-import fr.inria.lille.spirals.repair.expression.operator.UnaryOperator;
+import fr.inria.lille.spirals.repair.expressionV2.Expression;
+import fr.inria.lille.spirals.repair.expressionV2.combination.CombinationExpression;
+import fr.inria.lille.spirals.repair.expressionV2.combination.Operator;
+import fr.inria.lille.spirals.repair.expressionV2.combination.binary.BinaryExpression;
+import fr.inria.lille.spirals.repair.expressionV2.combination.binary.BinaryOperator;
+import fr.inria.lille.spirals.repair.expressionV2.combination.unary.UnaryExpression;
+import fr.inria.lille.spirals.repair.expressionV2.combination.unary.UnaryOperator;
+import fr.inria.lille.spirals.repair.expressionV2.factory.AccessFactory;
+import fr.inria.lille.spirals.repair.expressionV2.factory.CombinationFactory;
+import fr.inria.lille.spirals.repair.expressionV2.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,17 +45,115 @@ public class DataCombiner {
         lastTurn.addAll(candidates);
         int previousSize = 0;
         executionTime = System.currentTimeMillis() - startTime;
+        List<Operator> operators = new ArrayList<>();
+        operators.addAll(Arrays.asList(UnaryOperator.values()));
+        operators.addAll(Arrays.asList(BinaryOperator.values()));
         for (int i = 0; i < maxDepth - 1 && !stop && executionTime <= maxTime; i++) {
-            lastTurn.addAll(combinePrimitives(lastTurn, previousSize, i == maxDepth - 2 ? angelicValue : null));
+            lastTurn.addAll(newCombiner(lastTurn, operators, i == maxDepth - 2 ? angelicValue : null));
+
+            /*lastTurn.addAll(combinePrimitives(lastTurn, previousSize, i == maxDepth - 2 ? angelicValue : null));
             if (stop) {
                 return result;
             }
             lastTurn.addAll(combineComplex(lastTurn, previousSize, i == maxDepth - 2 ? angelicValue : null));
             previousSize = candidates.size();
-            executionTime = System.currentTimeMillis() - startTime;
+            executionTime = System.currentTimeMillis() - startTime;*/
         }
         result.addAll(lastTurn);
         logger.debug("[combine] end " + result.getCacheValues().keySet().size() + " evaluated elements");
+        return result;
+    }
+
+    private List<Expression> newCombiner(final List<Expression> toCombine, final List<Operator> operators, final Object angelicValue) {
+        final List<Expression> result = new ArrayList<>();
+
+        class Combination {
+            private final List<Expression> toCombine;
+            private final Operator operator;
+            private final List<Integer> positions;
+            private final int nbExpression;
+            private boolean isEnd = false;
+
+            Combination(List<Expression> toCombine, Operator operator, int nbExpression) {
+                this.toCombine = toCombine;
+                this.operator = operator;
+                this.nbExpression = nbExpression;
+                this.positions = new ArrayList<>(nbExpression);
+                for (int i = 0; i < nbExpression; i++) {
+                    positions.add(0);
+                }
+            }
+
+            public synchronized List<Expression> perform() {
+                if (isEnd || stop) {
+                    return null;
+                }
+                List<Expression> current = new ArrayList<>();
+                for (int i = 0; i < nbExpression; i++) {
+                    current.add(toCombine.get(positions.get(i)));
+                }
+                incrementPosition();
+                return current;
+            }
+
+            public boolean isEnd() {
+                return isEnd || stop;
+            }
+
+            private synchronized void incrementPosition() {
+                int size = toCombine.size();
+                for (int i = positions.size() - 1; i >= 0; i-- ) {
+                    Integer position = positions.get(i);
+                    if (position < size - 1) {
+                        position ++;
+                        positions.set(i, position);
+                        return;
+                    } else {
+                        positions.set(i, 0);
+                        if (i == positions.size() - 1 && positions.size() > 1) {
+                            positions.set(i, Math.min(positions.get(i - 1) + 2, size - 1));
+                        }
+                        if (i == 0) {
+                            isEnd = true;
+                        }
+                    }
+                }
+            }
+        }
+        if (Config.INSTANCE.isSortExpressions()) {
+            Collections.sort(toCombine, Collections.reverseOrder());
+        }
+
+        for (Operator operator : operators) {
+            if (angelicValue != null && !operator.getReturnType().isAssignableFrom(angelicValue.getClass())) {
+                continue;
+            }
+            int nbExpression = operator.getTypeParameters().size();
+            Combination combination = new Combination(toCombine, operator, nbExpression);
+            while(!combination.isEnd()) {
+                List<Expression> expressions = combination.perform();
+                CombinationExpression binaryExpression = CombinationFactory.create(operator, expressions);
+                if (addExpressionIn(binaryExpression, result, false)) {
+                    if (callListener(binaryExpression)) {
+                        if (Config.INSTANCE.isOnlyOneSynthesisResult()) {
+                            return result;
+                        }
+                    }
+                }
+                if (operator instanceof BinaryOperator) {
+                    if (!((BinaryOperator) operator).isCommutative()) {
+                        binaryExpression = CombinationFactory.create(operator, Arrays.asList(expressions.get(1), expressions.get(0)));
+                        if (addExpressionIn(binaryExpression, result, false)) {
+                            if (callListener(binaryExpression)) {
+                                if (Config.INSTANCE.isOnlyOneSynthesisResult()) {
+                                    return result;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return result;
     }
 
@@ -61,13 +167,13 @@ public class DataCombiner {
         executionTime = System.currentTimeMillis() - startTime;
         for (int i = 0; i < toCombine.size() && executionTime <= maxTime; i++) {
             Expression expression = toCombine.get(i);
-            if (expression.getType() == null || (!Number.class.isAssignableFrom(expression.getType()) && !Boolean.class.isAssignableFrom(expression.getType()))) {
+            if (expression.getValue().getType() == null || (!Number.class.isAssignableFrom(expression.getValue().getType()) && !Boolean.class.isAssignableFrom(expression.getValue().getType()))) {
                 continue;
             }
-            if (expression.getType() == null) {
+            if (expression.getValue().getType() == null) {
                 continue;
             }
-            if (expression instanceof ComplexTypeExpression) {
+            if (!expression.getValue().isPrimitive()) {
                 continue;
             }
             for (int j = 0; j < UnaryOperator.values().length; j++) {
@@ -75,13 +181,13 @@ public class DataCombiner {
                 if (value != null && operator.getReturnType() != value.getClass()) {
                     continue;
                 }
-                if (!operator.getReturnType().isAssignableFrom(expression.getType())) {
+                if (!operator.getReturnType().isAssignableFrom(expression.getValue().getType())) {
                     continue;
                 }
-                UnaryExpression unaryExpression = new UnaryExpressionImpl(operator, expression);
+                UnaryExpression unaryExpression = CombinationFactory.create(operator, expression);
                 if (addExpressionIn(unaryExpression, result, value != null)) {
-                    expression.getInExpressions().add(unaryExpression);
-                    if (callListerner(unaryExpression) && Config.INSTANCE.isOnlyOneSynthesisResult()) {
+                    //expression.getInExpressions().add(unaryExpression);
+                    if (callListener(unaryExpression) && Config.INSTANCE.isOnlyOneSynthesisResult()) {
                         return result;
                     }
                 }
@@ -93,13 +199,13 @@ public class DataCombiner {
                 }
                 Expression expression1 = toCombine.get(j);
 
-                if (expression1.getType() == null || (!Number.class.isAssignableFrom(expression1.getType()) && !Boolean.class.isAssignableFrom(expression1.getType()))) {
+                if (expression1.getValue().getType() == null || (!Number.class.isAssignableFrom(expression1.getValue().getType()) && !Boolean.class.isAssignableFrom(expression1.getValue().getType()))) {
                     continue;
                 }
-                if (expression instanceof Constant && expression1 instanceof Constant) {
+                if (expression.getValue().isConstant() && expression1.getValue().isConstant()) {
                     continue;
                 }
-                if (expression1 instanceof ComplexTypeExpression) {
+                if (!expression1.getValue().isPrimitive()) {
                     continue;
                 }
                 executionTime = System.currentTimeMillis() - startTime;
@@ -108,7 +214,7 @@ public class DataCombiner {
                     if (value != null && operator.getReturnType() != value.getClass()) {
                         continue;
                     }
-                    if (!operator.getParam1().isAssignableFrom(expression.getType()) || !operator.getParam2().isAssignableFrom(expression1.getType())) {
+                    if (!operator.getParam1().isAssignableFrom(expression.getValue().getType()) || !operator.getParam2().isAssignableFrom(expression1.getValue().getType())) {
                         continue;
                     }
                     List returnValue = combineExpressionOperator(expression, expression1, operator, value, result);
@@ -125,25 +231,25 @@ public class DataCombiner {
     }
 
     private List<Expression> combineExpressionOperator(Expression expression, Expression expression1, BinaryOperator operator, Object value, List<Expression> result) {
-        BinaryExpression binaryExpression = new PrimitiveBinaryExpressionImpl(operator, expression, expression1);
+        BinaryExpression binaryExpression = CombinationFactory.create(operator, expression, expression1);
         if (addExpressionIn(binaryExpression, result, value != null)) {
-            expression.getInExpressions().add(binaryExpression);
+            //expression.getInExpressions().add(binaryExpression);
             if (!expression.sameExpression(expression1)) {
-                expression1.getInExpressions().add(binaryExpression);
-                if (callListerner(binaryExpression) && Config.INSTANCE.isOnlyOneSynthesisResult()) {
+                //expression1.getInExpressions().add(binaryExpression);
+                if (callListener(binaryExpression) && Config.INSTANCE.isOnlyOneSynthesisResult()) {
                     return result;
                 }
             }
         }
 
         if (!operator.isCommutative()) {
-            binaryExpression = new PrimitiveBinaryExpressionImpl(operator, expression1, expression);
+            binaryExpression = CombinationFactory.create(operator, expression1, expression);
 
             if (addExpressionIn(binaryExpression, result, value != null)) {
-                expression.getInExpressions().add(binaryExpression);
+                //expression.getInExpressions().add(binaryExpression);
                 if (!expression.sameExpression(expression1)) {
-                    expression1.getInExpressions().add(binaryExpression);
-                    if (callListerner(binaryExpression) && Config.INSTANCE.isOnlyOneSynthesisResult()) {
+                    //expression1.getInExpressions().add(binaryExpression);
+                    if (callListener(binaryExpression) && Config.INSTANCE.isOnlyOneSynthesisResult()) {
                         return result;
                     }
                 }
@@ -153,7 +259,7 @@ public class DataCombiner {
     }
 
     private List<Expression> combineComplex(List<Expression> toCombine, int previousSize, Object value) {
-        Expression nullExpression = new ComplexConstantImpl("null", null);
+        Expression nullExpression = AccessFactory.literal(null);
         logger.debug("[combine] complex start on " + toCombine.size() + " elements");
         List<Expression> result = new ArrayList<>();
         if (value != null && value.getClass() != Boolean.class) {
@@ -166,31 +272,30 @@ public class DataCombiner {
         for (int i = 0; i < toCombine.size() && executionTime <= maxTime; i++) {
             Expression expression = toCombine.get(i);
 
-            if (expression.getType() != null && (Number.class.isAssignableFrom(expression.getType()) || Boolean.class.isAssignableFrom(expression.getType()))) {
+            if (expression.getValue().getType() != null && (Number.class.isAssignableFrom(expression.getValue().getType()) || Boolean.class.isAssignableFrom(expression.getValue().getType()))) {
                 continue;
             }
-            if (expression instanceof PrimitiveTypeExpression) {
+            if (expression.getValue().isPrimitive()) {
                 continue;
             }
 
-            BinaryExpression binaryExpression = new ComplexBinaryExpressionImpl(
-                    BinaryOperator.EQ, expression, nullExpression);
+            BinaryExpression binaryExpression = CombinationFactory.create(BinaryOperator.EQ, expression, nullExpression);
             if (addExpressionIn(binaryExpression, result, value != null)) {
-                expression.getInExpressions().add(binaryExpression);
+                //expression.getInExpressions().add(binaryExpression);
                 if (!expression.sameExpression(nullExpression)) {
-                    nullExpression.getInExpressions().add(binaryExpression);
-                    if (callListerner(binaryExpression)) {
+                    //nullExpression.getInExpressions().add(binaryExpression);
+                    if (callListener(binaryExpression)) {
                         return result;
                     }
                 }
             }
 
-            binaryExpression = new ComplexBinaryExpressionImpl(BinaryOperator.NEQ, expression, nullExpression);
+            binaryExpression = CombinationFactory.create(BinaryOperator.NEQ, expression, nullExpression);
             if (addExpressionIn(binaryExpression, result, value != null)) {
-                expression.getInExpressions().add(binaryExpression);
+                //expression.getInExpressions().add(binaryExpression);
                 if (!expression.sameExpression(nullExpression)) {
-                    nullExpression.getInExpressions().add(binaryExpression);
-                    if (callListerner(binaryExpression)) {
+                    //nullExpression.getInExpressions().add(binaryExpression);
+                    if (callListener(binaryExpression)) {
                         return result;
                     }
                 }
@@ -201,10 +306,13 @@ public class DataCombiner {
     }
 
     private boolean addExpressionIn(Expression expression, List<Expression> results, boolean toAdd) {
-        if (expression.getValue() == null) {
+        if (expression.getValue() == null || expression.getValue() == Value.NOVALUE) {
             return false;
         }
-        logger.debug("[data] " + expression);
+        if (expression.getValue().getRealValue() == null) {
+            return false;
+        }
+        //logger.debug("[data] " + expression);
         return results.add(expression);
     }
 
@@ -212,11 +320,12 @@ public class DataCombiner {
         this.listeners.add(combineListener);
     }
 
-    private boolean callListerner(Expression expression) {
-        for (int i = 0; i < listeners.size(); i++) {
-            CombineListener combineListener = listeners.get(i);
+    private boolean callListener(Expression expression) {
+        for (CombineListener combineListener : listeners) {
             if (combineListener.check(expression)) {
-                stop = true;
+                if (Config.INSTANCE.isOnlyOneSynthesisResult()) {
+                    stop = true;
+                }
                 return true;
             }
         }

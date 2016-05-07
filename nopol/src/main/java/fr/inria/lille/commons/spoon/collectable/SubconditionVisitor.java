@@ -42,7 +42,16 @@ public class SubconditionVisitor extends CtScanner {
     }
 
     @Override
-    public <T> void visitCtVariableRead(CtVariableRead<T> variableAccess) {
+    public <T> void visitCtVariableRead(CtVariableRead<T> variableRead) {
+        visitCtVariableAccess(variableRead);
+    }
+
+    @Override
+    public <T> void visitCtVariableWrite(CtVariableWrite<T> variableWrite) {
+        visitCtVariableAccess(variableWrite);
+    }
+
+    public <T> void visitCtVariableAccess(CtVariableAccess<T> variableAccess) {
         addFrom(variableAccess);
     }
 

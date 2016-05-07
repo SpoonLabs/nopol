@@ -80,13 +80,6 @@ public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
             testClasses = removeTestSuite(testClasses);
         }
 
-        if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Test clasess:");
-            for (String testClass : testClasses) {
-                this.logger.debug(testClass);
-            }
-        }
-
         return testClasses;
     }
 

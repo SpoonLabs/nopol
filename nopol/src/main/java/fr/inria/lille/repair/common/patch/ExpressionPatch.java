@@ -2,13 +2,10 @@ package fr.inria.lille.repair.common.patch;
 
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.SourceLocation;
-import fr.inria.lille.spirals.repair.expression.Expression;
+import fr.inria.lille.spirals.repair.expressionV2.Expression;
 
 import java.io.File;
 
-/**
- * Created by spirals on 25/03/15.
- */
 public class ExpressionPatch implements Patch {
     private final Expression expression;
     private final SourceLocation location;

@@ -32,9 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static xxl.java.library.LoggerLibrary.logDebug;
 import static xxl.java.library.LoggerLibrary.loggerFor;
 
 public abstract class SpoonedFile {
@@ -42,7 +40,7 @@ public abstract class SpoonedFile {
     protected abstract Collection<? extends CtType<?>> modelledClasses();
 
     public SpoonedFile(File[] sourceFiles, URL[] projectClasspath) {
-        logDebug(logger(), format("[Building Spoon model from %s]", sourceFiles));
+        //logDebug(logger(), format("[Building Spoon model from %s]", sourceFiles));
         this.sourceFiles = sourceFiles;
         this.projectClasspath = projectClasspath;
         factory = SpoonModelLibrary.newFactory();
@@ -134,7 +132,7 @@ public abstract class SpoonedFile {
         setProcessors(processors);
         for (CtType<?> modelledClass : modelledClasses) {
             String qualifiedName = modelledClass.getQualifiedName();
-            logDebug(logger(), format("[Spoon processing of %s]", qualifiedName));
+            //logDebug(logger(), format("[Spoon processing of %s]", qualifiedName));
             processingManager().process(modelledClass);
         }
         compileModelledClasses(modelledClasses);
@@ -159,7 +157,7 @@ public abstract class SpoonedFile {
     }
 
     protected synchronized String sourceForModelledClass(CtType<?> modelledClass) {
-        logDebug(logger(), format("[Scanning source code of %s]", modelledClass.getQualifiedName()));
+        //logDebug(logger(), format("[Scanning source code of %s]", modelledClass.getQualifiedName()));
         prettyPrinter().scan(modelledClass);
         String packageDeclaration = "package " + modelledClass.getPackage().getQualifiedName() + ";";
         String sourceCode = packageDeclaration + JavaLibrary.lineSeparator() + prettyPrinter().toString();

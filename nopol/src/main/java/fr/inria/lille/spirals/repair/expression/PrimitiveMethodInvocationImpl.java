@@ -15,8 +15,8 @@ public class PrimitiveMethodInvocationImpl extends MethodInvocationImpl implemen
     /**
      *
      */
-    public PrimitiveMethodInvocationImpl(String method, String declaringType, Expression expression, List<Expression> parameters, Value jdiValue, Object value, Class type) {
-        super(method, declaringType, expression, parameters, jdiValue, value, type);
+    public PrimitiveMethodInvocationImpl(String method, List<String> argumentTypes, String declaringType, Expression expression, List<Expression> parameters, Value jdiValue, Object value, Class type) {
+        super(method, argumentTypes, declaringType, expression, parameters, jdiValue, value, type);
     }
 }
 

@@ -2,8 +2,8 @@ package fr.inria.lille.spirals.repair.synthesizer.collect.spoon;
 
 
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.expression.PrimitiveConstant;
-import fr.inria.lille.spirals.repair.expression.PrimitiveConstantImpl;
+import fr.inria.lille.spirals.repair.expressionV2.access.Literal;
+import fr.inria.lille.spirals.repair.expressionV2.factory.AccessFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.processing.AbstractProcessor;
@@ -15,9 +15,6 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 
-/**
- * Created by spirals on 10/03/15.
- */
 public class ConstantCollector extends AbstractProcessor<CtLiteral> {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -78,7 +75,7 @@ public class ConstantCollector extends AbstractProcessor<CtLiteral> {
             return;
         }
         if (Number.class.isAssignableFrom(value.getClass())) {
-            PrimitiveConstant constant = new PrimitiveConstantImpl(ctLiteral.getValue(), type);
+            Literal constant = AccessFactory.literal(ctLiteral.getValue());
             if (candidates.add(constant)) {
                 logger.debug("[data] " + constant);
             }

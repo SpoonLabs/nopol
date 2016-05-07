@@ -2,9 +2,8 @@ package fr.inria.lille.spirals.repair.synthesizer.collect;
 
 import com.sun.jdi.*;
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.expression.Expression;
-import fr.inria.lille.spirals.repair.expression.PrimitiveConstantImpl;
-import fr.inria.lille.spirals.repair.synthesizer.collect.factory.ExpressionFacotry;
+import fr.inria.lille.spirals.repair.expressionV2.Expression;
+import fr.inria.lille.spirals.repair.expressionV2.factory.AccessFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.reflect.code.CtLiteral;
@@ -44,7 +43,7 @@ public class SpoonElementsCollector {
                     } else {
                         continue;
                     }
-                    Expression expression = new PrimitiveConstantImpl(value, type);
+                    Expression expression = AccessFactory.literal(value);
                     logger.debug("[data] " + expression + "=" + expression.getValue());
                     candidates.add(expression);
                 } else if (ctElement instanceof CtVariableAccess) {
@@ -54,7 +53,7 @@ public class SpoonElementsCollector {
                         continue;
                     }
                     Value value = stackFrame.getValue(localVariable);
-                    Expression expression = ExpressionFacotry.create(localVariable, value);
+                    Expression expression = AccessFactory.variable(localVariable.name(), value);
                     logger.debug("[data] " + expression + "=" + expression.getValue());
                     candidates.add(expression);
                 }

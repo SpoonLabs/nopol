@@ -143,5 +143,10 @@ public abstract class BinaryExpressionImpl extends ExpressionImpl implements Bin
         }
         return first + " " + getOperator().getSymbol() + " " + second;
     }
+
+    @Override
+    public int hashCode() {
+        return operator.hashCode() * first.hashCode() * second.hashCode();
+    }
 }
 

@@ -23,7 +23,7 @@ import com.martiansoftware.jsap.JSAPResult;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.synth.StatementType;
-import fr.inria.lille.repair.infinitel.InfinitelLauncher;
+import fr.inria.lille.repair.infinitel.Infinitel;
 import fr.inria.lille.repair.nopol.NoPolLauncher;
 import fr.inria.lille.repair.ranking.Ranking;
 import xxl.java.library.FileLibrary;
@@ -55,7 +55,9 @@ public class Main {
                 case REPAIR:
                     switch (Config.INSTANCE.getType()) {
                         case LOOP:
-                            InfinitelLauncher.launch(sourceFiles, classpath, Config.INSTANCE.getProjectTests());
+                            ProjectReference project = new ProjectReference(sourceFiles, classpath, Config.INSTANCE.getProjectTests());
+                            Infinitel infinitel = new Infinitel(project);
+                            infinitel.repair();
                             break;
                         default:
                             NoPolLauncher.launch(sourceFiles, classpath, Config.INSTANCE.getType(), Config.INSTANCE.getProjectTests());

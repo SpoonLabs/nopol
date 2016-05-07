@@ -167,7 +167,7 @@ public abstract class ExpressionImpl implements Expression {
 
     @Override
     public int hashCode() {
-        return -1;
+        return this.toString().hashCode();
     }
 
     @Override
@@ -197,7 +197,7 @@ public abstract class ExpressionImpl implements Expression {
     @Override
     public Object evaluate(Candidates values) {
         for (int i = 0; i < values.size(); i++) {
-            ExpressionImpl expression = (ExpressionImpl) values.get(i);
+            /*ExpressionImpl expression = (ExpressionImpl) values.get(i);
             if (expression.sameExpression(this)) {
                 return expression.getValue();
             }
@@ -206,7 +206,7 @@ public abstract class ExpressionImpl implements Expression {
                 if (expression1.sameExpression(this)) {
                     return expression1.getValue();
                 }
-            }
+            }*/
         }
         throw new RuntimeException("Expression not found");
     }

@@ -10,6 +10,7 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtTypedElement;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 
@@ -54,8 +55,7 @@ public class VariablesInSuspiciousCollector extends AbstractProcessor<CtTypedEle
                 return true;
             }
         });
-        for (int i = 0; i < elems.size(); i++) {
-            CtTypedElement ctTypedElement = elems.get(i);
+        for (CtTypedElement ctTypedElement : elems) {
             if (ctTypedElement instanceof CtVariableAccess ||
                     ctTypedElement instanceof CtLiteral ||
                     ctTypedElement instanceof CtFieldAccess ||

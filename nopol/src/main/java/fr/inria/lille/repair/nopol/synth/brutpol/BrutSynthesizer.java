@@ -3,7 +3,6 @@ package fr.inria.lille.repair.nopol.synth.brutpol;
 import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
-import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.repair.common.patch.ExpressionPatch;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
@@ -61,12 +60,12 @@ public class BrutSynthesizer<T> implements Synthesizer {
     @Override
     public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
         long startTime = System.currentTimeMillis();
-        Collection<Specification<T>> collection = angelicValue.buildFor(classpath, testClasses, failures);
+        /*Collection<Specification<T>> collection = angelicValue.buildFor(classpath, testClasses, failures);
 
         for (Iterator<Specification<T>> iterator = collection.iterator(); iterator.hasNext(); ) {
             Specification<T> next = iterator.next();
             next.inputs();
-        }
+        }*/
         Processor<CtStatement> processor = new ConditionalInstrumenter(nopolProcessor, type.getType());
         SpoonedClass fork = spooner.forked(sourceLocation.getContainingClassName());
         ClassLoader classLoader;
@@ -97,15 +96,17 @@ public class BrutSynthesizer<T> implements Synthesizer {
             String next = iterator.next();
             oracle.put(next, passedTests.get(next).toArray());
         }
-        if (determineViability(firstResult, secondResult)) {
+        if (determineViability(failures, firstResult, secondResult)) {
             DefaultSynthesizer.nbStatementsWithAngelicValue++;
             testCasesListener = new TestRunListener();
             AngelicExecution.disable();
             TestSuiteExecution.runTestResult(testClasses, classLoader, testCasesListener);
             passedTests = testCasesListener.passedTests;
-            for (Iterator<String> iterator = passedTests.keySet().iterator(); iterator.hasNext(); ) {
-                String next = iterator.next();
+            for (String next : passedTests.keySet()) {
                 Object[] values = passedTests.get(next).toArray();
+                if (values.length == 0) {
+                    continue;
+                }
                 boolean isSame = true;
                 for (int i = 1; i < values.length; i++) {
                     Object value = values[i - 1];
@@ -121,11 +122,15 @@ public class BrutSynthesizer<T> implements Synthesizer {
                     boolean flippedValue = !(Boolean) values[0];
                     AngelicExecution.setBooleanValue(flippedValue);
                     testCasesListener = new TestRunListener();
-                    Result result = TestSuiteExecution.runTest(next, classLoader, testCasesListener);
-                    if (!result.wasSuccessful()) {
+                    try {
+                        Result result = TestSuiteExecution.runTest(next, classLoader, testCasesListener);
+                        if (!result.wasSuccessful()) {
+                            oracle.put(next, values);
+                        } else {
+                            testsOutput.debug("Ignore the test {}", next);
+                        }
+                    } catch (Exception e) {
                         oracle.put(next, values);
-                    } else {
-                        testsOutput.debug("Ignore the test {}", next);
                     }
                 } else {
                     oracle.put(next, values);
@@ -141,17 +146,27 @@ public class BrutSynthesizer<T> implements Synthesizer {
         return NO_PATCH;
     }
 
-    private boolean determineViability(final Result firstResult, final Result secondResult) {
-        Collection<Description> firstFailures = TestSuiteExecution.collectDescription(firstResult.getFailures());
-        Collection<Description> secondFailures = TestSuiteExecution.collectDescription(secondResult.getFailures());
-        firstFailures.retainAll(secondFailures);
-        boolean viablePatch = firstFailures.isEmpty();
-        if (!viablePatch) {
-            //logger.debug("Failing test(s): {}\n{}", sourceLocation, firstFailures);
-            testsOutput.debug("First set: \n{}", firstResult.getFailures());
-            testsOutput.debug("Second set: \n{}", secondResult.getFailures());
+    private boolean determineViability(Collection<TestCase> testCases, final CompoundResult firstResult, final CompoundResult secondResult) {
+        Set<String> firstPassing = getPassingTests(testCases, firstResult);
+        Set<String> secondPassing = getPassingTests(testCases, secondResult);
+        firstPassing.addAll(secondPassing);
+        return firstPassing.size() == testCases.size();
+    }
+
+    private Set<String> getPassingTests(Collection<TestCase> testCases, final CompoundResult results) {
+        Set<String> output = new HashSet<>();
+        Collection<Description> failures = TestSuiteExecution.collectDescription(results.getFailures());
+        testCaseLoop:
+        for (TestCase testCase : testCases) {
+            for (Description failure : failures) {
+                if (testCase.className().equals(failure.getClassName())
+                        && failure.getMethodName().equals(testCase.testName())) {
+                    continue testCaseLoop;
+                }
+            }
+            output.add(testCase.className() + "#" + testCase.testName());
         }
-        return viablePatch;
+        return output;
     }
 
     @Override

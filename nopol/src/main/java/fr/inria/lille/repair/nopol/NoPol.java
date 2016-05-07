@@ -122,11 +122,10 @@ public class NoPol {
     private Map<SourceLocation, List<TestResult>> getTestListPerStatement() {
         Map<SourceLocation, List<TestResult>> results = new HashMap<>();
         List<TestResult> testResults = gZoltar.getGzoltar().getTestResults();
-        for (int i = 0; i < testResults.size(); i++) {
-            TestResult testResult = testResults.get(i);
+        for (TestResult testResult : testResults) {
             List<ComponentCount> components = testResult.getCoveredComponents();
-            for (int j = 0; j < components.size(); j++) {
-                Statement component = (Statement) components.get(j).getComponent();
+            for (ComponentCount component1 : components) {
+                Statement component = (Statement) component1.getComponent();
                 SourceLocation sourceLocation = new SourceLocation(component.getMethod().getParent().getLabel(), component.getLineNumber());
                 if (!results.containsKey(sourceLocation)) {
                     results.put(sourceLocation, new ArrayList<TestResult>());
@@ -146,7 +145,6 @@ public class NoPol {
      */
     private List<Patch> solveWithMultipleBuild(Collection<Statement> statements, Map<SourceLocation, List<TestResult>> testListPerStatement) {
         List<Patch> patches = new ArrayList<>();
-
         for (Iterator<Statement> iterator = statements.iterator(); iterator.hasNext() &&
                 // limit the execution time
                 System.currentTimeMillis() - startTime <= TimeUnit.MINUTES.toMillis(Config.INSTANCE.getMaxTime()); ) {
@@ -154,9 +152,9 @@ public class NoPol {
             if (((StatementExt) statement).getEf() == 0) {
                 continue;
             }
-			/*if(((StatementExt)statement).getNf() != 0) {
+			if(((StatementExt)statement).getNf() != 0) {
 				continue;
-			}*/
+			}
             try {
                 if (isInTest(statement))
                     continue;
@@ -201,11 +199,7 @@ public class NoPol {
     }
 
     private boolean isInTest(Statement statement) {
-        if (statement.getMethod().getParent().getName()
-                .contains("Test")) {
-            return true;
-        }
-        return false;
+        return statement.getMethod().getParent().getName().contains("Test");
     }
 
     private boolean isOk(Patch newRepair, List<TestResult> testClasses, NopolProcessor processor) {

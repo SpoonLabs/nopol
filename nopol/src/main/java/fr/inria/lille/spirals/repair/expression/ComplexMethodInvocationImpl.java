@@ -15,8 +15,8 @@ public class ComplexMethodInvocationImpl extends MethodInvocationImpl implements
     /**
      *
      */
-    public ComplexMethodInvocationImpl(String method, String declaringType, Expression expression, List<Expression> parameters, Value value, Class type) {
-        super(method, declaringType, expression, parameters, value, value, type);
+    public ComplexMethodInvocationImpl(String method, List<String> argumentTypes, String declaringType, Expression expression, List<Expression> parameters, Value value, Class type) {
+        super(method, argumentTypes, declaringType, expression, parameters, value, value, type);
     }
 
 }

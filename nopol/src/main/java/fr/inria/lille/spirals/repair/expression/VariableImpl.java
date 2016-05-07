@@ -46,6 +46,11 @@ public abstract class VariableImpl extends ExpressionImpl implements Variable {
         return Config.INSTANCE.getVariableWeight() * getPriority();
     }
 
+    @Override
+    public int hashCode() {
+        return variableName.hashCode();
+    }
+
     /*@Override
     public boolean equals(Object o) {
         if (this == o) return true;

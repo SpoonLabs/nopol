@@ -24,7 +24,11 @@ public final class JUnitRunner implements Callable<Result> {
         JUnitCore runner = new JUnitCore();
         runner.addListener(listener);
         Class<?>[] testClasses = testClassesFromCustomClassLoader();
-        return runner.run(testClasses);
+        try {
+            return runner.run(testClasses);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Class<?>[] testClassesFromCustomClassLoader() {

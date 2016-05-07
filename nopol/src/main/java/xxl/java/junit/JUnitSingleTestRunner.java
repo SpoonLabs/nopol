@@ -19,7 +19,11 @@ public class JUnitSingleTestRunner implements Callable<Result> {
         JUnitCore runner = new JUnitCore();
         runner.addListener(listener);
         Request request = Request.method(testClassFromCustomClassLoader(), testCaseName());
-        return runner.run(request);
+        try {
+            return runner.run(request);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Class<?> testClassFromCustomClassLoader() {

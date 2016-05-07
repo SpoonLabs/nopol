@@ -1,19 +1,7 @@
 package fr.inria.lille.spirals.repair.synthesizer;
 
-import com.sun.jdi.AbsentInformationException;
-import com.sun.jdi.IncompatibleThreadStateException;
-import com.sun.jdi.ObjectReference;
-import com.sun.jdi.ReferenceType;
-import com.sun.jdi.StackFrame;
-import com.sun.jdi.ThreadReference;
-import com.sun.jdi.VirtualMachine;
-import com.sun.jdi.event.BreakpointEvent;
-import com.sun.jdi.event.ClassPrepareEvent;
-import com.sun.jdi.event.Event;
-import com.sun.jdi.event.EventQueue;
-import com.sun.jdi.event.EventSet;
-import com.sun.jdi.event.VMDeathEvent;
-import com.sun.jdi.event.VMDisconnectEvent;
+import com.sun.jdi.*;
+import com.sun.jdi.event.*;
 import com.sun.jdi.request.BreakpointRequest;
 import com.sun.jdi.request.ClassPrepareRequest;
 import com.sun.jdi.request.EventRequestManager;
@@ -21,21 +9,13 @@ import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.expression.Constant;
-import fr.inria.lille.spirals.repair.expression.Expression;
-import fr.inria.lille.spirals.repair.expression.FieldAccess;
-import fr.inria.lille.spirals.repair.expression.MethodInvocation;
-import fr.inria.lille.spirals.repair.expression.PrimitiveConstantImpl;
-import fr.inria.lille.spirals.repair.expression.Variable;
+import fr.inria.lille.spirals.repair.expressionV2.Expression;
+import fr.inria.lille.spirals.repair.expressionV2.access.*;
+import fr.inria.lille.spirals.repair.expressionV2.factory.AccessFactory;
 import fr.inria.lille.spirals.repair.synthesizer.collect.DataCollector;
 import fr.inria.lille.spirals.repair.synthesizer.collect.DataCombiner;
 import fr.inria.lille.spirals.repair.synthesizer.collect.SpoonElementsCollector;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.ClassCollector;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.ConstantCollector;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.MethodCollector;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.StatCollector;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.VariableTypeCollector;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.VariablesInSuspiciousCollector;
+import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.*;
 import fr.inria.lille.spirals.repair.vm.DebugJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,17 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -96,9 +66,9 @@ public class SynthesizerImpl implements Synthesizer {
 
 	/**
      * Create a new DynaMoth synthesizer
-     * @param spoon the spoon intance of the project
+     * @param spoon the spoon instance of the project
      * @param projectRoots the root folders of the project
-     * @param location the location of the code to synthesiz
+     * @param location the location of the code to synthesizer
      * @param classpath the classpath of the project
      * @param oracle the oracle of the project Map<testClass#testMethod, {value iteration 1, value iteration 2, ...}>
      * @param tests tests to execute
@@ -171,7 +141,7 @@ public class SynthesizerImpl implements Synthesizer {
         }
         if (same) {
             Candidates candidates = new Candidates();
-            candidates.add(new PrimitiveConstantImpl(last, null, last.getClass()));
+            candidates.add(AccessFactory.literal(last));
             return candidates;
         }
         try {
@@ -194,7 +164,7 @@ public class SynthesizerImpl implements Synthesizer {
     private void processVMEvents() {
         try {
             // process events
-            EventQueue eventQueue = vm.eventQueue();
+            final EventQueue eventQueue = vm.eventQueue();
             while (true) {
                 EventSet eventSet = eventQueue.remove(TimeUnit.SECONDS.toMillis(this.dataCollectionTimeoutInSeconds ));
             	if (eventSet==null) return; // timeout
@@ -202,13 +172,13 @@ public class SynthesizerImpl implements Synthesizer {
                     if (event instanceof VMDeathEvent || event instanceof VMDisconnectEvent) {
                         // exit
                         DebugJUnitRunner.process.destroy();
-                        logger.info("Exit");
+                        logger.debug("Exit");
                         return;
                     } else if (event instanceof ClassPrepareEvent) {
-                        logger.info("ClassPrepareEvent");
+                        logger.debug("ClassPrepareEvent");
                         processClassPrepareEvent();
                     } else if (event instanceof BreakpointEvent) {
-                        logger.info("BreakpointEvent");
+                        logger.debug("BreakpointEvent");
                         processBreakPointEvents((BreakpointEvent) event);
                     }
                 }
@@ -245,10 +215,8 @@ public class SynthesizerImpl implements Synthesizer {
     private void jumpEndTest(ThreadReference threadRef) {
         try {
             List<StackFrame> frames = threadRef.frames();
-            for (int i = 0; i < frames.size(); i++) {
-                StackFrame stackFrame = frames.get(i);
-                for (int j = 0; j < tests.length; j++) {
-                    String test = tests[j];
+            for (StackFrame stackFrame : frames) {
+                for (String test : tests) {
                     String[] splitted = test.split("#");
                     test = splitted[0];
                     ObjectReference thisObject = stackFrame.thisObject();
@@ -265,7 +233,7 @@ public class SynthesizerImpl implements Synthesizer {
                                 if (listOfLocations.size() == 0) {
                                     continue;
                                 }
-                                com.sun.jdi.Location jdiLocation = (com.sun.jdi.Location) listOfLocations.get(listOfLocations.size() - 1);
+                                Location jdiLocation = (Location) listOfLocations.get(listOfLocations.size() - 1);
                                 breakpointJump = erm.createBreakpointRequest(jdiLocation);
                                 breakpointJump.setEnabled(true);
                                 jumpEnabled = true;
@@ -327,10 +295,8 @@ public class SynthesizerImpl implements Synthesizer {
     private void getCurrentTest(ThreadReference threadRef) {
         try {
             List<StackFrame> frames = threadRef.frames();
-            for (int i = 0; i < frames.size(); i++) {
-                StackFrame stackFrame = frames.get(i);
-                for (int j = 0; j < tests.length; j++) {
-                    String test = tests[j];
+            for (StackFrame stackFrame : frames) {
+                for (String test : tests) {
                     String[] splitted = test.split("#");
                     test = splitted[0];
                     ObjectReference thisObject = stackFrame.thisObject();
@@ -362,8 +328,7 @@ public class SynthesizerImpl implements Synthesizer {
 
     private void initSpoon() {
         File classFile = null;
-        for (int i = 0; i < projectRoots.length; i++) {
-            File projectRoot = projectRoots[i];
+        for (File projectRoot : projectRoots) {
             classFile = new File(projectRoot.getAbsoluteFile() + "/" + this.location.getContainingClassName().replaceAll("\\.", "/") + ".java");
             if (classFile.exists()) {
                 break;
@@ -389,6 +354,7 @@ public class SynthesizerImpl implements Synthesizer {
         this.calledMethods = collectMethod();
         this.variableType = variableType;
         try {
+            Config.INSTANCE.getComplianceLevel();
             StatCollector statCollector = new StatCollector(buggyMethod);
             spoon.processClass(location.getContainingClassName(), statCollector);
             this.statCollector = statCollector;
@@ -440,10 +406,15 @@ public class SynthesizerImpl implements Synthesizer {
     }
 
     private Set<String> collectMethod() {
-        MethodCollector methodCollector = new MethodCollector();
-        spoon.process(methodCollector);
+        try {
+            MethodCollector methodCollector = new MethodCollector();
+            spoon.process(methodCollector);
 
-        return methodCollector.getMethods();
+            return methodCollector.getMethods();
+        } catch (Exception e) {
+            logger.warn("Unable to collect method", e);
+        }
+        return new HashSet<>();
     }
 
     private Map<String, String> collectVariableType() {
@@ -457,6 +428,29 @@ public class SynthesizerImpl implements Synthesizer {
         return new HashMap<>();
     }
 
+    private boolean isConstant(Expression e) {
+        if (e.getValue().isConstant()) {
+            return true;
+        }
+        for (List<Candidates> candidates : values.values()) {
+            loopCandidate : for (Candidates candidate : candidates) {
+                for (Expression expression : candidate) {
+                    if (e.sameExpression(expression)) {
+                        if (expression.getValue().isConstant()) {
+                            return true;
+                        }
+                        if (!e.getValue().equals(expression.getValue())) {
+                            return false;
+                        }
+                        continue loopCandidate;
+                    }
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+
     private Candidates combineValues() {
         final Candidates result = new Candidates();
         List<String> collectedTests = new ArrayList<>(values.keySet());
@@ -464,9 +458,24 @@ public class SynthesizerImpl implements Synthesizer {
         Collections.sort(collectedTests, new Comparator<String>() {
             @Override
             public int compare(String s, String t1) {
+                if (values.get(t1).isEmpty()) {
+                    return -1;
+                }
+                if (values.get(s).isEmpty()) {
+                    return 1;
+                }
                 return values.get(t1).get(0).size() - values.get(s).get(0).size();
             }
         });
+        for (int i = 0; i < collectedTests.size(); i++) {
+            final String key = collectedTests.get(i);
+            List<Candidates> listValue = values.get(key);
+            for (Candidates expressions : listValue) {
+                for (Expression expression : expressions) {
+                    expression.getValue().setConstant(isConstant(expression));
+                }
+            }
+        }
         long currentTime = System.currentTimeMillis();
         Candidates lastCollectedValues = null;
         for (int k = 0; k < collectedTests.size() && currentTime - startTime <= remainingTime; k++) {
@@ -498,7 +507,7 @@ public class SynthesizerImpl implements Synthesizer {
                     if (expression == null || expression.getValue() == null) {
                         continue;
                     }
-                    if (expression.getValue().equals(angelicValue) && checkExpression(key, i, expression)) {
+                    if (angelicValue.equals(expression.getValue().getRealValue()) && checkExpression(key, i, expression)) {
                         result.add(expression);
                         if (Config.INSTANCE.isOnlyOneSynthesisResult()) {
                             printSummary(result);
@@ -513,7 +522,7 @@ public class SynthesizerImpl implements Synthesizer {
                 combiner.addCombineListener(new DataCombiner.CombineListener() {
                     @Override
                     public boolean check(Expression expression) {
-                        if (!expression.getValue().equals(angelicValue)) {
+                        if (!angelicValue.equals(expression.getValue().getRealValue())) {
                             return false;
                         }
                         if (checkExpression(key, iterationNumber, expression)) {
@@ -548,9 +557,7 @@ public class SynthesizerImpl implements Synthesizer {
             return false;
         }
         checkedExpression.add(expression.toString());
-        Iterator<String> it = values.keySet().iterator();
-        while (it.hasNext()) {
-            String test = it.next();
+        for (String test : values.keySet()) {
             List<Candidates> listCandidates = values.get(test);
             for (int i = 0; i < listCandidates.size(); i++) {
                 Candidates valueOtherTest = listCandidates.get(i);
@@ -564,9 +571,12 @@ public class SynthesizerImpl implements Synthesizer {
                     v = oracle.get(test)[oracle.get(test).length - 1];
                 }
                 try {
-                    Object expressionValue = expression.evaluate(valueOtherTest);
-                    if (!v.equals(expressionValue)) {
-                        logger.debug(expression + " not valid for the test " + test);
+                    fr.inria.lille.spirals.repair.expressionV2.value.Value expressionValue = expression.evaluate(valueOtherTest);
+                    if (expressionValue == null) {
+                        return false;
+                    }
+                    if (!v.equals(expressionValue.getRealValue())) {
+                        //logger.debug(expression + " not valid for the test " + test);
                         return false;
                     }
                 } catch (RuntimeException e) {
@@ -586,16 +596,17 @@ public class SynthesizerImpl implements Synthesizer {
         int nbMethodInvocation = 0;
         int nbFieldAccess = 0;
         int nbVariable = 0;
-        for (int i = 0; i < candidate.size(); i++) {
-            Expression expression = candidate.get(i);
-            if (expression instanceof Constant) {
+        for (Expression expression : candidate) {
+            if (expression.getValue().isConstant()) {
                 nbConstant++;
             } else if (expression instanceof Variable) {
-                nbVariable++;
-            } else if (expression instanceof MethodInvocation) {
+                if (((Variable) expression).getTarget() != null) {
+                    nbFieldAccess++;
+                } else {
+                    nbVariable++;
+                }
+            } else if (expression instanceof fr.inria.lille.spirals.repair.expressionV2.access.Method) {
                 nbMethodInvocation++;
-            } else if (expression instanceof FieldAccess) {
-                nbFieldAccess++;
             }
         }
 
