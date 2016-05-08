@@ -219,7 +219,6 @@ public class SynthesizerImpl implements Synthesizer {
         } finally {
             DebugJUnitRunner.process.destroy();
         }
-        return;
     }
 
     private void processClassPrepareEvent() throws AbsentInformationException {
@@ -611,22 +610,27 @@ public class SynthesizerImpl implements Synthesizer {
         System.out.println("Nb evaluated expressions " + nbExpressionEvaluated);
         System.out.println("Init Execution time      " + (initExecutionTime - startTime) + " ms");
         System.out.println("Collect Execution time   " + (collectExecutionTime - initExecutionTime) + " ms");
-        System.out.println("Combine Execution time   " + (System.currentTimeMillis() - collectExecutionTime) + " ms");
+        double combinationDuration = System.currentTimeMillis() - collectExecutionTime;
+        System.out.println("Combine Execution time   " + combinationDuration + " ms");
+        double nbCombinationPerMs = nbExpressionEvaluated/combinationDuration;
+        System.out.println("Nb Combination par sec   " + Math.round(nbCombinationPerMs*1000) + " combinations/sec");
         System.out.println("Total Execution time     " + (System.currentTimeMillis() - startTime) + " ms");
         System.out.println("Nb line execution        " + nbBreakPointCalls);
+
+        System.out.println("Nb results               " + result.size());
         System.out.println();
-        String patchResult = "";
+        System.out.println("Results:");
         for (int i = 0; i < result.size(); i++) {
             Expression expression = result.get(i);
-            patchResult += expression.asPatch() + ", ";
+            System.out.println((i + 1) + ". " + expression.toString());
         }
-        System.out.println("Result                   " + patchResult);
+
         System.out.println();
         System.out.println();
 
         System.out.println(this.statCollector);
 
-        System.out.println(" & " + nbConstant + " & " + nbMethodInvocation + " & " + nbFieldAccess + " & " + nbVariable + " & " + nbValueToCombine + " & " + nbExpressionEvaluated + " & " + (System.currentTimeMillis() - startTime) + " ms" + " & " + nbBreakPointCalls + " & " + patchResult.replaceAll("&", "\\&") + " &");
+        System.out.println(" & " + nbConstant + " & " + nbMethodInvocation + " & " + nbFieldAccess + " & " + nbVariable + " & " + nbValueToCombine + " & " + nbExpressionEvaluated + " & " + (System.currentTimeMillis() - startTime) + " ms" + " & " + nbBreakPointCalls  + " &");
     }
 
 	@Override

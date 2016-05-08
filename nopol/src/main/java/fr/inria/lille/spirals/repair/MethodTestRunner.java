@@ -14,7 +14,7 @@ public class MethodTestRunner {
         String[] tests = args[0].split(" ");
         for (int i = 0; i < tests.length; i++) {
             final String test = tests[i];
-            ExecutorService executor = Executors.newCachedThreadPool();
+            ExecutorService executor = Executors.newSingleThreadExecutor();
             Callable<Object> task = new Callable<Object>() {
                 public Object call() {
                     runTest(test);
@@ -28,7 +28,8 @@ public class MethodTestRunner {
                 // handle other exceptions
                 ex.printStackTrace();
             } finally {
-                future.cancel(true); // may or may not desire this
+                future.cancel(true);
+                executor.shutdown();
             }
         }
     }
