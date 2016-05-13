@@ -1,26 +1,26 @@
 # Nopol [![Build Status](https://travis-ci.org/SpoonLabs/nopol.svg?branch=master)](https://travis-ci.org/SpoonLabs/nopol) [![Coverage Status](https://coveralls.io/repos/github/SpoonLabs/nopol/badge.svg?branch=master)](https://coveralls.io/github/SpoonLabs/nopol?branch=master)
 
-This is the repository of Nopol.
-
-Nopol is an automatic software repair tool developed at Inria Lille.
-
-This code is research code, released under the GPL licence.
+Nopol is an automatic software repair tool for Java. This code is research code, released under the GPL licence.
 
 If you use this code for academic research, please cite:
-[Automatic Repair of Buggy If Conditions and Missing Preconditions with SMT](http://hal.inria.fr/hal-00977798/PDF/NOPOL-Automatic-Repair-of-Buggy-If-Conditions-and-Missing-Preconditions-with-SMT.pdf) (Favio DeMarco, Jifeng Xuan, Daniel Le Berre, Martin Monperrus), In Proceedings of the 6th International Workshop on Constraints in Software Testing, Verification, and Analysis (CSTVA 2014)
+[Nopol: Automatic Repair of Conditional Statement Bugs in Java Programs](https://hal.archives-ouvertes.fr/hal-01285008/document) (Jifeng Xuan, Matias Martinez, Favio Demarco, Maxime Clément, Sebastian Lamelas, Thomas Durieux, Daniel Le Berre, Daniel Le Berre, Martin Monperrus). IEEE Transactions on Software Engineering, 2016.
 ```Bibtex
-@InProceedings{DeMarco2014,
-  Title                    = {{Automatic Repair of Buggy If Conditions and Missing Preconditions with {SMT}}},
-  Author                   = {Favio DeMarco and Jifeng Xuan and Daniel Le Berre and Martin Monperrus},
-  Booktitle                = {Proceedings of the 6th International Workshop on Constraints in Software Testing, Verification, and Analysis (CSTVA 2014)},
-  url                      = {http://hal.inria.fr/hal-00977798/PDF/NOPOL-Automatic-Repair-of-Buggy-If-Conditions-and-Missing-Preconditions-with-SMT.pdf},
-  Year                     = {2014}
+@article{xuan:hal-01285008,
+ title = {Nopol: Automatic Repair of Conditional Statement Bugs in Java Programs},
+ author = {Xuan, Jifeng and Martinez, Matias and Demarco, Favio and Clément, Maxime and Lamelas, Sebastian and Durieux, Thomas and Le Berre, Daniel and Monperrus, Martin},
+ journal = {IEEE Transactions on Software Engineering},
+ year = {2016},
 }
 ```
-A compiled version of Nopol is at nopol-0.0.3-SNAPSHOT-jar-with-dependencies.jar
-It requires an SMT solver installed on the machine (e.g. Z3)
+
+You can alternatively cite the previous paper ["Automatic Repair of Buggy If Conditions and Missing Preconditions with SMT"](http://hal.inria.fr/hal-00977798/PDF/NOPOL-Automatic-Repair-of-Buggy-If-Conditions-and-Missing-Preconditions-with-SMT.pdf) (Favio DeMarco, Jifeng Xuan, Daniel Le Berre, Martin Monperrus), In Proceedings of the 6th International Workshop on Constraints in Software Testing, Verification, and Analysis (CSTVA 2014) [(Bibtex)](http://www.monperrus.net/martin/bibtexbrowser.php?key=DeMarco2014&bib=monperrus.bib)
+
+The dynamic synthesis part of Nopol is described in [DynaMoth: Dynamic Code Synthesis for Automatic Program Repair](https://hal.archives-ouvertes.fr/hal-01279233/document) (Thomas Durieux, Martin Monperrus), In Proceedings of the 11th International Workshop in Automation of Software Test, 2016. [(Bibtex)](http://www.monperrus.net/martin/bibtexbrowser.php?key=durieux%3Ahal-01279233&bib=monperrus.bib)
+
 
 ## Getting started
+
+Nopol requires Java and an SMT solver installed on the machine (e.g. Z3)
 
 1) First compile:
 
