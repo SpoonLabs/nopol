@@ -164,8 +164,8 @@ public class SynthesizerTest {
         check(synthesizer.getCollectedExpressions(), "this.foo((java.util.List) list2)");
         
         // the valid patches
-        check(synthesizer.getValidExpressions(), "(null == list) || (0 == ((java.util.List) list).size())");
-        check(synthesizer.getValidExpressions(), "(null == list) || ((java.util.List) list).isEmpty()");
+        check(synthesizer.getValidExpressions(), "(list == null) || (list.size() == 0)");
+        check(synthesizer.getValidExpressions(), "(list == null) || list.isEmpty()");
     }
 
     @Test
@@ -182,7 +182,7 @@ public class SynthesizerTest {
         //assertEquals(12,synthesizer.getCollectedExpressions().size());
 
         // the valid patches
-        check(synthesizer.getValidExpressions(), "(null == list) || ((java.util.List) list).isEmpty()");
+        check(synthesizer.getValidExpressions(), "(list == null) || list.isEmpty()");
     }
 
     private Synthesizer createSynthesizer(int nopolExampleNumber, Map<String, Object[]> o, int line) {

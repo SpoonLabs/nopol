@@ -14,9 +14,9 @@ import static org.junit.Assert.assertEquals;
 public class ExpressionTest {
     @Test
     public void primitiveBinaryFactoryTest() {
-        BinaryExpression binaryExpression = CombinationFactory.create(BinaryOperator.ADD, AccessFactory.literal(3.1), AccessFactory.literal(1));
+        BinaryExpression binaryExpression = CombinationFactory.create(BinaryOperator.ADD, AccessFactory.variable("a", 3.1), AccessFactory.literal(1));
         Object realValue = binaryExpression.getValue().getRealValue();
-        assertEquals("3.1 + 1", binaryExpression.toString());
+        assertEquals("a + 1", binaryExpression.toString());
         assertEquals(4.1, realValue);
     }
 
