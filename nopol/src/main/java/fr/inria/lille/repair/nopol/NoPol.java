@@ -40,7 +40,6 @@ import xxl.java.junit.TestSuiteExecution;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
@@ -100,7 +99,6 @@ public class NoPol {
 
         if (Config.INSTANCE.getOracle() == Config.NopolOracle.SYMBOLIC) {
             try {
-                this.classpath = addJPFLibraryToCassPath(classpath);
                 SpoonedProject jpfSpoon = new SpoonedProject(this.sourceFiles, classpath);
                 String mainClass = "nopol.repair.NopolTestRunner";
                 TestExecutorProcessor.createMainTestClass(jpfSpoon, mainClass);
@@ -248,24 +246,7 @@ public class NoPol {
         for (int i = 0; i < clpath.length; i++) {
             classpath.add(clpath[i]);
         }
-        try {
-            File file = new File("lib/jpf/jpf-classes.jar");
-            if(!classpath.contains(file.toURL())) {
-                classpath.add(file.toURL());
-            }
-            // file = new File("lib/jpf/gov.nasa-0.0.1.jar");
-            // classpath[classpath.length - 3] = file.toURL();
-            file = new File("lib/jpf/jpf-annotations.jar");
-            if(!classpath.contains(file.toURL())) {
-                classpath.add(file.toURL());
-            }
-            file = new File("misc/nopol-example/junit-4.11.jar");
-            if(!classpath.contains(file.toURL())) {
-                classpath.add(file.toURL());
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("JPF dependencies not found");
-        }
+
         return classpath.toArray(new URL[]{});
     }
 
