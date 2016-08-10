@@ -1,27 +1,5 @@
 package fr.inria.lille.spirals.evo;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.annotation.Annotation;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
@@ -29,12 +7,24 @@ import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.spirals.evo.processors.RemoveEvosuiteEffectsProcessor;
 import fr.inria.lille.spirals.evo.processors.TestSelectionProcessor;
+import org.apache.commons.cli.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spoon.Launcher;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import xxl.java.library.FileLibrary;
 import xxl.java.library.JavaLibrary;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Main {
 
@@ -147,7 +137,7 @@ public class Main {
 
     /**
      * this method analyze all java class in generatedTestDir and return java paths composed of packages.class
-     * @param generatedTestDir
+     * @param generatedTestFolder
      * @param classPath
      * @return List<String> list of class ({package.package.classname})
      */
@@ -175,7 +165,7 @@ public class Main {
 
     /**
      * this method analyze all java class in generatedTestDir and return a list of all Junit method
-     * @param generatedTestDir
+     * @param generatedTestFolder
      * @param classPath
      * @return List<CtMethod> list of methods
      */
@@ -334,7 +324,7 @@ public class Main {
             spoonLauncher.addProcessor(new RemoveEvosuiteEffectsProcessor());
             spoonLauncher.addInputResource(newTestFolder);
             spoonLauncher.getEnvironment().setSourceClasspath(classPath.split(File.pathSeparator));
-            spoonLauncher.setOutputDirectory(destSrcTestFolder);
+            spoonLauncher.setSourceOutputDirectory(destSrcTestFolder);
             spoonLauncher.getEnvironment().setShouldCompile(true);
             spoonLauncher.setBinaryOutputDirectory(destCpTestFolder);
             spoonLauncher.getEnvironment().setComplianceLevel(7);
@@ -369,7 +359,7 @@ public class Main {
         lastLauncher.addProcessor(new RemoveEvosuiteEffectsProcessor());
         lastLauncher.addInputResource(newTestFolder);
         lastLauncher.getEnvironment().setSourceClasspath(classPath.split(File.pathSeparator));
-        lastLauncher.setOutputDirectory(destSrcTestFolder);
+        lastLauncher.setSourceOutputDirectory(destSrcTestFolder);
         lastLauncher.getEnvironment().setShouldCompile(true);
         lastLauncher.setBinaryOutputDirectory(destCpTestFolder);
         lastLauncher.run();
