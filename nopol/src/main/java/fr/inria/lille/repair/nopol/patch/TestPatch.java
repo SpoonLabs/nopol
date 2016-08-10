@@ -21,7 +21,6 @@ import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxl.java.junit.TestSuiteExecution;
@@ -59,7 +58,7 @@ public final class TestPatch {
         logger.info("Running test suite to check the patch \"{}\" is working", patch.asString());
         Result result = TestSuiteExecution.runTestResult(testClasses, loader);
         if (result.wasSuccessful()) {
-            spoonedClass.generateOutputFile(destinationFolder());
+            //spoonedClass.generateOutputFile(destinationFolder());
             return true;
         } else {
             logger.info("Failing tests {}", result.getFailures());

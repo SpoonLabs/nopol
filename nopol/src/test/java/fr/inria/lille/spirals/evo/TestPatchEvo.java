@@ -47,8 +47,8 @@ public class TestPatchEvo {
 		//check if we got the rights patches
 		assertEquals("evo_examples.evo_example_1.EvoExample:9: CONDITIONAL number < evo_examples.evo_example_1.EvoExample.this.value", Main.patches.get("basic").get(0).toString());
 		assertEquals("evo_examples.evo_example_1.EvoExample:9: CONDITIONAL number < 1",Main.patches.get("test_evo_example_generated_0").get(0).toString());
-		assertEquals(0,Main.patches.get("test_evo_example_generated_1").size());
-		assertEquals(1,Main.keptMethods.size());
+		assertEquals(0, Main.patches.get("test_evo_example_generated_1").size());
+		assertEquals(1, Main.keptMethods.size());
 
 		//remove java tests
 		FileUtils.deleteDirectory(new File(destSrcTestFolder));
