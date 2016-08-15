@@ -20,9 +20,11 @@ public class TestPatchEvo {
 		String destSrcTestFolder = "src/test/resources/evo/destSrcTest";
 		String destCpTestFolder = "src/test/resources/evo/destCpTest";
 		String newTestFolder = "src/test/resources/evo/generated";
+		String patchSaveFolder = "src/test/resources/evo/patch";
 		//String dependencies = "junit-4.11.jar";
 		String dependencies = "misc/nopol-example/junit-4.11.jar";
 		boolean generateTest = false;
+		boolean whetherSavePatch=true;
 		String[] testClasses = new String[] {"evo_examples.evo_example_1.EvoExampleTest"};
 
 		/*String classPath = cpClassFolder+File.pathSeparator+dependencies;
@@ -38,7 +40,7 @@ public class TestPatchEvo {
 		FileUtils.deleteDirectory(new File(destCpTestFolder));
 		
 		Main.solverPath = "lib/z3/z3_for_linux";
-		Main.tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, generateTest, testClasses);
+		Main.tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, generateTest, testClasses, whetherSavePatch, patchSaveFolder);
 		
 		for(Map.Entry entry : Main.patches.entrySet()){
 			System.out.println(entry.getValue()+" "+entry.getKey());
