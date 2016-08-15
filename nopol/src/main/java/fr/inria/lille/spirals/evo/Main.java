@@ -17,7 +17,9 @@ import spoon.reflect.declaration.CtType;
 import xxl.java.library.FileLibrary;
 import xxl.java.library.JavaLibrary;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
@@ -42,6 +44,8 @@ public class Main {
     public static List<CtMethod<?>>  keptMethods = new ArrayList<CtMethod<?>>();
     public static List<CtMethod<?>>  removedMethods = new ArrayList<CtMethod<?>>();
     public static Map<String, List<Patch>> patches = new LinkedHashMap<String,List<Patch>>();
+    
+    public static boolean whetherSavePatch=true;
 
     public static void main(String[] args) throws IOException, ParseException {
 
@@ -54,7 +58,7 @@ public class Main {
         String newTestFolder = null;
         String dependencies = null;
         String testClasses = null;
-
+        String patchSaveFolder=null;
 
         Options options = new Options();
         options.addOption("cpClassFolder", true, "classes files (ex: project/target/classes)");
@@ -66,6 +70,7 @@ public class Main {
         options.addOption("destCpTestFolder", true, "java files where new tests will be compiled after validation. (ex: project/target/test-classes) default: cpTestFolder");
         options.addOption("dependencies", true, "all other class or jar required for the news tests. cpClassFolde & cpTestFolder are not necessary. (ex: junit, hamcrest, evosuite)");
         options.addOption("testClasses", true, "test classes used to generate patch (default : null = all classes)");
+        options.addOption("patchSaveFolder",true,"location used to save the generated patches if any");
 
         options.addOption("solverPath", true, "path for the solver");
         options.addOption("evosuitePath", true, "path of evosuite jar");
@@ -112,7 +117,11 @@ public class Main {
         if (cmd.getOptionValue("testClasses") != null) {
             testClasses = cmd.getOptionValue("testClasses");
         }
-
+        
+        if (cmd.getOptionValue("patchSaveFolder") != null) {
+        	patchSaveFolder = cmd.getOptionValue("patchSaveFolder");
+        }
+        
         if (cmd.getOptionValue("solverPath") != null) {
             solverPath = cmd.getOptionValue("solverPath");
         }
@@ -130,7 +139,7 @@ public class Main {
         }
 
         String[] testsClassesArray = (testClasses == null) ? null : testClasses.split(File.pathSeparator);
-        tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, true, testsClassesArray);
+        tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, true, testsClassesArray, whetherSavePatch, patchSaveFolder);
 
     }
 
@@ -264,7 +273,7 @@ public class Main {
      */
     public static void tryAllTests(String cpClassFolder, String cpTestFolder, 
             String srcClassFolder, String srcTestFolder, String destSrcTestFolder, 
-            String destCpTestFolder, final String newTestFolder, String dependencies, boolean generateTest, String[] firstTestClasses){
+            String destCpTestFolder, final String newTestFolder, String dependencies, boolean generateTest, String[] firstTestClasses, boolean whetherSavePatch, String patchSaveFolder){
 
         //create dest folders if not exist
         new File(destSrcTestFolder).mkdirs();
@@ -276,7 +285,7 @@ public class Main {
 
         //build classpath
         final String classPath = cpClassFolder+File.pathSeparatorChar+dependencies;
-
+        
         SolverFactory.setSolver(solver, solverPath);
 
         logger.debug("--------------------------------------------------");
@@ -306,7 +315,7 @@ public class Main {
         }
 
         List<CtMethod<?>> testsMethods = getNewTestsMethods(newTestFolder, classPath);
-
+        
 
         logger.debug("###########################################");
         logger.debug("######## start to try each methods ########");
@@ -317,7 +326,7 @@ public class Main {
             logger.debug("--------------------------------------------------");
 
             keptMethods.add(method);
-
+            
             logger.debug("### Remove EvoSuite &  Recompile Tests ");
             Launcher spoonLauncher = new Launcher();
             spoonLauncher.addProcessor(new TestSelectionProcessor(keptMethods));
@@ -365,6 +374,9 @@ public class Main {
         lastLauncher.run();
 
         displayHistory();
+        
+        if(whetherSavePatch)
+        	savePatchtoDisk(patchSaveFolder);
     }
 
 
@@ -436,5 +448,29 @@ public class Main {
         System.arraycopy(a, 0, c, 0, aLen);
         System.arraycopy(b, 0, c, aLen, bLen);
         return c;
+    }
+    
+    /**
+     * save generated patches to a folder
+     */
+    public static void savePatchtoDisk(String patchSaveFolder) {
+    	new File(patchSaveFolder).mkdirs();
+    	String filePath = patchSaveFolder+"//"+"generated_patches";
+    	File patchFile= new File(filePath);
+    	FileWriter writer;
+    	BufferedWriter bufferWriter;
+    	try  {
+    		writer = new FileWriter (patchFile);
+    		bufferWriter = new BufferedWriter (writer);
+    		for(Map.Entry entry : patches.entrySet()){
+    			writer.write(entry.getValue()+" "+entry.getKey());
+    			writer.write("\r\n");
+    			writer.flush();
+    		}
+    		bufferWriter.close();
+    		writer.close();
+    	} catch (IOException e) {
+    		logger.debug(e.getMessage());
+    	}
     }
 }
