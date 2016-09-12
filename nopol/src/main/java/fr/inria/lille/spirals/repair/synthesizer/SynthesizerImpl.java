@@ -9,9 +9,9 @@ import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.expressionV2.Expression;
-import fr.inria.lille.spirals.repair.expressionV2.access.*;
-import fr.inria.lille.spirals.repair.expressionV2.factory.AccessFactory;
+import fr.inria.lille.spirals.repair.expression.Expression;
+import fr.inria.lille.spirals.repair.expression.access.*;
+import fr.inria.lille.spirals.repair.expression.factory.AccessFactory;
 import fr.inria.lille.spirals.repair.synthesizer.collect.DataCollector;
 import fr.inria.lille.spirals.repair.synthesizer.collect.DataCombiner;
 import fr.inria.lille.spirals.repair.synthesizer.collect.SpoonElementsCollector;
@@ -571,7 +571,7 @@ public class SynthesizerImpl implements Synthesizer {
                     v = oracle.get(test)[oracle.get(test).length - 1];
                 }
                 try {
-                    fr.inria.lille.spirals.repair.expressionV2.value.Value expressionValue = expression.evaluate(valueOtherTest);
+                    fr.inria.lille.spirals.repair.expression.value.Value expressionValue = expression.evaluate(valueOtherTest);
                     if (expressionValue == null) {
                         return false;
                     }
@@ -605,7 +605,7 @@ public class SynthesizerImpl implements Synthesizer {
                 } else {
                     nbVariable++;
                 }
-            } else if (expression instanceof fr.inria.lille.spirals.repair.expressionV2.access.Method) {
+            } else if (expression instanceof fr.inria.lille.spirals.repair.expression.access.Method) {
                 nbMethodInvocation++;
             }
         }

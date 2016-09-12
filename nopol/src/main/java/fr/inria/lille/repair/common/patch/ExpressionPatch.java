@@ -2,7 +2,7 @@ package fr.inria.lille.repair.common.patch;
 
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.SourceLocation;
-import fr.inria.lille.spirals.repair.expressionV2.Expression;
+import fr.inria.lille.spirals.repair.expression.Expression;
 
 import java.io.File;
 
