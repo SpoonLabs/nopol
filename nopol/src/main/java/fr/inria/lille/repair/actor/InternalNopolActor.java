@@ -1,6 +1,5 @@
 package fr.inria.lille.repair.actor;
 
-import akka.actor.Actor;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import fr.inria.lille.repair.Main;
@@ -48,7 +47,11 @@ class InternalNopolActor extends UntypedActor {
                 for (Patch patch : patches) {
                     System.out.println(patch);
                 }
-            getSender().tell(patches, ActorRef.noSender());
+            String patchesAsString = "";
+            for (Patch patch : patches) {
+                patchesAsString += patch.asString() + "\n";
+            }
+            getSender().tell(patchesAsString, ActorRef.noSender());
             NoPolActor.actorNopol.tell(NoPolActor.Message.AVAILABLE, getSelf());
         }
     }
