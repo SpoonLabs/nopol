@@ -84,7 +84,7 @@ public class Main {
         System.err.println(jsap.getHelp());
     }
 
-    private static boolean parseArguments(String[] args) {
+    public static boolean parseArguments(String[] args) {
         JSAPResult config = jsap.parse(args);
         if (!config.success()) {
             System.err.println();
@@ -161,7 +161,7 @@ public class Main {
         return StatementType.NONE;
     }
 
-    private static void initJSAP() throws JSAPException {
+    public static void initJSAP() throws JSAPException {
         FlaggedOption modeOpt = new FlaggedOption("mode");
         modeOpt.setRequired(false);
         modeOpt.setAllowMultipleDeclarations(false);
