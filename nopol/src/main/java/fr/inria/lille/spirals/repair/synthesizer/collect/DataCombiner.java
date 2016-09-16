@@ -2,16 +2,16 @@ package fr.inria.lille.spirals.repair.synthesizer.collect;
 
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.expressionV2.Expression;
-import fr.inria.lille.spirals.repair.expressionV2.combination.CombinationExpression;
-import fr.inria.lille.spirals.repair.expressionV2.combination.Operator;
-import fr.inria.lille.spirals.repair.expressionV2.combination.binary.BinaryExpression;
-import fr.inria.lille.spirals.repair.expressionV2.combination.binary.BinaryOperator;
-import fr.inria.lille.spirals.repair.expressionV2.combination.unary.UnaryExpression;
-import fr.inria.lille.spirals.repair.expressionV2.combination.unary.UnaryOperator;
-import fr.inria.lille.spirals.repair.expressionV2.factory.AccessFactory;
-import fr.inria.lille.spirals.repair.expressionV2.factory.CombinationFactory;
-import fr.inria.lille.spirals.repair.expressionV2.value.Value;
+import fr.inria.lille.spirals.repair.expression.Expression;
+import fr.inria.lille.spirals.repair.expression.combination.CombinationExpression;
+import fr.inria.lille.spirals.repair.expression.combination.Operator;
+import fr.inria.lille.spirals.repair.expression.combination.binary.BinaryExpression;
+import fr.inria.lille.spirals.repair.expression.combination.binary.BinaryOperator;
+import fr.inria.lille.spirals.repair.expression.combination.unary.UnaryExpression;
+import fr.inria.lille.spirals.repair.expression.combination.unary.UnaryOperator;
+import fr.inria.lille.spirals.repair.expression.factory.AccessFactory;
+import fr.inria.lille.spirals.repair.expression.factory.CombinationFactory;
+import fr.inria.lille.spirals.repair.expression.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

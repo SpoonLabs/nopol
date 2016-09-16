@@ -2,9 +2,8 @@ package fr.inria.lille.spirals.repair.commons;
 
 
 import com.sun.jdi.Type;
-import fr.inria.lille.spirals.repair.expression.Constant;
-import fr.inria.lille.spirals.repair.expressionV2.Expression;
-import fr.inria.lille.spirals.repair.expressionV2.access.Method;
+import fr.inria.lille.spirals.repair.expression.Expression;
+import fr.inria.lille.spirals.repair.expression.access.Method;
 
 import java.util.*;
 
@@ -140,17 +139,6 @@ public class Candidates extends ArrayList<Expression> {
         for (int i = 0; i < filtredCandidates.size(); i++) {
             Expression expression = filtredCandidates.get(i);
             intersection(this, expression, intersection, checkValue);
-        }
-        return intersection;
-    }
-
-    public Candidates diff(Candidates filtredCandidates) {
-        Candidates intersection = new Candidates();
-        for (int i = 0; i < this.size(); i++) {
-            Expression expression = this.get(i);
-            if (!filtredCandidates.cache.contains(expression) || expression instanceof Constant) {
-                intersection.add(expression);
-            }
         }
         return intersection;
     }

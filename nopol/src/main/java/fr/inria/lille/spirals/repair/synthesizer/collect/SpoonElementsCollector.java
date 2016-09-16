@@ -2,8 +2,8 @@ package fr.inria.lille.spirals.repair.synthesizer.collect;
 
 import com.sun.jdi.*;
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.expressionV2.Expression;
-import fr.inria.lille.spirals.repair.expressionV2.factory.AccessFactory;
+import fr.inria.lille.spirals.repair.expression.Expression;
+import fr.inria.lille.spirals.repair.expression.factory.AccessFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.reflect.code.CtLiteral;

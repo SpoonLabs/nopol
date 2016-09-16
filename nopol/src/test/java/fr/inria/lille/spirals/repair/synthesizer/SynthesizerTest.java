@@ -3,7 +3,7 @@ package fr.inria.lille.spirals.repair.synthesizer;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.expressionV2.Expression;
+import fr.inria.lille.spirals.repair.expression.Expression;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

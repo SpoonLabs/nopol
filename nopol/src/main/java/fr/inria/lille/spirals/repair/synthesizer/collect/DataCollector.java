@@ -5,12 +5,12 @@ import com.sun.jdi.request.BreakpointRequest;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.expressionV2.Expression;
-import fr.inria.lille.spirals.repair.expressionV2.access.Literal;
-import fr.inria.lille.spirals.repair.expressionV2.access.Variable;
-import fr.inria.lille.spirals.repair.expressionV2.factory.AccessFactory;
-import fr.inria.lille.spirals.repair.expressionV2.value.ArrayValue;
-import fr.inria.lille.spirals.repair.expressionV2.value.TypeValue;
+import fr.inria.lille.spirals.repair.expression.Expression;
+import fr.inria.lille.spirals.repair.expression.access.Literal;
+import fr.inria.lille.spirals.repair.expression.access.Variable;
+import fr.inria.lille.spirals.repair.expression.factory.AccessFactory;
+import fr.inria.lille.spirals.repair.expression.value.ArrayValue;
+import fr.inria.lille.spirals.repair.expression.value.TypeValue;
 import fr.inria.lille.spirals.repair.synthesizer.collect.filter.FieldFilter;
 import fr.inria.lille.spirals.repair.synthesizer.collect.filter.MethodFilter;
 import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.StatCollector;
@@ -442,7 +442,7 @@ public class DataCollector {
                     return null;
                 }
             };
-            boolean cast = !(variableType.containsKey(exp.toString()) || exp.toString().equals("this") || exp instanceof fr.inria.lille.spirals.repair.expressionV2.access.Method);
+            boolean cast = !(variableType.containsKey(exp.toString()) || exp.toString().equals("this") || exp instanceof fr.inria.lille.spirals.repair.expression.access.Method);
             Future<Value> future = executor.submit(task);
             try {
                 Value result = future.get(Config.INSTANCE.getTimeoutMethodInvocation(), TimeUnit.SECONDS);
