@@ -51,7 +51,7 @@ class InternalNopolActor extends UntypedActor {
             for (Patch patch : patches) {
                 patchesAsString += patch.asString() + "\n";
             }
-            getSender().tell(patchesAsString, ActorRef.noSender());
+            getSender().tell(patches, ActorRef.noSender());
             NoPolActor.actorNopol.tell(NoPolActor.Message.AVAILABLE, getSelf());
         }
     }
