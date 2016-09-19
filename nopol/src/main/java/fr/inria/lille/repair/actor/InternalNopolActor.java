@@ -35,7 +35,6 @@ class InternalNopolActor extends UntypedActor {
                 }
                 URL[] classpath = JavaLibrary.classpathFrom(Config.INSTANCE.getProjectClasspath());
                 try {
-                    Config.INSTANCE.setSynthesis(Config.NopolSynthesis.BRUTPOL);
                     patches = NoPolLauncher.launch(sourceFiles, classpath, Config.INSTANCE.getType(), Config.INSTANCE.getProjectTests());
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -44,13 +43,8 @@ class InternalNopolActor extends UntypedActor {
             if (patches.isEmpty())
                 System.out.println("No Patch Found!");
             else
-                for (Patch patch : patches) {
+                for (Patch patch : patches)
                     System.out.println(patch);
-                }
-            String patchesAsString = "";
-            for (Patch patch : patches) {
-                patchesAsString += patch.asString() + "\n";
-            }
             getSender().tell(patches, ActorRef.noSender());
             NoPolActor.actorNopol.tell(NoPolActor.Message.AVAILABLE, getSelf());
         }

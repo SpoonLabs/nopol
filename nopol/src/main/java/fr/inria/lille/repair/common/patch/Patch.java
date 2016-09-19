@@ -18,11 +18,12 @@ package fr.inria.lille.repair.common.patch;
 import fr.inria.lille.repair.common.synth.StatementType;
 
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * @author Favio D. DeMarco
  */
-public interface Patch {
+public interface Patch extends Serializable {
 
     /**
      * Class that represents the inability to find a working patch.
@@ -30,6 +31,8 @@ public interface Patch {
      * @author Favio D. DeMarco
      */
     static final class NoPatch implements Patch {
+
+        private static final long serialVersionUID = 879597343875223695L;
 
         private NoPatch() {
         }
