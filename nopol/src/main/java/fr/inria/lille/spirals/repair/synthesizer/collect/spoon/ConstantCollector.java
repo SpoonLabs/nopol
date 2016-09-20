@@ -1,6 +1,7 @@
 package fr.inria.lille.spirals.repair.synthesizer.collect.spoon;
 
 
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.spirals.repair.commons.Candidates;
 import fr.inria.lille.spirals.repair.expression.access.Literal;
 import fr.inria.lille.spirals.repair.expression.factory.AccessFactory;
@@ -21,9 +22,12 @@ public class ConstantCollector extends AbstractProcessor<CtLiteral> {
 
     private final Candidates candidates;
     private final String buggyMethod;
+    private final Config config;
 
-    public ConstantCollector(Candidates candidates, String buggyMethod) {
+
+    public ConstantCollector(Candidates candidates, String buggyMethod, Config config) {
         super();
+        this.config = config;
         this.candidates = candidates;
         this.buggyMethod = buggyMethod;
     }
@@ -75,7 +79,7 @@ public class ConstantCollector extends AbstractProcessor<CtLiteral> {
             return;
         }
         if (Number.class.isAssignableFrom(value.getClass())) {
-            Literal constant = AccessFactory.literal(ctLiteral.getValue());
+            Literal constant = AccessFactory.literal(ctLiteral.getValue(), config);
             if (candidates.add(constant)) {
                 logger.debug("[data] " + constant);
             }

@@ -22,6 +22,7 @@ import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.commons.trace.SpecificationTestCasesListener;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.NoPolLauncher;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import org.junit.runner.Description;
@@ -48,9 +49,11 @@ public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
     private final ClassLoader classLoader;
     private RuntimeValues<Boolean> runtimeValues;
     private SourceLocation sourceLocation;
+    private Config config;
 
-    public ConstraintModelBuilder(RuntimeValues<Boolean> runtimeValues, SourceLocation sourceLocation, Processor<?> processor, SpoonedProject spooner) {
+    public ConstraintModelBuilder(RuntimeValues<Boolean> runtimeValues, SourceLocation sourceLocation, Processor<?> processor, SpoonedProject spooner, Config config) {
         this.sourceLocation = sourceLocation;
+        this.config = config;
         String qualifiedName = sourceLocation.getRootClassName();
         SpoonedClass fork = spooner.forked(qualifiedName);
         try {
@@ -75,17 +78,17 @@ public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
         int nbPassedTestExecution = 0;
         SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<>(runtimeValues);
         AngelicExecution.enable();
-        CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, listener);
+        CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, listener, config);
         nbFailingTestExecution += listener.numberOfFailedTests();
         nbPassedTestExecution += listener.numberOfTests() - listener.numberOfFailedTests();
         AngelicExecution.flip();
-        CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, listener);
+        CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, listener, config);
         nbFailingTestExecution += listener.numberOfFailedTests();
         nbPassedTestExecution += listener.numberOfTests() - listener.numberOfFailedTests();
         AngelicExecution.disable();
         if (determineViability(firstResult, secondResult)) {
             /* to collect information for passing tests */
-            TestSuiteExecution.runTestResult(testClasses, classLoader, listener);
+            TestSuiteExecution.runTestResult(testClasses, classLoader, listener, config);
             nbFailingTestExecution += listener.numberOfFailedTests();
             nbPassedTestExecution += listener.numberOfTests() - listener.numberOfFailedTests();
         }

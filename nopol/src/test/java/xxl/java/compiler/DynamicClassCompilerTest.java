@@ -22,6 +22,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import fr.inria.lille.repair.common.config.Config;
 import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
@@ -44,7 +45,7 @@ public class DynamicClassCompilerTest {
 				"		return \"Hello World!\";" +
 				"	}" + 
 				"}";
-		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code, new Config());
 		Class<?> newClass = loader.loadClass(qualifiedName);
 		Object newInstance = newClass.newInstance();
 		assertEquals("Hello World!", newInstance.toString());
@@ -61,7 +62,7 @@ public class DynamicClassCompilerTest {
 				"		return \"Hello World!\";" +
 				"	}" + 
 				"}";
-		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code, new Config());
 		Class<?> newClass = loader.loadClass(qualifiedName);
 		Class<?> sameClass = loader.loadClass(qualifiedName);
 		assertTrue(newClass == sameClass);
@@ -85,7 +86,7 @@ public class DynamicClassCompilerTest {
 				"	}" +
 				"}";
 		Map<String, String> sources = adHocMap(asList(qualifiedAbstractName, qualifiedSubclassName), asList(abstractCode, subclassCode));
-		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources, new Config());
 		Class<?> subclass = loader.loadClass(qualifiedSubclassName);
 		Object newInstance = subclass.newInstance();
 		assertEquals(12, subclass.getMethod("id").invoke(newInstance));
@@ -104,7 +105,7 @@ public class DynamicClassCompilerTest {
 				"		}" +
 				"	}" +
 				"}";
-		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedOuterName, code);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedOuterName, code, new Config());
 		Class<?> outerClass = loader.loadClass(qualifiedOuterName);
 		Class<?>[] classes = outerClass.getClasses();
 		assertEquals(1, classes.length);
@@ -131,7 +132,7 @@ public class DynamicClassCompilerTest {
 				"		}" +
 				"	}" +
 				"}";
-		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedOuterName, code);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedOuterName, code, new Config());
 		Class<?> outerClass = loader.loadClass(qualifiedOuterName);
 		Class<?>[] subClasses = outerClass.getClasses();
 		assertEquals(1, subClasses.length);
@@ -162,7 +163,7 @@ public class DynamicClassCompilerTest {
 				"		};" +
 				"	}" + 
 				"}";
-		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code, new Config());
 		Class<?> newClass = loader.loadClass(qualifiedName);
 		Comparable<String> newComparable = (Comparable<String>) newClass.getMethod("newComparable").invoke(newClass);
 		assertEquals(1, newComparable.compareTo("a"));
@@ -181,7 +182,7 @@ public class DynamicClassCompilerTest {
 				"		return \"Hello World!\";" +
 				"	}" +
 				"}";
-		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code, new Config());
 		Class<?> newClass = loader.loadClass(qualifiedName);
 		Object newInstance = newClass.newInstance();
 		assertEquals("Hello World!", newInstance.toString());
@@ -209,9 +210,9 @@ public class DynamicClassCompilerTest {
 				"		assertEquals(\"Hello World!\", new HelloWorld().toString());" +
 				"	}" + 
 				"}";
-		ClassLoader parentLoader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
+		ClassLoader parentLoader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code, new Config());
 		Map<String, String> sources = adHocMap(asList(qualifiedName, qualifiedTestName), asList(code, testCode));
-		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources, parentLoader);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources, parentLoader, new Config());
 		Class<?> testClass = loader.loadClass(qualifiedTestName);
 		Class<?> theClass = loader.loadClass(qualifiedName);
 		assertFalse(parentLoader == loader);
@@ -245,7 +246,7 @@ public class DynamicClassCompilerTest {
 				"	}" + 
 				"}";
 		Map<String, String> sources = adHocMap(asList(qualifiedName, qualifiedTestName), asList(code, testCode));
-		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources);
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources, new Config());
 		Class<?> testClass = loader.loadClass(qualifiedTestName);
 		Class<?> theClass = loader.loadClass(qualifiedName);
 		assertTrue(loader == theClass.getClassLoader());
@@ -278,8 +279,8 @@ public class DynamicClassCompilerTest {
 				"	}" + 
 				"}";
 		Map<String, String> sources = adHocMap(asList(qualifiedName, qualifiedTestName), asList(code, testCode));
-		ClassLoader parentLoader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
-		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources, parentLoader);
+		ClassLoader parentLoader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code, new Config());
+		ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(sources, parentLoader, new Config());
 		Class<?> testClass = loader.loadClass(qualifiedTestName);
 		Class<?> theClass = loader.loadClass(qualifiedName);
 		assertFalse(parentLoader == loader);
@@ -306,7 +307,7 @@ public class DynamicClassCompilerTest {
 				"		return new LinkedList<String>();" +
 				"	}" +
 				"}";
-		final ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code);
+		final ClassLoader loader = BytecodeClassLoaderBuilder.loaderFor(qualifiedName, code, new Config());
 
 		ThreadFactory normalFactory = new ThreadFactory() {
 			@Override
@@ -364,7 +365,7 @@ public class DynamicClassCompilerTest {
 	
 	@Test
 	public void compileFileWithDependencyBytecodes() throws Exception {
-		DynamicClassCompiler dependencyCompiler = new DynamicClassCompiler();
+		DynamicClassCompiler dependencyCompiler = new DynamicClassCompiler(new Config());
 		String dependencyQualifiedName ="test.dynamic.compiler.dependency.Echo";
 		String dependencyCode =
 				"package test.dynamic.compiler.dependency;" +
@@ -374,7 +375,7 @@ public class DynamicClassCompilerTest {
 				"	}" +
 				"}";
 		
-		DynamicClassCompiler clientCompiler = new DynamicClassCompiler();
+		DynamicClassCompiler clientCompiler = new DynamicClassCompiler(new Config());
 		String clientQualifiedName = "test.dynamic.compiler.client.Client";
 		String clientCode =
 				"package test.dynamic.compiler.client;" +
@@ -403,7 +404,7 @@ public class DynamicClassCompilerTest {
 	
 	@Test
 	public void compileModifiyAndRecompileWithSameCompiler() throws Exception {
-		DynamicClassCompiler compiler = new DynamicClassCompiler();
+		DynamicClassCompiler compiler = new DynamicClassCompiler(new Config());
 		String qualifiedName ="test.dynamic.compiler.Translator";
 		String sourceCode =
 				"package test.dynamic.compiler;" +
@@ -453,7 +454,7 @@ public class DynamicClassCompilerTest {
 				"		return \"Hello World!\";" +
 				"	}" + 
 				"}";
-		DynamicClassCompiler compiler = new DynamicClassCompiler();
+		DynamicClassCompiler compiler = new DynamicClassCompiler(new Config());
 		byte[] compilation = compiler.javaBytecodeFor(qualifiedName, code);
 		File jarFile = jarFileFor(adHocMap(qualifiedName, compilation), "HelloWorld");
 		URLClassLoader loader = new URLClassLoader(new URL[] { jarFile.toURI().toURL() });
@@ -475,7 +476,7 @@ public class DynamicClassCompilerTest {
 				"		return \"Successfully loaded in system\";" +
 				"	}" + 
 				"}";
-		DynamicClassCompiler compiler = new DynamicClassCompiler();
+		DynamicClassCompiler compiler = new DynamicClassCompiler(new Config());
 		byte[] compilation = compiler.javaBytecodeFor(qualifiedName, code);
 		File jarFile = jarFileFor(adHocMap(qualifiedName, compilation), "DynamicClass");
 		
@@ -519,7 +520,7 @@ public class DynamicClassCompilerTest {
 				"		return new Printer().print(this);" +
 				"	}" + 
 				"}";
-		DynamicClassCompiler compiler = new DynamicClassCompiler();
+		DynamicClassCompiler compiler = new DynamicClassCompiler(new Config());
 		
 		Map<String, String> qualifiedNameAndContent = adHocMap(asList(dependencyName, qualifiedName), asList(dependencyCode, code));
 		Map<String, byte[]> bytecodes = compiler.javaBytecodeFor(qualifiedNameAndContent);
@@ -557,13 +558,13 @@ public class DynamicClassCompilerTest {
 				"		return new Greet(object).toString();" +
 				"	}" + 
 				"}";
-		DynamicClassCompiler compiler = new DynamicClassCompiler();
+		DynamicClassCompiler compiler = new DynamicClassCompiler(new Config());
 		byte[] dependency = compiler.javaBytecodeFor(dependencyName, dependencyCode);
 		
 		File jarFile = jarFileFor(adHocMap(dependencyName, dependency), "Greet");
 		URL[] classpath = new URL[] { jarFile.toURI().toURL() };
 		
-		DynamicClassCompiler otherCompiler = new DynamicClassCompiler(classpath);
+		DynamicClassCompiler otherCompiler = new DynamicClassCompiler(classpath, new Config());
 		byte[] otherCompilation = otherCompiler.javaBytecodeFor(qualifiedName, code);
 		
 		BytecodeClassLoader bytecodeLoader = BytecodeClassLoaderBuilder.loaderWith(qualifiedName, otherCompilation, classpath);
@@ -588,7 +589,7 @@ public class DynamicClassCompilerTest {
 				"		return a * b;" +
 				"	}" +
 				"}";
-		DynamicClassCompiler compiler = new DynamicClassCompiler();
+		DynamicClassCompiler compiler = new DynamicClassCompiler(new Config());
 		byte[] firstDependencyVersion = compiler.javaBytecodeFor(dependencyName, dependencyCode + "}");
 		byte[] secondDependencyVersion = compiler.javaBytecodeFor(dependencyName, newDependencyCode);
 		
@@ -612,9 +613,9 @@ public class DynamicClassCompilerTest {
 				"	}" +
 				"}";
 		
-		DynamicClassCompiler otherCompiler = new DynamicClassCompiler(new URL[] { secondVersionJar.toURI().toURL() });
+		DynamicClassCompiler otherCompiler = new DynamicClassCompiler(new URL[] { secondVersionJar.toURI().toURL() }, new Config());
 		checkException(true, otherCompiler, qualifiedName, code, adHocMap(dependencyName, firstDependencyVersion));
-		otherCompiler = new DynamicClassCompiler(new URL[] { firstVersionJar.toURI().toURL() });
+		otherCompiler = new DynamicClassCompiler(new URL[] { firstVersionJar.toURI().toURL() }, new Config());
 		byte[] compilation = checkException(false, otherCompiler, qualifiedName, code, adHocMap(dependencyName, secondDependencyVersion));
 
 		URLClassLoader parentLoader = new URLClassLoader(new URL[] { secondVersionJar.toURI().toURL() });
@@ -636,7 +637,7 @@ public class DynamicClassCompilerTest {
 		String qualifiedNameB = "x.y.z.Clash";
 		String srcClassA = "package a.b.c;" + "public class Clash {}";
 		String srcClassB = "package x.y.z;" + "public class Clash {}";
-		DynamicClassCompiler compiler = new DynamicClassCompiler();
+		DynamicClassCompiler compiler = new DynamicClassCompiler(new Config());
 		byte[] compilationA = compiler.javaBytecodeFor(qualifiedNameA, srcClassA);
 		File jar = jarFileFor(adHocMap(qualifiedNameA, compilationA), "nameClash");
 		URL[] classpath = new URL[] { jar.toURI().toURL() };
@@ -647,7 +648,7 @@ public class DynamicClassCompilerTest {
 				"public class Client {" +
 				"	public Clash field = new Clash();" +
 				"}";
-		DynamicClassCompiler otherCompiler = new DynamicClassCompiler(classpath);
+		DynamicClassCompiler otherCompiler = new DynamicClassCompiler(classpath, new Config());
 		otherCompiler.javaBytecodeFor(qualifiedNameB, srcClassB);
 		byte[] compilation = null;
 		try {

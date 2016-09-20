@@ -2,6 +2,7 @@ package fr.inria.lille.repair.nopol.ifmetric;
 
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.repair.TestClassesFinder;
+import fr.inria.lille.repair.common.config.Config;
 import xxl.java.junit.TestSuiteExecution;
 
 import java.io.File;
@@ -31,6 +32,7 @@ public class IfMetric {
     private final File sourceFolder;
     private static File output1;
     private File output2;
+    private Config config;
 
     private static FileWriter writer;
 
@@ -43,7 +45,8 @@ public class IfMetric {
     static final String COMPUTE_METRIC_CALL = IfMetric.class.getName()
             + ".computeIfMetric(";
 
-    public IfMetric(File sourceFolder, String[] paths) {
+    public IfMetric(File sourceFolder, String[] paths, Config config) {
+        this.config = config;
         this.sourceFolder = sourceFolder;
         this.classpath = createUrls(paths);
         output1 = new File(sourceFolder.getAbsolutePath() + File.separatorChar + ".." + File.separatorChar + "IfMetricPurAndImpur");
@@ -90,7 +93,7 @@ public class IfMetric {
         String[] paths = args[1].split(Character
                 .toString(File.pathSeparatorChar));
 
-        new IfMetric(sourceFolder, paths).run();
+        new IfMetric(sourceFolder, paths, new Config()).run();
     }
 
     private void run() {
@@ -115,12 +118,12 @@ public class IfMetric {
     private void compute(String[] testClasses) {
         IfCollectorProcessor collectorProcessor = new IfCollectorProcessor();
         IfCountingInstrumentingProcessor instrumentingProcessor = new IfCountingInstrumentingProcessor(this);
-        SpoonedProject project = new SpoonedProject(new File[]{sourceFolder}, classpath);
+        SpoonedProject project = new SpoonedProject(new File[]{sourceFolder}, classpath, this.config);
         ClassLoader loader = project.processedAndDumpedToClassLoader(modifyClass, asList(collectorProcessor, instrumentingProcessor));
 
         writeOutPut("ClassName.TestCaseName\t\t\tNbInpurIf\tNbPurIf");
 
-        TestSuiteExecution.runCasesIn(testClasses, loader);
+        TestSuiteExecution.runCasesIn(testClasses, loader, this.config);
 
         System.out.println("First metric has been compute in : " + output1.getAbsoluteFile());
 

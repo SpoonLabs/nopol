@@ -7,8 +7,8 @@ import fr.inria.lille.spirals.repair.expression.value.Value;
 
 public class LiteralImpl extends ExpressionImpl implements Literal {
 
-    public LiteralImpl(Value value) {
-        super(value);
+    public LiteralImpl(Value value, Config config) {
+        super(value, config);
         value.setConstant(true);
     }
 
@@ -24,7 +24,7 @@ public class LiteralImpl extends ExpressionImpl implements Literal {
 
     @Override
     public double getWeight() {
-        return Config.INSTANCE.getConstantWeight() * getPriority();
+        return config.getConstantWeight() * getPriority();
     }
 
     @Override

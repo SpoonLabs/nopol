@@ -3,6 +3,7 @@ package fr.inria.lille.repair.infinitel.loop.implant;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.commons.trace.SpecificationTestCasesListener;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.infinitel.loop.While;
 import fr.inria.lille.repair.infinitel.loop.examination.LoopTestListener;
 import fr.inria.lille.repair.infinitel.loop.examination.LoopTestResult;
@@ -19,9 +20,12 @@ import static xxl.java.junit.TestSuiteExecution.runTestCase;
 
 public class MonitoringTestExecutor {
 
-    public MonitoringTestExecutor(ClassLoader classLoader, CentralLoopMonitor monitor) {
+    private final Config config;
+
+    public MonitoringTestExecutor(ClassLoader classLoader, CentralLoopMonitor monitor, Config config) {
         this.monitor = monitor;
         this.classLoader = classLoader;
+        this.config = config;
         monitor().disableAll();
     }
 
@@ -58,21 +62,21 @@ public class MonitoringTestExecutor {
 
     public Result execute(TestCase testCase, While loop, RunListener listener) {
         monitor().enable(loop);
-        Result result = runTestCase(testCase, classLoader(), listener);
+        Result result = runTestCase(testCase, classLoader(), listener, config);
         monitor().disable(loop);
         return result;
     }
 
     public Result execute(TestCase testCase, Collection<While> loops, RunListener listener) {
         monitor().enable(loops);
-        Result result = runTestCase(testCase, classLoader(), listener);
+        Result result = runTestCase(testCase, classLoader(), listener, config);
         monitor().disable(loops);
         return result;
     }
 
     public LoopTestResult execute(String[] testClasses) {
         LoopTestListener listener = new LoopTestListener(monitor());
-        runCasesIn(testClasses, classLoader(), listener);
+        runCasesIn(testClasses, classLoader(), listener, config);
         return listener.result();
     }
 
