@@ -23,8 +23,8 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
     /**
      *
      */
-    public BinaryExpressionImpl(BinaryOperator operator, Expression first, Expression second) {
-        super(null);
+    public BinaryExpressionImpl(BinaryOperator operator, Expression first, Expression second, Config config) {
+        super(null, config);
         this.operator = operator;
         this.first = first;
         this.second = second;
@@ -184,7 +184,7 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
     }
 
     private boolean isValue(Value v1, Number v2) {
-        Value eval = new BinaryExpressionEvaluator(CombinationFactory.create(BinaryOperator.EQ, AccessFactory.literal(v1.getRealValue()), AccessFactory.literal(v2))).eval();
+        Value eval = new BinaryExpressionEvaluator(CombinationFactory.create(BinaryOperator.EQ, AccessFactory.literal(v1.getRealValue(), config), AccessFactory.literal(v2, config), config)).eval();
         if (eval == null) {
             return false;
         }
@@ -224,34 +224,34 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
         double weight = 0;
         switch (getOperator()) {
             case AND:
-                weight = Config.INSTANCE.getAndWeight();
+                weight = this.config.getAndWeight();
                 break;
             case OR:
-                weight = Config.INSTANCE.getOrWeight();
+                weight = this.config.getOrWeight();
                 break;
             case EQ:
-                weight = Config.INSTANCE.getEqWeight();
+                weight = this.config.getEqWeight();
                 break;
             case NEQ:
-                weight = Config.INSTANCE.getnEqWeight();
+                weight = this.config.getnEqWeight();
                 break;
             case LESS:
-                weight = Config.INSTANCE.getLessWeight();
+                weight = this.config.getLessWeight();
                 break;
             case LESSEQ:
-                weight = Config.INSTANCE.getLessEqWeight();
+                weight = this.config.getLessEqWeight();
                 break;
             case ADD:
-                weight = Config.INSTANCE.getAddWeight();
+                weight = this.config.getAddWeight();
                 break;
             case SUB:
-                weight = Config.INSTANCE.getSubWeight();
+                weight = this.config.getSubWeight();
                 break;
             case MULT:
-                weight = Config.INSTANCE.getMulWeight();
+                weight = this.config.getMulWeight();
                 break;
             case DIV:
-                weight = Config.INSTANCE.getDivWeight();
+                weight = this.config.getDivWeight();
                 break;
         }
         return weight * getPriority() * getFirstExpression().getWeight() * getSecondExpression().getWeight();

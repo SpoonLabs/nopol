@@ -1,6 +1,7 @@
 package fr.inria.lille.spirals.repair.synthesizer.collect;
 
 import com.sun.jdi.*;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.spirals.repair.commons.Candidates;
 import fr.inria.lille.spirals.repair.expression.Expression;
 import fr.inria.lille.spirals.repair.expression.factory.AccessFactory;
@@ -18,13 +19,17 @@ import java.util.Set;
  * Created by Thomas Durieux on 24/03/15.
  */
 public class SpoonElementsCollector {
+
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final Set<CtTypedElement> elements;
 
+    private final Config config;
 
-    public SpoonElementsCollector(Set<CtTypedElement> elements) {
+    public SpoonElementsCollector(Set<CtTypedElement> elements, Config config) {
         this.elements = elements;
+        this.config = config;
     }
 
     public Candidates collect(ThreadReference threadRef) {
@@ -43,7 +48,7 @@ public class SpoonElementsCollector {
                     } else {
                         continue;
                     }
-                    Expression expression = AccessFactory.literal(value);
+                    Expression expression = AccessFactory.literal(value, config);
                     logger.debug("[data] " + expression + "=" + expression.getValue());
                     candidates.add(expression);
                 } else if (ctElement instanceof CtVariableAccess) {
@@ -53,7 +58,7 @@ public class SpoonElementsCollector {
                         continue;
                     }
                     Value value = stackFrame.getValue(localVariable);
-                    Expression expression = AccessFactory.variable(localVariable.name(), value);
+                    Expression expression = AccessFactory.variable(localVariable.name(), value, config);
                     logger.debug("[data] " + expression + "=" + expression.getValue());
                     candidates.add(expression);
                 }

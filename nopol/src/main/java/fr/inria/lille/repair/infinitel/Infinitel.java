@@ -1,6 +1,7 @@
 package fr.inria.lille.repair.infinitel;
 
 import fr.inria.lille.repair.ProjectReference;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.infinitel.loop.examination.LoopTestResult;
 import fr.inria.lille.repair.infinitel.loop.implant.MonitoringTestExecutor;
 import fr.inria.lille.repair.infinitel.loop.implant.ProjectMonitorImplanter;
@@ -19,8 +20,10 @@ import static xxl.java.library.LoggerLibrary.loggerFor;
 
 public class Infinitel {
 
+    private final Config config;
+
     public static void run(File[] sourceFile, URL[] classpath) {
-        Infinitel infiniteLoopFixer = new Infinitel(sourceFile, classpath);
+        Infinitel infiniteLoopFixer = new Infinitel(sourceFile, classpath, new Config());
         try {
             infiniteLoopFixer.repair();
         } catch (Exception e) {
@@ -29,12 +32,13 @@ public class Infinitel {
         }
     }
 
-    public Infinitel(File[] sourceFile, URL[] classpath) {
-        this(new ProjectReference(sourceFile, classpath));
+    public Infinitel(File[] sourceFile, URL[] classpath, Config config) {
+        this(new ProjectReference(sourceFile, classpath), config);
     }
 
-    public Infinitel(ProjectReference project) {
+    public Infinitel(ProjectReference project, Config config) {
         this.project = project;
+        this.config = config;
     }
 
     public ProjectReference project() {
@@ -56,7 +60,7 @@ public class Infinitel {
     }
 
     protected MonitoringTestExecutor newTestExecutor() {
-        MonitoringTestExecutor executor = ProjectMonitorImplanter.implanted(project(), configuration());
+        MonitoringTestExecutor executor = ProjectMonitorImplanter.implanted(project(), configuration(), config);
         return executor;
     }
 

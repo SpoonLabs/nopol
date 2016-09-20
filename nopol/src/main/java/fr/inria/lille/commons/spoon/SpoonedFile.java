@@ -37,18 +37,21 @@ import static xxl.java.library.LoggerLibrary.loggerFor;
 
 public abstract class SpoonedFile {
 
+    protected final Config config;
+
     protected abstract Collection<? extends CtType<?>> modelledClasses();
 
-    public SpoonedFile(File[] sourceFiles, URL[] projectClasspath) {
+    public SpoonedFile(File[] sourceFiles, URL[] projectClasspath, Config config) {
         //logDebug(logger(), format("[Building Spoon model from %s]", sourceFiles));
+        this.config = config;
         this.sourceFiles = sourceFiles;
         this.projectClasspath = projectClasspath;
         factory = SpoonModelLibrary.newFactory();
-        factory.getEnvironment().setComplianceLevel(Config.INSTANCE.getComplianceLevel());
+        factory.getEnvironment().setComplianceLevel(config.getComplianceLevel());
         factory.getEnvironment().setGenerateJavadoc(false);
         factory.getEnvironment().setLevel(Level.OFF.toString());
         factory = SpoonModelLibrary.modelFor(factory, sourceFiles, projectClasspath());
-        compiler = new DynamicClassCompiler(compilationClasspath());
+        compiler = new DynamicClassCompiler(compilationClasspath(), config);
         manager = new RuntimeProcessingManager(spoonFactory());
         compiledClasses = MetaMap.newHashMap();
         prettyPrinter = new DefaultJavaPrettyPrinter(spoonEnvironment());

@@ -37,6 +37,7 @@ public class DataCollector {
     private final StatCollector statCollector;
     private final Map<String, String> variableType;
     private final Set<String> calledMethods;
+    private final Config config;
     private long executionTime;
     private long startTime;
     private long maxTime;
@@ -49,8 +50,10 @@ public class DataCollector {
                          Set<String> classes,
                          StatCollector statCollector,
                          Map<String, String> variableType,
-                         Set<String> calledMethods) {
+                         Set<String> calledMethods,
+                         Config config) {
         this.threadRef = threadRef;
+        this.config = config;
 
         this.constants = constants;
         this.importedClasses = classes;
@@ -75,18 +78,18 @@ public class DataCollector {
             logger.debug("Collect Level 1");
             // collect this
             if (stackFrame.thisObject() != null) {
-                Variable variableThis = AccessFactory.variable("this", stackFrame.thisObject());
+                Variable variableThis = AccessFactory.variable("this", stackFrame.thisObject(), config);
                 candidates.add(variableThis);
                 logger.debug("[data] " + variableThis + "=" + variableThis.getValue());
             }
             executionTime = System.currentTimeMillis() - startTime;
             // collect static fields
-            if (Config.INSTANCE.isCollectStaticFields()) {
+            if (this.config.isCollectStaticFields()) {
                 List<Field> fields = stackFrame.location().declaringType().visibleFields();
                 for (Field field : fields) {
                     Value value = stackFrame.location().declaringType().getValue(field);
-                    Variable complexConstant = AccessFactory.variable(stackFrame.location().declaringType().name(), stackFrame.location().declaringType());
-                    Variable expression = AccessFactory.variable(complexConstant, field.name(), value);
+                    Variable complexConstant = AccessFactory.variable(stackFrame.location().declaringType().name(), stackFrame.location().declaringType(), config);
+                    Variable expression = AccessFactory.variable(complexConstant, field.name(), value, config);
                     logger.debug("[data] " + expression);
                     candidates.add(expression);
                 }
@@ -98,25 +101,25 @@ public class DataCollector {
             candidates.addAll(collectVariables(stackFrame));
 
             // special values;
-            Literal literal0 = AccessFactory.literal(0);
+            Literal literal0 = AccessFactory.literal(0, config);
             literal0.getValue().setJDIValue(threadRef.virtualMachine().mirrorOf(0));
-            Literal literal1 = AccessFactory.literal(1);
+            Literal literal1 = AccessFactory.literal(1, config);
             literal1.getValue().setJDIValue(threadRef.virtualMachine().mirrorOf(1));
             candidates.add(literal0);
             candidates.add(literal1);
-            candidates.add(AccessFactory.literal(null));
-            
+            candidates.add(AccessFactory.literal(null, config));
+
             // collect literals
-            if (Config.INSTANCE.isCollectLiterals()) {
+            if (this.config.isCollectLiterals()) {
                 candidates.addAll(constants);
             }
             // collect static methods
-            if (Config.INSTANCE.isCollectStaticMethods()) {
+            if (this.config.isCollectStaticMethods()) {
                 candidates.addAll(collectStaticMethods(statCollector.getStatMethod().keySet(), threadRef, candidates));
             }
-            
+
             recurse();
-            
+
         } catch (IncompatibleThreadStateException e) {
             logger.error("Unable to collect eexp", e);
         }
@@ -126,7 +129,7 @@ public class DataCollector {
 
 
     private void recurse() {
-        for (int depth = 1; depth < Config.INSTANCE.getSynthesisDepth() - 1 && executionTime <= maxTime; depth++) {
+        for (int depth = 1; depth < this.config.getSynthesisDepth() - 1 && executionTime <= maxTime; depth++) {
             Candidates copy = new Candidates(); // to avoid java.util.ConcurrentModificationException
             copy.addAll(candidates);
             executionTime = System.currentTimeMillis() - startTime;
@@ -136,7 +139,7 @@ public class DataCollector {
             	}
             }
         }
-        
+
 	}
 
 	private Candidates collectFieldAndMethodOnTheValueOf(Expression exp, ThreadReference threadRef) {
@@ -144,17 +147,17 @@ public class DataCollector {
 		if (!(exp.getValue().getJDIValue() instanceof ObjectReference)) {
 			throw new IllegalArgumentException();
 		}
-		
+
 		results.addAll(collectFields(exp));
-		
+
 		// the current set of expressions can be passed as parameters
 		results.addAll(collectMethods(exp, threadRef, candidates));
 
         if (exp.getValue() instanceof ArrayValue) {
             int length = ((ArrayValue) exp.getValue()).length();
-            results.add(AccessFactory.variable(exp, "length", length));
+            results.add(AccessFactory.variable(exp, "length", length, config));
             if (length > 0) {
-                results.add(AccessFactory.array(exp, AccessFactory.literal(0)));
+                results.add(AccessFactory.array(exp, AccessFactory.literal(0, config), config));
             }
         }
         return results;
@@ -168,7 +171,7 @@ public class DataCollector {
             for (int i = 0; i < variables.size() && executionTime < maxTime; i++) {
                 LocalVariable localVariable = variables.get(i);
                 Value value = stackFrame.getValue(localVariable);
-                Expression expression = AccessFactory.variable(localVariable.name(), value);
+                Expression expression = AccessFactory.variable(localVariable.name(), value, config);
                 logger.debug("[data] " + expression);
                 results.add(expression);
                 executionTime = System.currentTimeMillis() - startTime;
@@ -213,7 +216,7 @@ public class DataCollector {
             }
 
             Value value = fieldValues.get(field);
-            Expression expression = AccessFactory.variable(exp, field.name(), value);
+            Expression expression = AccessFactory.variable(exp, field.name(), value, config);
             if (expression == null) {
                 continue;
             }
@@ -296,7 +299,7 @@ public class DataCollector {
             }
 
             ReferenceType ref = refs.get(0);
-            Expression exp = AccessFactory.variable(next.getDeclaringType().getQualifiedName(), ref);
+            Expression exp = AccessFactory.variable(next.getDeclaringType().getQualifiedName(), ref, config);
             List<Method> methods = getMethods(exp, ref, true, threadRef, next.getSimpleName());
             results.addAll(callMethods(exp, threadRef, methods, argsCandidates));
         }
@@ -309,14 +312,14 @@ public class DataCollector {
 
     private List<Method> getMethods(Expression exp, ReferenceType ref, boolean isStatic, ThreadReference threadRef, String methodNameFilter) {
         List<Method> methods = new ArrayList<>();
-        
+
         if (variableType.containsKey(exp.toString())) {
             List<ReferenceType> referenceTypes = threadRef.virtualMachine().classesByName(String.valueOf(variableType.get(exp.toString())));
             if (referenceTypes.size() > 0) {
                 ref = referenceTypes.get(0);
             }
         }
-        
+
         List<Method> visibleMethods = ref.visibleMethods();
         for (Method method : visibleMethods) {
             boolean toCall = isToCall(exp, ref, method, isStatic);
@@ -354,7 +357,7 @@ public class DataCollector {
         if (method.isObsolete()) {
             return false;
         }
-        if(Config.INSTANCE.isCollectOnlyUsedMethod()) {
+        if(this.config.isCollectOnlyUsedMethod()) {
             // ignore all methods not previously used
             String className = method.declaringType().name();
             String qualifiedMethodName =  className.substring(0, className.lastIndexOf(".")) + "." + method.name();
@@ -378,7 +381,7 @@ public class DataCollector {
                 results.add(returnValue);
                 continue;
             }
-            
+
             List<List<Expression>> allPossibleMethodArgs = createAllPossibleArgsListForMethod(method, argsCandidates);
             executionTime = System.currentTimeMillis() - startTime;
             int countFailCall = 0;
@@ -445,7 +448,7 @@ public class DataCollector {
             boolean cast = !(variableType.containsKey(exp.toString()) || exp.toString().equals("this") || exp instanceof fr.inria.lille.spirals.repair.expression.access.Method);
             Future<Value> future = executor.submit(task);
             try {
-                Value result = future.get(Config.INSTANCE.getTimeoutMethodInvocation(), TimeUnit.SECONDS);
+                Value result = future.get(this.config.getTimeoutMethodInvocation(), TimeUnit.SECONDS);
                 if (result != null) {
                     List<String> argumentTypes = new ArrayList<String>();
                     try {
@@ -456,7 +459,7 @@ public class DataCollector {
                     } catch (ClassNotLoadedException e) {
                         e.printStackTrace();
                     }
-                    expression = AccessFactory.method(method.name(), argumentTypes, method.declaringType().name(), exp, expressions, result);
+                    expression = AccessFactory.method(method.name(), argumentTypes, method.declaringType().name(), exp, expressions, result, config);
                     logger.debug("[data] " + expression);
                 }
             } catch (Exception ex) {

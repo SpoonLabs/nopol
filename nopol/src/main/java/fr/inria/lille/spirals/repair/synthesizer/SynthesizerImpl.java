@@ -41,6 +41,7 @@ public class SynthesizerImpl implements Synthesizer {
     
     /** key: test name, value: list of runtime contexts (if a statement is executed several times in the same test */
     private final SortedMap<String, List<Candidates>> values;
+    private final Config config;
     private SpoonedProject spoon;
     private final Set<String> checkedExpression = new HashSet<>();
     private int nbExpressionEvaluated = 0;
@@ -73,8 +74,8 @@ public class SynthesizerImpl implements Synthesizer {
      * @param oracle the oracle of the project Map<testClass#testMethod, {value iteration 1, value iteration 2, ...}>
      * @param tests tests to execute
      */
-    public SynthesizerImpl(SpoonedProject spoon, File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests) {
-        this(projectRoots, location, classpath, oracle, tests,5*60 /* 5 minutes, default in repair mode */);
+    public SynthesizerImpl(SpoonedProject spoon, File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, Config config) {
+        this(projectRoots, location, classpath, oracle, tests,5*60 /* 5 minutes, default in repair mode */, config);
         this.spoon = spoon;
     }
 
@@ -86,13 +87,14 @@ public class SynthesizerImpl implements Synthesizer {
      * @param oracle the oracle of the project Map<testClass#testMethod, {value iteration 1, value iteration 2, ...}>
      * @param tests tests to execute
      */
-    public SynthesizerImpl(File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, int dataCollectionTimeoutInSeconds) {
+    public SynthesizerImpl(File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, int dataCollectionTimeoutInSeconds, Config config) {
         this.projectRoots = projectRoots;
         this.location = location;
         this.dataCollectionTimeoutInSeconds=dataCollectionTimeoutInSeconds;
         this.oracle = oracle;
         this.tests = tests;
         this.values = new TreeMap<>();
+        this.config = config;
 
         this.constants = new Candidates();
         this.classes = new HashSet<>();
@@ -141,7 +143,7 @@ public class SynthesizerImpl implements Synthesizer {
         }
         if (same) {
             Candidates candidates = new Candidates();
-            candidates.add(AccessFactory.literal(last));
+            candidates.add(AccessFactory.literal(last, config));
             return candidates;
         }
         try {
@@ -269,7 +271,7 @@ public class SynthesizerImpl implements Synthesizer {
             return;
         }
         if (values.containsKey(currentTestClass + "#" + currentTestMethod)) {
-            if (values.get(currentTestClass + "#" + currentTestMethod).size() > Config.INSTANCE.getMaxLineInvocationPerTest()) {
+            if (values.get(currentTestClass + "#" + currentTestMethod).size() > config.getMaxLineInvocationPerTest()) {
                 jumpEndTest(threadRef);
                 return;
             }
@@ -337,16 +339,16 @@ public class SynthesizerImpl implements Synthesizer {
         }
         if (spoon == null) {
             try {
-                spoon = new SpoonedProject(new File[]{classFile}, classpath);
+                spoon = new SpoonedProject(new File[]{classFile}, classpath, config);
             } catch (Exception e) {
                 logger.warn("Unable to spoon the project", e);
                 return;
             }
         }
-        if (Config.INSTANCE.isCollectLiterals()) {
+        if (config.isCollectLiterals()) {
             constants = collectLiterals();
         }
-        if (Config.INSTANCE.isCollectStaticMethods()) {
+        if (config.isCollectStaticMethods()) {
             classes = collectUsedClasses();
         }
 
@@ -354,13 +356,13 @@ public class SynthesizerImpl implements Synthesizer {
         this.calledMethods = collectMethod();
         this.variableType = variableType;
         try {
-            Config.INSTANCE.getComplianceLevel();
+            config.getComplianceLevel();
             StatCollector statCollector = new StatCollector(buggyMethod);
             spoon.processClass(location.getContainingClassName(), statCollector);
             this.statCollector = statCollector;
             VariablesInSuspiciousCollector variablesInSuspiciousCollector = new VariablesInSuspiciousCollector(location);
             spoon.processClass(location.getContainingClassName(), variablesInSuspiciousCollector);
-            spoonElementsCollector = new SpoonElementsCollector(variablesInSuspiciousCollector.getVariables());
+            spoonElementsCollector = new SpoonElementsCollector(variablesInSuspiciousCollector.getVariables(), config);
         } catch (Exception e) {
             logger.warn("Unable to collect used classes", e);
         }
@@ -375,11 +377,11 @@ public class SynthesizerImpl implements Synthesizer {
 
     private Candidates collectRuntimeValues(ThreadReference threadRef) {
         if (values.containsKey(currentTestClass + "#" + currentTestMethod)) {
-            if (values.get(currentTestClass + "#" + currentTestMethod).size() > Config.INSTANCE.getMaxLineInvocationPerTest()) {
+            if (values.get(currentTestClass + "#" + currentTestMethod).size() > config.getMaxLineInvocationPerTest()) {
                 return new Candidates();
             }
         }
-        DataCollector dataCollect = new DataCollector(threadRef, constants, location, buggyMethod, classes, statCollector, this.variableType, this.calledMethods);
+        DataCollector dataCollect = new DataCollector(threadRef, constants, location, buggyMethod, classes, statCollector, this.variableType, this.calledMethods, config);
         Candidates eexps = dataCollect.collect(TimeUnit.MINUTES.toMillis(7));
         return eexps;
     }
@@ -387,7 +389,7 @@ public class SynthesizerImpl implements Synthesizer {
     private Candidates collectLiterals() {
         Candidates candidates = new Candidates();
         try {
-            spoon.processClass(location.getContainingClassName(), new ConstantCollector(candidates, buggyMethod));
+            spoon.processClass(location.getContainingClassName(), new ConstantCollector(candidates, buggyMethod, config));
         } catch (Exception e) {
             logger.warn("Unable to collect literals", e);
         }
@@ -491,7 +493,7 @@ public class SynthesizerImpl implements Synthesizer {
                     continue;
                 }
                 lastCollectedValues = eexps;
-                if (Config.INSTANCE.isSortExpressions()) {
+                if (config.isSortExpressions()) {
                     Collections.sort(eexps, Collections.reverseOrder());
                 }
                 final Object angelicValue;
@@ -509,7 +511,7 @@ public class SynthesizerImpl implements Synthesizer {
                     }
                     if (angelicValue.equals(expression.getValue().getRealValue()) && checkExpression(key, i, expression)) {
                         result.add(expression);
-                        if (Config.INSTANCE.isOnlyOneSynthesisResult()) {
+                        if (config.isOnlyOneSynthesisResult()) {
                             printSummary(result);
                             return result;
                         }
@@ -535,9 +537,9 @@ public class SynthesizerImpl implements Synthesizer {
                 currentTime = System.currentTimeMillis();
                 // combine eexps
                 long maxCombinerTime = remainingTime - (currentTime - startTime);
-                combiner.combine(eexps, angelicValue, maxCombinerTime);
+                combiner.combine(eexps, angelicValue, maxCombinerTime, config);
                 if (result.size() > 0) {
-                    if (Config.INSTANCE.isOnlyOneSynthesisResult()) {
+                    if (config.isOnlyOneSynthesisResult()) {
                         printSummary(result);
                         return result;
                     }

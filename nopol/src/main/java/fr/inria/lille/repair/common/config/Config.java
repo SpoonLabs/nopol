@@ -31,8 +31,6 @@ public class Config {
         CVC4
     }
 
-    public static Config INSTANCE = new Config();
-
     private final String filename = "config.ini";
     private final Properties p;
 
@@ -77,7 +75,7 @@ public class Config {
 
     private int complianceLevel;
 
-    Config() {
+    public Config() {
         p = new Properties();
         try {
             ClassLoader classLoader = getClass().getClassLoader();
@@ -113,10 +111,6 @@ public class Config {
         } catch (IOException e) {
             throw new RuntimeException("Unable to load config file", e);
         }
-    }
-
-    public void reset() {
-        INSTANCE = new Config();
     }
 
     public int getSynthesisDepth() {

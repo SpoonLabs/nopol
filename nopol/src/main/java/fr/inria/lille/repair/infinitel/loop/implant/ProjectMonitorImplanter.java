@@ -5,6 +5,7 @@ import fr.inria.lille.commons.spoon.util.SpoonReferenceLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.repair.ProjectReference;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.infinitel.InfinitelConfiguration;
 import fr.inria.lille.repair.infinitel.loop.While;
 import spoon.processing.AbstractProcessor;
@@ -16,12 +17,12 @@ import java.util.Map;
 
 public class ProjectMonitorImplanter extends AbstractProcessor<CtWhile> {
 
-    public static MonitoringTestExecutor implanted(ProjectReference project, InfinitelConfiguration configuration) {
+    public static MonitoringTestExecutor implanted(ProjectReference project, InfinitelConfiguration configuration, Config config) {
         ProjectMonitorImplanter implanter = new ProjectMonitorImplanter(configuration.iterationsThreshold());
-        SpoonedProject spoonedProject = new SpoonedProject(project.sourceFiles(), project.classpath());
+        SpoonedProject spoonedProject = new SpoonedProject(project.sourceFiles(), project.classpath(), config);
         spoonedProject.process(implanter);
         ClassLoader classLoader = spoonedProject.dumpedToClassLoader();
-        MonitoringTestExecutor testExecutor = new MonitoringTestExecutor(classLoader, implanter.implant());
+        MonitoringTestExecutor testExecutor = new MonitoringTestExecutor(classLoader, implanter.implant(), config);
         return testExecutor;
     }
 

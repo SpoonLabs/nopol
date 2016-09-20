@@ -11,8 +11,8 @@ public class ArrayImpl extends ExpressionImpl implements Array {
     private Expression target;
     private Expression index;
 
-    public ArrayImpl(Expression target, Expression index, Value value) {
-        super(value);
+    public ArrayImpl(Expression target, Expression index, Value value, Config config) {
+        super(value, config);
         this.target = target;
         this.index = index;
     }
@@ -39,7 +39,7 @@ public class ArrayImpl extends ExpressionImpl implements Array {
 
     @Override
     public double getWeight() {
-        return Config.INSTANCE.getVariableWeight() * getPriority();
+        return config.getVariableWeight() * getPriority();
     }
 
     @Override
