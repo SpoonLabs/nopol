@@ -16,8 +16,8 @@ public class MethodImpl extends ExpressionImpl implements Method {
     private final List<Expression> parameters;
     private String strExpression = null;
 
-    public MethodImpl(String method, List<String> argumentTypes, String declaringType, Expression target, List<Expression> parameters, Value value) {
-        super(value);
+    public MethodImpl(String method, List<String> argumentTypes, String declaringType, Expression target, List<Expression> parameters, Value value, Config config) {
+        super(value, config);
         this.method = method;
         this.argumentTypes = argumentTypes;
         this.target = target;
@@ -39,7 +39,7 @@ public class MethodImpl extends ExpressionImpl implements Method {
 
     @Override
     public double getWeight() {
-        return Config.INSTANCE.getMethodCallWeight() * getPriority() * getTarget().getWeight() / (getParameters().size() == 0 ? 1 : getParameters().size());
+        return config.getMethodCallWeight() * getPriority() * getTarget().getWeight() / (getParameters().size() == 0 ? 1 : getParameters().size());
     }
 
     @Override

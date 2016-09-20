@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
 
+import fr.inria.lille.repair.common.config.Config;
 import org.junit.Test;
 import org.junit.runner.Result;
 
@@ -17,7 +18,7 @@ public class TestSuiteExecutionTest {
 
 	@Test
 	public void runSuite() {
-		Result result = TestSuiteExecution.runCasesIn(new String[]{ sampleTestClass() }, classLoaderWithTestClass());
+		Result result = TestSuiteExecution.runCasesIn(new String[]{ sampleTestClass() }, classLoaderWithTestClass(), new Config());
 		assertFalse(result.wasSuccessful());
 		assertTrue(3 == result.getRunCount());
 		assertTrue(1 == result.getFailureCount());
@@ -26,7 +27,7 @@ public class TestSuiteExecutionTest {
 	@Test
 	public void runSingleTest() {
 		TestCase testCase = TestCase.from(sampleTestClass(), "joinTrue", 1);
-		Result result = TestSuiteExecution.runTestCase(testCase, classLoaderWithTestClass());
+		Result result = TestSuiteExecution.runTestCase(testCase, classLoaderWithTestClass(), new Config());
 		assertTrue(result.wasSuccessful());
 		assertEquals(1, result.getRunCount());
 		assertEquals(0, result.getFailureCount());
@@ -35,7 +36,7 @@ public class TestSuiteExecutionTest {
 	@Test
 	public void runSuiteWithTestListener() {
 		TestCasesListener listener = new TestCasesListener();
-		TestSuiteExecution.runCasesIn(new String[]{ sampleTestClass() }, classLoaderWithTestClass(), listener);
+		TestSuiteExecution.runCasesIn(new String[]{ sampleTestClass() }, classLoaderWithTestClass(), listener, new Config());
 		assertEquals(3, listener.allTests().size());
 		assertEquals(2, listener.successfulTests().size());
 		assertEquals(1, listener.failedTests().size());
@@ -44,7 +45,7 @@ public class TestSuiteExecutionTest {
 	@Test
 	public void doNotUseSameTestNameTwice() {
 		TestCasesListener listener = new TestCasesListener();
-		TestSuiteExecution.runCasesIn(new String[]{ sampleTestClass(), sampleTestClass() }, classLoaderWithTestClass(), listener);
+		TestSuiteExecution.runCasesIn(new String[]{ sampleTestClass(), sampleTestClass() }, classLoaderWithTestClass(), listener, new Config());
 		assertEquals(6, listener.allTests().size());
 		assertEquals(4, listener.successfulTests().size());
 		assertEquals(2, listener.failedTests().size());
@@ -53,21 +54,21 @@ public class TestSuiteExecutionTest {
 	@Test
 	public void compoundResultForMultipleTestCases() {
 		TestCasesListener listener = new TestCasesListener();
-		TestSuiteExecution.runCasesIn(new String[]{ sampleTestClass() }, classLoaderWithTestClass(), listener);
+		TestSuiteExecution.runCasesIn(new String[]{ sampleTestClass() }, classLoaderWithTestClass(), listener, new Config());
 		Collection<TestCase> failedTests = listener.failedTests();
 		assertFalse(failedTests.isEmpty());
 		Collection<TestCase> successfulTests = listener.successfulTests();
 		assertFalse(successfulTests.isEmpty());
 		CompoundResult compound;
 		
-		compound = TestSuiteExecution.runTestCases(failedTests, classLoaderWithTestClass());
+		compound = TestSuiteExecution.runTestCases(failedTests, classLoaderWithTestClass(), new Config());
 		assertFalse(compound.wasSuccessful());
 		assertTrue(failedTests.size() == compound.getFailureCount());
 		assertTrue(failedTests.size() == compound.getRunCount());
 		assertTrue(0 == compound.getIgnoreCount());
 		assertTrue(compound.successes().isEmpty());
 		
-		compound = TestSuiteExecution.runTestCases(successfulTests, classLoaderWithTestClass());
+		compound = TestSuiteExecution.runTestCases(successfulTests, classLoaderWithTestClass(), new Config());
 		assertTrue(compound.wasSuccessful());
 		assertTrue(0 == compound.getFailureCount());
 		assertTrue(successfulTests.size() == compound.getRunCount());
@@ -78,7 +79,7 @@ public class TestSuiteExecutionTest {
 	@Test
 	public void runJUnit3Tests() {
 		TestCasesListener listener = new TestCasesListener();
-		TestSuiteExecution.runCasesIn(new String[]{ sampleTestCase() }, classLoaderWithTestCase(), listener);
+		TestSuiteExecution.runCasesIn(new String[]{ sampleTestCase() }, classLoaderWithTestCase(), listener, new Config());
 		Collection<TestCase> cases = listener.allTests();
 		assertEquals(3, cases.size());
 	}

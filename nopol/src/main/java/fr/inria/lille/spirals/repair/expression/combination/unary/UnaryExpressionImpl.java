@@ -1,6 +1,7 @@
 package fr.inria.lille.spirals.repair.expression.combination.unary;
 
 
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.spirals.repair.commons.Candidates;
 import fr.inria.lille.spirals.repair.expression.Expression;
 import fr.inria.lille.spirals.repair.expression.ExpressionImpl;
@@ -17,8 +18,8 @@ public class UnaryExpressionImpl extends ExpressionImpl implements UnaryExpressi
     private Expression expression;
     private String strExpression = null;
 
-    public UnaryExpressionImpl(UnaryOperator operator, Expression expression) {
-        super(null);
+    public UnaryExpressionImpl(UnaryOperator operator, Expression expression, Config config) {
+        super(null, config);
         this.operator = operator;
         this.expression = expression;
         evaluate();

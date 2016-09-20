@@ -1,5 +1,6 @@
 package xxl.java.compiler;
 
+import fr.inria.lille.repair.common.config.Config;
 import xxl.java.container.classic.MetaMap;
 
 import java.net.URL;
@@ -7,33 +8,33 @@ import java.util.Map;
 
 public class BytecodeClassLoaderBuilder {
 
-    public static BytecodeClassLoader loaderFor(String qualifiedName, String sourceContent) {
-        Map<String, byte[]> bytecodes = bytecodes(qualifiedName, sourceContent);
+    public static BytecodeClassLoader loaderFor(String qualifiedName, String sourceContent, Config config) {
+        Map<String, byte[]> bytecodes = bytecodes(qualifiedName, sourceContent, config);
         return loaderWith(bytecodes);
     }
 
-    public static BytecodeClassLoader loaderFor(String qualifiedName, String sourceContent, URL[] classpath) {
-        Map<String, byte[]> bytecodes = bytecodes(qualifiedName, sourceContent);
+    public static BytecodeClassLoader loaderFor(String qualifiedName, String sourceContent, URL[] classpath, Config config) {
+        Map<String, byte[]> bytecodes = bytecodes(qualifiedName, sourceContent, config);
         return loaderWith(bytecodes, classpath);
     }
 
-    public static BytecodeClassLoader loaderFor(String qualifiedName, String sourceContent, ClassLoader parentClassLoader) {
-        Map<String, byte[]> bytecodes = bytecodes(qualifiedName, sourceContent);
+    public static BytecodeClassLoader loaderFor(String qualifiedName, String sourceContent, ClassLoader parentClassLoader, Config config) {
+        Map<String, byte[]> bytecodes = bytecodes(qualifiedName, sourceContent, config);
         return loaderWith(bytecodes, parentClassLoader);
     }
 
-    public static BytecodeClassLoader loaderFor(Map<String, String> qualifiedNameAndContent) {
-        Map<String, byte[]> bytecodes = bytecodes(qualifiedNameAndContent);
+    public static BytecodeClassLoader loaderFor(Map<String, String> qualifiedNameAndContent, Config config) {
+        Map<String, byte[]> bytecodes = bytecodes(qualifiedNameAndContent, config);
         return loaderWith(bytecodes);
     }
 
-    public static BytecodeClassLoader loaderFor(Map<String, String> qualifiedNameAndContent, URL[] classpath) {
-        Map<String, byte[]> bytecodes = bytecodes(qualifiedNameAndContent);
+    public static BytecodeClassLoader loaderFor(Map<String, String> qualifiedNameAndContent, URL[] classpath, Config config) {
+        Map<String, byte[]> bytecodes = bytecodes(qualifiedNameAndContent, config);
         return loaderWith(bytecodes, classpath);
     }
 
-    public static BytecodeClassLoader loaderFor(Map<String, String> qualifiedNameAndContent, ClassLoader parentClassLoader) {
-        Map<String, byte[]> bytecodes = bytecodes(qualifiedNameAndContent);
+    public static BytecodeClassLoader loaderFor(Map<String, String> qualifiedNameAndContent, ClassLoader parentClassLoader, Config config) {
+        Map<String, byte[]> bytecodes = bytecodes(qualifiedNameAndContent, config);
         return loaderWith(bytecodes, parentClassLoader);
     }
 
@@ -73,12 +74,12 @@ public class BytecodeClassLoaderBuilder {
         return newLoader;
     }
 
-    private static Map<String, byte[]> bytecodes(String qualifiedName, String sourceContent) {
+    private static Map<String, byte[]> bytecodes(String qualifiedName, String sourceContent, Config config) {
         Map<String, String> sources = MetaMap.newHashMap(qualifiedName, sourceContent);
-        return bytecodes(sources);
+        return bytecodes(sources, config);
     }
 
-    private static Map<String, byte[]> bytecodes(Map<String, String> qualifiedNameAndContent) {
-        return new DynamicClassCompiler().javaBytecodeFor(qualifiedNameAndContent);
+    private static Map<String, byte[]> bytecodes(Map<String, String> qualifiedNameAndContent, Config config) {
+        return new DynamicClassCompiler(config).javaBytecodeFor(qualifiedNameAndContent);
     }
 }

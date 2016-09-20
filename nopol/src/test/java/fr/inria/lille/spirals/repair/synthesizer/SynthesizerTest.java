@@ -20,11 +20,6 @@ import static org.junit.Assert.assertEquals;
 
 public class SynthesizerTest {
 
-    @Before
-    public void before() {
-        Config.INSTANCE.reset();
-    }
-
     @Test
     public void test1() throws InterruptedException {
         Map<String, Object[]> oracle = new HashMap<>();
@@ -35,7 +30,9 @@ public class SynthesizerTest {
         oracle.put("test5", new Object[]{true});
         oracle.put("test9", new Object[]{false});
 
-        test(1, oracle, 12, new String[] {"index <= 0", "index < 1"});
+		Config config = new Config();
+
+		test(1, oracle, 12, new String[] {"index <= 0", "index < 1"}, config);
     }
 
     @Test
@@ -51,7 +48,9 @@ public class SynthesizerTest {
         oracle.put("test8", new Object[]{false});
         oracle.put("test9", new Object[]{false});
 
-        test(2, oracle, 11, new String[] {"a < b"});
+		Config config = new Config();
+
+        test(2, oracle, 11, new String[] {"a < b"}, config);
     }
 
     @Test
@@ -67,7 +66,9 @@ public class SynthesizerTest {
         oracle.put("test8", new Object[]{false});
         oracle.put("test9", new Object[]{false});
 
-        test(3, oracle, 11, new String[] {"tmp == 0", "0 == tmp"});
+		Config config = new Config();
+
+		test(3, oracle, 11, new String[] {"tmp == 0", "0 == tmp"}, config);
     }
 
     @Test
@@ -85,7 +86,9 @@ public class SynthesizerTest {
         oracle.put("test10", new Object[]{false});
         oracle.put("test11", new Object[]{false});
 
-        Synthesizer synthesizer = createSynthesizer(4, oracle, 27);
+		Config config = new Config();
+
+        Synthesizer synthesizer = createSynthesizer(4, oracle, 27, config);
         System.out.println("basic: "+synthesizer.getCollectedExpressions());    
         check(synthesizer.getCollectedExpressions(), "initializedVariableShouldBeCollected");
         check(synthesizer.getCollectedExpressions(), "otherInitializedVariableShouldBeCollected");
@@ -102,7 +105,9 @@ public class SynthesizerTest {
         oracle.put("test5", new Object[]{false});
         oracle.put("test6", new Object[]{true});
 
-        test(5, oracle, 20, new String[] {"0 <= a", "1 <= a"});
+		Config config = new Config();
+
+		test(5, oracle, 20, new String[] {"0 <= a", "1 <= a"}, config);
     }
 
     @Test
@@ -115,7 +120,9 @@ public class SynthesizerTest {
         oracle.put("test5", new Object[]{false});
         oracle.put("test6", new Object[]{false});
 
-        test(6, oracle, 7, new String[] {"a < b"});
+		Config config = new Config();
+
+		test(6, oracle, 7, new String[] {"a < b"}, config);
     }
 
 
@@ -134,7 +141,9 @@ public class SynthesizerTest {
         oracle.put("test_10", new Object[]{false});
         oracle.put("test_11", new Object[]{false});
 
-        test(8, oracle, 12, new String[] {"(b * a) <= 100", "(a * b) <= 100", "a <= (100 / b)", "b <= (100 / a)"});
+		Config config = new Config();
+
+        test(8, oracle, 12, new String[] {"(b * a) <= 100", "(a * b) <= 100", "a <= (100 / b)", "b <= (100 / a)"}, config);
     }
 
     @Test
@@ -145,9 +154,11 @@ public class SynthesizerTest {
         oracle.put("test_3", new Object[]{true});
         oracle.put("test_4", new Object[]{false});
 
-        Config.INSTANCE.setOnlyOneSynthesisResult(false);
+		Config config = new Config();
+
+        config.setOnlyOneSynthesisResult(false);
         
-        Synthesizer synthesizer = createSynthesizer(12, oracle, 5);
+        Synthesizer synthesizer = createSynthesizer(12, oracle, 5, config);
         System.out.println("basic: "+synthesizer.getCollectedExpressions());
         assertEquals(13, synthesizer.getCollectedExpressions().size());
         
@@ -175,9 +186,10 @@ public class SynthesizerTest {
         oracle.put("test_2", new Object[]{false});
         oracle.put("test_3", new Object[]{false});
 
-        Config.INSTANCE.setOnlyOneSynthesisResult(false);
+		Config config = new Config();
+        config.setOnlyOneSynthesisResult(false);
 
-        Synthesizer synthesizer = createSynthesizer(13, oracle, 4);
+        Synthesizer synthesizer = createSynthesizer(13, oracle, 4, config);
         System.out.println("basic: "+synthesizer.getCollectedExpressions());
         //assertEquals(12,synthesizer.getCollectedExpressions().size());
 
@@ -185,7 +197,7 @@ public class SynthesizerTest {
         check(synthesizer.getValidExpressions(), "(list == null) || list.isEmpty()");
     }
 
-    private Synthesizer createSynthesizer(int nopolExampleNumber, Map<String, Object[]> o, int line) {
+    private Synthesizer createSynthesizer(int nopolExampleNumber, Map<String, Object[]> o, int line, Config config) {
         String executionType = "nopol";
         String pack = executionType + "_examples." + executionType + "_example_" + nopolExampleNumber;
         String className = pack + ".NopolExample";
@@ -202,13 +214,13 @@ public class SynthesizerTest {
         String classpath = "../test-projects/target/test-classes"+File.pathSeparatorChar+"../test-projects/target/classes/"+File.pathSeparatorChar+"misc/nopol-example/junit-4.11.jar"+File.pathSeparatorChar+"misc/nopol-example/hamcrest-core-1.3.jar";
         SourceLocation location = new SourceLocation(className, line);
         File[] files = new File []{new File("../test-projects/src/main/java/"), new File("../test-projects/src/test/java/")};
-        Synthesizer synthesizer = new SynthesizerImpl(files, location, JavaLibrary.classpathFrom(classpath), oracle, tests.toArray(new String[0]),5 /* seconds, a goood value for tests */);
+        Synthesizer synthesizer = new SynthesizerImpl(files, location, JavaLibrary.classpathFrom(classpath), oracle, tests.toArray(new String[0]),5 /* seconds, a goood value for tests */, config);
         synthesizer.run(TimeUnit.MINUTES.toMillis(15));
         return synthesizer;
     }
     
-    private Synthesizer test(int nopolExampleNumber, Map<String, Object[]> o, int line, String[] patch) {
-    	Synthesizer synthesizer = createSynthesizer(nopolExampleNumber, o, line);
+    private Synthesizer test(int nopolExampleNumber, Map<String, Object[]> o, int line, String[] patch, Config config) {
+		Synthesizer synthesizer = createSynthesizer(nopolExampleNumber, o, line, config);
         Candidates expressions = synthesizer.getValidExpressions();
         check(expressions, patch);
         return synthesizer;

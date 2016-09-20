@@ -38,34 +38,35 @@ public class Main {
 
     public static void main(String[] args) {
         try {
+            Config config = new Config();
             initJSAP();
-            if (!parseArguments(args)) {
+            if (!parseArguments(args, config)) {
                 return;
             }
-            File[] sourceFiles = new File[Config.INSTANCE.getProjectSourcePath().length];
-            for (int i = 0; i < Config.INSTANCE.getProjectSourcePath().length; i++) {
-                String path = Config.INSTANCE.getProjectSourcePath()[i];
+            File[] sourceFiles = new File[config.getProjectSourcePath().length];
+            for (int i = 0; i < config.getProjectSourcePath().length; i++) {
+                String path = config.getProjectSourcePath()[i];
                 File sourceFile = FileLibrary.openFrom(path);
                 sourceFiles[i] = sourceFile;
             }
 
-            URL[] classpath = JavaLibrary.classpathFrom(Config.INSTANCE.getProjectClasspath());
+            URL[] classpath = JavaLibrary.classpathFrom(config.getProjectClasspath());
 
-            switch (Config.INSTANCE.getMode()) {
+            switch (config.getMode()) {
                 case REPAIR:
-                    switch (Config.INSTANCE.getType()) {
+                    switch (config.getType()) {
                         case LOOP:
-                            ProjectReference project = new ProjectReference(sourceFiles, classpath, Config.INSTANCE.getProjectTests());
-                            Infinitel infinitel = new Infinitel(project);
+                            ProjectReference project = new ProjectReference(sourceFiles, classpath, config.getProjectTests());
+                            Infinitel infinitel = new Infinitel(project, config);
                             infinitel.repair();
                             break;
                         default:
-                            NoPolLauncher.launch(sourceFiles, classpath, Config.INSTANCE.getType(), Config.INSTANCE.getProjectTests());
+                            NoPolLauncher.launch(sourceFiles, classpath, config);
                             break;
                     }
                     break;
                 case RANKING:
-                    Ranking ranking = new Ranking(sourceFiles, classpath, Config.INSTANCE.getProjectTests());
+                    Ranking ranking = new Ranking(sourceFiles, classpath, config.getProjectTests());
                     System.out.println(ranking.summary());
                     break;
             }
@@ -84,31 +85,32 @@ public class Main {
         System.err.println(jsap.getHelp());
     }
 
-    public static boolean parseArguments(String[] args) {
-        JSAPResult config = jsap.parse(args);
-        if (!config.success()) {
+
+    private static boolean parseArguments(String[] args, Config config) {
+        JSAPResult jsapConfig = jsap.parse(args);
+        if (!jsapConfig.success()) {
             System.err.println();
-            for (Iterator<?> errs = config.getErrorMessageIterator(); errs.hasNext(); ) {
+            for (Iterator<?> errs = jsapConfig.getErrorMessageIterator(); errs.hasNext(); ) {
                 System.err.println("Error: " + errs.next());
             }
             showUsage();
             return false;
         }
 
-        Config.INSTANCE.setType(strToStatementType(config.getString("type")));
-        Config.INSTANCE.setMode(strToMode(config.getString("mode")));
-        Config.INSTANCE.setSynthesis(strToSynthesis(config.getString("synthesis")));
-        Config.INSTANCE.setOracle(strToOracle(config.getString("oracle")));
-        Config.INSTANCE.setSolver(strToSolver(config.getString("solver")));
-        if (config.getString("solverPath") != null) {
-            Config.INSTANCE.setSolverPath(config.getString("solverPath"));
-            SolverFactory.setSolver(Config.INSTANCE.getSolver(), Config.INSTANCE.getSolverPath());
+        config.setType(strToStatementType(jsapConfig.getString("type")));
+        config.setMode(strToMode(jsapConfig.getString("mode")));
+        config.setSynthesis(strToSynthesis(jsapConfig.getString("synthesis")));
+        config.setOracle(strToOracle(jsapConfig.getString("oracle")));
+        config.setSolver(strToSolver(jsapConfig.getString("solver")));
+        if (jsapConfig.getString("solverPath") != null) {
+            config.setSolverPath(jsapConfig.getString("solverPath"));
+            SolverFactory.setSolver(config.getSolver(), config.getSolverPath());
         }
-        Config.INSTANCE.setProjectClasspath(config.getString("classpath"));
-        Config.INSTANCE.setProjectSourcePath(config.getStringArray("source"));
-        Config.INSTANCE.setProjectTests(config.getStringArray("test"));
-        Config.INSTANCE.setComplianceLevel(config.getInt("complianceLevel", 7));
-        Config.INSTANCE.setMaxTime(config.getInt("maxTime", 60));
+        config.setProjectClasspath(jsapConfig.getString("classpath"));
+        config.setProjectSourcePath(jsapConfig.getStringArray("source"));
+        config.setProjectTests(jsapConfig.getStringArray("test"));
+        config.setComplianceLevel(jsapConfig.getInt("complianceLevel", 7));
+        config.setMaxTime(jsapConfig.getInt("maxTime", 60));
         return true;
     }
 
@@ -161,7 +163,7 @@ public class Main {
         return StatementType.NONE;
     }
 
-    public static void initJSAP() throws JSAPException {
+    private static void initJSAP() throws JSAPException {
         FlaggedOption modeOpt = new FlaggedOption("mode");
         modeOpt.setRequired(false);
         modeOpt.setAllowMultipleDeclarations(false);

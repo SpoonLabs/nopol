@@ -28,7 +28,7 @@ class InternalNopolActor extends UntypedActor {
 			Config config = (Config) message;
 			checkSynthesis(config);
 			try {
-				patches = NoPolLauncher.launch(buildSourceFiles(config) , buildClasspath(config), config.getType(), config.getProjectTests());
+				patches = NoPolLauncher.launch(buildSourceFiles(config) , buildClasspath(config), config);
 			} catch (Exception e) {
 				throw new RuntimeException("Error launch NoPol");
 			} finally {
