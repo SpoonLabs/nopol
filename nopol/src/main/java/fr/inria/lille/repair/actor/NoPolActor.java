@@ -5,6 +5,7 @@ import akka.actor.*;
 import com.martiansoftware.jsap.JSAPException;
 import com.typesafe.config.ConfigFactory;
 import fr.inria.lille.repair.Main;
+import fr.inria.lille.repair.common.config.Config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class NoPolActor extends UntypedActor {
 
     @Override
     public void onReceive(Object o) {
-        if (o instanceof String) {
+        if (o instanceof Config) {
             boolean taskSent = false;
             for (ActorRef actorRef : this.pool.keySet()) {
                 if (this.pool.get(actorRef)) {
@@ -51,11 +52,11 @@ public class NoPolActor extends UntypedActor {
     static ActorSystem system;
     static ActorRef actorNopol;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws JSAPException {
         try {
             Main.initJSAP();
         } catch (JSAPException e) {
-            e.printStackTrace();
+            throw new JSAPException();
         }
         com.typesafe.config.Config config = ConfigFactory.load("nopol");
         String ACTOR_SYSTEM_NAME = config.getString("nopol.system.name");

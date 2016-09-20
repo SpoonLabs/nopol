@@ -20,33 +20,30 @@ import java.util.List;
  */
 class InternalNopolActor extends UntypedActor {
 
-    @Override
-    public void onReceive(Object message) throws Exception {
-        if (message instanceof String) {
-            String[] args = ((String) message).split(" ");
-            System.out.println(Arrays.toString(args));
-            List<Patch> patches = Collections.EMPTY_LIST;
-            if (Main.parseArguments(args)) {
-                File[] sourceFiles = new File[Config.INSTANCE.getProjectSourcePath().length];
-                for (int i = 0; i < Config.INSTANCE.getProjectSourcePath().length; i++) {
-                    String path = Config.INSTANCE.getProjectSourcePath()[i];
-                    File sourceFile = FileLibrary.openFrom(path);
-                    sourceFiles[i] = sourceFile;
-                }
-                URL[] classpath = JavaLibrary.classpathFrom(Config.INSTANCE.getProjectClasspath());
-                try {
-                    patches = NoPolLauncher.launch(sourceFiles, classpath, Config.INSTANCE.getType(), Config.INSTANCE.getProjectTests());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            if (patches.isEmpty())
-                System.out.println("No Patch Found!");
-            else
-                for (Patch patch : patches)
-                    System.out.println(patch);
-            getSender().tell(patches, ActorRef.noSender());
-            NoPolActor.actorNopol.tell(NoPolActor.Message.AVAILABLE, getSelf());
-        }
-    }
+	@Override
+	public void onReceive(Object message) throws Exception {
+		if (message instanceof Config) {
+			List<Patch> patches = Collections.EMPTY_LIST;
+			Config config = (Config) message;
+			File[] sourceFiles = new File[config.getProjectSourcePath().length];
+			for (int i = 0; i < config.getProjectSourcePath().length; i++) {
+				String path = config.getProjectSourcePath()[i];
+				File sourceFile = FileLibrary.openFrom(path);
+				sourceFiles[i] = sourceFile;
+			}
+			URL[] classpath = JavaLibrary.classpathFrom(config.getProjectClasspath());
+			try {
+				patches = NoPolLauncher.launch(sourceFiles, classpath, config.getType(), config.getProjectTests());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			if (patches.isEmpty())
+				System.out.println("No Patch Found!");
+			else
+				for (Patch patch : patches)
+					System.out.println(patch);
+			getSender().tell(patches, ActorRef.noSender());
+			NoPolActor.actorNopol.tell(NoPolActor.Message.AVAILABLE, getSelf());
+		}
+	}
 }
