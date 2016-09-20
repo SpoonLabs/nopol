@@ -55,7 +55,7 @@ public final class TestPatch {
     public boolean passesAllTests(Patch patch, List<TestResult> testClasses, NopolProcessor processor) {
         logger.info("Applying patch: {}", patch);
         String qualifiedName = patch.getRootClassName();
-        SpoonedClass spoonedClass = spoonedProject.forked(qualifiedName, config);
+        SpoonedClass spoonedClass = spoonedProject.forked(qualifiedName);
         processor.setValue(patch.asString());
         ClassLoader loader = spoonedClass.processedAndDumpedToClassLoader(processor);
         logger.info("Running test suite to check the patch \"{}\" is working", patch.asString());

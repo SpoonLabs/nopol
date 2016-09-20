@@ -94,7 +94,7 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
         nbStatementsWithAngelicValue++;
         Candidates constantes = new Candidates();
         ConstantCollector constantCollector = new ConstantCollector(constantes, null, config);
-        spoonedProject.forked(sourceLocation.getContainingClassName(), config).process(constantCollector);
+        spoonedProject.forked(sourceLocation.getContainingClassName()).process(constantCollector);
         Map<String, Integer> intConstants = new HashMap();
         intConstants.put("-1", -1);
         intConstants.put("0", 0);

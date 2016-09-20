@@ -55,7 +55,7 @@ public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
         this.sourceLocation = sourceLocation;
         this.config = config;
         String qualifiedName = sourceLocation.getRootClassName();
-        SpoonedClass fork = spooner.forked(qualifiedName, config);
+        SpoonedClass fork = spooner.forked(qualifiedName);
         try {
             classLoader = fork.processedAndDumpedToClassLoader(processor);
         } catch (DynamicCompilationException e) {

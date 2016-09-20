@@ -22,7 +22,7 @@ public class ProjectMonitorImplanter extends AbstractProcessor<CtWhile> {
         SpoonedProject spoonedProject = new SpoonedProject(project.sourceFiles(), project.classpath(), config);
         spoonedProject.process(implanter);
         ClassLoader classLoader = spoonedProject.dumpedToClassLoader();
-        MonitoringTestExecutor testExecutor = new MonitoringTestExecutor(classLoader, implanter.implant());
+        MonitoringTestExecutor testExecutor = new MonitoringTestExecutor(classLoader, implanter.implant(), config);
         return testExecutor;
     }
 

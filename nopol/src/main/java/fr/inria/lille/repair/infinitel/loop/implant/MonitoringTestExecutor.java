@@ -20,58 +20,61 @@ import static xxl.java.junit.TestSuiteExecution.runTestCase;
 
 public class MonitoringTestExecutor {
 
-    public MonitoringTestExecutor(ClassLoader classLoader, CentralLoopMonitor monitor) {
+    private final Config config;
+
+    public MonitoringTestExecutor(ClassLoader classLoader, CentralLoopMonitor monitor, Config config) {
         this.monitor = monitor;
         this.classLoader = classLoader;
+        this.config = config;
         monitor().disableAll();
     }
 
-    public Result execute(TestCase testCase, While loop, int threshold, int invocation, Config config) {
-        return execute(testCase, loop, threshold, invocation, nullRunListener(), config);
+    public Result execute(TestCase testCase, While loop, int threshold, int invocation) {
+        return execute(testCase, loop, threshold, invocation, nullRunListener());
     }
 
-    public Result execute(TestCase testCase, Collection<While> loops, Config config) {
-        return execute(testCase, loops, nullRunListener(), config);
+    public Result execute(TestCase testCase, Collection<While> loops) {
+        return execute(testCase, loops, nullRunListener());
     }
 
-    public Result execute(TestCase testCase, While loop, Config config) {
-        return execute(testCase, loop, nullRunListener(), config);
+    public Result execute(TestCase testCase, While loop) {
+        return execute(testCase, loop, nullRunListener());
     }
 
-    public Collection<Specification<Boolean>> executeCollectingTraces(TestCase testCase, While loop, Config config) {
+    public Collection<Specification<Boolean>> executeCollectingTraces(TestCase testCase, While loop) {
         SpecificationTestCasesListener<Boolean> listener = specificationListener(loop);
-        execute(testCase, loop, listener, config);
+        execute(testCase, loop, listener);
         return listener.specifications();
     }
 
-    public Collection<Specification<Boolean>> executeCollectingTraces(TestCase testCase, While loop, int threshold, int invocation, Config config) {
+    public Collection<Specification<Boolean>> executeCollectingTraces(TestCase testCase, While loop, int threshold, int invocation) {
         SpecificationTestCasesListener<Boolean> listener = specificationListener(loop);
-        execute(testCase, loop, threshold, invocation, listener, config);
+        execute(testCase, loop, threshold, invocation, listener);
         return listener.specifications();
     }
 
-    public Result execute(TestCase testCase, While loop, int threshold, int invocation, RunListener listener, Config config) {
+    public Result execute(TestCase testCase, While loop, int threshold, int invocation, RunListener listener) {
         int oldThreshold = monitor().setThresholdOf(loop, threshold, invocation);
-        Result result = execute(testCase, loop, listener, config);
+        Result result = execute(testCase, loop, listener);
         monitor().setThresholdOf(loop, oldThreshold, invocation);
         return result;
     }
 
-    public Result execute(TestCase testCase, While loop, RunListener listener, Config config) {
+    public Result execute(TestCase testCase, While loop, RunListener listener) {
         monitor().enable(loop);
         Result result = runTestCase(testCase, classLoader(), listener, config);
         monitor().disable(loop);
         return result;
     }
 
-    public Result execute(TestCase testCase, Collection<While> loops, RunListener listener, Config config) {
+    public Result execute(TestCase testCase, Collection<While> loops, RunListener listener) {
         monitor().enable(loops);
         Result result = runTestCase(testCase, classLoader(), listener, config);
         monitor().disable(loops);
         return result;
     }
 
-    public LoopTestResult execute(String[] testClasses, Config config) {
+    public LoopTestResult execute(String[] testClasses) {
         LoopTestListener listener = new LoopTestListener(monitor());
         runCasesIn(testClasses, classLoader(), listener, config);
         return listener.result();

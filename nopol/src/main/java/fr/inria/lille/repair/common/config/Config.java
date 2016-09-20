@@ -113,10 +113,6 @@ public class Config {
         }
     }
 
-    public void reset() {
-//        INSTANCE = new Config();
-    }
-
     public int getSynthesisDepth() {
         return synthesisDepth;
     }

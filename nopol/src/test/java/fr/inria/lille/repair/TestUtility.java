@@ -39,7 +39,7 @@ public abstract class TestUtility {
         return new ProjectReference(sourceFile, classpath, testClasses);
     }
 
-    private List<Patch> patchFor(Config config, ProjectReference project, StatementType type) {
+    private List<Patch> patchFor(ProjectReference project, Config config) {
         for (int i = 0; i < project.sourceFiles().length; i++) {
             File file = project.sourceFiles()[i];
             clean(file.getParent());
@@ -55,7 +55,7 @@ public abstract class TestUtility {
             default:
                 throw new RuntimeException("Execution type not found");
         }
-        NoPol nopol = new NoPol(project.sourceFiles(), project.classpath(), type, new Config());
+        NoPol nopol = new NoPol(project.sourceFiles(), project.classpath(), config);
         patches = nopol.build(project.testClasses());
 
         for (int i = 0; i < project.sourceFiles().length; i++) {
@@ -71,22 +71,22 @@ public abstract class TestUtility {
                 possibleFixes.contains(foundPatch.asString()));
     }
 
-    protected Patch test(int projectNumber, int linePosition, StatementType type,
+    protected Patch test(int projectNumber, int linePosition,
                        Collection<String> expectedFailedTests, Config config) {
         ProjectReference project = projectForExample(projectNumber);
         SolverFactory.setSolver(solver, solverPath);
         TestCasesListener listener = new TestCasesListener();
         URLClassLoader classLoader = new URLClassLoader(project.classpath());
         TestSuiteExecution.runCasesIn(project.testClasses(), classLoader,
-                listener, new Config());
+                listener, config);
         Collection<String> failedTests = TestCase.testNames(listener
                 .failedTests());
         // assertEquals(expectedFailedTests.size(), failedTests.size());
         // assertTrue(expectedFailedTests.containsAll(failedTests));
-        List<Patch> patches = patchFor(config, project, type);
+        List<Patch> patches = patchFor(project, config);
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), type);
+        assertEquals(patch.getType(), config.getType());
         assertEquals(linePosition, patch.getLineNumber());
         System.out.println(String.format("Patch for nopol example %d: %s",
                 projectNumber, patch.asString()));

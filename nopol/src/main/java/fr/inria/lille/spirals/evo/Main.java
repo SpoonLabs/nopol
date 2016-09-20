@@ -245,7 +245,8 @@ public class Main {
 
 
         config.setMaxTime(maxTime);
-        NoPol nopol = new NoPol(sourceFiles, classPath, nopolType, config);
+        config.setType(nopolType);
+        NoPol nopol = new NoPol(sourceFiles, classPath, config);
         List<Patch> currentPatches;
         if(testClasses == null){
             currentPatches = nopol.build();   

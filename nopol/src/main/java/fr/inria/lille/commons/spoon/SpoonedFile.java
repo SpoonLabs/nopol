@@ -37,10 +37,13 @@ import static xxl.java.library.LoggerLibrary.loggerFor;
 
 public abstract class SpoonedFile {
 
+    protected final Config config;
+
     protected abstract Collection<? extends CtType<?>> modelledClasses();
 
     public SpoonedFile(File[] sourceFiles, URL[] projectClasspath, Config config) {
         //logDebug(logger(), format("[Building Spoon model from %s]", sourceFiles));
+        this.config = config;
         this.sourceFiles = sourceFiles;
         this.projectClasspath = projectClasspath;
         factory = SpoonModelLibrary.newFactory();

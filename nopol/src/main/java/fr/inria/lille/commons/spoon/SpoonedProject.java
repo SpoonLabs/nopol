@@ -35,7 +35,7 @@ public class SpoonedProject extends SpoonedFile {
         return modelledClasses;
     }
 
-    public SpoonedClass forked(String qualifiedName, Config config) {
+    public SpoonedClass forked(String qualifiedName) {
         CtType<?> modelledClass = modelledClass(qualifiedName);
         if (modelledClass == null) {
             return null;

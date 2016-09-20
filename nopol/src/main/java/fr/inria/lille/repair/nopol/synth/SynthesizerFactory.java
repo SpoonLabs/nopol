@@ -47,29 +47,33 @@ public final class SynthesizerFactory {
     private final File[] sourceFolders;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final SpoonedProject spooner;
-    private StatementType type;
+    private final Config config;
     private static int nbStatementsAnalysed = 0;
     private static RuntimeValues<Boolean> runtimeValuesInstance = RuntimeValues.newInstance();
 
-    /**
-     * @param type
-     */
-    public SynthesizerFactory(final File[] sourceFolders, final SpoonedProject spooner, StatementType type) {
+	/**
+	 *
+	 * @param sourceFolders
+	 * @param spooner
+	 * @param config
+	 */
+    public SynthesizerFactory(final File[] sourceFolders, final SpoonedProject spooner, Config config) {
         this.sourceFolders = sourceFolders;
         this.spooner = spooner;
-        this.type = type;
+        this.config = config;
     }
 
-    public Synthesizer getFor(final SourceLocation statement, Config config) {
+    public Synthesizer getFor(final SourceLocation statement)
+	{
         nbStatementsAnalysed++;
-        SpoonedClass spoonCl = spooner.forked(statement.getRootClassName(), config);
+        SpoonedClass spoonCl = spooner.forked(statement.getRootClassName());
         if (spoonCl == null) {
             return NO_OP_SYNTHESIZER;
         }
         if (spoonCl.getSimpleType() == null) {
             return NO_OP_SYNTHESIZER;
         }
-        StatementTypeDetector detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), statement.getLineNumber(), type);
+        StatementTypeDetector detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), statement.getLineNumber(), config.getType());
         spoonCl.process(detector);
 
         NopolProcessor nopolProcessor;

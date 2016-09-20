@@ -21,12 +21,9 @@ import static xxl.java.library.LoggerLibrary.*;
 
 public class InfiniteLoopFixer {
 
-	private Config config;
-
-    public InfiniteLoopFixer(LoopTestResult testResult, MonitoringTestExecutor executor, Config config) {
+    public InfiniteLoopFixer(LoopTestResult testResult, MonitoringTestExecutor executor) {
         this.testResult = testResult;
         this.executor = executor;
-		this.config = config;
         synthesis = new ConstraintBasedSynthesis();
     }
 
@@ -67,7 +64,7 @@ public class InfiniteLoopFixer {
     protected Integer firstSuccessfulIteration(While loop, TestCase testCase, int invocation) {
         int limit = executor().monitor().threshold();
         for (int newThreshold = 0; newThreshold <= limit; newThreshold += 1) {
-            Result result = executor().execute(testCase, loop, newThreshold, invocation, config);
+            Result result = executor().execute(testCase, loop, newThreshold, invocation);
             if (result.wasSuccessful()) {
                 return newThreshold;
             }
@@ -82,9 +79,9 @@ public class InfiniteLoopFixer {
         for (TestCase testCase : loopTests) {
             Collection<Specification<Boolean>> testSpecifications;
             if (thresholds.containsKey(testCase)) {
-                testSpecifications = executor().executeCollectingTraces(testCase, loop, thresholds.get(testCase), testResult().infiniteInvocation(loop, testCase), config);
+                testSpecifications = executor().executeCollectingTraces(testCase, loop, thresholds.get(testCase), testResult().infiniteInvocation(loop, testCase));
             } else {
-                testSpecifications = executor().executeCollectingTraces(testCase, loop, config);
+                testSpecifications = executor().executeCollectingTraces(testCase, loop);
             }
             specifications.addAll(testSpecifications);
         }

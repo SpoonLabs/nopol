@@ -20,23 +20,25 @@ import static xxl.java.library.LoggerLibrary.loggerFor;
 
 public class Infinitel {
 
+    private final Config config;
+
     public static void run(File[] sourceFile, URL[] classpath) {
-        Infinitel infiniteLoopFixer = new Infinitel(sourceFile, classpath);
-        Config config = new Config();//TODO default config
+        Infinitel infiniteLoopFixer = new Infinitel(sourceFile, classpath, new Config());
         try {
-            infiniteLoopFixer.repair(config);
+            infiniteLoopFixer.repair();
         } catch (Exception e) {
             e.printStackTrace();
             logError(infiniteLoopFixer.logger(), "Repair failed");
         }
     }
 
-    public Infinitel(File[] sourceFile, URL[] classpath) {
-        this(new ProjectReference(sourceFile, classpath));
+    public Infinitel(File[] sourceFile, URL[] classpath, Config config) {
+        this(new ProjectReference(sourceFile, classpath), config);
     }
 
-    public Infinitel(ProjectReference project) {
+    public Infinitel(ProjectReference project, Config config) {
         this.project = project;
+        this.config = config;
     }
 
     public ProjectReference project() {
@@ -51,23 +53,23 @@ public class Infinitel {
         return project().testClasses();
     }
 
-    public void repair(Config config) {
-        MonitoringTestExecutor testExecutor = newTestExecutor(config);
-        LoopTestResult testResult = newTestResult(testExecutor, config);
-        fixInfiniteLoops(testResult, testExecutor, config);
+    public void repair() {
+        MonitoringTestExecutor testExecutor = newTestExecutor();
+        LoopTestResult testResult = newTestResult(testExecutor);
+        fixInfiniteLoops(testResult, testExecutor);
     }
 
-    protected MonitoringTestExecutor newTestExecutor(Config config) {
+    protected MonitoringTestExecutor newTestExecutor() {
         MonitoringTestExecutor executor = ProjectMonitorImplanter.implanted(project(), configuration(), config);
         return executor;
     }
 
-    protected LoopTestResult newTestResult(MonitoringTestExecutor testExecutor, Config config) {
-        return testExecutor.execute(projectTestClasses(), config);
+    protected LoopTestResult newTestResult(MonitoringTestExecutor testExecutor) {
+        return testExecutor.execute(projectTestClasses());
     }
 
-    protected void fixInfiniteLoops(LoopTestResult testResult, MonitoringTestExecutor testExecutor, Config config) {
-        InfiniteLoopFixer fixer = new InfiniteLoopFixer(testResult, testExecutor, config);
+    protected void fixInfiniteLoops(LoopTestResult testResult, MonitoringTestExecutor testExecutor) {
+        InfiniteLoopFixer fixer = new InfiniteLoopFixer(testResult, testExecutor);
         fixer.repair();
     }
 

@@ -47,17 +47,16 @@ public class InfinitelDiagnostician extends Infinitel {
     public static void main(String[] args) {
         File sourceFile = FileLibrary.openFrom(args[0]);
         URL[] classpath = JavaLibrary.classpathFrom(args[1]);
-        Config config = new Config();
-        new InfinitelDiagnostician(new File[]{sourceFile}, classpath).diagnose(config);
+        new InfinitelDiagnostician(new File[]{sourceFile}, classpath, new Config()).diagnose();
         System.out.println("Diagnostics ended");
     }
 
-    public InfinitelDiagnostician(File[] sourceFile, URL[] classpath) {
-        super(sourceFile, classpath);
+    public InfinitelDiagnostician(File[] sourceFile, URL[] classpath, Config config) {
+        super(sourceFile, classpath, config);
     }
 
-    public InfinitelDiagnostician(ProjectReference project) {
-        super(project);
+    public InfinitelDiagnostician(ProjectReference project, Config config) {
+        super(project, config);
     }
 
     @Override
@@ -65,9 +64,9 @@ public class InfinitelDiagnostician extends Infinitel {
         return Singleton.of(InfinitelDiagnosticianConfiguration.class);
     }
 
-    private void diagnose(Config config) {
-        MonitoringTestExecutor executor = newTestExecutor(config);
-        LoopTestResult testResult = newTestResult(executor, config);
+    private void diagnose() {
+        MonitoringTestExecutor executor = newTestExecutor();
+        LoopTestResult testResult = newTestResult(executor);
         logTable(loopDataTable(testResult));
         logTable(testDataTable(testResult));
         logAllExitRecords(testResult);

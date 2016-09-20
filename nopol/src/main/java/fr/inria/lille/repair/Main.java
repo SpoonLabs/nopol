@@ -57,11 +57,11 @@ public class Main {
                     switch (config.getType()) {
                         case LOOP:
                             ProjectReference project = new ProjectReference(sourceFiles, classpath, config.getProjectTests());
-                            Infinitel infinitel = new Infinitel(project);
-                            infinitel.repair(config);
+                            Infinitel infinitel = new Infinitel(project, config);
+                            infinitel.repair();
                             break;
                         default:
-                            NoPolLauncher.launch(sourceFiles, classpath, config.getType(), config.getProjectTests(), config);
+                            NoPolLauncher.launch(sourceFiles, classpath, config);
                             break;
                     }
                     break;

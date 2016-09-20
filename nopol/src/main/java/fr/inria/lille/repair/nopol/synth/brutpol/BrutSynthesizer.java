@@ -70,7 +70,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
             next.inputs();
         }*/
         Processor<CtStatement> processor = new ConditionalInstrumenter(nopolProcessor, type.getType());
-        SpoonedClass fork = spooner.forked(sourceLocation.getContainingClassName(), config);
+        SpoonedClass fork = spooner.forked(sourceLocation.getContainingClassName());
         ClassLoader classLoader;
         try {
             classLoader = fork.processedAndDumpedToClassLoader(processor);
