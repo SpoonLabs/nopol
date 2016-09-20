@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class NoPolActor extends UntypedActor {
 
-    public enum Message {AVAILABLE}
+    enum Message {AVAILABLE}
 
     private Map<ActorRef, Boolean> pool = new HashMap<>();
 
@@ -53,11 +53,6 @@ public class NoPolActor extends UntypedActor {
     static ActorRef actorNopol;
 
     public static void main(String[] args) throws JSAPException {
-        try {
-            Main.initJSAP();
-        } catch (JSAPException e) {
-            throw new JSAPException();
-        }
         com.typesafe.config.Config config = ConfigFactory.load("nopol");
         String ACTOR_SYSTEM_NAME = config.getString("nopol.system.name");
         String ACTOR_NAME = config.getString("nopol.actor.name");
