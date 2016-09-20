@@ -20,6 +20,7 @@ import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.trace.Specification;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.patch.StringPatch;
 import fr.inria.lille.repair.common.synth.StatementType;
@@ -48,9 +49,11 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
     private static int nbVariables;
     private final SpoonedProject spoonedProject;
     private NopolProcessor conditionalProcessor;
+    private Config config;
 
-    public DefaultSynthesizer(SpoonedProject spoonedProject, AngelicValue constraintModelBuilder, SourceLocation sourceLocation, StatementType type, NopolProcessor processor) {
+    public DefaultSynthesizer(SpoonedProject spoonedProject, AngelicValue constraintModelBuilder, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, Config config) {
         this.constraintModelBuilder = constraintModelBuilder;
+        this.config = config;
         this.sourceLocation = sourceLocation;
         this.type = type;
         this.spoonedProject = spoonedProject;
@@ -90,8 +93,8 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
         }
         nbStatementsWithAngelicValue++;
         Candidates constantes = new Candidates();
-        ConstantCollector constantCollector = new ConstantCollector(constantes, null);
-        spoonedProject.forked(sourceLocation.getContainingClassName()).process(constantCollector);
+        ConstantCollector constantCollector = new ConstantCollector(constantes, null, config);
+        spoonedProject.forked(sourceLocation.getContainingClassName(), config).process(constantCollector);
         Map<String, Integer> intConstants = new HashMap();
         intConstants.put("-1", -1);
         intConstants.put("0", 0);

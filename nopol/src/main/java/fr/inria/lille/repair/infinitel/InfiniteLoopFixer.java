@@ -3,6 +3,7 @@ package fr.inria.lille.repair.infinitel;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.trace.Specification;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.infinitel.loop.While;
 import fr.inria.lille.repair.infinitel.loop.examination.LoopTestResult;
 import fr.inria.lille.repair.infinitel.loop.implant.MonitoringTestExecutor;
@@ -20,9 +21,12 @@ import static xxl.java.library.LoggerLibrary.*;
 
 public class InfiniteLoopFixer {
 
-    public InfiniteLoopFixer(LoopTestResult testResult, MonitoringTestExecutor executor) {
+	private Config config;
+
+    public InfiniteLoopFixer(LoopTestResult testResult, MonitoringTestExecutor executor, Config config) {
         this.testResult = testResult;
         this.executor = executor;
+		this.config = config;
         synthesis = new ConstraintBasedSynthesis();
     }
 
@@ -63,7 +67,7 @@ public class InfiniteLoopFixer {
     protected Integer firstSuccessfulIteration(While loop, TestCase testCase, int invocation) {
         int limit = executor().monitor().threshold();
         for (int newThreshold = 0; newThreshold <= limit; newThreshold += 1) {
-            Result result = executor().execute(testCase, loop, newThreshold, invocation);
+            Result result = executor().execute(testCase, loop, newThreshold, invocation, config);
             if (result.wasSuccessful()) {
                 return newThreshold;
             }
@@ -78,9 +82,9 @@ public class InfiniteLoopFixer {
         for (TestCase testCase : loopTests) {
             Collection<Specification<Boolean>> testSpecifications;
             if (thresholds.containsKey(testCase)) {
-                testSpecifications = executor().executeCollectingTraces(testCase, loop, thresholds.get(testCase), testResult().infiniteInvocation(loop, testCase));
+                testSpecifications = executor().executeCollectingTraces(testCase, loop, thresholds.get(testCase), testResult().infiniteInvocation(loop, testCase), config);
             } else {
-                testSpecifications = executor().executeCollectingTraces(testCase, loop);
+                testSpecifications = executor().executeCollectingTraces(testCase, loop, config);
             }
             specifications.addAll(testSpecifications);
         }

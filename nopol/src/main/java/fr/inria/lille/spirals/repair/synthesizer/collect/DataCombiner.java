@@ -26,15 +26,18 @@ import java.util.List;
 public class DataCombiner {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public static final int maxDepth = Config.INSTANCE.getSynthesisDepth();
+    public static int maxDepth;
 
     private final List<CombineListener> listeners = new ArrayList<>();
     private boolean stop = false;
     private long startTime;
     private long maxTime;
     private long executionTime;
+    private Config config;
 
-    public Candidates combine(Candidates candidates, Object angelicValue, long maxTime) {
+    public Candidates combine(Candidates candidates, Object angelicValue, long maxTime, Config config) {
+        this.config = config;
+        maxDepth = config.getSynthesisDepth();
         this.maxTime = maxTime;
         this.startTime = System.currentTimeMillis();
         executionTime = System.currentTimeMillis() - startTime;
@@ -120,7 +123,7 @@ public class DataCombiner {
                 }
             }
         }
-        if (Config.INSTANCE.isSortExpressions()) {
+        if (config.isSortExpressions()) {
             Collections.sort(toCombine, Collections.reverseOrder());
         }
 
@@ -132,20 +135,20 @@ public class DataCombiner {
             Combination combination = new Combination(toCombine, operator, nbExpression);
             while(!combination.isEnd()) {
                 List<Expression> expressions = combination.perform();
-                CombinationExpression binaryExpression = CombinationFactory.create(operator, expressions);
+                CombinationExpression binaryExpression = CombinationFactory.create(operator, expressions, config);
                 if (addExpressionIn(binaryExpression, result, false)) {
                     if (callListener(binaryExpression)) {
-                        if (Config.INSTANCE.isOnlyOneSynthesisResult()) {
+                        if (config.isOnlyOneSynthesisResult()) {
                             return result;
                         }
                     }
                 }
                 if (operator instanceof BinaryOperator) {
                     if (!((BinaryOperator) operator).isCommutative()) {
-                        binaryExpression = CombinationFactory.create(operator, Arrays.asList(expressions.get(1), expressions.get(0)));
+                        binaryExpression = CombinationFactory.create(operator, Arrays.asList(expressions.get(1), expressions.get(0)), config);
                         if (addExpressionIn(binaryExpression, result, false)) {
                             if (callListener(binaryExpression)) {
-                                if (Config.INSTANCE.isOnlyOneSynthesisResult()) {
+                                if (config.isOnlyOneSynthesisResult()) {
                                     return result;
                                 }
                             }
@@ -161,7 +164,7 @@ public class DataCombiner {
         logger.debug("[combine] primitive start on " + toCombine.size() + " elements");
         List<Expression> result = new ArrayList<>();
 
-        if (Config.INSTANCE.isSortExpressions()) {
+        if (config.isSortExpressions()) {
             Collections.sort(toCombine, Collections.reverseOrder());
         }
         executionTime = System.currentTimeMillis() - startTime;
@@ -184,10 +187,10 @@ public class DataCombiner {
                 if (!operator.getReturnType().isAssignableFrom(expression.getValue().getType())) {
                     continue;
                 }
-                UnaryExpression unaryExpression = CombinationFactory.create(operator, expression);
+                UnaryExpression unaryExpression = CombinationFactory.create(operator, expression, config);
                 if (addExpressionIn(unaryExpression, result, value != null)) {
                     //expression.getInExpressions().add(unaryExpression);
-                    if (callListener(unaryExpression) && Config.INSTANCE.isOnlyOneSynthesisResult()) {
+                    if (callListener(unaryExpression) && config.isOnlyOneSynthesisResult()) {
                         return result;
                     }
                 }
@@ -231,25 +234,25 @@ public class DataCombiner {
     }
 
     private List<Expression> combineExpressionOperator(Expression expression, Expression expression1, BinaryOperator operator, Object value, List<Expression> result) {
-        BinaryExpression binaryExpression = CombinationFactory.create(operator, expression, expression1);
+        BinaryExpression binaryExpression = CombinationFactory.create(operator, expression, expression1, config);
         if (addExpressionIn(binaryExpression, result, value != null)) {
             //expression.getInExpressions().add(binaryExpression);
             if (!expression.sameExpression(expression1)) {
                 //expression1.getInExpressions().add(binaryExpression);
-                if (callListener(binaryExpression) && Config.INSTANCE.isOnlyOneSynthesisResult()) {
+                if (callListener(binaryExpression) && config.isOnlyOneSynthesisResult()) {
                     return result;
                 }
             }
         }
 
         if (!operator.isCommutative()) {
-            binaryExpression = CombinationFactory.create(operator, expression1, expression);
+            binaryExpression = CombinationFactory.create(operator, expression1, expression, config);
 
             if (addExpressionIn(binaryExpression, result, value != null)) {
                 //expression.getInExpressions().add(binaryExpression);
                 if (!expression.sameExpression(expression1)) {
                     //expression1.getInExpressions().add(binaryExpression);
-                    if (callListener(binaryExpression) && Config.INSTANCE.isOnlyOneSynthesisResult()) {
+                    if (callListener(binaryExpression) && config.isOnlyOneSynthesisResult()) {
                         return result;
                     }
                 }
@@ -259,13 +262,13 @@ public class DataCombiner {
     }
 
     private List<Expression> combineComplex(List<Expression> toCombine, int previousSize, Object value) {
-        Expression nullExpression = AccessFactory.literal(null);
+        Expression nullExpression = AccessFactory.literal(null, config);
         logger.debug("[combine] complex start on " + toCombine.size() + " elements");
         List<Expression> result = new ArrayList<>();
         if (value != null && value.getClass() != Boolean.class) {
             return result;
         }
-        if (Config.INSTANCE.isSortExpressions()) {
+        if (config.isSortExpressions()) {
             Collections.sort(toCombine, Collections.reverseOrder());
         }
         executionTime = System.currentTimeMillis() - startTime;
@@ -279,7 +282,7 @@ public class DataCombiner {
                 continue;
             }
 
-            BinaryExpression binaryExpression = CombinationFactory.create(BinaryOperator.EQ, expression, nullExpression);
+            BinaryExpression binaryExpression = CombinationFactory.create(BinaryOperator.EQ, expression, nullExpression, config);
             if (addExpressionIn(binaryExpression, result, value != null)) {
                 //expression.getInExpressions().add(binaryExpression);
                 if (!expression.sameExpression(nullExpression)) {
@@ -290,7 +293,7 @@ public class DataCombiner {
                 }
             }
 
-            binaryExpression = CombinationFactory.create(BinaryOperator.NEQ, expression, nullExpression);
+            binaryExpression = CombinationFactory.create(BinaryOperator.NEQ, expression, nullExpression, config);
             if (addExpressionIn(binaryExpression, result, value != null)) {
                 //expression.getInExpressions().add(binaryExpression);
                 if (!expression.sameExpression(nullExpression)) {
@@ -323,7 +326,7 @@ public class DataCombiner {
     private boolean callListener(Expression expression) {
         for (CombineListener combineListener : listeners) {
             if (combineListener.check(expression)) {
-                if (Config.INSTANCE.isOnlyOneSynthesisResult()) {
+                if (config.isOnlyOneSynthesisResult()) {
                     stop = true;
                 }
                 return true;

@@ -39,7 +39,7 @@ public abstract class TestUtility {
         return new ProjectReference(sourceFile, classpath, testClasses);
     }
 
-    private List<Patch> patchFor(ProjectReference project, StatementType type) {
+    private List<Patch> patchFor(Config config, ProjectReference project, StatementType type) {
         for (int i = 0; i < project.sourceFiles().length; i++) {
             File file = project.sourceFiles()[i];
             clean(file.getParent());
@@ -47,15 +47,15 @@ public abstract class TestUtility {
         List<Patch> patches;
         switch (this.executionType) {
             case "symbolic":
-                Config.INSTANCE.setOracle(Config.NopolOracle.SYMBOLIC);
+                config.setOracle(Config.NopolOracle.SYMBOLIC);
                 break;
             case "nopol":
-                Config.INSTANCE.setOracle(Config.NopolOracle.ANGELIC);
+                config.setOracle(Config.NopolOracle.ANGELIC);
                 break;
             default:
                 throw new RuntimeException("Execution type not found");
         }
-        NoPol nopol = new NoPol(project.sourceFiles(), project.classpath(), type);
+        NoPol nopol = new NoPol(project.sourceFiles(), project.classpath(), type, new Config());
         patches = nopol.build(project.testClasses());
 
         for (int i = 0; i < project.sourceFiles().length; i++) {
@@ -72,18 +72,18 @@ public abstract class TestUtility {
     }
 
     protected Patch test(int projectNumber, int linePosition, StatementType type,
-                       Collection<String> expectedFailedTests) {
+                       Collection<String> expectedFailedTests, Config config) {
         ProjectReference project = projectForExample(projectNumber);
         SolverFactory.setSolver(solver, solverPath);
         TestCasesListener listener = new TestCasesListener();
         URLClassLoader classLoader = new URLClassLoader(project.classpath());
         TestSuiteExecution.runCasesIn(project.testClasses(), classLoader,
-                listener);
+                listener, new Config());
         Collection<String> failedTests = TestCase.testNames(listener
                 .failedTests());
         // assertEquals(expectedFailedTests.size(), failedTests.size());
         // assertTrue(expectedFailedTests.containsAll(failedTests));
-        List<Patch> patches = patchFor(project, type);
+        List<Patch> patches = patchFor(config, project, type);
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
         assertEquals(patch.getType(), type);

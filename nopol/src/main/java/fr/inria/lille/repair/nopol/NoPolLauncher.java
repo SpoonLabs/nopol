@@ -49,12 +49,12 @@ public class NoPolLauncher {
         System.exit(1);
     }
 
-    public static List<Patch> launch(File[] sourceFile, URL[] classpath, StatementType type, String[] args) {
+    public static List<Patch> launch(File[] sourceFile, URL[] classpath, StatementType type, String[] args, Config config) {
         System.out.println("Source files: " + Arrays.toString(sourceFile));
         System.out.println("Classpath: " + Arrays.toString(classpath));
         System.out.println("Statement type: " + type);
         System.out.println("Args: " + Arrays.toString(args));
-        System.out.println("Config: " + Config.INSTANCE);
+        System.out.println("Config: " + config);
         System.out.println("Available processors (cores): " + Runtime.getRuntime().availableProcessors());
 
     	/* Total amount of free memory available to the JVM */
@@ -75,7 +75,7 @@ public class NoPolLauncher {
         System.out.println("PATH: " + System.getenv("PATH"));
 
         long executionTime = System.currentTimeMillis();
-        NoPol nopol = new NoPol(sourceFile, classpath, type);
+        NoPol nopol = new NoPol(sourceFile, classpath, type, config);
         List<Patch> patches = null;
         try {
             if (args.length > 0) {
@@ -87,7 +87,7 @@ public class NoPolLauncher {
             e.printStackTrace();
         } finally {
             executionTime = System.currentTimeMillis() - executionTime;
-            displayResult(nopol, patches, executionTime);
+            displayResult(nopol, patches, executionTime, config);
         }
         return patches;
     }
@@ -95,7 +95,7 @@ public class NoPolLauncher {
     public static ArrayList<Integer> nbFailingTestExecution = new ArrayList<>();
     public static ArrayList<Integer> nbPassedTestExecution = new ArrayList<>();
 
-    private static void displayResult(NoPol nopol, List<Patch> patches, long executionTime) {
+    private static void displayResult(NoPol nopol, List<Patch> patches, long executionTime, Config config) {
         System.out.println("----INFORMATION----");
         List<CtType<?>> allClasses = nopol.getSpooner().spoonFactory().Class().getAll();
         int nbMethod = 0;
@@ -130,7 +130,7 @@ public class NoPolLauncher {
         System.out.println("Nb unit tests : " + nopol.getgZoltar().getGzoltar().getTestResults().size());
         System.out.println("Nb Statements Analyzed : " + SynthesizerFactory.getNbStatementsAnalysed());
         System.out.println("Nb Statements with Angelic Value Found : " + DefaultSynthesizer.getNbStatementsWithAngelicValue());
-        if (Config.INSTANCE.getSynthesis() == Config.NopolSynthesis.SMT) {
+        if (config.getSynthesis() == Config.NopolSynthesis.SMT) {
             System.out.println("Nb inputs in SMT : " + DefaultSynthesizer.getDataSize());
             System.out.println("Nb SMT level: " + ConstraintBasedSynthesis.level);
             if (ConstraintBasedSynthesis.operators != null) {

@@ -63,8 +63,10 @@ public class NoPol {
     private static boolean singlePatch = true;
     private String[] testClasses;
     public long startTime;
+    private Config config;
 
-    public NoPol(ProjectReference project, StatementType type) {
+    public NoPol(ProjectReference project, StatementType type, Config config) {
+        this.config = config;
         this.classpath = project.classpath();
         this.sourceFiles = project.sourceFiles();
         this.testClasses = project.testClasses();
@@ -74,13 +76,13 @@ public class NoPol {
         /*if (this.testClasses == null || this.testClasses.length == 0) {
 			this.testClasses = new TestClassesFinder().findIn(classpath, false);
 		}*/
-        spooner = new SpoonedProject(this.sourceFiles, classpath);
-        testPatch = new TestPatch(sourceFiles[0], spooner);
+        spooner = new SpoonedProject(this.sourceFiles, classpath, config);
+        testPatch = new TestPatch(sourceFiles[0], spooner, config);
         startTime = System.currentTimeMillis();
     }
 
-    public NoPol(final File[] sourceFiles, final URL[] classpath, StatementType type) {
-        this(new ProjectReference(sourceFiles, classpath), type);
+    public NoPol(final File[] sourceFiles, final URL[] classpath, StatementType type, Config config) {
+        this(new ProjectReference(sourceFiles, classpath), type, config);
     }
 
     public List<Patch> build() {
@@ -97,9 +99,9 @@ public class NoPol {
 
         Map<SourceLocation, List<TestResult>> testListPerStatement = getTestListPerStatement();
 
-        if (Config.INSTANCE.getOracle() == Config.NopolOracle.SYMBOLIC) {
+        if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
             try {
-                SpoonedProject jpfSpoon = new SpoonedProject(this.sourceFiles, classpath);
+                SpoonedProject jpfSpoon = new SpoonedProject(this.sourceFiles, classpath, config);
                 String mainClass = "nopol.repair.NopolTestRunner";
                 TestExecutorProcessor.createMainTestClass(jpfSpoon, mainClass);
                 jpfSpoon.process(new AssertReplacer());
@@ -145,7 +147,7 @@ public class NoPol {
         List<Patch> patches = new ArrayList<>();
         for (Iterator<Statement> iterator = statements.iterator(); iterator.hasNext() &&
                 // limit the execution time
-                System.currentTimeMillis() - startTime <= TimeUnit.MINUTES.toMillis(Config.INSTANCE.getMaxTime()); ) {
+                System.currentTimeMillis() - startTime <= TimeUnit.MINUTES.toMillis(config.getMaxTime()); ) {
             Statement statement = iterator.next();
             if (((StatementExt) statement).getEf() == 0) {
                 continue;
@@ -159,7 +161,7 @@ public class NoPol {
                 NoPol.currentStatement = statement;
                 logger.debug("Analysing {}", statement);
                 SourceLocation sourceLocation = new SourceLocation(statement.getMethod().getParent().getName(), statement.getLineNumber());
-                Synthesizer synth = new SynthesizerFactory(sourceFiles, spooner, type).getFor(sourceLocation);
+                Synthesizer synth = new SynthesizerFactory(sourceFiles, spooner, type).getFor(sourceLocation, config);
 
                 if (synth == Synthesizer.NO_OP_SYNTHESIZER) {
                     continue;
@@ -180,7 +182,7 @@ public class NoPol {
                 if (failingTest.isEmpty()) {
                     continue;
                 }
-                Patch patch = synth.buildPatch(classpath, tests, failingTest, Config.INSTANCE.getMaxTimeBuildPatch());
+                Patch patch = synth.buildPatch(classpath, tests, failingTest, config.getMaxTimeBuildPatch());
                 if (isOk(patch, gZoltar.getGzoltar().getTestResults(), synth.getProcessor())) {
                     patches.add(patch);
                     if (isSinglePatch()) {
@@ -225,13 +227,13 @@ public class NoPol {
     private Collection<TestCase> failingTests(String[] testClasses,
                                               ClassLoader testClassLoader) {
         TestCasesListener listener = new TestCasesListener();
-        TestSuiteExecution.runCasesIn(testClasses, testClassLoader, listener);
+        TestSuiteExecution.runCasesIn(testClasses, testClassLoader, listener, this.config);
         return listener.failedTests();
     }
 
     private Collection<TestCase> failingTests(String[] testClasses) {
         TestCasesListener listener = new TestCasesListener();
-        TestSuiteExecution.runCasesIn(testClasses, spooner.dumpedToClassLoader(), listener);
+        TestSuiteExecution.runCasesIn(testClasses, spooner.dumpedToClassLoader(), listener, this.config);
         return listener.failedTests();
     }
 

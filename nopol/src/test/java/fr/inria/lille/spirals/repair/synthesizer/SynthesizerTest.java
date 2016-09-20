@@ -20,9 +20,11 @@ import static org.junit.Assert.assertEquals;
 
 public class SynthesizerTest {
 
+    private static Config config;
+
     @Before
     public void before() {
-        Config.INSTANCE.reset();
+        config = new Config();
     }
 
     @Test
@@ -145,7 +147,7 @@ public class SynthesizerTest {
         oracle.put("test_3", new Object[]{true});
         oracle.put("test_4", new Object[]{false});
 
-        Config.INSTANCE.setOnlyOneSynthesisResult(false);
+        config.setOnlyOneSynthesisResult(false);
         
         Synthesizer synthesizer = createSynthesizer(12, oracle, 5);
         System.out.println("basic: "+synthesizer.getCollectedExpressions());
@@ -175,7 +177,7 @@ public class SynthesizerTest {
         oracle.put("test_2", new Object[]{false});
         oracle.put("test_3", new Object[]{false});
 
-        Config.INSTANCE.setOnlyOneSynthesisResult(false);
+        config.setOnlyOneSynthesisResult(false);
 
         Synthesizer synthesizer = createSynthesizer(13, oracle, 4);
         System.out.println("basic: "+synthesizer.getCollectedExpressions());
@@ -202,7 +204,7 @@ public class SynthesizerTest {
         String classpath = "../test-projects/target/test-classes"+File.pathSeparatorChar+"../test-projects/target/classes/"+File.pathSeparatorChar+"misc/nopol-example/junit-4.11.jar"+File.pathSeparatorChar+"misc/nopol-example/hamcrest-core-1.3.jar";
         SourceLocation location = new SourceLocation(className, line);
         File[] files = new File []{new File("../test-projects/src/main/java/"), new File("../test-projects/src/test/java/")};
-        Synthesizer synthesizer = new SynthesizerImpl(files, location, JavaLibrary.classpathFrom(classpath), oracle, tests.toArray(new String[0]),5 /* seconds, a goood value for tests */);
+        Synthesizer synthesizer = new SynthesizerImpl(files, location, JavaLibrary.classpathFrom(classpath), oracle, tests.toArray(new String[0]),5 /* seconds, a goood value for tests */, new Config());
         synthesizer.run(TimeUnit.MINUTES.toMillis(15));
         return synthesizer;
     }

@@ -1,5 +1,6 @@
 package fr.inria.lille.spirals.evo;
 
+import fr.inria.lille.repair.common.config.Config;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
@@ -40,7 +41,7 @@ public class TestPatchEvo {
 		FileUtils.deleteDirectory(new File(destCpTestFolder));
 		
 		Main.solverPath = "lib/z3/z3_for_linux";
-		Main.tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, generateTest, testClasses, whetherSavePatch, patchSaveFolder);
+		Main.tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, generateTest, testClasses, whetherSavePatch, patchSaveFolder, new Config());
 		
 		for(Map.Entry entry : Main.patches.entrySet()){
 			System.out.println(entry.getValue()+" "+entry.getKey());

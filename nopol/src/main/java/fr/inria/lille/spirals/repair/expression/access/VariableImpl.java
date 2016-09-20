@@ -17,8 +17,8 @@ public class VariableImpl extends ExpressionImpl implements Variable {
     /**
      *
      */
-    public VariableImpl(String variableName, Expression target, Value value) {
-        super(value);
+    public VariableImpl(String variableName, Expression target, Value value, Config config) {
+        super(value, config);
         this.variableName = variableName;
         this.target = target;
     }
@@ -36,9 +36,9 @@ public class VariableImpl extends ExpressionImpl implements Variable {
     @Override
     public double getWeight() {
         if (getValue().isConstant()) {
-            return Config.INSTANCE.getConstantWeight() * getPriority();
+            return config.getConstantWeight() * getPriority();
         }
-        return Config.INSTANCE.getVariableWeight() * getPriority();
+        return config.getVariableWeight() * getPriority();
     }
 
     @Override

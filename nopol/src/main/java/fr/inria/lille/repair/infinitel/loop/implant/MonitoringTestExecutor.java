@@ -3,6 +3,7 @@ package fr.inria.lille.repair.infinitel.loop.implant;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.commons.trace.SpecificationTestCasesListener;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.infinitel.loop.While;
 import fr.inria.lille.repair.infinitel.loop.examination.LoopTestListener;
 import fr.inria.lille.repair.infinitel.loop.examination.LoopTestResult;
@@ -25,54 +26,54 @@ public class MonitoringTestExecutor {
         monitor().disableAll();
     }
 
-    public Result execute(TestCase testCase, While loop, int threshold, int invocation) {
-        return execute(testCase, loop, threshold, invocation, nullRunListener());
+    public Result execute(TestCase testCase, While loop, int threshold, int invocation, Config config) {
+        return execute(testCase, loop, threshold, invocation, nullRunListener(), config);
     }
 
-    public Result execute(TestCase testCase, Collection<While> loops) {
-        return execute(testCase, loops, nullRunListener());
+    public Result execute(TestCase testCase, Collection<While> loops, Config config) {
+        return execute(testCase, loops, nullRunListener(), config);
     }
 
-    public Result execute(TestCase testCase, While loop) {
-        return execute(testCase, loop, nullRunListener());
+    public Result execute(TestCase testCase, While loop, Config config) {
+        return execute(testCase, loop, nullRunListener(), config);
     }
 
-    public Collection<Specification<Boolean>> executeCollectingTraces(TestCase testCase, While loop) {
+    public Collection<Specification<Boolean>> executeCollectingTraces(TestCase testCase, While loop, Config config) {
         SpecificationTestCasesListener<Boolean> listener = specificationListener(loop);
-        execute(testCase, loop, listener);
+        execute(testCase, loop, listener, config);
         return listener.specifications();
     }
 
-    public Collection<Specification<Boolean>> executeCollectingTraces(TestCase testCase, While loop, int threshold, int invocation) {
+    public Collection<Specification<Boolean>> executeCollectingTraces(TestCase testCase, While loop, int threshold, int invocation, Config config) {
         SpecificationTestCasesListener<Boolean> listener = specificationListener(loop);
-        execute(testCase, loop, threshold, invocation, listener);
+        execute(testCase, loop, threshold, invocation, listener, config);
         return listener.specifications();
     }
 
-    public Result execute(TestCase testCase, While loop, int threshold, int invocation, RunListener listener) {
+    public Result execute(TestCase testCase, While loop, int threshold, int invocation, RunListener listener, Config config) {
         int oldThreshold = monitor().setThresholdOf(loop, threshold, invocation);
-        Result result = execute(testCase, loop, listener);
+        Result result = execute(testCase, loop, listener, config);
         monitor().setThresholdOf(loop, oldThreshold, invocation);
         return result;
     }
 
-    public Result execute(TestCase testCase, While loop, RunListener listener) {
+    public Result execute(TestCase testCase, While loop, RunListener listener, Config config) {
         monitor().enable(loop);
-        Result result = runTestCase(testCase, classLoader(), listener);
+        Result result = runTestCase(testCase, classLoader(), listener, config);
         monitor().disable(loop);
         return result;
     }
 
-    public Result execute(TestCase testCase, Collection<While> loops, RunListener listener) {
+    public Result execute(TestCase testCase, Collection<While> loops, RunListener listener, Config config) {
         monitor().enable(loops);
-        Result result = runTestCase(testCase, classLoader(), listener);
+        Result result = runTestCase(testCase, classLoader(), listener, config);
         monitor().disable(loops);
         return result;
     }
 
-    public LoopTestResult execute(String[] testClasses) {
+    public LoopTestResult execute(String[] testClasses, Config config) {
         LoopTestListener listener = new LoopTestListener(monitor());
-        runCasesIn(testClasses, classLoader(), listener);
+        runCasesIn(testClasses, classLoader(), listener, config);
         return listener.result();
     }
 

@@ -3,6 +3,7 @@ package fr.inria.lille.repair.nopol.synth.brutpol;
 import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.ExpressionPatch;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
@@ -47,9 +48,11 @@ public class BrutSynthesizer<T> implements Synthesizer {
     private final SpoonedProject spooner;
     private final File[] sourceFolders;
     private final AngelicValue angelicValue;
+    private final Config config;
 
-    public BrutSynthesizer(AngelicValue angelicValue, File[] sourceFolders, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, SpoonedProject spooner) {
+    public BrutSynthesizer(AngelicValue angelicValue, File[] sourceFolders, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, SpoonedProject spooner, Config config) {
         this.sourceLocation = sourceLocation;
+        this.config = config;
         this.type = type;
         this.nopolProcessor = processor;
         this.spooner = spooner;
@@ -67,7 +70,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
             next.inputs();
         }*/
         Processor<CtStatement> processor = new ConditionalInstrumenter(nopolProcessor, type.getType());
-        SpoonedClass fork = spooner.forked(sourceLocation.getContainingClassName());
+        SpoonedClass fork = spooner.forked(sourceLocation.getContainingClassName(), config);
         ClassLoader classLoader;
         try {
             classLoader = fork.processedAndDumpedToClassLoader(processor);
@@ -80,7 +83,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
         AngelicExecution.enable();
         AngelicExecution.setBooleanValue(false);
         TestRunListener testCasesListener = new TestRunListener();
-        CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, testCasesListener);
+        CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, testCasesListener, config);
         Map<String, List<T>> passedTests = testCasesListener.passedTests;
         for (Iterator<String> iterator = passedTests.keySet().iterator(); iterator.hasNext(); ) {
             String next = iterator.next();
@@ -89,7 +92,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
         AngelicExecution.flip();
 
         testCasesListener = new TestRunListener();
-        CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, testCasesListener);
+        CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, testCasesListener, config);
         AngelicExecution.disable();
         passedTests = testCasesListener.passedTests;
         for (Iterator<String> iterator = passedTests.keySet().iterator(); iterator.hasNext(); ) {
@@ -100,7 +103,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
             DefaultSynthesizer.nbStatementsWithAngelicValue++;
             testCasesListener = new TestRunListener();
             AngelicExecution.disable();
-            TestSuiteExecution.runTestResult(testClasses, classLoader, testCasesListener);
+            TestSuiteExecution.runTestResult(testClasses, classLoader, testCasesListener, config);
             passedTests = testCasesListener.passedTests;
             for (String next : passedTests.keySet()) {
                 Object[] values = passedTests.get(next).toArray();
@@ -123,7 +126,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
                     AngelicExecution.setBooleanValue(flippedValue);
                     testCasesListener = new TestRunListener();
                     try {
-                        Result result = TestSuiteExecution.runTest(next, classLoader, testCasesListener);
+                        Result result = TestSuiteExecution.runTest(next, classLoader, testCasesListener, config);
                         if (!result.wasSuccessful()) {
                             oracle.put(next, values);
                         } else {
@@ -137,7 +140,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
                 }
             }
             long remainingTime = TimeUnit.MINUTES.toMillis(maxTimeBuildPatch) - (System.currentTimeMillis() - startTime);
-            SynthesizerImpl synthesizer = new SynthesizerImpl(spooner, sourceFolders, sourceLocation, classpath, oracle, oracle.keySet().toArray(new String[0]));
+            SynthesizerImpl synthesizer = new SynthesizerImpl(spooner, sourceFolders, sourceLocation, classpath, oracle, oracle.keySet().toArray(new String[0]), config);
             Candidates run = synthesizer.run(remainingTime);
             if (run.size() > 0) {
                 return new ExpressionPatch(run.get(0), sourceLocation, type);

@@ -21,13 +21,13 @@ import static xxl.java.library.LoggerLibrary.loggerFor;
 
 public class DynamicClassCompiler {
 
-    public DynamicClassCompiler(URL[] classpath) {
-        this();
+    public DynamicClassCompiler(URL[] classpath, Config config) {
+        this(config);
         options = optionsWithClasspath(classpath);
     }
 
-    public DynamicClassCompiler() {
-        int complianceLevel = Config.INSTANCE.getComplianceLevel();
+    public DynamicClassCompiler(Config config) {
+        int complianceLevel = config.getComplianceLevel();
         options = asList("-nowarn");
         compiler = ToolProvider.getSystemJavaCompiler();
         diagnostics = new DiagnosticCollector<JavaFileObject>();

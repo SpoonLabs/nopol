@@ -1,6 +1,7 @@
 package fr.inria.lille.repair.infinitel;
 
 import fr.inria.lille.repair.ProjectReference;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.infinitel.loop.examination.LoopTestResult;
 import fr.inria.lille.repair.infinitel.loop.implant.MonitoringTestExecutor;
 import fr.inria.lille.repair.infinitel.loop.implant.ProjectMonitorImplanter;
@@ -21,8 +22,9 @@ public class Infinitel {
 
     public static void run(File[] sourceFile, URL[] classpath) {
         Infinitel infiniteLoopFixer = new Infinitel(sourceFile, classpath);
+        Config config = new Config();//TODO default config
         try {
-            infiniteLoopFixer.repair();
+            infiniteLoopFixer.repair(config);
         } catch (Exception e) {
             e.printStackTrace();
             logError(infiniteLoopFixer.logger(), "Repair failed");
@@ -49,23 +51,23 @@ public class Infinitel {
         return project().testClasses();
     }
 
-    public void repair() {
-        MonitoringTestExecutor testExecutor = newTestExecutor();
-        LoopTestResult testResult = newTestResult(testExecutor);
-        fixInfiniteLoops(testResult, testExecutor);
+    public void repair(Config config) {
+        MonitoringTestExecutor testExecutor = newTestExecutor(config);
+        LoopTestResult testResult = newTestResult(testExecutor, config);
+        fixInfiniteLoops(testResult, testExecutor, config);
     }
 
-    protected MonitoringTestExecutor newTestExecutor() {
-        MonitoringTestExecutor executor = ProjectMonitorImplanter.implanted(project(), configuration());
+    protected MonitoringTestExecutor newTestExecutor(Config config) {
+        MonitoringTestExecutor executor = ProjectMonitorImplanter.implanted(project(), configuration(), config);
         return executor;
     }
 
-    protected LoopTestResult newTestResult(MonitoringTestExecutor testExecutor) {
-        return testExecutor.execute(projectTestClasses());
+    protected LoopTestResult newTestResult(MonitoringTestExecutor testExecutor, Config config) {
+        return testExecutor.execute(projectTestClasses(), config);
     }
 
-    protected void fixInfiniteLoops(LoopTestResult testResult, MonitoringTestExecutor testExecutor) {
-        InfiniteLoopFixer fixer = new InfiniteLoopFixer(testResult, testExecutor);
+    protected void fixInfiniteLoops(LoopTestResult testResult, MonitoringTestExecutor testExecutor, Config config) {
+        InfiniteLoopFixer fixer = new InfiniteLoopFixer(testResult, testExecutor, config);
         fixer.repair();
     }
 

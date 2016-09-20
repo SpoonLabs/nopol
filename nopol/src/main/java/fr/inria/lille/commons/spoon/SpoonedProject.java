@@ -1,5 +1,6 @@
 package fr.inria.lille.commons.spoon;
 
+import fr.inria.lille.repair.common.config.Config;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtType;
 import xxl.java.container.classic.MetaList;
@@ -13,8 +14,8 @@ import static java.util.Arrays.asList;
 
 public class SpoonedProject extends SpoonedFile {
 
-    public SpoonedProject(File[] sourceFile, URL[] classpath) {
-        super(sourceFile, classpath);
+    public SpoonedProject(File[] sourceFile, URL[] classpath, Config config) {
+        super(sourceFile, classpath, config);
     }
 
     @Override
@@ -34,12 +35,12 @@ public class SpoonedProject extends SpoonedFile {
         return modelledClasses;
     }
 
-    public SpoonedClass forked(String qualifiedName) {
+    public SpoonedClass forked(String qualifiedName, Config config) {
         CtType<?> modelledClass = modelledClass(qualifiedName);
         if (modelledClass == null) {
             return null;
         }
-        return new SpoonedClass(this, modelledClass);
+        return new SpoonedClass(this, modelledClass, config);
     }
 
     public ClassLoader processedAndDumpedToClassLoader(String qualifiedName, Processor<?> processor) {

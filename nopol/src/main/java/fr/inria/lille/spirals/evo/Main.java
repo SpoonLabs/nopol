@@ -139,7 +139,7 @@ public class Main {
         }
 
         String[] testsClassesArray = (testClasses == null) ? null : testClasses.split(File.pathSeparator);
-        tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, true, testsClassesArray, whetherSavePatch, patchSaveFolder);
+        tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, true, testsClassesArray, whetherSavePatch, patchSaveFolder, new Config());
 
     }
 
@@ -220,7 +220,7 @@ public class Main {
      */
     public static List<Patch> NopolPatchGeneration(String cpClassFolder,String  cpTestFolder, 
             String srcClassFolder, String srcTestFolder, String destSrcTestFolder, 
-            String destCpTestFolder, String dependencies, String[] testClasses) {
+            String destCpTestFolder, String dependencies, String[] testClasses, Config config) {
 
         //sources contain main java and test java.
         String sources = srcClassFolder+File.pathSeparatorChar+srcTestFolder+File.pathSeparatorChar+destSrcTestFolder;
@@ -244,8 +244,8 @@ public class Main {
         logger.debug("testClasses = "+testClasses);
 
 
-        Config.INSTANCE.setMaxTime(maxTime);
-        NoPol nopol = new NoPol(sourceFiles, classPath, nopolType);
+        config.setMaxTime(maxTime);
+        NoPol nopol = new NoPol(sourceFiles, classPath, nopolType, config);
         List<Patch> currentPatches;
         if(testClasses == null){
             currentPatches = nopol.build();   
@@ -273,7 +273,7 @@ public class Main {
      */
     public static void tryAllTests(String cpClassFolder, String cpTestFolder, 
             String srcClassFolder, String srcTestFolder, String destSrcTestFolder, 
-            String destCpTestFolder, final String newTestFolder, String dependencies, boolean generateTest, String[] firstTestClasses, boolean whetherSavePatch, String patchSaveFolder){
+            String destCpTestFolder, final String newTestFolder, String dependencies, boolean generateTest, String[] firstTestClasses, boolean whetherSavePatch, String patchSaveFolder, Config config){
 
         //create dest folders if not exist
         new File(destSrcTestFolder).mkdirs();
@@ -291,7 +291,7 @@ public class Main {
         logger.debug("--------------------------------------------------");
         logger.debug(" ##### launch nopol without new tests ##### ");
 
-        currentPatches = NopolPatchGeneration(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, dependencies, testClasses);
+        currentPatches = NopolPatchGeneration(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, dependencies, testClasses, config);
         patches.put("basic", currentPatches);
         if(currentPatches.isEmpty()){
             logger.debug("### ----- NO PATCH FOUND -----");
@@ -341,7 +341,7 @@ public class Main {
 
 
             logger.debug("### Launch Nopol");
-            currentPatches = NopolPatchGeneration(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, dependencies, testClasses);
+            currentPatches = NopolPatchGeneration(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, dependencies, testClasses, config);
             if(!currentPatches.isEmpty()){
                 logger.debug("### ----- PATCH FOUND -----");
                 for (Patch patch : currentPatches) {

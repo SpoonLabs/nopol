@@ -1,6 +1,7 @@
 package fr.inria.lille.spirals.repair.expression;
 
 
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.spirals.repair.commons.Candidates;
 import fr.inria.lille.spirals.repair.expression.value.Value;
 
@@ -11,9 +12,11 @@ public abstract class ExpressionImpl implements Expression {
     private double priority;
 
     private Value value;
+    protected Config config;
 
-    public ExpressionImpl(Value value) {
+    public ExpressionImpl(Value value, Config config) {
         setValue(value);
+        this.config = config;
         this.priority = 1;
     }
 

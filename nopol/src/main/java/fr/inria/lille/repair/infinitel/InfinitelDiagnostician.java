@@ -1,6 +1,7 @@
 package fr.inria.lille.repair.infinitel;
 
 import fr.inria.lille.repair.ProjectReference;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.infinitel.loop.While;
 import fr.inria.lille.repair.infinitel.loop.examination.LoopTestResult;
 import fr.inria.lille.repair.infinitel.loop.implant.MonitoringTestExecutor;
@@ -46,7 +47,8 @@ public class InfinitelDiagnostician extends Infinitel {
     public static void main(String[] args) {
         File sourceFile = FileLibrary.openFrom(args[0]);
         URL[] classpath = JavaLibrary.classpathFrom(args[1]);
-        new InfinitelDiagnostician(new File[]{sourceFile}, classpath).diagnose();
+        Config config = new Config();
+        new InfinitelDiagnostician(new File[]{sourceFile}, classpath).diagnose(config);
         System.out.println("Diagnostics ended");
     }
 
@@ -63,9 +65,9 @@ public class InfinitelDiagnostician extends Infinitel {
         return Singleton.of(InfinitelDiagnosticianConfiguration.class);
     }
 
-    private void diagnose() {
-        MonitoringTestExecutor executor = newTestExecutor();
-        LoopTestResult testResult = newTestResult(executor);
+    private void diagnose(Config config) {
+        MonitoringTestExecutor executor = newTestExecutor(config);
+        LoopTestResult testResult = newTestResult(executor, config);
         logTable(loopDataTable(testResult));
         logTable(testDataTable(testResult));
         logAllExitRecords(testResult);
