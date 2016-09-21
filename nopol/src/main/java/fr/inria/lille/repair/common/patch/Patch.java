@@ -16,6 +16,7 @@
 package fr.inria.lille.repair.common.patch;
 
 import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.nopol.SourceLocation;
 
 import java.io.File;
 
@@ -23,55 +24,6 @@ import java.io.File;
  * @author Favio D. DeMarco
  */
 public interface Patch {
-
-    /**
-     * Class that represents the inability to find a working patch.
-     *
-     * @author Favio D. DeMarco
-     */
-    static final class NoPatch implements Patch {
-
-        private NoPatch() {
-        }
-
-        @Override
-        public String asString() {
-            throw new UnsupportedOperationException(toString());
-        }
-
-        @Override
-        public String getRootClassName() {
-            throw new UnsupportedOperationException(toString());
-        }
-
-        @Override
-        public File getFile(final File sourcePath) {
-            throw new UnsupportedOperationException(toString());
-        }
-
-        @Override
-        public int getLineNumber() {
-            throw new UnsupportedOperationException(toString());
-        }
-
-        @Override
-        public StatementType getType() {
-            throw new UnsupportedOperationException(toString());
-        }
-
-        /**
-         * @see java.lang.Object#toString()
-         */
-        @Override
-        public String toString() {
-            return "No viable patch found.";
-        }
-    }
-
-    /**
-     * Singleton that represents the inability to find a working patch.
-     */
-    static final Patch NO_PATCH = new NoPatch();
 
     String asString();
 
@@ -85,4 +37,7 @@ public interface Patch {
     int getLineNumber();
 
     StatementType getType();
+
+    SourceLocation getSourceLocation();
+
 }
