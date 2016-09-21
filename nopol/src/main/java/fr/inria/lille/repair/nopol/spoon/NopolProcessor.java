@@ -15,6 +15,7 @@ public abstract class NopolProcessor extends AbstractProcessor<CtStatement> {
     @Override
     public boolean isToBeProcessed(CtStatement statement) {
         if (statement.getPosition() != null) {
+
             return (statement.getPosition().getLine() == this.target
                     .getPosition().getLine())
                     && (statement.getPosition().getColumn() == this.target
@@ -47,6 +48,10 @@ public abstract class NopolProcessor extends AbstractProcessor<CtStatement> {
 
     public void setType(Class<?> type) {
         this.type = type;
+    }
+
+    public CtStatement getTarget() {
+        return target;
     }
 
     private Class<?> type;

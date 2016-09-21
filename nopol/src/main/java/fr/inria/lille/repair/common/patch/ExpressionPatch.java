@@ -62,4 +62,10 @@ public class ExpressionPatch implements Patch {
     public String toString() {
         return String.format("%s:%d: %s %s", location.getContainingClassName(), getLineNumber(), type, expression.toString());
     }
+
+    @Override
+    public SourceLocation getSourceLocation() {
+        return this.location;
+    }
+
 }

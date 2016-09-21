@@ -34,72 +34,70 @@ import xxl.java.junit.TestCase;
 import java.net.URL;
 import java.util.*;
 
-import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
-
 /**
  * @author Favio D. DeMarco
  */
 public final class DefaultSynthesizer<T> implements Synthesizer {
 
-    private final SourceLocation sourceLocation;
-    private final AngelicValue constraintModelBuilder;
-    private final StatementType type;
-    public static int nbStatementsWithAngelicValue = 0;
-    private static int dataSize = 0;
-    private static int nbVariables;
-    private final SpoonedProject spoonedProject;
-    private NopolProcessor conditionalProcessor;
-    private Config config;
+	private final SourceLocation sourceLocation;
+	private final AngelicValue constraintModelBuilder;
+	private final StatementType type;
+	public static int nbStatementsWithAngelicValue = 0;
+	private static int dataSize = 0;
+	private static int nbVariables;
+	private final SpoonedProject spoonedProject;
+	private NopolProcessor conditionalProcessor;
+	private Config config;
 
-    public DefaultSynthesizer(SpoonedProject spoonedProject, AngelicValue constraintModelBuilder, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, Config config) {
-        this.constraintModelBuilder = constraintModelBuilder;
-        this.config = config;
-        this.sourceLocation = sourceLocation;
-        this.type = type;
-        this.spoonedProject = spoonedProject;
-        conditionalProcessor = processor;
-    }
+	public DefaultSynthesizer(SpoonedProject spoonedProject, AngelicValue constraintModelBuilder, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, Config config) {
+		this.constraintModelBuilder = constraintModelBuilder;
+		this.config = config;
+		this.sourceLocation = sourceLocation;
+		this.type = type;
+		this.spoonedProject = spoonedProject;
+		conditionalProcessor = processor;
+	}
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see fr.inria.lille.jefix.synth.Synthesizer#buildPatch(java.net.URL[], java.lang.String[])
-     */
-    @Override
-    public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
-        Collection<Specification<T>> data = constraintModelBuilder.buildFor(classpath, testClasses, failures);
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see fr.inria.lille.jefix.synth.Synthesizer#buildPatch(java.net.URL[], java.lang.String[])
+	 */
+	@Override
+	public List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
+		Collection<Specification<T>> data = constraintModelBuilder.buildFor(classpath, testClasses, failures);
 
-        // XXX FIXME TODO move this
-        // there should be at least two sets of values, otherwise the patch would be "true" or "false"
-        int dataSize = data.size();
-        if (dataSize < 2) {
-            LoggerFactory.getLogger(this.getClass()).info("{} input values set(s). There are not enough tests for {} otherwise the patch would be \"true\" or \"false\"",
-                    dataSize, sourceLocation);
-            return NO_PATCH;
-        }
-        // the synthesizer do an infinite loop when all data does not have the same input size
-        int firstDataSize = data.iterator().next().inputs().size();
-        for (Iterator<Specification<T>> iterator = data.iterator(); iterator.hasNext(); ) {
-            Specification<T> next = iterator.next();
-            if (next.inputs().size() != firstDataSize) {
-                //return NO_PATCH;
-            }
-        }
+		// XXX FIXME TODO move this
+		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
+		int dataSize = data.size();
+		if (dataSize < 2) {
+			LoggerFactory.getLogger(this.getClass()).info("{} input values set(s). There are not enough tests for {} otherwise the patch would be \"true\" or \"false\"",
+					dataSize, sourceLocation);
+			return Collections.EMPTY_LIST;
+		}
+		// the synthesizer do an infinite loop when all data does not have the same input size
+		int firstDataSize = data.iterator().next().inputs().size();
+		for (Iterator<Specification<T>> iterator = data.iterator(); iterator.hasNext(); ) {
+			Specification<T> next = iterator.next();
+			if (next.inputs().size() != firstDataSize) {
+				//return NO_PATCH;
+			}
+		}
 
-        // and it should be a viable patch, ie. fix the bug
-        if (!constraintModelBuilder.isAViablePatch()) {
-            LoggerFactory.getLogger(this.getClass()).info("Changing only this statement does not solve the bug. {}", sourceLocation);
-            return NO_PATCH;
-        }
-        nbStatementsWithAngelicValue++;
-        Candidates constantes = new Candidates();
-        ConstantCollector constantCollector = new ConstantCollector(constantes, null, config);
-        spoonedProject.forked(sourceLocation.getContainingClassName()).process(constantCollector);
-        Map<String, Integer> intConstants = new HashMap();
-        intConstants.put("-1", -1);
-        intConstants.put("0", 0);
-        intConstants.put("1", 1);
-        /*for (int i = 0; i < constantes.size(); i++) {
+		// and it should be a viable patch, ie. fix the bug
+		if (!constraintModelBuilder.isAViablePatch()) {
+			LoggerFactory.getLogger(this.getClass()).info("Changing only this statement does not solve the bug. {}", sourceLocation);
+			return Collections.EMPTY_LIST;
+		}
+		nbStatementsWithAngelicValue++;
+		Candidates constantes = new Candidates();
+		ConstantCollector constantCollector = new ConstantCollector(constantes, null, config);
+		spoonedProject.forked(sourceLocation.getContainingClassName()).process(constantCollector);
+		Map<String, Integer> intConstants = new HashMap();
+		intConstants.put("-1", -1);
+		intConstants.put("0", 0);
+		intConstants.put("1", 1);
+		/*for (int i = 0; i < constantes.size(); i++) {
 			Expression expression = constantes.get(i);
 			if(expression instanceof PrimitiveConstant) {
 				if(expression.getType() == Integer.class) {
@@ -107,33 +105,33 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
 				}
 			}
 		}*/
-        ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis(intConstants);
-        CodeGenesis genesis = synthesis.codesSynthesisedFrom(
-                (Class<T>) (type.getType()), data);
-        if (!genesis.isSuccessful()) {
-            return NO_PATCH;
-        }
-        DefaultSynthesizer.dataSize = dataSize;
-        DefaultSynthesizer.nbVariables = data.iterator().next().inputs().keySet().size();
-        return new StringPatch(genesis.returnStatement(), sourceLocation, type);
-    }
+		ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis(intConstants);
+		CodeGenesis genesis = synthesis.codesSynthesisedFrom(
+				(Class<T>) (type.getType()), data);
+		if (!genesis.isSuccessful()) {
+			return Collections.EMPTY_LIST;
+		}
+		DefaultSynthesizer.dataSize = dataSize;
+		DefaultSynthesizer.nbVariables = data.iterator().next().inputs().keySet().size();
+		return Collections.singletonList((Patch) new StringPatch(genesis.returnStatement(), sourceLocation, type));
+	}
 
-    public static int getNbStatementsWithAngelicValue() {
-        return nbStatementsWithAngelicValue;
-    }
+	public static int getNbStatementsWithAngelicValue() {
+		return nbStatementsWithAngelicValue;
+	}
 
-    public static int getDataSize() {
-        return dataSize;
-    }
+	public static int getDataSize() {
+		return dataSize;
+	}
 
-    public static int getNbVariables() {
-        return nbVariables;
-    }
+	public static int getNbVariables() {
+		return nbVariables;
+	}
 
-    @Override
-    public NopolProcessor getProcessor() {
-        return conditionalProcessor;
-    }
+	@Override
+	public NopolProcessor getProcessor() {
+		return conditionalProcessor;
+	}
 
 
 }

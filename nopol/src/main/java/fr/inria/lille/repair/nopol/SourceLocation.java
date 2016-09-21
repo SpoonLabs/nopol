@@ -30,6 +30,25 @@ public final class SourceLocation implements Serializable {
 
     private final int lineNumber;
 
+    private int beginSource;
+    private int endSource;
+
+    public int getBeginSource() {
+        return beginSource;
+    }
+
+    public void setSourceStart(int beginSource) {
+        this.beginSource = beginSource;
+    }
+
+    public int getEndSource() {
+        return endSource;
+    }
+
+    public void setSourceEnd(int endSource) {
+        this.endSource = endSource;
+    }
+
     /**
      * @param containingClassName
      * @param lineNumber

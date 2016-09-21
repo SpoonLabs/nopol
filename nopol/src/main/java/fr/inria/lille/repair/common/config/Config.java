@@ -6,6 +6,7 @@ import xxl.java.library.JavaLibrary;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Properties;
@@ -13,7 +14,10 @@ import java.util.Properties;
 /**
  * Created by Thomas Durieux on 23/03/15.
  */
-public class Config {
+
+public class Config implements Serializable {
+
+	private static final long serialVersionUID = -2542128741040978263L;
 
 	public enum NopolMode {
 		REPAIR,
@@ -37,7 +41,6 @@ public class Config {
 
 	private final String filename = "config.ini";
 	private final Properties p;
-
 
 	private int synthesisDepth;
 	private boolean collectStaticMethods;
