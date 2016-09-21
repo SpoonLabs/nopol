@@ -77,6 +77,11 @@ public class StringPatch implements Patch {
         return type;
     }
 
+    @Override
+    public SourceLocation getSourceLocation() {
+        return this.location;
+    }
+
     /**
      * @see java.lang.Object#toString()
      */

@@ -15,6 +15,7 @@ import fr.inria.lille.repair.nopol.synth.AngelicValue;
 import fr.inria.lille.repair.nopol.synth.DefaultSynthesizer;
 import fr.inria.lille.repair.nopol.synth.Synthesizer;
 import fr.inria.lille.spirals.repair.commons.Candidates;
+import fr.inria.lille.spirals.repair.expression.Expression;
 import fr.inria.lille.spirals.repair.synthesizer.SynthesizerImpl;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
@@ -24,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.cu.SourcePosition;
 import xxl.java.compiler.DynamicCompilationException;
 import xxl.java.junit.CompoundResult;
 import xxl.java.junit.TestCase;
@@ -33,8 +35,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
 
 /**
  * Created by spirals on 25/03/15.
@@ -61,7 +61,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
     }
 
     @Override
-    public Patch buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
+    public List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
         long startTime = System.currentTimeMillis();
         /*Collection<Specification<T>> collection = angelicValue.buildFor(classpath, testClasses, failures);
 
@@ -76,7 +76,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
             classLoader = fork.processedAndDumpedToClassLoader(processor);
         } catch (DynamicCompilationException e) {
             e.printStackTrace();
-            return NO_PATCH;
+            return Collections.EMPTY_LIST;
         }
         Map<String, Object[]> oracle = new HashMap<>();
 
@@ -140,13 +140,22 @@ public class BrutSynthesizer<T> implements Synthesizer {
                 }
             }
             long remainingTime = TimeUnit.MINUTES.toMillis(maxTimeBuildPatch) - (System.currentTimeMillis() - startTime);
+
+            SourcePosition position = nopolProcessor.getTarget().getPosition();
+            this.sourceLocation.setSourceStart(position.getSourceStart());
+            this.sourceLocation.setSourceEnd(position.getSourceEnd());
+
             SynthesizerImpl synthesizer = new SynthesizerImpl(spooner, sourceFolders, sourceLocation, classpath, oracle, oracle.keySet().toArray(new String[0]), config);
             Candidates run = synthesizer.run(remainingTime);
             if (run.size() > 0) {
-                return new ExpressionPatch(run.get(0), sourceLocation, type);
+                List<Patch> patches = new ArrayList<>();
+                for (Expression expression : run) {
+                    patches.add(new ExpressionPatch(expression, sourceLocation, type));
+                }
+                return patches;
             }
         }
-        return NO_PATCH;
+        return Collections.EMPTY_LIST;
     }
 
     private boolean determineViability(Collection<TestCase> testCases, final CompoundResult firstResult, final CompoundResult secondResult) {
