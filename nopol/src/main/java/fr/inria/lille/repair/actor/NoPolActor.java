@@ -4,7 +4,7 @@ package fr.inria.lille.repair.actor;
 import akka.actor.*;
 import com.martiansoftware.jsap.JSAPException;
 import com.typesafe.config.ConfigFactory;
-import fr.inria.lille.repair.Main;
+import fr.inria.lille.repair.common.config.Config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,55 +14,61 @@ import java.util.Map;
  */
 public class NoPolActor extends UntypedActor {
 
-    public enum Message {AVAILABLE}
+	final class ConfigActor {
+		final Config config;
+		final ActorRef client;
+		ConfigActor(Config config, ActorRef client) {
+			this.config = config;
+			this.client = client;
+		}
+	}
 
-    private Map<ActorRef, Boolean> pool = new HashMap<>();
+	private Map<ActorRef, Boolean> pool = new HashMap<>();
 
-    public NoPolActor() {
-        for (int i = 0; i < 10; i++)
-            pool.put(system.actorOf(Props.create(InternalNopolActor.class), "InternalNopolActor_" + i), Boolean.TRUE);
-    }
+	public NoPolActor(ActorSystem system) {
+		for (int i = 0; i < 10; i++)
+			this.pool.put(system.actorOf(Props.create(InternalNopolActor.class), "InternalNopolActor_" + i), Boolean.TRUE);
+	}
 
-    @Override
-    public void onReceive(Object o) {
-        if (o instanceof String) {
-            boolean taskSent = false;
-            for (ActorRef actorRef : this.pool.keySet()) {
-                if (this.pool.get(actorRef)) {
-                    taskSent = true;
-                    actorRef.tell(o, getSender());
-                    this.pool.put(actorRef, Boolean.FALSE);
-                    break;
-                }
-            }
-            if (!taskSent)
-                this.pool.keySet().iterator().next().tell(o, getSender());//send to the first actor of the keyset
-        } else if (o instanceof Message) {
-            switch ((Message) o) {
-                case AVAILABLE:
-                    this.pool.put(getSender(), Boolean.TRUE);
-                    break;
-                default:
-                    //do not know
-            }
-        }
-    }
+	@Override
+	public void onReceive(Object message) {
+		if (message instanceof Config) {
+			boolean taskSent = false;
+			//Looking for free actor
+			for (ActorRef actorRef : this.pool.keySet()) {
+				if (this.pool.get(actorRef)) {
+					taskSent = true;
+					actorRef.tell(new ConfigActor((Config) message, getSender()), getSelf());
+					this.pool.put(actorRef, Boolean.FALSE);
+					break;
+				}
+			}
+			if (!taskSent)
+				this.pool.keySet().iterator().next().tell(message, getSender());//send to the first actor of the keyset
+		} else if (message instanceof Message) {
+			switch ((Message) message) {
+				case AVAILABLE:
+					this.pool.put(getSender(), Boolean.TRUE);
+					break;
+				default:
+					unhandled(message);//Unsupported message type
+			}
+		} else
+			unhandled(message);//Unsupported message type
+	}
 
-    static ActorSystem system;
-    static ActorRef actorNopol;
+	enum Message {AVAILABLE}
 
-    public static void main(String[] args) {
-        try {
-            Main.initJSAP();
-        } catch (JSAPException e) {
-            e.printStackTrace();
-        }
-        com.typesafe.config.Config config = ConfigFactory.load("nopol");
-        String ACTOR_SYSTEM_NAME = config.getString("nopol.system.name");
-        String ACTOR_NAME = config.getString("nopol.actor.name");
-        system = ActorSystem.create(ACTOR_SYSTEM_NAME, config);
-        actorNopol = system.actorOf(Props.create(NoPolActor.class), ACTOR_NAME);
-        System.out.println(actorNopol);
-    }
+	static String pathToSolver;// = "/home/bdanglot/workspace/nopol/nopol/lib/z3/z3_for_linux";
+
+	public static void main(String[] args) throws JSAPException {
+		com.typesafe.config.Config config = ConfigFactory.load("nopol");
+		pathToSolver = config.getString("nopol.solver.path");
+		String ACTOR_SYSTEM_NAME = config.getString("nopol.system.name");
+		String ACTOR_NAME = config.getString("nopol.actor.name");
+		ActorSystem system = ActorSystem.create(ACTOR_SYSTEM_NAME, config);
+		ActorRef actorNopol = system.actorOf(Props.create(NoPolActor.class, system), ACTOR_NAME);
+		System.out.println(actorNopol);
+	}
 
 }

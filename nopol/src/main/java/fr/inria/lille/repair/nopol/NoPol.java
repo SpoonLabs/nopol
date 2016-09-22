@@ -45,7 +45,6 @@ import java.net.URLClassLoader;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static fr.inria.lille.repair.common.patch.Patch.NO_PATCH;
 
 /**
  * @author Favio D. DeMarco
@@ -59,7 +58,6 @@ public class NoPol {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final SpoonedProject spooner;
 	private final File[] sourceFiles;
-	private static boolean singlePatch = true;
 	private String[] testClasses;
 	public long startTime;
 	private Config config;
@@ -180,15 +178,19 @@ public class NoPol {
 				if (failingTest.isEmpty()) {
 					continue;
 				}
-				Patch patch = synth.buildPatch(classpath, tests, failingTest, config.getMaxTimeBuildPatch());
-				if (isOk(patch, gZoltar.getGzoltar().getTestResults(), synth.getProcessor())) {
-					patches.add(patch);
-					if (isSinglePatch()) {
-						break;
+				List<Patch> tmpPatches = synth.buildPatch(classpath, tests, failingTest, config.getMaxTimeBuildPatch());
+				for (int i = 0; i < tmpPatches.size(); i++) {
+					Patch patch = tmpPatches.get(i);
+					if (isOk(patch, gZoltar.getGzoltar().getTestResults(), synth.getProcessor())) {
+						patches.add(patch);
+						if (config.isOnlyOneSynthesisResult()) {
+							break;
+						}
+					} else {
+						logger.debug("Could not find a patch in {}", statement);
 					}
-				} else {
-					logger.debug("Could not find a patch in {}", statement);
 				}
+
 			} catch (RuntimeException re) {
 				re.printStackTrace();
 			}
@@ -201,19 +203,8 @@ public class NoPol {
 	}
 
 	private boolean isOk(Patch newRepair, List<TestResult> testClasses, NopolProcessor processor) {
-		if (newRepair == NO_PATCH) {
-			return false;
-		}
 		logger.trace("Suggested patch: {}", newRepair);
 		return testPatch.passesAllTests(newRepair, testClasses, processor);
-	}
-
-	public static boolean isSinglePatch() {
-		return singlePatch;
-	}
-
-	public static boolean setSinglePatch(boolean singlePatch) {
-		return NoPol.singlePatch = singlePatch;
 	}
 
 	/**
