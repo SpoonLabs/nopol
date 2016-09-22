@@ -4,8 +4,6 @@ package fr.inria.lille.repair.actor;
 import akka.actor.*;
 import com.martiansoftware.jsap.JSAPException;
 import com.typesafe.config.ConfigFactory;
-import fr.inria.lille.repair.Main;
-import fr.inria.lille.repair.common.config.Config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,15 +12,6 @@ import java.util.Map;
  * Created by bdanglot on 9/12/16.
  */
 public class NoPolActor extends UntypedActor {
-
-	final class ConfigActor {
-		final Config config;
-		final ActorRef client;
-		ConfigActor(Config config, ActorRef client) {
-			this.config = config;
-			this.client = client;
-		}
-	}
 
 	private Map<ActorRef, Boolean> pool = new HashMap<>();
 
@@ -33,13 +22,15 @@ public class NoPolActor extends UntypedActor {
 
 	@Override
 	public void onReceive(Object message) {
-		if (message instanceof Config) {
+		if (message instanceof ConfigActor) {
+			ConfigActor configActor = (ConfigActor) message;
+			configActor.setClient(getSender());
 			boolean taskSent = false;
 			//Looking for free actor
 			for (ActorRef actorRef : this.pool.keySet()) {
 				if (this.pool.get(actorRef)) {
 					taskSent = true;
-					actorRef.tell(new ConfigActor((Config) message, getSender()), getSelf());
+					actorRef.tell(configActor, getSelf());
 					this.pool.put(actorRef, Boolean.FALSE);
 					break;
 				}
