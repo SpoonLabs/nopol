@@ -18,71 +18,71 @@ import spoon.reflect.declaration.CtMethod;
 
 public class ConstantCollector extends AbstractProcessor<CtLiteral> {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final Candidates candidates;
-    private final String buggyMethod;
-    private final Config config;
+	private final Candidates candidates;
+	private final String buggyMethod;
+	private final Config config;
 
 
-    public ConstantCollector(Candidates candidates, String buggyMethod, Config config) {
-        super();
-        this.config = config;
-        this.candidates = candidates;
-        this.buggyMethod = buggyMethod;
-    }
+	public ConstantCollector(Candidates candidates, String buggyMethod, Config config) {
+		super();
+		this.config = config;
+		this.candidates = candidates;
+		this.buggyMethod = buggyMethod;
+	}
 
-    @Override
-    public boolean isToBeProcessed(CtLiteral candidate) {
-        CtMethod parent = candidate.getParent(CtMethod.class);
-        if (parent == null) {
-            return false;
-        }
-        if (buggyMethod != null) {
-            return parent.getSimpleName().equals(buggyMethod);
-        }
-        return true;
-    }
+	@Override
+	public boolean isToBeProcessed(CtLiteral candidate) {
+		CtMethod parent = candidate.getParent(CtMethod.class);
+		if (parent == null) {
+			return false;
+		}
+		if (buggyMethod != null) {
+			return parent.getSimpleName().equals(buggyMethod);
+		}
+		return true;
+	}
 
-    @Override
-    public void process(CtLiteral ctLiteral) {
-        if (ctLiteral.getValue() instanceof Boolean) {
-            return;
-        } else if (ctLiteral.getValue() instanceof Number) {
-            if (ctLiteral.getValue().equals(1) ||
-                    ctLiteral.getValue().equals(0)) {
-                return;
-            }
-        }
-        CtElement parent = ctLiteral.getParent(CtLocalVariable.class);
-        if (parent != null) {
-            return;
-        }
-        parent = ctLiteral.getParent(CtAssignment.class);
-        if (parent != null) {
-            return;
-        }
-        parent = ctLiteral.getParent(CtField.class);
-        if (parent != null) {
-            return;
-        }
-        parent = ctLiteral.getParent(CtThrow.class);
-        if (parent != null) {
-            return;
-        }
-        Class type = null;
-        if (ctLiteral.getValue() != null) {
-            type = ctLiteral.getValue().getClass();
-        }
-        Object value = ctLiteral.getValue();
-        if (value == null) {
-            return;
-        }
-        if (Number.class.isAssignableFrom(value.getClass())) {
-            Literal constant = AccessFactory.literal(ctLiteral.getValue(), config);
-            if (candidates.add(constant)) {
-                logger.debug("[data] " + constant);
-            }
-        }
-    }
+	@Override
+	public void process(CtLiteral ctLiteral) {
+		if (ctLiteral.getValue() instanceof Boolean) {
+			return;
+		} else if (ctLiteral.getValue() instanceof Number) {
+			if (ctLiteral.getValue().equals(1) ||
+					ctLiteral.getValue().equals(0)) {
+				return;
+			}
+		}
+		CtElement parent = ctLiteral.getParent(CtLocalVariable.class);
+		if (parent != null) {
+			return;
+		}
+		parent = ctLiteral.getParent(CtAssignment.class);
+		if (parent != null) {
+			return;
+		}
+		parent = ctLiteral.getParent(CtField.class);
+		if (parent != null) {
+			return;
+		}
+		parent = ctLiteral.getParent(CtThrow.class);
+		if (parent != null) {
+			return;
+		}
+		Class type = null;
+		if (ctLiteral.getValue() != null) {
+			type = ctLiteral.getValue().getClass();
+		}
+		Object value = ctLiteral.getValue();
+		if (value == null) {
+			return;
+		}
+		if (Number.class.isAssignableFrom(value.getClass())) {
+			Literal constant = AccessFactory.literal(ctLiteral.getValue(), config);
+			if (candidates.add(constant)) {
+				logger.debug("[data] " + constant);
+			}
+		}
+	}
 }

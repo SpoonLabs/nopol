@@ -1,7 +1,10 @@
 package fr.inria.lille.repair.actor;
 
 
-import akka.actor.*;
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
+import akka.actor.Props;
+import akka.actor.UntypedActor;
 import com.martiansoftware.jsap.JSAPException;
 import com.typesafe.config.ConfigFactory;
 import fr.inria.lille.repair.common.config.Config;
@@ -17,6 +20,7 @@ public class NoPolActor extends UntypedActor {
 	final class ConfigActor {
 		final Config config;
 		final ActorRef client;
+
 		ConfigActor(Config config, ActorRef client) {
 			this.config = config;
 			this.client = client;

@@ -17,70 +17,70 @@ import java.util.Map;
 
 public class ProjectMonitorImplanter extends AbstractProcessor<CtWhile> {
 
-    public static MonitoringTestExecutor implanted(ProjectReference project, InfinitelConfiguration configuration, Config config) {
-        ProjectMonitorImplanter implanter = new ProjectMonitorImplanter(configuration.iterationsThreshold());
-        SpoonedProject spoonedProject = new SpoonedProject(project.sourceFiles(), project.classpath(), config);
-        spoonedProject.process(implanter);
-        ClassLoader classLoader = spoonedProject.dumpedToClassLoader();
-        MonitoringTestExecutor testExecutor = new MonitoringTestExecutor(classLoader, implanter.implant(), config);
-        return testExecutor;
-    }
+	public static MonitoringTestExecutor implanted(ProjectReference project, InfinitelConfiguration configuration, Config config) {
+		ProjectMonitorImplanter implanter = new ProjectMonitorImplanter(configuration.iterationsThreshold());
+		SpoonedProject spoonedProject = new SpoonedProject(project.sourceFiles(), project.classpath(), config);
+		spoonedProject.process(implanter);
+		ClassLoader classLoader = spoonedProject.dumpedToClassLoader();
+		MonitoringTestExecutor testExecutor = new MonitoringTestExecutor(classLoader, implanter.implant(), config);
+		return testExecutor;
+	}
 
-    public ProjectMonitorImplanter(int threshold) {
-        this.threshold = threshold;
-        submonitors = MetaMap.newHashMap();
-        runtimeValues = MetaMap.newHashMap();
-    }
+	public ProjectMonitorImplanter(int threshold) {
+		this.threshold = threshold;
+		submonitors = MetaMap.newHashMap();
+		runtimeValues = MetaMap.newHashMap();
+	}
 
-    @Override
-    public boolean isToBeProcessed(CtWhile loopStatement) {
-        return true;
-    }
+	@Override
+	public boolean isToBeProcessed(CtWhile loopStatement) {
+		return true;
+	}
 
-    @Override
-    public void process(CtWhile loopStatement) {
-        While loop = newLoop(loopStatement);
-        LoopMonitor loopMonitor = LoopMonitor.newInstance(loop, threshold());
-        RuntimeValues<Boolean> newRuntimeValues = RuntimeValues.newInstance();
-        submonitors().put(loop, loopMonitor);
-        runtimeValues().put(loop, newRuntimeValues);
-        LoopInstrumenter.instrument(loopMonitor, newRuntimeValues);
-    }
+	@Override
+	public void process(CtWhile loopStatement) {
+		While loop = newLoop(loopStatement);
+		LoopMonitor loopMonitor = LoopMonitor.newInstance(loop, threshold());
+		RuntimeValues<Boolean> newRuntimeValues = RuntimeValues.newInstance();
+		submonitors().put(loop, loopMonitor);
+		runtimeValues().put(loop, newRuntimeValues);
+		LoopInstrumenter.instrument(loopMonitor, newRuntimeValues);
+	}
 
-    public CentralLoopMonitor implant() {
-        CentralLoopMonitor monitor = new CentralLoopMonitor(threshold(), submonitors(), runtimeValues());
-        return monitor;
-    }
+	public CentralLoopMonitor implant() {
+		CentralLoopMonitor monitor = new CentralLoopMonitor(threshold(), submonitors(), runtimeValues());
+		return monitor;
+	}
 
-    public boolean isUnbreakable(CtWhile loopStatement) {
-        CtMethod<?> correspondingMethod = loopStatement.getParent(CtMethod.class);
-        if (SpoonStatementLibrary.isLastStatementOfMethod(loopStatement)) {
-            return !SpoonReferenceLibrary.isVoidType(correspondingMethod.getType());
-        }
-        return false;
-    }
+	public boolean isUnbreakable(CtWhile loopStatement) {
+		CtMethod<?> correspondingMethod = loopStatement.getParent(CtMethod.class);
+		if (SpoonStatementLibrary.isLastStatementOfMethod(loopStatement)) {
+			return !SpoonReferenceLibrary.isVoidType(correspondingMethod.getType());
+		}
+		return false;
+	}
 
-    protected While newLoop(CtWhile loopStatement) {
-        While loop = new While(loopStatement);
-        if (isUnbreakable(loopStatement)) {
-            loop.setUnbreakable();
-        }
-        return loop;
-    }
+	protected While newLoop(CtWhile loopStatement) {
+		While loop = new While(loopStatement);
+		if (isUnbreakable(loopStatement)) {
+			loop.setUnbreakable();
+		}
+		return loop;
+	}
 
-    private int threshold() {
-        return threshold;
-    }
+	private int threshold() {
+		return threshold;
+	}
 
-    private Map<While, LoopMonitor> submonitors() {
-        return submonitors;
-    }
+	private Map<While, LoopMonitor> submonitors() {
+		return submonitors;
+	}
 
-    private Map<While, RuntimeValues<Boolean>> runtimeValues() {
-        return runtimeValues;
-    }
+	private Map<While, RuntimeValues<Boolean>> runtimeValues() {
+		return runtimeValues;
+	}
 
-    private int threshold;
-    private Map<While, LoopMonitor> submonitors;
-    private Map<While, RuntimeValues<Boolean>> runtimeValues;
+	private int threshold;
+	private Map<While, LoopMonitor> submonitors;
+	private Map<While, RuntimeValues<Boolean>> runtimeValues;
 }

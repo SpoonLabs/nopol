@@ -23,9 +23,9 @@ import fr.inria.lille.repair.nopol.SourceLocation;
  */
 public interface SuspiciousStatement {
 
-    SourceLocation getSourceLocation();
+	SourceLocation getSourceLocation();
 
-    double getSuspiciousness();
+	double getSuspiciousness();
 
-    Statement getStatement();
+	Statement getStatement();
 }

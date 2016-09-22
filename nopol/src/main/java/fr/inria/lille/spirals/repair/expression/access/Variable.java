@@ -8,12 +8,13 @@ import fr.inria.lille.spirals.repair.expression.Expression;
  */
 public interface Variable extends Expression {
 
-    /**
-     * get the variable name
-     * @return the variableName
-     */
-    String getVariableName();
+	/**
+	 * get the variable name
+	 *
+	 * @return the variableName
+	 */
+	String getVariableName();
 
-    Expression getTarget();
+	Expression getTarget();
 }
 

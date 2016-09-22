@@ -34,42 +34,42 @@ import java.util.List;
  */
 public final class TestPatch {
 
-    private static final String SPOON_DIRECTORY = File.separator + ".." + File.separator + "spooned";
-    private final Config config;
+	private static final String SPOON_DIRECTORY = File.separator + ".." + File.separator + "spooned";
+	private final Config config;
 
-    private SpoonedProject spoonedProject;
-    private final File sourceFolder;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private SpoonedProject spoonedProject;
+	private final File sourceFolder;
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
-    public TestPatch(final File sourceFolder, SpoonedProject spoonedProject, Config config) {
-        this.config = config;
-        this.sourceFolder = sourceFolder;
-        this.spoonedProject = spoonedProject;
-    }
+	public TestPatch(final File sourceFolder, SpoonedProject spoonedProject, Config config) {
+		this.config = config;
+		this.sourceFolder = sourceFolder;
+		this.spoonedProject = spoonedProject;
+	}
 
-    public static String getGeneratedPatchDirectorie() {
-        return SPOON_DIRECTORY;
-    }
+	public static String getGeneratedPatchDirectorie() {
+		return SPOON_DIRECTORY;
+	}
 
-    public boolean passesAllTests(Patch patch, List<TestResult> testClasses, NopolProcessor processor) {
-        logger.info("Applying patch: {}", patch);
-        String qualifiedName = patch.getRootClassName();
-        SpoonedClass spoonedClass = spoonedProject.forked(qualifiedName);
-        processor.setValue(patch.asString());
-        ClassLoader loader = spoonedClass.processedAndDumpedToClassLoader(processor);
-        logger.info("Running test suite to check the patch \"{}\" is working", patch.asString());
-        Result result = TestSuiteExecution.runTestResult(testClasses, loader, config);
-        if (result.wasSuccessful()) {
-            //spoonedClass.generateOutputFile(destinationFolder());
-            return true;
-        } else {
-            logger.info("Failing tests {}", result.getFailures());
-        }
-        return false;
-    }
+	public boolean passesAllTests(Patch patch, List<TestResult> testClasses, NopolProcessor processor) {
+		logger.info("Applying patch: {}", patch);
+		String qualifiedName = patch.getRootClassName();
+		SpoonedClass spoonedClass = spoonedProject.forked(qualifiedName);
+		processor.setValue(patch.asString());
+		ClassLoader loader = spoonedClass.processedAndDumpedToClassLoader(processor);
+		logger.info("Running test suite to check the patch \"{}\" is working", patch.asString());
+		Result result = TestSuiteExecution.runTestResult(testClasses, loader, config);
+		if (result.wasSuccessful()) {
+			//spoonedClass.generateOutputFile(destinationFolder());
+			return true;
+		} else {
+			logger.info("Failing tests {}", result.getFailures());
+		}
+		return false;
+	}
 
-    private File destinationFolder() {
-        return new File(sourceFolder, SPOON_DIRECTORY);
-    }
+	private File destinationFolder() {
+		return new File(sourceFolder, SPOON_DIRECTORY);
+	}
 }

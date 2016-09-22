@@ -16,39 +16,39 @@ import java.util.Set;
 
 public class TestExecutorProcessor {
 
-    public static void createMainTestClass(SpoonedFile spooner,
-                                           String className) {
-        Factory factory = spooner.spoonFactory();
-        CtClass<Object> executeTestClass = factory.Class().create(className);
+	public static void createMainTestClass(SpoonedFile spooner,
+										   String className) {
+		Factory factory = spooner.spoonFactory();
+		CtClass<Object> executeTestClass = factory.Class().create(className);
 
-        CtTypeReference<String[]> typedReference = factory.Class()
-                .createReference(String[].class);
-        CtTypeReference<Object> returnTypedReference = factory.Class()
-                .createReference("void");
+		CtTypeReference<String[]> typedReference = factory.Class()
+				.createReference(String[].class);
+		CtTypeReference<Object> returnTypedReference = factory.Class()
+				.createReference("void");
 
-        Set<ModifierKind> modifiers = new LinkedHashSet<>(2);
-        modifiers.add(ModifierKind.PUBLIC);
-        modifiers.add(ModifierKind.STATIC);
+		Set<ModifierKind> modifiers = new LinkedHashSet<>(2);
+		modifiers.add(ModifierKind.PUBLIC);
+		modifiers.add(ModifierKind.STATIC);
 
-        HashSet<CtTypeReference<? extends Throwable>> exceptions = new HashSet<>();
-        exceptions.add(factory.Class().createReference(Exception.class));
+		HashSet<CtTypeReference<? extends Throwable>> exceptions = new HashSet<>();
+		exceptions.add(factory.Class().createReference(Exception.class));
 
-        CtBlock<?> body = spooner.spoonFactory().Core().createBlock();
+		CtBlock<?> body = spooner.spoonFactory().Core().createBlock();
 
-        body.addStatement(factory
-                .Code()
-                .createCodeSnippetStatement(
-                        "for (String method : methods) {\n\t\t"
-                                + "String[] split = method.split(\"\\\\.\");\n\t\t"
-                                + "Class.forName(method.replace(\".\" + split[split.length - 1], \"\")).getMethod(\"runJPFTest\", String[].class).invoke(null, new Object[] { new String[] { split[split.length - 1] }});}"));
+		body.addStatement(factory
+				.Code()
+				.createCodeSnippetStatement(
+						"for (String method : methods) {\n\t\t"
+								+ "String[] split = method.split(\"\\\\.\");\n\t\t"
+								+ "Class.forName(method.replace(\".\" + split[split.length - 1], \"\")).getMethod(\"runJPFTest\", String[].class).invoke(null, new Object[] { new String[] { split[split.length - 1] }});}"));
 
-        CtMethod<?> method = spooner
-                .spoonFactory()
-                .Method()
-                .create(executeTestClass, modifiers, returnTypedReference,
-                        "main", new ArrayList<CtParameter<?>>(), exceptions,
-                        body);
-        spooner.spoonFactory().Method()
-                .createParameter(method, typedReference, "methods");
-    }
+		CtMethod<?> method = spooner
+				.spoonFactory()
+				.Method()
+				.create(executeTestClass, modifiers, returnTypedReference,
+						"main", new ArrayList<CtParameter<?>>(), exceptions,
+						body);
+		spooner.spoonFactory().Method()
+				.createParameter(method, typedReference, "methods");
+	}
 }

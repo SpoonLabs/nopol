@@ -44,79 +44,79 @@ import java.util.List;
  */
 public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private boolean viablePatch;
-    private final ClassLoader classLoader;
-    private RuntimeValues<Boolean> runtimeValues;
-    private SourceLocation sourceLocation;
-    private Config config;
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private boolean viablePatch;
+	private final ClassLoader classLoader;
+	private RuntimeValues<Boolean> runtimeValues;
+	private SourceLocation sourceLocation;
+	private Config config;
 
-    public ConstraintModelBuilder(RuntimeValues<Boolean> runtimeValues, SourceLocation sourceLocation, Processor<?> processor, SpoonedProject spooner, Config config) {
-        this.sourceLocation = sourceLocation;
-        this.config = config;
-        String qualifiedName = sourceLocation.getRootClassName();
-        SpoonedClass fork = spooner.forked(qualifiedName);
-        try {
-            classLoader = fork.processedAndDumpedToClassLoader(processor);
-        } catch (DynamicCompilationException e) {
-            logger.error("Unable to compile the change: \n" + fork.getSimpleType());
-            throw e;
-        }
-        this.runtimeValues = runtimeValues;
-    }
+	public ConstraintModelBuilder(RuntimeValues<Boolean> runtimeValues, SourceLocation sourceLocation, Processor<?> processor, SpoonedProject spooner, Config config) {
+		this.sourceLocation = sourceLocation;
+		this.config = config;
+		String qualifiedName = sourceLocation.getRootClassName();
+		SpoonedClass fork = spooner.forked(qualifiedName);
+		try {
+			classLoader = fork.processedAndDumpedToClassLoader(processor);
+		} catch (DynamicCompilationException e) {
+			logger.error("Unable to compile the change: \n" + fork.getSimpleType());
+			throw e;
+		}
+		this.runtimeValues = runtimeValues;
+	}
 
-    @Override
-    public Collection<Specification<Boolean>> buildFor(URL[] classpath, String[] testClasses, Collection<TestCase> failures) {
-        return null;
-    }
+	@Override
+	public Collection<Specification<Boolean>> buildFor(URL[] classpath, String[] testClasses, Collection<TestCase> failures) {
+		return null;
+	}
 
-    /**
-     * @see fr.inria.lille.repair.nopol.synth.ConstraintModelBuilder#buildFor(URL[], List, Collection)
-     */
-    public Collection<Specification<Boolean>> buildFor(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
-        int nbFailingTestExecution = 0;
-        int nbPassedTestExecution = 0;
-        SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<>(runtimeValues);
-        AngelicExecution.enable();
-        CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, listener, config);
-        nbFailingTestExecution += listener.numberOfFailedTests();
-        nbPassedTestExecution += listener.numberOfTests() - listener.numberOfFailedTests();
-        AngelicExecution.flip();
-        CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, listener, config);
-        nbFailingTestExecution += listener.numberOfFailedTests();
-        nbPassedTestExecution += listener.numberOfTests() - listener.numberOfFailedTests();
-        AngelicExecution.disable();
-        if (determineViability(firstResult, secondResult)) {
-            /* to collect information for passing tests */
-            TestSuiteExecution.runTestResult(testClasses, classLoader, listener, config);
-            nbFailingTestExecution += listener.numberOfFailedTests();
-            nbPassedTestExecution += listener.numberOfTests() - listener.numberOfFailedTests();
-        }
-        NoPolLauncher.nbFailingTestExecution.add(nbFailingTestExecution);
-        NoPolLauncher.nbPassedTestExecution.add(nbPassedTestExecution);
-        return listener.specifications();
-    }
+	/**
+	 * @see fr.inria.lille.repair.nopol.synth.ConstraintModelBuilder#buildFor(URL[], List, Collection)
+	 */
+	public Collection<Specification<Boolean>> buildFor(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
+		int nbFailingTestExecution = 0;
+		int nbPassedTestExecution = 0;
+		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<>(runtimeValues);
+		AngelicExecution.enable();
+		CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, listener, config);
+		nbFailingTestExecution += listener.numberOfFailedTests();
+		nbPassedTestExecution += listener.numberOfTests() - listener.numberOfFailedTests();
+		AngelicExecution.flip();
+		CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, listener, config);
+		nbFailingTestExecution += listener.numberOfFailedTests();
+		nbPassedTestExecution += listener.numberOfTests() - listener.numberOfFailedTests();
+		AngelicExecution.disable();
+		if (determineViability(firstResult, secondResult)) {
+			/* to collect information for passing tests */
+			TestSuiteExecution.runTestResult(testClasses, classLoader, listener, config);
+			nbFailingTestExecution += listener.numberOfFailedTests();
+			nbPassedTestExecution += listener.numberOfTests() - listener.numberOfFailedTests();
+		}
+		NoPolLauncher.nbFailingTestExecution.add(nbFailingTestExecution);
+		NoPolLauncher.nbPassedTestExecution.add(nbPassedTestExecution);
+		return listener.specifications();
+	}
 
-    private boolean determineViability(final Result firstResult, final Result secondResult) {
-        Collection<Description> firstFailures = TestSuiteExecution.collectDescription(firstResult.getFailures());
-        Collection<Description> secondFailures = TestSuiteExecution.collectDescription(secondResult.getFailures());
-        firstFailures.retainAll(secondFailures);
-        viablePatch = firstFailures.isEmpty();
-        int nbFirstSuccess = firstResult.getRunCount() - firstResult.getFailureCount();
-        int nbSecondSuccess = firstResult.getRunCount() - firstResult.getFailureCount();
-        if (!viablePatch || (nbFirstSuccess == 0 && nbSecondSuccess == 0)) {
-            logger.debug("Failing test(s): {}\n{}", sourceLocation, firstFailures);
-            Logger testsOutput = LoggerFactory.getLogger("tests.output");
-            testsOutput.debug("First set: \n{}", firstResult.getFailures());
-            testsOutput.debug("Second set: \n{}", secondResult.getFailures());
-        }
-        return viablePatch;
-    }
+	private boolean determineViability(final Result firstResult, final Result secondResult) {
+		Collection<Description> firstFailures = TestSuiteExecution.collectDescription(firstResult.getFailures());
+		Collection<Description> secondFailures = TestSuiteExecution.collectDescription(secondResult.getFailures());
+		firstFailures.retainAll(secondFailures);
+		viablePatch = firstFailures.isEmpty();
+		int nbFirstSuccess = firstResult.getRunCount() - firstResult.getFailureCount();
+		int nbSecondSuccess = firstResult.getRunCount() - firstResult.getFailureCount();
+		if (!viablePatch || (nbFirstSuccess == 0 && nbSecondSuccess == 0)) {
+			logger.debug("Failing test(s): {}\n{}", sourceLocation, firstFailures);
+			Logger testsOutput = LoggerFactory.getLogger("tests.output");
+			testsOutput.debug("First set: \n{}", firstResult.getFailures());
+			testsOutput.debug("Second set: \n{}", secondResult.getFailures());
+		}
+		return viablePatch;
+	}
 
-    /**
-     * @see fr.inria.lille.repair.nopol.synth.ConstraintModelBuilder#isAViablePatch()
-     */
-    public boolean isAViablePatch() {
-        return viablePatch;
-    }
+	/**
+	 * @see fr.inria.lille.repair.nopol.synth.ConstraintModelBuilder#isAViablePatch()
+	 */
+	public boolean isAViablePatch() {
+		return viablePatch;
+	}
 }

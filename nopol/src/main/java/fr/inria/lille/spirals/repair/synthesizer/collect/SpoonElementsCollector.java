@@ -21,53 +21,53 @@ import java.util.Set;
 public class SpoonElementsCollector {
 
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final Set<CtTypedElement> elements;
+	private final Set<CtTypedElement> elements;
 
-    private final Config config;
+	private final Config config;
 
-    public SpoonElementsCollector(Set<CtTypedElement> elements, Config config) {
-        this.elements = elements;
-        this.config = config;
-    }
+	public SpoonElementsCollector(Set<CtTypedElement> elements, Config config) {
+		this.elements = elements;
+		this.config = config;
+	}
 
-    public Candidates collect(ThreadReference threadRef) {
-        Candidates candidates = new Candidates();
-        Iterator<CtTypedElement> it = elements.iterator();
-        try {
-            StackFrame stackFrame = threadRef.frame(0);
-            while (it.hasNext()) {
-                CtElement ctElement = it.next();
-                if (ctElement instanceof CtLiteral) {
-                    CtLiteral ctLiteral = (CtLiteral) ctElement;
-                    Object value = ctLiteral.getValue();
-                    Class type = null;
-                    if (value != null) {
-                        type = value.getClass();
-                    } else {
-                        continue;
-                    }
-                    Expression expression = AccessFactory.literal(value, config);
-                    logger.debug("[data] " + expression + "=" + expression.getValue());
-                    candidates.add(expression);
-                } else if (ctElement instanceof CtVariableAccess) {
-                    CtVariableAccess ctVariableAccess = (CtVariableAccess) ctElement;
-                    LocalVariable localVariable = stackFrame.visibleVariableByName(ctVariableAccess.toString());
-                    if (localVariable == null) {
-                        continue;
-                    }
-                    Value value = stackFrame.getValue(localVariable);
-                    Expression expression = AccessFactory.variable(localVariable.name(), value, config);
-                    logger.debug("[data] " + expression + "=" + expression.getValue());
-                    candidates.add(expression);
-                }
-            }
-        } catch (IncompatibleThreadStateException e) {
-            e.printStackTrace();
-        } catch (AbsentInformationException e) {
-            e.printStackTrace();
-        }
-        return candidates;
-    }
+	public Candidates collect(ThreadReference threadRef) {
+		Candidates candidates = new Candidates();
+		Iterator<CtTypedElement> it = elements.iterator();
+		try {
+			StackFrame stackFrame = threadRef.frame(0);
+			while (it.hasNext()) {
+				CtElement ctElement = it.next();
+				if (ctElement instanceof CtLiteral) {
+					CtLiteral ctLiteral = (CtLiteral) ctElement;
+					Object value = ctLiteral.getValue();
+					Class type = null;
+					if (value != null) {
+						type = value.getClass();
+					} else {
+						continue;
+					}
+					Expression expression = AccessFactory.literal(value, config);
+					logger.debug("[data] " + expression + "=" + expression.getValue());
+					candidates.add(expression);
+				} else if (ctElement instanceof CtVariableAccess) {
+					CtVariableAccess ctVariableAccess = (CtVariableAccess) ctElement;
+					LocalVariable localVariable = stackFrame.visibleVariableByName(ctVariableAccess.toString());
+					if (localVariable == null) {
+						continue;
+					}
+					Value value = stackFrame.getValue(localVariable);
+					Expression expression = AccessFactory.variable(localVariable.name(), value, config);
+					logger.debug("[data] " + expression + "=" + expression.getValue());
+					candidates.add(expression);
+				}
+			}
+		} catch (IncompatibleThreadStateException e) {
+			e.printStackTrace();
+		} catch (AbsentInformationException e) {
+			e.printStackTrace();
+		}
+		return candidates;
+	}
 }

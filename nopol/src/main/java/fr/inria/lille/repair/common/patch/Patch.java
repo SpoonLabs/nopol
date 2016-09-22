@@ -26,19 +26,19 @@ import java.io.Serializable;
  */
 public interface Patch extends Serializable {
 
-    String asString();
+	String asString();
 
-    /**
-     * @return the containingClassName
-     */
-    String getRootClassName();
+	/**
+	 * @return the containingClassName
+	 */
+	String getRootClassName();
 
-    File getFile(File sourcePath);
+	File getFile(File sourcePath);
 
-    int getLineNumber();
+	int getLineNumber();
 
-    StatementType getType();
+	StatementType getType();
 
-    SourceLocation getSourceLocation();
+	SourceLocation getSourceLocation();
 
 }

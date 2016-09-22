@@ -8,10 +8,10 @@ import java.util.List;
  */
 public interface ArrayValue extends Value {
 
-    String getArrayType();
+	String getArrayType();
 
-    int length();
+	int length();
 
-    List<Value> getValues();
+	List<Value> getValues();
 }
 

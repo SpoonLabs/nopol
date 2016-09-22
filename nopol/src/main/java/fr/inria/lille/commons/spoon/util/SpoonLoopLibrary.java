@@ -14,39 +14,39 @@ import static fr.inria.lille.commons.spoon.util.SpoonElementLibrary.allChildrenO
 
 public class SpoonLoopLibrary {
 
-    public static Collection<CtBreak> breakStatementsIn(CtLoop loop) {
-        List<CtBreak> breaksOfLoop = MetaList.newArrayList();
-        List<CtBreak> allBreaks = allChildrenOf(loop, CtBreak.class);
-        for (CtBreak candidateBreak : allBreaks) {
-            if (isBreakingFrom(loop, candidateBreak)) {
-                breaksOfLoop.add(candidateBreak);
-            }
-        }
-        return breaksOfLoop;
-    }
+	public static Collection<CtBreak> breakStatementsIn(CtLoop loop) {
+		List<CtBreak> breaksOfLoop = MetaList.newArrayList();
+		List<CtBreak> allBreaks = allChildrenOf(loop, CtBreak.class);
+		for (CtBreak candidateBreak : allBreaks) {
+			if (isBreakingFrom(loop, candidateBreak)) {
+				breaksOfLoop.add(candidateBreak);
+			}
+		}
+		return breaksOfLoop;
+	}
 
-    public static boolean isBreakingFrom(CtLoop loop, CtBreak breakStatement) {
-        if (breakStatement.getParent(CtLoop.class) == loop) {
-            return breakStatement.getParent(CtSwitch.class) == loop.getParent(CtSwitch.class);
-        }
-        return false;
-    }
+	public static boolean isBreakingFrom(CtLoop loop, CtBreak breakStatement) {
+		if (breakStatement.getParent(CtLoop.class) == loop) {
+			return breakStatement.getParent(CtSwitch.class) == loop.getParent(CtSwitch.class);
+		}
+		return false;
+	}
 
-    public static Collection<CtReturn<?>> returnStatementsIn(CtLoop loop) {
-        List<CtReturn<?>> returnsOfLoop = MetaList.newArrayList();
-        List<CtReturn<?>> allReturns = (List) allChildrenOf(loop, CtReturn.class);
-        for (CtReturn<?> candidateReturn : allReturns) {
-            if (isReturningFrom(loop, candidateReturn)) {
-                returnsOfLoop.add(candidateReturn);
-            }
-        }
-        return returnsOfLoop;
-    }
+	public static Collection<CtReturn<?>> returnStatementsIn(CtLoop loop) {
+		List<CtReturn<?>> returnsOfLoop = MetaList.newArrayList();
+		List<CtReturn<?>> allReturns = (List) allChildrenOf(loop, CtReturn.class);
+		for (CtReturn<?> candidateReturn : allReturns) {
+			if (isReturningFrom(loop, candidateReturn)) {
+				returnsOfLoop.add(candidateReturn);
+			}
+		}
+		return returnsOfLoop;
+	}
 
-    public static boolean isReturningFrom(CtLoop loop, CtReturn<?> returnStatement) {
-        if (returnStatement.getParent(CtLoop.class) == loop) {
-            return returnStatement.getParent(CtMethod.class) == loop.getParent(CtMethod.class);
-        }
-        return false;
-    }
+	public static boolean isReturningFrom(CtLoop loop, CtReturn<?> returnStatement) {
+		if (returnStatement.getParent(CtLoop.class) == loop) {
+			return returnStatement.getParent(CtMethod.class) == loop.getParent(CtMethod.class);
+		}
+		return false;
+	}
 }

@@ -25,69 +25,69 @@ import java.io.File;
  */
 public class StringPatch implements Patch {
 
-    private static final long serialVersionUID = 1150517609100930111L;
-    private final SourceLocation location;
-    private final String repair;
-    private final StatementType type;
+	private static final long serialVersionUID = 1150517609100930111L;
+	private final SourceLocation location;
+	private final String repair;
+	private final StatementType type;
 
-    /**
-     * @param repair
-     * @param location
-     * @param type
-     */
-    public StringPatch(final String repair, final SourceLocation location, final StatementType type) {
-        this.repair = repair;
-        this.location = location;
-        this.type = type;
-    }
+	/**
+	 * @param repair
+	 * @param location
+	 * @param type
+	 */
+	public StringPatch(final String repair, final SourceLocation location, final StatementType type) {
+		this.repair = repair;
+		this.location = location;
+		this.type = type;
+	}
 
-    /**
-     * @see fr.inria.lille.repair.nopol.patch.Patch#asString()
-     */
-    @Override
-    public String asString() {
-        return repair;
-    }
+	/**
+	 * @see fr.inria.lille.repair.nopol.patch.Patch#asString()
+	 */
+	@Override
+	public String asString() {
+		return repair;
+	}
 
-    /**
-     * @return the containingClassName
-     */
-    @Override
-    public String getRootClassName() {
-        return location.getRootClassName();
-    }
+	/**
+	 * @return the containingClassName
+	 */
+	@Override
+	public String getRootClassName() {
+		return location.getRootClassName();
+	}
 
-    /**
-     * @see fr.inria.lille.repair.nopol.patch.Patch#getFile()
-     */
-    @Override
-    public File getFile(final File sourceFolder) {
-        return location.getSourceFile(sourceFolder);
-    }
+	/**
+	 * @see fr.inria.lille.repair.nopol.patch.Patch#getFile()
+	 */
+	@Override
+	public File getFile(final File sourceFolder) {
+		return location.getSourceFile(sourceFolder);
+	}
 
-    /**
-     * @see fr.inria.lille.repair.nopol.patch.Patch#getLineNumber()
-     */
-    @Override
-    public int getLineNumber() {
-        return location.getLineNumber();
-    }
+	/**
+	 * @see fr.inria.lille.repair.nopol.patch.Patch#getLineNumber()
+	 */
+	@Override
+	public int getLineNumber() {
+		return location.getLineNumber();
+	}
 
-    @Override
-    public StatementType getType() {
-        return type;
-    }
+	@Override
+	public StatementType getType() {
+		return type;
+	}
 
-    @Override
-    public SourceLocation getSourceLocation() {
-        return this.location;
-    }
+	@Override
+	public SourceLocation getSourceLocation() {
+		return this.location;
+	}
 
-    /**
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return String.format("%s:%d: %s %s", location.getContainingClassName(), getLineNumber(), type, repair);
-    }
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return String.format("%s:%d: %s %s", location.getContainingClassName(), getLineNumber(), type, repair);
+	}
 }

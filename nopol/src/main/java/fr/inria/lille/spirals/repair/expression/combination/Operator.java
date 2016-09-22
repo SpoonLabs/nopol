@@ -4,10 +4,10 @@ package fr.inria.lille.spirals.repair.expression.combination;
 import java.util.List;
 
 public interface Operator {
-    String getSymbol();
+	String getSymbol();
 
-    Class getReturnType();
+	Class getReturnType();
 
-    List<Class> getTypeParameters();
+	List<Class> getTypeParameters();
 }
 

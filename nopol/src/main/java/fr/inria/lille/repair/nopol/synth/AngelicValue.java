@@ -13,9 +13,9 @@ import java.util.List;
  */
 public interface AngelicValue<T> {
 
-    Collection<Specification<T>> buildFor(final URL[] classpath, List<TestResult> testClasses, final Collection<TestCase> failures);
+	Collection<Specification<T>> buildFor(final URL[] classpath, List<TestResult> testClasses, final Collection<TestCase> failures);
 
-    Collection<Specification<T>> buildFor(final URL[] classpath, final String[] testClasses, final Collection<TestCase> failures);
+	Collection<Specification<T>> buildFor(final URL[] classpath, final String[] testClasses, final Collection<TestCase> failures);
 
-    boolean isAViablePatch();
+	boolean isAViablePatch();
 }

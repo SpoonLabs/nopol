@@ -19,109 +19,109 @@ import static xxl.java.library.LoggerLibrary.loggerFor;
 
 public class TestSuiteExecution {
 
-    public static Result runCasesIn(String[] testClasses, ClassLoader classLoaderForTestThread, Config config) {
-        return runCasesIn(testClasses, classLoaderForTestThread, nullRunListener(), config);
-    }
+	public static Result runCasesIn(String[] testClasses, ClassLoader classLoaderForTestThread, Config config) {
+		return runCasesIn(testClasses, classLoaderForTestThread, nullRunListener(), config);
+	}
 
-    public static Result runCasesIn(String[] testClasses, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
-        return executionResult(new JUnitRunner(testClasses, listener), classLoaderForTestThread, config);
-    }
+	public static Result runCasesIn(String[] testClasses, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
+		return executionResult(new JUnitRunner(testClasses, listener), classLoaderForTestThread, config);
+	}
 
-    public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread, Config config) {
-        return runTestCase(testCase, classLoaderForTestThread, nullRunListener(), config);
-    }
+	public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread, Config config) {
+		return runTestCase(testCase, classLoaderForTestThread, nullRunListener(), config);
+	}
 
-    public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
-        return executionResult(new JUnitSingleTestRunner(testCase, listener), classLoaderForTestThread, config);
-    }
+	public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
+		return executionResult(new JUnitSingleTestRunner(testCase, listener), classLoaderForTestThread, config);
+	}
 
-    public static Result runTest(String test, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
-        return executionResult(new JUnitSingleTestResultRunner(test, listener), classLoaderForTestThread, config);
-    }
+	public static Result runTest(String test, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
+		return executionResult(new JUnitSingleTestResultRunner(test, listener), classLoaderForTestThread, config);
+	}
 
-    public static Result runTestCase(TestResult testCase, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
-        return executionResult(new JUnitSingleTestResultRunner(testCase, listener), classLoaderForTestThread, config);
-    }
+	public static Result runTestCase(TestResult testCase, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
+		return executionResult(new JUnitSingleTestResultRunner(testCase, listener), classLoaderForTestThread, config);
+	}
 
-    public static CompoundResult runTestCases(Collection<TestCase> testCases, ClassLoader classLoaderForTestThread, Config config) {
-        return runTestCases(testCases, classLoaderForTestThread, nullRunListener(), config);
-    }
+	public static CompoundResult runTestCases(Collection<TestCase> testCases, ClassLoader classLoaderForTestThread, Config config) {
+		return runTestCases(testCases, classLoaderForTestThread, nullRunListener(), config);
+	}
 
-    public static CompoundResult runTestResult(Collection<TestResult> testCases, ClassLoader classLoaderForTestThread, Config config) {
-        return runTestResult(testCases, classLoaderForTestThread, nullRunListener(), config);
-    }
+	public static CompoundResult runTestResult(Collection<TestResult> testCases, ClassLoader classLoaderForTestThread, Config config) {
+		return runTestResult(testCases, classLoaderForTestThread, nullRunListener(), config);
+	}
 
-    public static Result runTest(String[] testClasses, ClassLoader loader, Config config) {
-        return runTest(testClasses, loader, nullRunListener(), config);
-    }
+	public static Result runTest(String[] testClasses, ClassLoader loader, Config config) {
+		return runTest(testClasses, loader, nullRunListener(), config);
+	}
 
-    public static Result runTest(String[] testClasses, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
-        List<Result> results = MetaList.newArrayList(testClasses.length);
-        for (String testCase : testClasses) {
-            results.add(runTest(testCase, classLoaderForTestThread, listener, config));
-        }
-        return new CompoundResult(results);
-    }
+	public static Result runTest(String[] testClasses, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
+		List<Result> results = MetaList.newArrayList(testClasses.length);
+		for (String testCase : testClasses) {
+			results.add(runTest(testCase, classLoaderForTestThread, listener, config));
+		}
+		return new CompoundResult(results);
+	}
 
-    public static CompoundResult runTestResult(Collection<TestResult> testCases, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
-        List<Result> results = MetaList.newArrayList(testCases.size());
-        for (TestResult testCase : testCases) {
-            if (testCase.getName().startsWith("junit.")) {
-                continue;
-            }
-            results.add(runTestCase(testCase, classLoaderForTestThread, listener, config));
-        }
-        return new CompoundResult(results);
-    }
+	public static CompoundResult runTestResult(Collection<TestResult> testCases, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
+		List<Result> results = MetaList.newArrayList(testCases.size());
+		for (TestResult testCase : testCases) {
+			if (testCase.getName().startsWith("junit.")) {
+				continue;
+			}
+			results.add(runTestCase(testCase, classLoaderForTestThread, listener, config));
+		}
+		return new CompoundResult(results);
+	}
 
-    public static CompoundResult runTestCases(Collection<TestCase> testCases, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
-        List<Result> results = MetaList.newArrayList(testCases.size());
-        for (TestCase testCase : testCases) {
-            results.add(runTestCase(testCase, classLoaderForTestThread, listener, config));
-        }
-        return new CompoundResult(results);
-    }
+	public static CompoundResult runTestCases(Collection<TestCase> testCases, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
+		List<Result> results = MetaList.newArrayList(testCases.size());
+		for (TestCase testCase : testCases) {
+			results.add(runTestCase(testCase, classLoaderForTestThread, listener, config));
+		}
+		return new CompoundResult(results);
+	}
 
-    private static Result executionResult(Callable<Result> callable, ClassLoader classLoaderForTestThread, Config config) {
-        ExecutorService executor = Executors.newSingleThreadExecutor(new CustomClassLoaderThreadFactory(classLoaderForTestThread));
-        Result result = null;
-        try {
-            result = executor.submit(callable).get(config.getTimeoutTestExecution(), TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        } catch (TimeoutException e) {
-            logDebug(logger(), String.format("Timeout after %d seconds. Infinite loop?", secondsForTimeout()));
-            throw new RuntimeException(e);
-        } finally {
-            executor.shutdownNow();
-        }
-        return result;
-    }
+	private static Result executionResult(Callable<Result> callable, ClassLoader classLoaderForTestThread, Config config) {
+		ExecutorService executor = Executors.newSingleThreadExecutor(new CustomClassLoaderThreadFactory(classLoaderForTestThread));
+		Result result = null;
+		try {
+			result = executor.submit(callable).get(config.getTimeoutTestExecution(), TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		} catch (ExecutionException e) {
+			throw new RuntimeException(e);
+		} catch (TimeoutException e) {
+			logDebug(logger(), String.format("Timeout after %d seconds. Infinite loop?", secondsForTimeout()));
+			throw new RuntimeException(e);
+		} finally {
+			executor.shutdownNow();
+		}
+		return result;
+	}
 
-    public static List<Description> collectDescription(List<Failure> failures) {
-        List<Description> descriptions = MetaList.newLinkedList();
-        for (Failure failure : failures) {
-            descriptions.add(failure.getDescription());
-        }
-        return descriptions;
-    }
+	public static List<Description> collectDescription(List<Failure> failures) {
+		List<Description> descriptions = MetaList.newLinkedList();
+		for (Failure failure : failures) {
+			descriptions.add(failure.getDescription());
+		}
+		return descriptions;
+	}
 
-    protected static long secondsForTimeout() {
-        return secondsForTimeout;
-    }
+	protected static long secondsForTimeout() {
+		return secondsForTimeout;
+	}
 
-    private static RunListener nullRunListener() {
-        return Singleton.of(NullRunListener.class);
-    }
+	private static RunListener nullRunListener() {
+		return Singleton.of(NullRunListener.class);
+	}
 
-    private static Logger logger() {
-        return loggerFor(TestSuiteExecution.class);
-    }
+	private static Logger logger() {
+		return loggerFor(TestSuiteExecution.class);
+	}
 
-    @Deprecated
-    private static long secondsForTimeout = 0L;//MINUTES.toSeconds(Config.INSTANCE.getTimeoutTestExecution());
+	@Deprecated
+	private static long secondsForTimeout = 0L;//MINUTES.toSeconds(Config.INSTANCE.getTimeoutTestExecution());
 
 
 }

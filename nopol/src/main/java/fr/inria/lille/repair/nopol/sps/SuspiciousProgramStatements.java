@@ -26,8 +26,8 @@ import java.util.List;
  */
 public interface SuspiciousProgramStatements {
 
-    /**
-     * @return a ranked list of potential bug root-cause.
-     */
-    List<Statement> sortBySuspiciousness(final String... testClasses);
+	/**
+	 * @return a ranked list of potential bug root-cause.
+	 */
+	List<Statement> sortBySuspiciousness(final String... testClasses);
 }

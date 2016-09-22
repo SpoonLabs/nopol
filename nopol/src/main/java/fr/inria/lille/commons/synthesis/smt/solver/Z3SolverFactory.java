@@ -8,38 +8,38 @@ import org.smtlib.solvers.Solver_z3_4_3;
 
 public class Z3SolverFactory extends SolverFactory {
 
-    /**
-     * Command to run from terminal:
-     * <p/>
-     * $ z3 -smt2 <script-file>
-     */
+	/**
+	 * Command to run from terminal:
+	 * <p/>
+	 * $ z3 -smt2 <script-file>
+	 */
 
-    public Z3SolverFactory() {
-        this("lib/z3/z3_for_" + (isMac() ? "mac" : "linux"));
-    }
+	public Z3SolverFactory() {
+		this("lib/z3/z3_for_" + (isMac() ? "mac" : "linux"));
+	}
 
-    public Z3SolverFactory(String solverPath) {
-        super(solverPath);
-    }
+	public Z3SolverFactory(String solverPath) {
+		super(solverPath);
+	}
 
-    @Override
-    public String solverName() {
-        return "z3";
-    }
+	@Override
+	public String solverName() {
+		return "z3";
+	}
 
-    @Override
-    public ISolver newSolver(Configuration smtConfig) {
-        return new Solver_z3_4_3(smtConfig, solverPath());
-    }
+	@Override
+	public ISolver newSolver(Configuration smtConfig) {
+		return new Solver_z3_4_3(smtConfig, solverPath());
+	}
 
-    @Override
-    public ISymbol logic() {
-        return SMTLib.logicAufnira();
-    }
+	@Override
+	public ISymbol logic() {
+		return SMTLib.logicAufnira();
+	}
 
 
-    private static boolean isMac() {
-        String OS = System.getProperty("os.name").toLowerCase();
-        return (OS.indexOf("mac") >= 0);
-    }
+	private static boolean isMac() {
+		String OS = System.getProperty("os.name").toLowerCase();
+		return (OS.indexOf("mac") >= 0);
+	}
 }

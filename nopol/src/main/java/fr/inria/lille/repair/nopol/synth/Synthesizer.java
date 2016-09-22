@@ -12,19 +12,19 @@ import java.util.List;
 
 public interface Synthesizer {
 
-    Synthesizer NO_OP_SYNTHESIZER = new Synthesizer() {
-        @Override
-        public List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
-            return Collections.EMPTY_LIST;
-        }
+	Synthesizer NO_OP_SYNTHESIZER = new Synthesizer() {
+		@Override
+		public List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
+			return Collections.EMPTY_LIST;
+		}
 
-        @Override
-        public NopolProcessor getProcessor() {
-            return null;
-        }
-    };
+		@Override
+		public NopolProcessor getProcessor() {
+			return null;
+		}
+	};
 
-    List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch);
+	List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch);
 
-    NopolProcessor getProcessor();
+	NopolProcessor getProcessor();
 }

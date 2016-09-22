@@ -12,10 +12,10 @@ import java.util.List;
  */
 public interface Method extends Expression {
 
-    Expression getTarget();
+	Expression getTarget();
 
-    String getMethod();
+	String getMethod();
 
-    List<Expression> getParameters();
+	List<Expression> getParameters();
 }
 

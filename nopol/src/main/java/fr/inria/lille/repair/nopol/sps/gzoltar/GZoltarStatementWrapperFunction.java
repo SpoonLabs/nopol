@@ -23,10 +23,10 @@ import fr.inria.lille.repair.nopol.sps.SuspiciousStatement;
  */
 enum GZoltarStatementWrapperFunction implements Function<com.gzoltar.core.components.Statement, SuspiciousStatement> {
 
-    INSTANCE;
+	INSTANCE;
 
-    @Override
-    public SuspiciousStatement apply(final com.gzoltar.core.components.Statement statement) {
-        return new GZoltarStatement(statement);
-    }
+	@Override
+	public SuspiciousStatement apply(final com.gzoltar.core.components.Statement statement) {
+		return new GZoltarStatement(statement);
+	}
 }

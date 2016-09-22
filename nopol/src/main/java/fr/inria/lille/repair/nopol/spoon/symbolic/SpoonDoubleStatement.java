@@ -27,48 +27,48 @@ import spoon.reflect.declaration.CtTypedElement;
  * @author Thomas Durieux
  */
 public enum SpoonDoubleStatement implements Predicate<CtElement> {
-    INSTANCE;
+	INSTANCE;
 
-    private Class<?> getClassOfStatement(CtElement candidate) {
-        CtElement parent = candidate.getParent();
-        while (parent != null && !(parent instanceof CtClass<?>)) {
-            parent = parent.getParent();
-        }
-        if (parent != null) {
-            return ((CtClass<?>) parent).getActualClass();
-        }
-        return null;
-    }
+	private Class<?> getClassOfStatement(CtElement candidate) {
+		CtElement parent = candidate.getParent();
+		while (parent != null && !(parent instanceof CtClass<?>)) {
+			parent = parent.getParent();
+		}
+		if (parent != null) {
+			return ((CtClass<?>) parent).getActualClass();
+		}
+		return null;
+	}
 
-    @Override
-    public boolean apply(final CtElement candidate) {
-        SourcePosition position = candidate.getPosition();
-        if (position == null) {
-            return false;
-        }
+	@Override
+	public boolean apply(final CtElement candidate) {
+		SourcePosition position = candidate.getPosition();
+		if (position == null) {
+			return false;
+		}
 
-        Class<?> statementClass = getClassOfStatement(candidate);
-        if (statementClass == null) {
-            return false;
-        }
-        CtElement parent = candidate.getParent();
-        if (parent == null) {
-            return false;
-        }
-        boolean isLocalVariable = candidate instanceof CtLocalVariable<?>;
-        boolean isPrimitiveLiteral = false;
-        CtTypedElement<?> type = null;
-        if (isLocalVariable) {
-            type = (CtLocalVariable<?>) candidate;
-        } else if (candidate instanceof CtAssignment<?, ?>) {
-            type = (CtAssignment<?, ?>) candidate;
-        }
-        if (type == null) {
-            return false;
-        }
-        Class<?> variableClass = type.getType().getActualClass();
-        isPrimitiveLiteral = variableClass.equals(Double.class)
-                || variableClass.equals(double.class);
-        return isPrimitiveLiteral;
-    }
+		Class<?> statementClass = getClassOfStatement(candidate);
+		if (statementClass == null) {
+			return false;
+		}
+		CtElement parent = candidate.getParent();
+		if (parent == null) {
+			return false;
+		}
+		boolean isLocalVariable = candidate instanceof CtLocalVariable<?>;
+		boolean isPrimitiveLiteral = false;
+		CtTypedElement<?> type = null;
+		if (isLocalVariable) {
+			type = (CtLocalVariable<?>) candidate;
+		} else if (candidate instanceof CtAssignment<?, ?>) {
+			type = (CtAssignment<?, ?>) candidate;
+		}
+		if (type == null) {
+			return false;
+		}
+		Class<?> variableClass = type.getType().getActualClass();
+		isPrimitiveLiteral = variableClass.equals(Double.class)
+				|| variableClass.equals(double.class);
+		return isPrimitiveLiteral;
+	}
 }

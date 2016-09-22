@@ -19,7 +19,6 @@ import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.repair.common.config.Config;
-import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.common.synth.StatementTypeDetector;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.nopol.spoon.ConditionalLoggingInstrumenter;
@@ -44,114 +43,112 @@ import static fr.inria.lille.repair.nopol.synth.Synthesizer.NO_OP_SYNTHESIZER;
  */
 public final class SynthesizerFactory {
 
-    private final File[] sourceFolders;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final SpoonedProject spooner;
-    private final Config config;
-    private static int nbStatementsAnalysed = 0;
-    private static RuntimeValues<Boolean> runtimeValuesInstance = RuntimeValues.newInstance();
+	private final File[] sourceFolders;
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final SpoonedProject spooner;
+	private final Config config;
+	private static int nbStatementsAnalysed = 0;
+	private static RuntimeValues<Boolean> runtimeValuesInstance = RuntimeValues.newInstance();
 
 	/**
-	 *
 	 * @param sourceFolders
 	 * @param spooner
 	 * @param config
 	 */
-    public SynthesizerFactory(final File[] sourceFolders, final SpoonedProject spooner, Config config) {
-        this.sourceFolders = sourceFolders;
-        this.spooner = spooner;
-        this.config = config;
-    }
+	public SynthesizerFactory(final File[] sourceFolders, final SpoonedProject spooner, Config config) {
+		this.sourceFolders = sourceFolders;
+		this.spooner = spooner;
+		this.config = config;
+	}
 
-    public Synthesizer getFor(final SourceLocation statement)
-	{
-        nbStatementsAnalysed++;
-        SpoonedClass spoonCl = spooner.forked(statement.getRootClassName());
-        if (spoonCl == null) {
-            return NO_OP_SYNTHESIZER;
-        }
-        if (spoonCl.getSimpleType() == null) {
-            return NO_OP_SYNTHESIZER;
-        }
-        StatementTypeDetector detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), statement.getLineNumber(), config.getType());
-        spoonCl.process(detector);
+	public Synthesizer getFor(final SourceLocation statement) {
+		nbStatementsAnalysed++;
+		SpoonedClass spoonCl = spooner.forked(statement.getRootClassName());
+		if (spoonCl == null) {
+			return NO_OP_SYNTHESIZER;
+		}
+		if (spoonCl.getSimpleType() == null) {
+			return NO_OP_SYNTHESIZER;
+		}
+		StatementTypeDetector detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), statement.getLineNumber(), config.getType());
+		spoonCl.process(detector);
 
-        NopolProcessor nopolProcessor;
-        switch (detector.getType()) {
-            case CONDITIONAL:
-                switch (config.getOracle()) {
-                    case ANGELIC:
-                        nopolProcessor = new ConditionalReplacer(detector.statement());
-                        break;
-                    case SYMBOLIC:
-                        nopolProcessor = new SymbolicConditionalReplacer(detector.statement());
-                        break;
-                    default:
-                        return NO_OP_SYNTHESIZER;
-                }
-                break;
-            case PRECONDITION:
-                switch (config.getOracle()) {
-                    case ANGELIC:
-                        nopolProcessor = new ConditionalAdder(detector.statement());
-                        break;
-                    case SYMBOLIC:
-                        nopolProcessor = new SymbolicConditionalAdder(detector.statement());
-                        break;
-                    default:
-                        return NO_OP_SYNTHESIZER;
-                }
-                break;
-            case INTEGER_LITERAL:
-            case BOOLEAN_LITERAL:
-            case DOUBLE_LITERAL:
-                switch (config.getOracle()) {
-                    case SYMBOLIC:
-                        nopolProcessor = new LiteralReplacer(detector.getType().getType(), detector.statement());
-                        break;
-                    default:
-                        return NO_OP_SYNTHESIZER;
-                }
-                break;
-            default:
-                logger.debug("No synthesizer found for {}.", statement);
-                return NO_OP_SYNTHESIZER;
-        }
-        AngelicValue constraintModelBuilder = null;
-        if (Boolean.class.equals(detector.getType().getType())) {
-            RuntimeValues<Boolean> runtimeValuesInstance = RuntimeValues.newInstance();
-            switch (config.getOracle()) {
-                case ANGELIC:
-                    Processor<CtStatement> processor = new ConditionalLoggingInstrumenter(runtimeValuesInstance, nopolProcessor);
-                    constraintModelBuilder = new ConstraintModelBuilder(runtimeValuesInstance, statement, processor, spooner, config);
-                    break;
-                case SYMBOLIC:
-                    constraintModelBuilder = new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, config);
-                    break;
-                default:
-                    return NO_OP_SYNTHESIZER;
-            }
-        }
-        if (Integer.class.equals(detector.getType().getType())) {
-            RuntimeValues<Integer> runtimeValuesInstance = RuntimeValues.newInstance();
-            constraintModelBuilder = new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, config);
-            return new DefaultSynthesizer<>(spooner, constraintModelBuilder, statement, detector.getType(), nopolProcessor, config);
-        }
-        if (Double.class.equals(detector.getType().getType())) {
-            RuntimeValues<Double> runtimeValuesInstance = RuntimeValues.newInstance();
-            constraintModelBuilder = new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, config);
-            return new DefaultSynthesizer<>(spooner, constraintModelBuilder, statement, detector.getType(), nopolProcessor, config);
-        }
-        switch (config.getSynthesis()) {
-            case SMT:
-                return new DefaultSynthesizer(spooner, constraintModelBuilder, statement, detector.getType(), nopolProcessor, config);
-            case BRUTPOL:
-                return new BrutSynthesizer(constraintModelBuilder, sourceFolders, statement, detector.getType(), nopolProcessor, spooner, config);
-        }
-        return Synthesizer.NO_OP_SYNTHESIZER;
-    }
+		NopolProcessor nopolProcessor;
+		switch (detector.getType()) {
+			case CONDITIONAL:
+				switch (config.getOracle()) {
+					case ANGELIC:
+						nopolProcessor = new ConditionalReplacer(detector.statement());
+						break;
+					case SYMBOLIC:
+						nopolProcessor = new SymbolicConditionalReplacer(detector.statement());
+						break;
+					default:
+						return NO_OP_SYNTHESIZER;
+				}
+				break;
+			case PRECONDITION:
+				switch (config.getOracle()) {
+					case ANGELIC:
+						nopolProcessor = new ConditionalAdder(detector.statement());
+						break;
+					case SYMBOLIC:
+						nopolProcessor = new SymbolicConditionalAdder(detector.statement());
+						break;
+					default:
+						return NO_OP_SYNTHESIZER;
+				}
+				break;
+			case INTEGER_LITERAL:
+			case BOOLEAN_LITERAL:
+			case DOUBLE_LITERAL:
+				switch (config.getOracle()) {
+					case SYMBOLIC:
+						nopolProcessor = new LiteralReplacer(detector.getType().getType(), detector.statement());
+						break;
+					default:
+						return NO_OP_SYNTHESIZER;
+				}
+				break;
+			default:
+				logger.debug("No synthesizer found for {}.", statement);
+				return NO_OP_SYNTHESIZER;
+		}
+		AngelicValue constraintModelBuilder = null;
+		if (Boolean.class.equals(detector.getType().getType())) {
+			RuntimeValues<Boolean> runtimeValuesInstance = RuntimeValues.newInstance();
+			switch (config.getOracle()) {
+				case ANGELIC:
+					Processor<CtStatement> processor = new ConditionalLoggingInstrumenter(runtimeValuesInstance, nopolProcessor);
+					constraintModelBuilder = new ConstraintModelBuilder(runtimeValuesInstance, statement, processor, spooner, config);
+					break;
+				case SYMBOLIC:
+					constraintModelBuilder = new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, config);
+					break;
+				default:
+					return NO_OP_SYNTHESIZER;
+			}
+		}
+		if (Integer.class.equals(detector.getType().getType())) {
+			RuntimeValues<Integer> runtimeValuesInstance = RuntimeValues.newInstance();
+			constraintModelBuilder = new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, config);
+			return new DefaultSynthesizer<>(spooner, constraintModelBuilder, statement, detector.getType(), nopolProcessor, config);
+		}
+		if (Double.class.equals(detector.getType().getType())) {
+			RuntimeValues<Double> runtimeValuesInstance = RuntimeValues.newInstance();
+			constraintModelBuilder = new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, config);
+			return new DefaultSynthesizer<>(spooner, constraintModelBuilder, statement, detector.getType(), nopolProcessor, config);
+		}
+		switch (config.getSynthesis()) {
+			case SMT:
+				return new DefaultSynthesizer(spooner, constraintModelBuilder, statement, detector.getType(), nopolProcessor, config);
+			case BRUTPOL:
+				return new BrutSynthesizer(constraintModelBuilder, sourceFolders, statement, detector.getType(), nopolProcessor, spooner, config);
+		}
+		return Synthesizer.NO_OP_SYNTHESIZER;
+	}
 
-    public static int getNbStatementsAnalysed() {
-        return nbStatementsAnalysed;
-    }
+	public static int getNbStatementsAnalysed() {
+		return nbStatementsAnalysed;
+	}
 }

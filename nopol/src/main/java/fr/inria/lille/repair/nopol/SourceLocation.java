@@ -25,92 +25,92 @@ import java.io.Serializable;
  */
 public final class SourceLocation implements Serializable {
 
-    private static final long serialVersionUID = -4580346333924562425L;
-    private final String containingClassName;
+	private static final long serialVersionUID = -4580346333924562425L;
+	private final String containingClassName;
 
-    private final int lineNumber;
+	private final int lineNumber;
 
-    private int beginSource;
-    private int endSource;
+	private int beginSource;
+	private int endSource;
 
-    public int getBeginSource() {
-        return beginSource;
-    }
+	public int getBeginSource() {
+		return beginSource;
+	}
 
-    public void setSourceStart(int beginSource) {
-        this.beginSource = beginSource;
-    }
+	public void setSourceStart(int beginSource) {
+		this.beginSource = beginSource;
+	}
 
-    public int getEndSource() {
-        return endSource;
-    }
+	public int getEndSource() {
+		return endSource;
+	}
 
-    public void setSourceEnd(int endSource) {
-        this.endSource = endSource;
-    }
+	public void setSourceEnd(int endSource) {
+		this.endSource = endSource;
+	}
 
-    /**
-     * @param containingClassName
-     * @param lineNumber
-     */
-    public SourceLocation(final String containingClassName, final int lineNumber) {
-        this.containingClassName = containingClassName;
-        this.lineNumber = lineNumber;
-    }
+	/**
+	 * @param containingClassName
+	 * @param lineNumber
+	 */
+	public SourceLocation(final String containingClassName, final int lineNumber) {
+		this.containingClassName = containingClassName;
+		this.lineNumber = lineNumber;
+	}
 
-    /**
-     * @return the containingClassName
-     */
-    public String getContainingClassName() {
-        return containingClassName;
-    }
+	/**
+	 * @return the containingClassName
+	 */
+	public String getContainingClassName() {
+		return containingClassName;
+	}
 
-    /**
-     * @return the lineNumber
-     */
-    public int getLineNumber() {
-        return lineNumber;
-    }
+	/**
+	 * @return the lineNumber
+	 */
+	public int getLineNumber() {
+		return lineNumber;
+	}
 
-    public String getRootClassName() {
-        int inertTypeIndex = containingClassName.indexOf('$');
-        if (inertTypeIndex > 0) {
-            return containingClassName.substring(0, inertTypeIndex);
-        }
-        return containingClassName;
-    }
+	public String getRootClassName() {
+		int inertTypeIndex = containingClassName.indexOf('$');
+		if (inertTypeIndex > 0) {
+			return containingClassName.substring(0, inertTypeIndex);
+		}
+		return containingClassName;
+	}
 
-    public File getSourceFile(final File sourceFolder) {
-        if (sourceFolder.isFile()) {
-            return sourceFolder;
-        }
-        String pathToJavaFile = getRootClassName().replace('.', File.separatorChar);
-        return FileLibrary.fileFrom(sourceFolder.getAbsolutePath() + '/' + pathToJavaFile + ".java");
-    }
+	public File getSourceFile(final File sourceFolder) {
+		if (sourceFolder.isFile()) {
+			return sourceFolder;
+		}
+		String pathToJavaFile = getRootClassName().replace('.', File.separatorChar);
+		return FileLibrary.fileFrom(sourceFolder.getAbsolutePath() + '/' + pathToJavaFile + ".java");
+	}
 
-    /**
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return String.format("SourceLocation %s:%d", containingClassName, lineNumber);
-    }
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return String.format("SourceLocation %s:%d", containingClassName, lineNumber);
+	}
 
-    @Override
-    public int hashCode() {
-        int result = containingClassName != null ? containingClassName.hashCode() : 0;
-        result = 31 * result + lineNumber;
-        return result;
-    }
+	@Override
+	public int hashCode() {
+		int result = containingClassName != null ? containingClassName.hashCode() : 0;
+		result = 31 * result + lineNumber;
+		return result;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
 
-        SourceLocation that = (SourceLocation) o;
+		SourceLocation that = (SourceLocation) o;
 
-        if (lineNumber != that.lineNumber) return false;
-        return !(containingClassName != null ? !containingClassName.equals(that.containingClassName) : that.containingClassName != null);
-    }
+		if (lineNumber != that.lineNumber) return false;
+		return !(containingClassName != null ? !containingClassName.equals(that.containingClassName) : that.containingClassName != null);
+	}
 }

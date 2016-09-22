@@ -7,16 +7,16 @@ import fr.inria.lille.spirals.repair.commons.Candidates;
  */
 public interface Synthesizer {
 
-    /**
-     * Run the synthesizer
-     *
-     * @param remainingTime
-     * @return the patch
-     */
-    Candidates run(long remainingTime);
-    
-    Candidates getCollectedExpressions();
-    
-    Candidates getValidExpressions();
+	/**
+	 * Run the synthesizer
+	 *
+	 * @param remainingTime
+	 * @return the patch
+	 */
+	Candidates run(long remainingTime);
+
+	Candidates getCollectedExpressions();
+
+	Candidates getValidExpressions();
 
 }

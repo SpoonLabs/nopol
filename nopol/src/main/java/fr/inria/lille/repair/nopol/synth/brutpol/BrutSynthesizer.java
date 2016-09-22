@@ -41,170 +41,170 @@ import java.util.concurrent.TimeUnit;
  */
 public class BrutSynthesizer<T> implements Synthesizer {
 
-    private final Logger testsOutput = LoggerFactory.getLogger(getClass().getName());
-    private final NopolProcessor nopolProcessor;
-    private final StatementType type;
-    private final SourceLocation sourceLocation;
-    private final SpoonedProject spooner;
-    private final File[] sourceFolders;
-    private final AngelicValue angelicValue;
-    private final Config config;
+	private final Logger testsOutput = LoggerFactory.getLogger(getClass().getName());
+	private final NopolProcessor nopolProcessor;
+	private final StatementType type;
+	private final SourceLocation sourceLocation;
+	private final SpoonedProject spooner;
+	private final File[] sourceFolders;
+	private final AngelicValue angelicValue;
+	private final Config config;
 
-    public BrutSynthesizer(AngelicValue angelicValue, File[] sourceFolders, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, SpoonedProject spooner, Config config) {
-        this.sourceLocation = sourceLocation;
-        this.config = config;
-        this.type = type;
-        this.nopolProcessor = processor;
-        this.spooner = spooner;
-        this.sourceFolders = sourceFolders;
-        this.angelicValue = angelicValue;
-    }
+	public BrutSynthesizer(AngelicValue angelicValue, File[] sourceFolders, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, SpoonedProject spooner, Config config) {
+		this.sourceLocation = sourceLocation;
+		this.config = config;
+		this.type = type;
+		this.nopolProcessor = processor;
+		this.spooner = spooner;
+		this.sourceFolders = sourceFolders;
+		this.angelicValue = angelicValue;
+	}
 
-    @Override
-    public List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
-        long startTime = System.currentTimeMillis();
-        /*Collection<Specification<T>> collection = angelicValue.buildFor(classpath, testClasses, failures);
+	@Override
+	public List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
+		long startTime = System.currentTimeMillis();
+		/*Collection<Specification<T>> collection = angelicValue.buildFor(classpath, testClasses, failures);
 
         for (Iterator<Specification<T>> iterator = collection.iterator(); iterator.hasNext(); ) {
             Specification<T> next = iterator.next();
             next.inputs();
         }*/
-        Processor<CtStatement> processor = new ConditionalInstrumenter(nopolProcessor, type.getType());
-        SpoonedClass fork = spooner.forked(sourceLocation.getContainingClassName());
-        ClassLoader classLoader;
-        try {
-            classLoader = fork.processedAndDumpedToClassLoader(processor);
-        } catch (DynamicCompilationException e) {
-            e.printStackTrace();
-            return Collections.EMPTY_LIST;
-        }
-        Map<String, Object[]> oracle = new HashMap<>();
+		Processor<CtStatement> processor = new ConditionalInstrumenter(nopolProcessor, type.getType());
+		SpoonedClass fork = spooner.forked(sourceLocation.getContainingClassName());
+		ClassLoader classLoader;
+		try {
+			classLoader = fork.processedAndDumpedToClassLoader(processor);
+		} catch (DynamicCompilationException e) {
+			e.printStackTrace();
+			return Collections.EMPTY_LIST;
+		}
+		Map<String, Object[]> oracle = new HashMap<>();
 
-        AngelicExecution.enable();
-        AngelicExecution.setBooleanValue(false);
-        TestRunListener testCasesListener = new TestRunListener();
-        CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, testCasesListener, config);
-        Map<String, List<T>> passedTests = testCasesListener.passedTests;
-        for (Iterator<String> iterator = passedTests.keySet().iterator(); iterator.hasNext(); ) {
-            String next = iterator.next();
-            oracle.put(next, passedTests.get(next).toArray());
-        }
-        AngelicExecution.flip();
+		AngelicExecution.enable();
+		AngelicExecution.setBooleanValue(false);
+		TestRunListener testCasesListener = new TestRunListener();
+		CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, testCasesListener, config);
+		Map<String, List<T>> passedTests = testCasesListener.passedTests;
+		for (Iterator<String> iterator = passedTests.keySet().iterator(); iterator.hasNext(); ) {
+			String next = iterator.next();
+			oracle.put(next, passedTests.get(next).toArray());
+		}
+		AngelicExecution.flip();
 
-        testCasesListener = new TestRunListener();
-        CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, testCasesListener, config);
-        AngelicExecution.disable();
-        passedTests = testCasesListener.passedTests;
-        for (Iterator<String> iterator = passedTests.keySet().iterator(); iterator.hasNext(); ) {
-            String next = iterator.next();
-            oracle.put(next, passedTests.get(next).toArray());
-        }
-        if (determineViability(failures, firstResult, secondResult)) {
-            DefaultSynthesizer.nbStatementsWithAngelicValue++;
-            testCasesListener = new TestRunListener();
-            AngelicExecution.disable();
-            TestSuiteExecution.runTestResult(testClasses, classLoader, testCasesListener, config);
-            passedTests = testCasesListener.passedTests;
-            for (String next : passedTests.keySet()) {
-                Object[] values = passedTests.get(next).toArray();
-                if (values.length == 0) {
-                    continue;
-                }
-                boolean isSame = true;
-                for (int i = 1; i < values.length; i++) {
-                    Object value = values[i - 1];
-                    Object value1 = values[i];
-                    if (!value.equals(value1)) {
-                        isSame = false;
-                        break;
-                    }
-                }
-                // ignore the test if the result of the test is not dependant of the condition value
-                if (isSame) {
-                    AngelicExecution.enable();
-                    boolean flippedValue = !(Boolean) values[0];
-                    AngelicExecution.setBooleanValue(flippedValue);
-                    testCasesListener = new TestRunListener();
-                    try {
-                        Result result = TestSuiteExecution.runTest(next, classLoader, testCasesListener, config);
-                        if (!result.wasSuccessful()) {
-                            oracle.put(next, values);
-                        } else {
-                            testsOutput.debug("Ignore the test {}", next);
-                        }
-                    } catch (Exception e) {
-                        oracle.put(next, values);
-                    }
-                } else {
-                    oracle.put(next, values);
-                }
-            }
-            long remainingTime = TimeUnit.MINUTES.toMillis(maxTimeBuildPatch) - (System.currentTimeMillis() - startTime);
+		testCasesListener = new TestRunListener();
+		CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, testCasesListener, config);
+		AngelicExecution.disable();
+		passedTests = testCasesListener.passedTests;
+		for (Iterator<String> iterator = passedTests.keySet().iterator(); iterator.hasNext(); ) {
+			String next = iterator.next();
+			oracle.put(next, passedTests.get(next).toArray());
+		}
+		if (determineViability(failures, firstResult, secondResult)) {
+			DefaultSynthesizer.nbStatementsWithAngelicValue++;
+			testCasesListener = new TestRunListener();
+			AngelicExecution.disable();
+			TestSuiteExecution.runTestResult(testClasses, classLoader, testCasesListener, config);
+			passedTests = testCasesListener.passedTests;
+			for (String next : passedTests.keySet()) {
+				Object[] values = passedTests.get(next).toArray();
+				if (values.length == 0) {
+					continue;
+				}
+				boolean isSame = true;
+				for (int i = 1; i < values.length; i++) {
+					Object value = values[i - 1];
+					Object value1 = values[i];
+					if (!value.equals(value1)) {
+						isSame = false;
+						break;
+					}
+				}
+				// ignore the test if the result of the test is not dependant of the condition value
+				if (isSame) {
+					AngelicExecution.enable();
+					boolean flippedValue = !(Boolean) values[0];
+					AngelicExecution.setBooleanValue(flippedValue);
+					testCasesListener = new TestRunListener();
+					try {
+						Result result = TestSuiteExecution.runTest(next, classLoader, testCasesListener, config);
+						if (!result.wasSuccessful()) {
+							oracle.put(next, values);
+						} else {
+							testsOutput.debug("Ignore the test {}", next);
+						}
+					} catch (Exception e) {
+						oracle.put(next, values);
+					}
+				} else {
+					oracle.put(next, values);
+				}
+			}
+			long remainingTime = TimeUnit.MINUTES.toMillis(maxTimeBuildPatch) - (System.currentTimeMillis() - startTime);
 
-            SourcePosition position = nopolProcessor.getTarget().getPosition();
-            this.sourceLocation.setSourceStart(position.getSourceStart());
-            this.sourceLocation.setSourceEnd(position.getSourceEnd());
+			SourcePosition position = nopolProcessor.getTarget().getPosition();
+			this.sourceLocation.setSourceStart(position.getSourceStart());
+			this.sourceLocation.setSourceEnd(position.getSourceEnd());
 
-            SynthesizerImpl synthesizer = new SynthesizerImpl(spooner, sourceFolders, sourceLocation, classpath, oracle, oracle.keySet().toArray(new String[0]), config);
-            Candidates run = synthesizer.run(remainingTime);
-            if (run.size() > 0) {
-                List<Patch> patches = new ArrayList<>();
-                for (Expression expression : run) {
-                    patches.add(new ExpressionPatch(expression, sourceLocation, type));
-                }
-                return patches;
-            }
-        }
-        return Collections.EMPTY_LIST;
-    }
+			SynthesizerImpl synthesizer = new SynthesizerImpl(spooner, sourceFolders, sourceLocation, classpath, oracle, oracle.keySet().toArray(new String[0]), config);
+			Candidates run = synthesizer.run(remainingTime);
+			if (run.size() > 0) {
+				List<Patch> patches = new ArrayList<>();
+				for (Expression expression : run) {
+					patches.add(new ExpressionPatch(expression, sourceLocation, type));
+				}
+				return patches;
+			}
+		}
+		return Collections.EMPTY_LIST;
+	}
 
-    private boolean determineViability(Collection<TestCase> testCases, final CompoundResult firstResult, final CompoundResult secondResult) {
-        Set<String> firstPassing = getPassingTests(testCases, firstResult);
-        Set<String> secondPassing = getPassingTests(testCases, secondResult);
-        firstPassing.addAll(secondPassing);
-        return firstPassing.size() == testCases.size();
-    }
+	private boolean determineViability(Collection<TestCase> testCases, final CompoundResult firstResult, final CompoundResult secondResult) {
+		Set<String> firstPassing = getPassingTests(testCases, firstResult);
+		Set<String> secondPassing = getPassingTests(testCases, secondResult);
+		firstPassing.addAll(secondPassing);
+		return firstPassing.size() == testCases.size();
+	}
 
-    private Set<String> getPassingTests(Collection<TestCase> testCases, final CompoundResult results) {
-        Set<String> output = new HashSet<>();
-        Collection<Description> failures = TestSuiteExecution.collectDescription(results.getFailures());
-        testCaseLoop:
-        for (TestCase testCase : testCases) {
-            for (Description failure : failures) {
-                if (testCase.className().equals(failure.getClassName())
-                        && failure.getMethodName().equals(testCase.testName())) {
-                    continue testCaseLoop;
-                }
-            }
-            output.add(testCase.className() + "#" + testCase.testName());
-        }
-        return output;
-    }
+	private Set<String> getPassingTests(Collection<TestCase> testCases, final CompoundResult results) {
+		Set<String> output = new HashSet<>();
+		Collection<Description> failures = TestSuiteExecution.collectDescription(results.getFailures());
+		testCaseLoop:
+		for (TestCase testCase : testCases) {
+			for (Description failure : failures) {
+				if (testCase.className().equals(failure.getClassName())
+						&& failure.getMethodName().equals(testCase.testName())) {
+					continue testCaseLoop;
+				}
+			}
+			output.add(testCase.className() + "#" + testCase.testName());
+		}
+		return output;
+	}
 
-    @Override
-    public NopolProcessor getProcessor() {
-        return nopolProcessor;
-    }
+	@Override
+	public NopolProcessor getProcessor() {
+		return nopolProcessor;
+	}
 
 
-    private class TestRunListener extends RunListener {
-        private Map<String, List<T>> failedTests = new HashMap<>();
-        private Map<String, List<T>> passedTests = new HashMap<>();
+	private class TestRunListener extends RunListener {
+		private Map<String, List<T>> failedTests = new HashMap<>();
+		private Map<String, List<T>> passedTests = new HashMap<>();
 
-        @Override
-        public void testFailure(Failure failure) throws Exception {
-            Description description = failure.getDescription();
-            String key = description.getClassName() + "#" + description.getMethodName();
-            failedTests.put(key, AngelicExecution.previousValue);
-        }
+		@Override
+		public void testFailure(Failure failure) throws Exception {
+			Description description = failure.getDescription();
+			String key = description.getClassName() + "#" + description.getMethodName();
+			failedTests.put(key, AngelicExecution.previousValue);
+		}
 
-        @Override
-        public void testFinished(Description description) throws Exception {
-            String key = description.getClassName() + "#" + description.getMethodName();
-            if (!failedTests.containsKey(key)) {
-                passedTests.put(key, AngelicExecution.previousValue);
-            }
-            AngelicExecution.previousValue = new ArrayList<>();
-        }
-    }
+		@Override
+		public void testFinished(Description description) throws Exception {
+			String key = description.getClassName() + "#" + description.getMethodName();
+			if (!failedTests.containsKey(key)) {
+				passedTests.put(key, AngelicExecution.previousValue);
+			}
+			AngelicExecution.previousValue = new ArrayList<>();
+		}
+	}
 }

@@ -26,84 +26,84 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 final class GZoltarStatement implements SuspiciousStatement {
 
-    private SourceLocation location;
+	private SourceLocation location;
 
-    private final Statement statement;
+	private final Statement statement;
 
-    /**
-     * @param statement
-     */
-    GZoltarStatement(final Statement statement) {
-        this.statement = checkNotNull(statement);
-    }
+	/**
+	 * @param statement
+	 */
+	GZoltarStatement(final Statement statement) {
+		this.statement = checkNotNull(statement);
+	}
 
-    /**
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (this.getClass() != obj.getClass()) {
-            return false;
-        }
-        GZoltarStatement other = (GZoltarStatement) obj;
-        if (this.statement == null) {
-            if (other.statement != null) {
-                return false;
-            }
-        } else if (!this.statement.equals(other.statement)) {
-            return false;
-        }
-        return true;
-    }
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
+		GZoltarStatement other = (GZoltarStatement) obj;
+		if (this.statement == null) {
+			if (other.statement != null) {
+				return false;
+			}
+		} else if (!this.statement.equals(other.statement)) {
+			return false;
+		}
+		return true;
+	}
 
-    @Override
-    public SourceLocation getSourceLocation() {
-        if (null == this.location) {
-            this.location = new SourceLocation(this.statement.getClazz().getLabel(), this.statement.getLineNumber());
-        }
-        return this.location;
-    }
+	@Override
+	public SourceLocation getSourceLocation() {
+		if (null == this.location) {
+			this.location = new SourceLocation(this.statement.getClazz().getLabel(), this.statement.getLineNumber());
+		}
+		return this.location;
+	}
 
-    /**
-     * @see fr.inria.lille.jsemfix.sps.SuspiciousStatement#getSuspiciousness()
-     */
-    @Override
-    public double getSuspiciousness() {
-        return this.statement.getSuspiciousness();
-    }
+	/**
+	 * @see fr.inria.lille.jsemfix.sps.SuspiciousStatement#getSuspiciousness()
+	 */
+	@Override
+	public double getSuspiciousness() {
+		return this.statement.getSuspiciousness();
+	}
 
-    @Override
-    public Statement getStatement() {
-        return statement;
-    }
+	@Override
+	public Statement getStatement() {
+		return statement;
+	}
 
-    /**
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        return this.statement.getLabel().hashCode();
-    }
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return this.statement.getLabel().hashCode();
+	}
 
-    /**
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("GZoltarStatement [ContainingClass=");
-        builder.append(this.getSourceLocation().getContainingClassName());
-        builder.append(", LineNumber=");
-        builder.append(this.location.getLineNumber());
-        builder.append(", Suspiciousness=");
-        builder.append(this.getSuspiciousness());
-        builder.append("]");
-        return builder.toString();
-    }
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("GZoltarStatement [ContainingClass=");
+		builder.append(this.getSourceLocation().getContainingClassName());
+		builder.append(", LineNumber=");
+		builder.append(this.location.getLineNumber());
+		builder.append(", Suspiciousness=");
+		builder.append(this.getSuspiciousness());
+		builder.append("]");
+		return builder.toString();
+	}
 }

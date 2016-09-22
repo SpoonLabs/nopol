@@ -9,10 +9,10 @@ import fr.inria.lille.spirals.repair.expression.combination.CombinationExpressio
  */
 public interface BinaryExpression extends CombinationExpression {
 
-    Expression getFirstExpression();
+	Expression getFirstExpression();
 
-    BinaryOperator getOperator();
+	BinaryOperator getOperator();
 
-    Expression getSecondExpression();
+	Expression getSecondExpression();
 }
 

@@ -11,18 +11,18 @@ import java.io.Serializable;
  */
 public interface Expression extends Cloneable, Comparable<Expression>, Serializable {
 
-    Value getValue();
+	Value getValue();
 
-    void setValue(Value value);
+	void setValue(Value value);
 
-    boolean sameExpression(Expression exp2);
+	boolean sameExpression(Expression exp2);
 
-    double getWeight();
+	double getWeight();
 
-    double getPriority();
+	double getPriority();
 
-    Value evaluate(Candidates values);
+	Value evaluate(Candidates values);
 
-    String asPatch();
+	String asPatch();
 }
 

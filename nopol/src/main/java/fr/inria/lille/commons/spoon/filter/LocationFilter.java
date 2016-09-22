@@ -7,18 +7,18 @@ import xxl.java.library.FileLibrary;
 
 public abstract class LocationFilter<T extends CtElement> extends AbstractFilter<T> {
 
-    public LocationFilter(Class<T> theClass, SourcePosition position) {
-        super(theClass);
-        this.position = position;
-    }
+	public LocationFilter(Class<T> theClass, SourcePosition position) {
+		super(theClass);
+		this.position = position;
+	}
 
-    protected SourcePosition position() {
-        return position;
-    }
+	protected SourcePosition position() {
+		return position;
+	}
 
-    public boolean onTheSameFile(SourcePosition otherPosition) {
-        return FileLibrary.isSameFile(position().getFile(), otherPosition.getFile());
-    }
+	public boolean onTheSameFile(SourcePosition otherPosition) {
+		return FileLibrary.isSameFile(position().getFile(), otherPosition.getFile());
+	}
 
-    private SourcePosition position;
+	private SourcePosition position;
 }

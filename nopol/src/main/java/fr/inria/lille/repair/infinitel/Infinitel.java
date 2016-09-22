@@ -20,66 +20,66 @@ import static xxl.java.library.LoggerLibrary.loggerFor;
 
 public class Infinitel {
 
-    private final Config config;
+	private final Config config;
 
-    public static void run(File[] sourceFile, URL[] classpath) {
-        Infinitel infiniteLoopFixer = new Infinitel(sourceFile, classpath, new Config());
-        try {
-            infiniteLoopFixer.repair();
-        } catch (Exception e) {
-            e.printStackTrace();
-            logError(infiniteLoopFixer.logger(), "Repair failed");
-        }
-    }
+	public static void run(File[] sourceFile, URL[] classpath) {
+		Infinitel infiniteLoopFixer = new Infinitel(sourceFile, classpath, new Config());
+		try {
+			infiniteLoopFixer.repair();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logError(infiniteLoopFixer.logger(), "Repair failed");
+		}
+	}
 
-    public Infinitel(File[] sourceFile, URL[] classpath, Config config) {
-        this(new ProjectReference(sourceFile, classpath), config);
-    }
+	public Infinitel(File[] sourceFile, URL[] classpath, Config config) {
+		this(new ProjectReference(sourceFile, classpath), config);
+	}
 
-    public Infinitel(ProjectReference project, Config config) {
-        this.project = project;
-        this.config = config;
-    }
+	public Infinitel(ProjectReference project, Config config) {
+		this.project = project;
+		this.config = config;
+	}
 
-    public ProjectReference project() {
-        return project;
-    }
+	public ProjectReference project() {
+		return project;
+	}
 
-    public URL[] projectClasspath() {
-        return project().classpath();
-    }
+	public URL[] projectClasspath() {
+		return project().classpath();
+	}
 
-    public String[] projectTestClasses() {
-        return project().testClasses();
-    }
+	public String[] projectTestClasses() {
+		return project().testClasses();
+	}
 
-    public void repair() {
-        MonitoringTestExecutor testExecutor = newTestExecutor();
-        LoopTestResult testResult = newTestResult(testExecutor);
-        fixInfiniteLoops(testResult, testExecutor);
-    }
+	public void repair() {
+		MonitoringTestExecutor testExecutor = newTestExecutor();
+		LoopTestResult testResult = newTestResult(testExecutor);
+		fixInfiniteLoops(testResult, testExecutor);
+	}
 
-    protected MonitoringTestExecutor newTestExecutor() {
-        MonitoringTestExecutor executor = ProjectMonitorImplanter.implanted(project(), configuration(), config);
-        return executor;
-    }
+	protected MonitoringTestExecutor newTestExecutor() {
+		MonitoringTestExecutor executor = ProjectMonitorImplanter.implanted(project(), configuration(), config);
+		return executor;
+	}
 
-    protected LoopTestResult newTestResult(MonitoringTestExecutor testExecutor) {
-        return testExecutor.execute(projectTestClasses());
-    }
+	protected LoopTestResult newTestResult(MonitoringTestExecutor testExecutor) {
+		return testExecutor.execute(projectTestClasses());
+	}
 
-    protected void fixInfiniteLoops(LoopTestResult testResult, MonitoringTestExecutor testExecutor) {
-        InfiniteLoopFixer fixer = new InfiniteLoopFixer(testResult, testExecutor);
-        fixer.repair();
-    }
+	protected void fixInfiniteLoops(LoopTestResult testResult, MonitoringTestExecutor testExecutor) {
+		InfiniteLoopFixer fixer = new InfiniteLoopFixer(testResult, testExecutor);
+		fixer.repair();
+	}
 
-    protected InfinitelConfiguration configuration() {
-        return Singleton.of(InfinitelConfiguration.class);
-    }
+	protected InfinitelConfiguration configuration() {
+		return Singleton.of(InfinitelConfiguration.class);
+	}
 
-    protected Logger logger() {
-        return loggerFor(this);
-    }
+	protected Logger logger() {
+		return loggerFor(this);
+	}
 
-    private ProjectReference project;
+	private ProjectReference project;
 }

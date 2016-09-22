@@ -23,18 +23,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class MainOld {
-    private static JSAP jsap = new JSAP();
-    private static String mode;
-    private static String type;
-    private static String execution;
-    private static String[] tests;
-    private static String solverPath;
-    private static String solver;
-    private static String source;
-    private static String classpath;
+	private static JSAP jsap = new JSAP();
+	private static String mode;
+	private static String type;
+	private static String execution;
+	private static String[] tests;
+	private static String solverPath;
+	private static String solver;
+	private static String source;
+	private static String classpath;
 
 	/*private static void parseArguments(String[] args) throws JSAPException {
-        UnflaggedOption opt1 = new UnflaggedOption("mode")
+		UnflaggedOption opt1 = new UnflaggedOption("mode")
 				.setUsageName("repair|ranking")
 				.setStringParser(JSAP.STRING_PARSER).setDefault("repair")
 				.setRequired(true);
@@ -211,28 +211,28 @@ public class MainOld {
 		}
 	}*/
 
-    private static void showUsage() {
-        System.err.println();
-        System.err.println("Usage: java " + MainOld.class.getName());
-        System.err.println("                " + jsap.getUsage());
-        System.err.println();
-        System.err.println(jsap.getHelp());
-        System.exit(1);
+	private static void showUsage() {
+		System.err.println();
+		System.err.println("Usage: java " + MainOld.class.getName());
+		System.err.println("                " + jsap.getUsage());
+		System.err.println();
+		System.err.println(jsap.getHelp());
+		System.exit(1);
 
-        try {
-            InputStream usageDeatil = FileLibrary.resource("/usage")
-                    .openStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    usageDeatil));
-            String currentLine = "";
-            while (currentLine != null) {
-                System.out.println(currentLine);
-                currentLine = reader.readLine();
-            }
-            reader.close();
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "Unexpected: usage detail file not found");
-        }
-    }
+		try {
+			InputStream usageDeatil = FileLibrary.resource("/usage")
+					.openStream();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					usageDeatil));
+			String currentLine = "";
+			while (currentLine != null) {
+				System.out.println(currentLine);
+				currentLine = reader.readLine();
+			}
+			reader.close();
+		} catch (Exception e) {
+			throw new RuntimeException(
+					"Unexpected: usage detail file not found");
+		}
+	}
 }

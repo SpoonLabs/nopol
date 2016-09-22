@@ -8,32 +8,32 @@ import org.smtlib.solvers.Solver_cvc4;
 
 public class CVC4SolverFactory extends SolverFactory {
 
-    /**
-     * Command to run from terminal:
-     * <p/>
-     * $ cvc4 --lang=smt <script-file>
-     */
+	/**
+	 * Command to run from terminal:
+	 * <p/>
+	 * $ cvc4 --lang=smt <script-file>
+	 */
 
-    public CVC4SolverFactory() {
-        this("lib/cvc4-1.4.2/cvc4_for_mac");
-    }
+	public CVC4SolverFactory() {
+		this("lib/cvc4-1.4.2/cvc4_for_mac");
+	}
 
-    public CVC4SolverFactory(String solverPath) {
-        super(solverPath);
-    }
+	public CVC4SolverFactory(String solverPath) {
+		super(solverPath);
+	}
 
-    @Override
-    public String solverName() {
-        return "cvc4";
-    }
+	@Override
+	public String solverName() {
+		return "cvc4";
+	}
 
-    @Override
-    public ISolver newSolver(Configuration smtConfig) {
-        return new Solver_cvc4(smtConfig, solverPath());
-    }
+	@Override
+	public ISolver newSolver(Configuration smtConfig) {
+		return new Solver_cvc4(smtConfig, solverPath());
+	}
 
-    @Override
-    public ISymbol logic() {
-        return SMTLib.logicAuflira();
-    }
+	@Override
+	public ISymbol logic() {
+		return SMTLib.logicAuflira();
+	}
 }

@@ -14,24 +14,24 @@ import static fr.inria.lille.commons.synthesis.smt.SMTLib.lessThan;
 
 public class AcyclicityConstraint extends Constraint {
 
-    public AcyclicityConstraint(SMTLib smtlib) {
-        super("Acyclicity", smtlib);
-    }
+	public AcyclicityConstraint(SMTLib smtlib) {
+		super("Acyclicity", smtlib);
+	}
 
-    @Override
-    public List<LocationVariable<?>> variablesForExpression(LocationVariableContainer container) {
-        return container.operatorsAndParameters();
-    }
+	@Override
+	public List<LocationVariable<?>> variablesForExpression(LocationVariableContainer container) {
+		return container.operatorsAndParameters();
+	}
 
-    @Override
-    protected Collection<IExpr> definitionExpressions(LocationVariableContainer locationVariableContainer) {
-        Collection<IExpr> parametersBeforeOperators = MetaList.newLinkedList();
-        for (ParameterLocationVariable<?> parameter : locationVariableContainer.allParameters()) {
-            IExpr parameterExpr = expressionSymbolOf(parameter);
-            IExpr operatorExpr = expressionSymbolOf(parameter.operatorLocationVariable());
-            parametersBeforeOperators.add(binaryOperation(parameterExpr, lessThan(), operatorExpr));
-        }
-        return parametersBeforeOperators;
-    }
+	@Override
+	protected Collection<IExpr> definitionExpressions(LocationVariableContainer locationVariableContainer) {
+		Collection<IExpr> parametersBeforeOperators = MetaList.newLinkedList();
+		for (ParameterLocationVariable<?> parameter : locationVariableContainer.allParameters()) {
+			IExpr parameterExpr = expressionSymbolOf(parameter);
+			IExpr operatorExpr = expressionSymbolOf(parameter.operatorLocationVariable());
+			parametersBeforeOperators.add(binaryOperation(parameterExpr, lessThan(), operatorExpr));
+		}
+		return parametersBeforeOperators;
+	}
 
 }

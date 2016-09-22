@@ -10,28 +10,28 @@ import spoon.reflect.declaration.CtMethod;
  * Created by spirals on 11/06/15.
  */
 public class MethodFromLocation extends AbstractProcessor<CtStatement> {
-    private final SourceLocation location;
-    private String method;
+	private final SourceLocation location;
+	private String method;
 
-    public MethodFromLocation(SourceLocation location) {
-        this.location = location;
-    }
+	public MethodFromLocation(SourceLocation location) {
+		this.location = location;
+	}
 
-    @Override
-    public boolean isToBeProcessed(CtStatement candidate) {
-        CtClass parent = candidate.getParent(CtClass.class);
-        if (parent == null || !parent.getQualifiedName().equals(this.location.getContainingClassName())) {
-            return false;
-        }
-        return parent.getPosition().getLine() == location.getLineNumber();
-    }
+	@Override
+	public boolean isToBeProcessed(CtStatement candidate) {
+		CtClass parent = candidate.getParent(CtClass.class);
+		if (parent == null || !parent.getQualifiedName().equals(this.location.getContainingClassName())) {
+			return false;
+		}
+		return parent.getPosition().getLine() == location.getLineNumber();
+	}
 
-    @Override
-    public void process(CtStatement ctStatement) {
-        this.method = ctStatement.getParent(CtMethod.class).getSimpleName();
-    }
+	@Override
+	public void process(CtStatement ctStatement) {
+		this.method = ctStatement.getParent(CtMethod.class).getSimpleName();
+	}
 
-    public String getMethod() {
-        return method;
-    }
+	public String getMethod() {
+		return method;
+	}
 }

@@ -8,22 +8,22 @@ import static java.util.Arrays.asList;
 
 public abstract class OperatorTheory {
 
-    public OperatorTheory(Operator<?>... operators) {
-        this(asList(operators));
-    }
+	public OperatorTheory(Operator<?>... operators) {
+		this(asList(operators));
+	}
 
-    public OperatorTheory(Collection<Operator<?>> operators) {
-        this.operators = operators;
-    }
+	public OperatorTheory(Collection<Operator<?>> operators) {
+		this.operators = operators;
+	}
 
-    public Collection<Operator<?>> operators() {
-        return operators;
-    }
+	public Collection<Operator<?>> operators() {
+		return operators;
+	}
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + operators();
-    }
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + operators();
+	}
 
-    private Collection<Operator<?>> operators;
+	private Collection<Operator<?>> operators;
 }

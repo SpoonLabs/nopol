@@ -8,23 +8,23 @@ import java.util.Collection;
 
 public class InBlockFilter<T extends CtElement> extends AbstractFilter<T> {
 
-    public InBlockFilter(Class<T> theClass, Collection<CtBlock<?>> blocks) {
-        super(theClass);
-        this.blocks = blocks;
-    }
+	public InBlockFilter(Class<T> theClass, Collection<CtBlock<?>> blocks) {
+		super(theClass);
+		this.blocks = blocks;
+	}
 
-    @Override
-    public boolean matches(T element) {
-        CtBlock<?> elementBlock = element.getParent(CtBlock.class);
-        if (elementBlock != null) {
-            return blocks().contains(elementBlock);
-        }
-        return false;
-    }
+	@Override
+	public boolean matches(T element) {
+		CtBlock<?> elementBlock = element.getParent(CtBlock.class);
+		if (elementBlock != null) {
+			return blocks().contains(elementBlock);
+		}
+		return false;
+	}
 
-    private Collection<CtBlock<?>> blocks() {
-        return blocks;
-    }
+	private Collection<CtBlock<?>> blocks() {
+		return blocks;
+	}
 
-    private Collection<CtBlock<?>> blocks;
+	private Collection<CtBlock<?>> blocks;
 }

@@ -8,8 +8,8 @@ import fr.inria.lille.spirals.repair.expression.combination.CombinationExpressio
  */
 public interface UnaryExpression extends CombinationExpression {
 
-    Expression getExpression();
+	Expression getExpression();
 
-    UnaryOperator getOperator();
+	UnaryOperator getOperator();
 }
 

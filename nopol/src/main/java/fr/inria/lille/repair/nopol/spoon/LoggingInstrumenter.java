@@ -16,77 +16,77 @@ import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newLocalVariab
 import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.insertBeforeUnderSameParent;
 
 public final class LoggingInstrumenter<T> extends
-        AbstractProcessor<CtStatement> {
+		AbstractProcessor<CtStatement> {
 
-    private static Object value;
+	private static Object value;
 
-    public LoggingInstrumenter(RuntimeValues<T> runtimeValues,
-                               NopolProcessor subprocessor) {
-        this.subprocessor = subprocessor;
-        this.runtimeValues = runtimeValues;
-    }
+	public LoggingInstrumenter(RuntimeValues<T> runtimeValues,
+							   NopolProcessor subprocessor) {
+		this.subprocessor = subprocessor;
+		this.runtimeValues = runtimeValues;
+	}
 
-    @Override
-    public boolean isToBeProcessed(CtStatement statement) {
-        return subprocessor().isToBeProcessed(statement);
-    }
+	@Override
+	public boolean isToBeProcessed(CtStatement statement) {
+		return subprocessor().isToBeProcessed(statement);
+	}
 
-    public static void setValue(Object value) {
-        LoggingInstrumenter.value = value;
-    }
+	public static void setValue(Object value) {
+		LoggingInstrumenter.value = value;
+	}
 
-    public static void disable() {
-        setValue(null);
-    }
+	public static void disable() {
+		setValue(null);
+	}
 
-    public static Object getValue(Object def) {
-        if (value == null) {
-            return def;
-        }
-        return value;
-    }
+	public static Object getValue(Object def) {
+		if (value == null) {
+			return def;
+		}
+		return value;
+	}
 
-    @Override
-    public void process(CtStatement statement) {
-        String evaluationAccess = "runtimeAngelicValue";
-        // create the angelic value
-        String type = subprocessor.getType().getCanonicalName();
-        CtLocalVariable<?> evaluation = newLocalVariableDeclaration(
-                statement.getFactory(), subprocessor.getType(), evaluationAccess, "(" + type + ")"
-                        + this.getClass().getCanonicalName() + ".getValue("
-                        + subprocessor.getDefaultValue() + ")");
-        // insert angelic value before the statement
-        insertBeforeUnderSameParent(evaluation, statement);
-        // collect values of the statement
-        appendValueCollection(statement, evaluationAccess);
-        // insert angelic value in the condition
-        subprocessor.setValue("runtimeAngelicValue");
-        subprocessor().process(statement);
-    }
+	@Override
+	public void process(CtStatement statement) {
+		String evaluationAccess = "runtimeAngelicValue";
+		// create the angelic value
+		String type = subprocessor.getType().getCanonicalName();
+		CtLocalVariable<?> evaluation = newLocalVariableDeclaration(
+				statement.getFactory(), subprocessor.getType(), evaluationAccess, "(" + type + ")"
+						+ this.getClass().getCanonicalName() + ".getValue("
+						+ subprocessor.getDefaultValue() + ")");
+		// insert angelic value before the statement
+		insertBeforeUnderSameParent(evaluation, statement);
+		// collect values of the statement
+		appendValueCollection(statement, evaluationAccess);
+		// insert angelic value in the condition
+		subprocessor.setValue("runtimeAngelicValue");
+		subprocessor().process(statement);
+	}
 
-    public void appendValueCollection(CtStatement element, String outputName) {
-        CollectableValueFinder finder;
-        if (CtIf.class.isInstance(element)) {
-            finder = CollectableValueFinder.valueFinderFromIf((CtIf) element);
-        } else {
-            finder = CollectableValueFinder.valueFinderFrom(element);
-        }
-        Collection<String> collectables = finder.reachableVariables();
-        Multimap<String, String> getters = finder.accessibleGetters();
-        collectables.remove(outputName);
-        RuntimeValuesInstrumenter.runtimeCollectionBefore(element,
-                MetaMap.autoMap(collectables), getters, outputName,
-                runtimeValues());
-    }
+	public void appendValueCollection(CtStatement element, String outputName) {
+		CollectableValueFinder finder;
+		if (CtIf.class.isInstance(element)) {
+			finder = CollectableValueFinder.valueFinderFromIf((CtIf) element);
+		} else {
+			finder = CollectableValueFinder.valueFinderFrom(element);
+		}
+		Collection<String> collectables = finder.reachableVariables();
+		Multimap<String, String> getters = finder.accessibleGetters();
+		collectables.remove(outputName);
+		RuntimeValuesInstrumenter.runtimeCollectionBefore(element,
+				MetaMap.autoMap(collectables), getters, outputName,
+				runtimeValues());
+	}
 
-    private RuntimeValues<?> runtimeValues() {
-        return runtimeValues;
-    }
+	private RuntimeValues<?> runtimeValues() {
+		return runtimeValues;
+	}
 
-    private NopolProcessor subprocessor() {
-        return subprocessor;
-    }
+	private NopolProcessor subprocessor() {
+		return subprocessor;
+	}
 
-    private final NopolProcessor subprocessor;
-    private final RuntimeValues<T> runtimeValues;
+	private final NopolProcessor subprocessor;
+	private final RuntimeValues<T> runtimeValues;
 }

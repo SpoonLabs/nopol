@@ -10,40 +10,40 @@ import static java.util.Arrays.asList;
 
 public class SpoonedClass extends SpoonedFile {
 
-    public SpoonedClass(SpoonedProject parentProject, CtType<?> modelledClass, Config config) {
-        super(new File[]{modelledClass.getPosition().getFile()}, parentProject.projectClasspath(), config);
-        this.simpleType = modelledClass;
-        this.parentProject = parentProject;
-        qualifiedClassName = modelledClass.getQualifiedName();
-        compiledClasses().putAll(parentProject().compiledClasses());
-    }
+	public SpoonedClass(SpoonedProject parentProject, CtType<?> modelledClass, Config config) {
+		super(new File[]{modelledClass.getPosition().getFile()}, parentProject.projectClasspath(), config);
+		this.simpleType = modelledClass;
+		this.parentProject = parentProject;
+		qualifiedClassName = modelledClass.getQualifiedName();
+		compiledClasses().putAll(parentProject().compiledClasses());
+	}
 
-    @Override
-    protected Collection<? extends CtType<?>> modelledClasses() {
-        return asList(modelledClass());
-    }
+	@Override
+	protected Collection<? extends CtType<?>> modelledClasses() {
+		return asList(modelledClass());
+	}
 
-    public String qualifiedClassName() {
-        return qualifiedClassName;
-    }
+	public String qualifiedClassName() {
+		return qualifiedClassName;
+	}
 
-    public String sourceCode() {
-        return super.sourceForModelledClass(modelledClass());
-    }
+	public String sourceCode() {
+		return super.sourceForModelledClass(modelledClass());
+	}
 
-    public CtType<?> getSimpleType() {
-        return simpleType;
-    }
+	public CtType<?> getSimpleType() {
+		return simpleType;
+	}
 
-    protected CtType<?> modelledClass() {
-        return typeFactory().get(qualifiedClassName());
-    }
+	protected CtType<?> modelledClass() {
+		return typeFactory().get(qualifiedClassName());
+	}
 
-    protected SpoonedProject parentProject() {
-        return parentProject;
-    }
+	protected SpoonedProject parentProject() {
+		return parentProject;
+	}
 
-    private String qualifiedClassName;
-    private SpoonedProject parentProject;
-    private CtType<?> simpleType;
+	private String qualifiedClassName;
+	private SpoonedProject parentProject;
+	private CtType<?> simpleType;
 }

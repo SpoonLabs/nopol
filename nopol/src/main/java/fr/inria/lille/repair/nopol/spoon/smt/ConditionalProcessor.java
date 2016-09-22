@@ -9,31 +9,31 @@ import spoon.reflect.declaration.CtElement;
 
 public abstract class ConditionalProcessor extends NopolProcessor {
 
-    public abstract CtIf processCondition(CtStatement statement, String newCondition);
+	public abstract CtIf processCondition(CtStatement statement, String newCondition);
 
-    public ConditionalProcessor(CtStatement target, String defaultCondition) {
-        super(target);
-        setDefaultValue(defaultCondition);
-    }
+	public ConditionalProcessor(CtStatement target, String defaultCondition) {
+		super(target);
+		setDefaultValue(defaultCondition);
+	}
 
-    public static CtExpression<Boolean> getCondition(CtElement element) {
-        CtExpression<Boolean> condition;
-        if (element instanceof CtIf) {
-            condition = ((CtIf) element).getCondition();
-        } else if (element instanceof CtConditional) {
-            condition = ((CtConditional<?>) element).getCondition();
-        } else {
-            throw new IllegalStateException("Unknown conditional class: " + element.getClass());
-        }
-        return condition;
-    }
+	public static CtExpression<Boolean> getCondition(CtElement element) {
+		CtExpression<Boolean> condition;
+		if (element instanceof CtIf) {
+			condition = ((CtIf) element).getCondition();
+		} else if (element instanceof CtConditional) {
+			condition = ((CtConditional<?>) element).getCondition();
+		} else {
+			throw new IllegalStateException("Unknown conditional class: " + element.getClass());
+		}
+		return condition;
+	}
 
-    @Override
-    public void process(CtStatement statement) {
-        if (getValue() != null) {
-            processCondition(statement, getValue());
-        } else {
-            processCondition(statement, getDefaultValue());
-        }
-    }
+	@Override
+	public void process(CtStatement statement) {
+		if (getValue() != null) {
+			processCondition(statement, getValue());
+		} else {
+			processCondition(statement, getDefaultValue());
+		}
+	}
 }
