@@ -19,11 +19,12 @@ import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.SourceLocation;
 
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * @author Favio D. DeMarco
  */
-public interface Patch {
+public interface Patch extends Serializable {
 
     String asString();
 

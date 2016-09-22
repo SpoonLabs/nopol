@@ -18,12 +18,14 @@ package fr.inria.lille.repair.nopol;
 import xxl.java.library.FileLibrary;
 
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * @author Favio D. DeMarco
  */
-public final class SourceLocation {
+public final class SourceLocation implements Serializable {
 
+    private static final long serialVersionUID = -4580346333924562425L;
     private final String containingClassName;
 
     private final int lineNumber;

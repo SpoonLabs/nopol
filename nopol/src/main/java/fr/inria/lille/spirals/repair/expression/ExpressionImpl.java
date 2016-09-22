@@ -9,6 +9,7 @@ import fr.inria.lille.spirals.repair.expression.value.Value;
  * is the generic type of an expression
  */
 public abstract class ExpressionImpl implements Expression {
+    private static final long serialVersionUID = -2411100294881241663L;
     private double priority;
 
     private Value value;

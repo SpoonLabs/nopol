@@ -5,7 +5,7 @@ import java.util.List;
 public class ArrayValueImpl extends AbstractValue implements ArrayValue {
     private final int length;
     private String arrayType;
-    private com.sun.jdi.Value JDIValue;
+    private transient com.sun.jdi.Value JDIValue;
     private List<Value> values;
 
     public ArrayValueImpl(String arrayType, com.sun.jdi.Value JDIValue, List<Value> values, Object realValue) {

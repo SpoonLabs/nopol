@@ -4,7 +4,9 @@ package fr.inria.lille.spirals.repair.expression.value;
 import com.sun.jdi.Type;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public interface Value {
+import java.io.Serializable;
+
+public interface Value extends Serializable {
 
     Class getType();
 

@@ -9,10 +9,10 @@ import com.sun.jdi.*;
 public abstract class AbstractValue implements Value {
     private double priority;
 
-    private Object realValue;
+    private transient Object realValue;
     private boolean isPrimitive = false;
     private boolean isConstant = false;
-    private com.sun.jdi.Value JDIValue;
+    private transient com.sun.jdi.Value JDIValue;
     private Class type;
 
     public AbstractValue(Object realValue) {

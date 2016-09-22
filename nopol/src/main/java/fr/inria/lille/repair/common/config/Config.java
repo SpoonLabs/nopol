@@ -230,234 +230,234 @@ public class Config implements Serializable {
 		this.mulWeight = mulWeight;
 	}
 
-    public double getDivWeight() {
-        return divWeight;
-    }
+	public double getDivWeight() {
+		return divWeight;
+	}
 
-    public void setDivWeight(double divWeight) {
-        this.divWeight = divWeight;
-    }
+	public void setDivWeight(double divWeight) {
+		this.divWeight = divWeight;
+	}
 
-    public double getAndWeight() {
-        return andWeight;
-    }
+	public double getAndWeight() {
+		return andWeight;
+	}
 
-    public void setAndWeight(double andWeight) {
-        this.andWeight = andWeight;
-    }
+	public void setAndWeight(double andWeight) {
+		this.andWeight = andWeight;
+	}
 
-    public double getOrWeight() {
-        return orWeight;
-    }
+	public double getOrWeight() {
+		return orWeight;
+	}
 
-    public void setOrWeight(double orWeight) {
-        this.orWeight = orWeight;
-    }
+	public void setOrWeight(double orWeight) {
+		this.orWeight = orWeight;
+	}
 
-    public double getEqWeight() {
-        return eqWeight;
-    }
+	public double getEqWeight() {
+		return eqWeight;
+	}
 
-    public void setEqWeight(double eqWeight) {
-        this.eqWeight = eqWeight;
-    }
+	public void setEqWeight(double eqWeight) {
+		this.eqWeight = eqWeight;
+	}
 
-    public double getnEqWeight() {
-        return nEqWeight;
-    }
+	public double getnEqWeight() {
+		return nEqWeight;
+	}
 
-    public void setnEqWeight(double nEqWeight) {
-        this.nEqWeight = nEqWeight;
-    }
+	public void setnEqWeight(double nEqWeight) {
+		this.nEqWeight = nEqWeight;
+	}
 
-    public double getLessEqWeight() {
-        return lessEqWeight;
-    }
+	public double getLessEqWeight() {
+		return lessEqWeight;
+	}
 
-    public void setLessEqWeight(double lessEqWeight) {
-        this.lessEqWeight = lessEqWeight;
-    }
+	public void setLessEqWeight(double lessEqWeight) {
+		this.lessEqWeight = lessEqWeight;
+	}
 
-    public double getLessWeight() {
-        return lessWeight;
-    }
+	public double getLessWeight() {
+		return lessWeight;
+	}
 
-    public void setLessWeight(double lessWeight) {
-        this.lessWeight = lessWeight;
-    }
+	public void setLessWeight(double lessWeight) {
+		this.lessWeight = lessWeight;
+	}
 
-    public double getMethodCallWeight() {
-        return methodCallWeight;
-    }
+	public double getMethodCallWeight() {
+		return methodCallWeight;
+	}
 
-    public void setMethodCallWeight(double methodCallWeight) {
-        this.methodCallWeight = methodCallWeight;
-    }
+	public void setMethodCallWeight(double methodCallWeight) {
+		this.methodCallWeight = methodCallWeight;
+	}
 
-    public double getFieldAccessWeight() {
-        return fieldAccessWeight;
-    }
+	public double getFieldAccessWeight() {
+		return fieldAccessWeight;
+	}
 
-    public void setFieldAccessWeight(double fieldAccessWeight) {
-        this.fieldAccessWeight = fieldAccessWeight;
-    }
+	public void setFieldAccessWeight(double fieldAccessWeight) {
+		this.fieldAccessWeight = fieldAccessWeight;
+	}
 
-    public double getConstantWeight() {
-        return constantWeight;
-    }
+	public double getConstantWeight() {
+		return constantWeight;
+	}
 
-    public void setConstantWeight(double constantWeight) {
-        this.constantWeight = constantWeight;
-    }
+	public void setConstantWeight(double constantWeight) {
+		this.constantWeight = constantWeight;
+	}
 
-    public double getVariableWeight() {
-        return variableWeight;
-    }
+	public double getVariableWeight() {
+		return variableWeight;
+	}
 
-    public void setVariableWeight(double variableWeight) {
-        this.variableWeight = variableWeight;
-    }
+	public void setVariableWeight(double variableWeight) {
+		this.variableWeight = variableWeight;
+	}
 
-    public NopolMode getMode() {
-        return mode;
-    }
+	public NopolMode getMode() {
+		return mode;
+	}
 
-    public void setMode(NopolMode mode) {
-        this.mode = mode;
-    }
+	public void setMode(NopolMode mode) {
+		this.mode = mode;
+	}
 
-    public StatementType getType() {
-        return type;
-    }
+	public StatementType getType() {
+		return type;
+	}
 
-    public void setType(StatementType type) {
-        this.type = type;
-    }
+	public void setType(StatementType type) {
+		this.type = type;
+	}
 
-    public NopolSynthesis getSynthesis() {
-        return synthesis;
-    }
+	public NopolSynthesis getSynthesis() {
+		return synthesis;
+	}
 
-    public void setSynthesis(NopolSynthesis synthesis) {
-        this.synthesis = synthesis;
-    }
+	public void setSynthesis(NopolSynthesis synthesis) {
+		this.synthesis = synthesis;
+	}
 
-    public NopolOracle getOracle() {
-        return oracle;
-    }
+	public NopolOracle getOracle() {
+		return oracle;
+	}
 
-    public void setOracle(NopolOracle oracle) {
-        this.oracle = oracle;
-    }
+	public void setOracle(NopolOracle oracle) {
+		this.oracle = oracle;
+	}
 
-    public NopolSolver getSolver() {
-        return solver;
-    }
+	public NopolSolver getSolver() {
+		return solver;
+	}
 
-    public void setSolver(NopolSolver solver) {
-        this.solver = solver;
-    }
+	public void setSolver(NopolSolver solver) {
+		this.solver = solver;
+	}
 
-    public String getSolverPath() {
-        return solverPath;
-    }
+	public String getSolverPath() {
+		return solverPath;
+	}
 
-    public void setSolverPath(String solverPath) {
-        this.solverPath = solverPath;
-    }
+	public void setSolverPath(String solverPath) {
+		this.solverPath = solverPath;
+	}
 
-    public String[] getProjectSourcePath() {
-        return projectSourcePath;
-    }
+	public String[] getProjectSourcePath() {
+		return projectSourcePath;
+	}
 
-    public void setProjectSourcePath(String[] projectSourcePath) {
-        this.projectSourcePath = projectSourcePath;
-    }
+	public void setProjectSourcePath(String[] projectSourcePath) {
+		this.projectSourcePath = projectSourcePath;
+	}
 
-    public String getProjectClasspath() {
-        return projectClasspath;
-    }
+	public String getProjectClasspath() {
+		return projectClasspath;
+	}
 
-    public void setProjectClasspath(String projectClasspath) {
-        this.projectClasspath = projectClasspath;
-    }
+	public void setProjectClasspath(String projectClasspath) {
+		this.projectClasspath = projectClasspath;
+	}
 
-    public String[] getProjectTests() {
-        return projectTests;
-    }
+	public String[] getProjectTests() {
+		return projectTests;
+	}
 
-    public void setProjectTests(String[] projectTests) {
-        this.projectTests = projectTests;
-    }
+	public void setProjectTests(String[] projectTests) {
+		this.projectTests = projectTests;
+	}
 
-    public int getComplianceLevel() {
-        return complianceLevel;
-    }
+	public int getComplianceLevel() {
+		return complianceLevel;
+	}
 
-    public void setComplianceLevel(int complianceLevel) {
-        this.complianceLevel = complianceLevel;
-    }
+	public void setComplianceLevel(int complianceLevel) {
+		this.complianceLevel = complianceLevel;
+	}
 
-    public int getMaxTime() {
-        return maxTime;
-    }
+	public int getMaxTime() {
+		return maxTime;
+	}
 
-    public void setMaxTime(int maxTime) {
-        this.maxTime = maxTime;
-    }
+	public void setMaxTime(int maxTime) {
+		this.maxTime = maxTime;
+	}
 
 
-    public long getTimeoutTestExecution() {
-        return timeoutTestExecution;
-    }
+	public long getTimeoutTestExecution() {
+		return timeoutTestExecution;
+	}
 
-    public void setTimeoutTestExecution(long timeoutTestExecution) {
-        this.timeoutTestExecution = timeoutTestExecution;
-    }
+	public void setTimeoutTestExecution(long timeoutTestExecution) {
+		this.timeoutTestExecution = timeoutTestExecution;
+	}
 
-    public long getMaxTimeBuildPatch() {
-        return maxTimeBuildPatch;
-    }
+	public long getMaxTimeBuildPatch() {
+		return maxTimeBuildPatch;
+	}
 
-    public void setMaxTimeBuildPatch(long maxTimeBuildPatch) {
-        this.maxTimeBuildPatch = maxTimeBuildPatch;
-    }
+	public void setMaxTimeBuildPatch(long maxTimeBuildPatch) {
+		this.maxTimeBuildPatch = maxTimeBuildPatch;
+	}
 
-    @Override
-    public String toString() {
-        return "Config{" +
-                "synthesisDepth=" + synthesisDepth +
-                ", collectStaticMethods=" + collectStaticMethods +
-                ", collectStaticFields=" + collectStaticFields +
-                ", collectLiterals=" + collectLiterals +
-                ", onlyOneSynthesisResult=" + onlyOneSynthesisResult +
-                ", sortExpressions=" + sortExpressions +
-                ", maxLineInvocationPerTest=" + maxLineInvocationPerTest +
-                ", timeoutMethodInvocation=" + timeoutMethodInvocation +
-                ", addWeight=" + addWeight +
-                ", subWeight=" + subWeight +
-                ", mulWeight=" + mulWeight +
-                ", divWeight=" + divWeight +
-                ", andWeight=" + andWeight +
-                ", orWeight=" + orWeight +
-                ", eqWeight=" + eqWeight +
-                ", nEqWeight=" + nEqWeight +
-                ", lessEqWeight=" + lessEqWeight +
-                ", lessWeight=" + lessWeight +
-                ", methodCallWeight=" + methodCallWeight +
-                ", fieldAccessWeight=" + fieldAccessWeight +
-                ", constantWeight=" + constantWeight +
-                ", variableWeight=" + variableWeight +
-                ", mode=" + mode +
-                ", type=" + type +
-                ", synthesis=" + synthesis +
-                ", oracle=" + oracle +
-                ", solver=" + solver +
-                ", solverPath='" + solverPath + '\'' +
-                ", projectSourcePath=" + Arrays.toString(projectSourcePath) +
-                ", projectClasspath='" + projectClasspath + '\'' +
-                ", projectTests=" + Arrays.toString(projectTests) +
-                ", complianceLevel=" + complianceLevel +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "Config{" +
+				"synthesisDepth=" + synthesisDepth +
+				", collectStaticMethods=" + collectStaticMethods +
+				", collectStaticFields=" + collectStaticFields +
+				", collectLiterals=" + collectLiterals +
+				", onlyOneSynthesisResult=" + onlyOneSynthesisResult +
+				", sortExpressions=" + sortExpressions +
+				", maxLineInvocationPerTest=" + maxLineInvocationPerTest +
+				", timeoutMethodInvocation=" + timeoutMethodInvocation +
+				", addWeight=" + addWeight +
+				", subWeight=" + subWeight +
+				", mulWeight=" + mulWeight +
+				", divWeight=" + divWeight +
+				", andWeight=" + andWeight +
+				", orWeight=" + orWeight +
+				", eqWeight=" + eqWeight +
+				", nEqWeight=" + nEqWeight +
+				", lessEqWeight=" + lessEqWeight +
+				", lessWeight=" + lessWeight +
+				", methodCallWeight=" + methodCallWeight +
+				", fieldAccessWeight=" + fieldAccessWeight +
+				", constantWeight=" + constantWeight +
+				", variableWeight=" + variableWeight +
+				", mode=" + mode +
+				", type=" + type +
+				", synthesis=" + synthesis +
+				", oracle=" + oracle +
+				", solver=" + solver +
+				", solverPath='" + solverPath + '\'' +
+				", projectSourcePath=" + Arrays.toString(projectSourcePath) +
+				", projectClasspath='" + projectClasspath + '\'' +
+				", projectTests=" + Arrays.toString(projectTests) +
+				", complianceLevel=" + complianceLevel +
+				'}';
+	}
 }

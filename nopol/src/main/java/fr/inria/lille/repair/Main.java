@@ -85,7 +85,8 @@ public class Main {
         System.err.println(jsap.getHelp());
     }
 
-    public static boolean parseArguments(String[] args, Config config) {
+
+    private static boolean parseArguments(String[] args, Config config) {
         JSAPResult jsapConfig = jsap.parse(args);
         if (!jsapConfig.success()) {
             System.err.println();

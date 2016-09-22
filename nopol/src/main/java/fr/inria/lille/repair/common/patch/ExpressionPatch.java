@@ -7,6 +7,7 @@ import fr.inria.lille.spirals.repair.expression.Expression;
 import java.io.File;
 
 public class ExpressionPatch implements Patch {
+    private static final long serialVersionUID = -157430722893779258L;
     private final Expression expression;
     private final SourceLocation location;
     private final StatementType type;
