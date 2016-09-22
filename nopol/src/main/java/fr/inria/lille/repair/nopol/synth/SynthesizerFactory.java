@@ -19,7 +19,6 @@ import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.repair.common.config.Config;
-import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.common.synth.StatementTypeDetector;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.nopol.spoon.ConditionalLoggingInstrumenter;

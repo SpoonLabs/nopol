@@ -24,7 +24,6 @@ import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.TestClassesFinder;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
-import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.patch.TestPatch;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.spoon.symbolic.AssertReplacer;
@@ -90,7 +89,7 @@ public class NoPol {
 		gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath, testClasses);
 		Collection<Statement> statements = gZoltar.sortBySuspiciousness(testClasses);
 		if (statements.isEmpty()) {
-			throw new RuntimeException("No suspicious statements found.");
+			throw new NoSuspiciousStatementException("NoPol did not find any suspicious statement.", "No suspicious statement");
 		}
 
 		Map<SourceLocation, List<TestResult>> testListPerStatement = getTestListPerStatement();

@@ -85,11 +85,19 @@ public class NoPolLauncher {
 			} else {
 				patches = nopol.build();
 			}
+		} catch (NoSuspiciousStatementException stmt) {
+			throw stmt;
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			executionTime = System.currentTimeMillis() - executionTime;
 			displayResult(nopol, patches, executionTime, config);
+			nbPassedTestExecution.clear();
+			if (nbFailingTestExecution.isEmpty()) {
+				throw new NoFailingTestCaseException("NoPol did not find any failing test case." , "No failing test case");
+			} else {
+				nbFailingTestExecution.clear();
+			}
 		}
 		return patches;
 	}
@@ -157,6 +165,7 @@ public class NoPolLauncher {
 		}
 		System.out.println("Nb run failing test  : " + nbFailingTestExecution);
 		System.out.println("Nb run passing test : " + nbPassedTestExecution);
+
 		System.out.println("NoPol Execution time : " + executionTime + "ms");
 
 		if (patches != null && !patches.isEmpty()) {

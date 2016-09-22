@@ -7,6 +7,7 @@ import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.ExpressionPatch;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.nopol.NoPolLauncher;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.spoon.brutpol.ConditionalInstrumenter;
@@ -69,6 +70,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
             Specification<T> next = iterator.next();
             next.inputs();
         }*/
+		NoPolLauncher.nbFailingTestExecution.add(failures.size());
         Processor<CtStatement> processor = new ConditionalInstrumenter(nopolProcessor, type.getType());
         SpoonedClass fork = spooner.forked(sourceLocation.getContainingClassName());
         ClassLoader classLoader;
