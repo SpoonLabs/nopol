@@ -2,11 +2,15 @@ package fr.inria.lille.repair.nopol.actor;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
+import fr.inria.lille.repair.actor.ConfigActor;
 import fr.inria.lille.repair.actor.NoPolActor;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static fr.inria.lille.repair.nopol.actor.NopolActorTest.actorNopol;
@@ -20,33 +24,35 @@ public class ActorClient extends UntypedActor {
 	/**
 	 * This class simulate a "client" using NoPol with the actorSystem.
 	 */
-
-	private String [] sourcePath;
-	private String classPath;
+	private String rootProject;
 	private String fullQualifiedNameTest;
-	private String pathToSolver;
 	private ActorRef sender;
 	private String patchAsString;
 
-	public ActorClient(String[] sourcePath, String classPath, String fullQualifiedNameTest, String pathToSolver, String patchAsString) {
-		this.sourcePath = sourcePath;
-		this.classPath = classPath;
+	public ActorClient(String rootProject, String fullQualifiedNameTest, String patchAsString) {
+		this.rootProject = rootProject;
 		this.fullQualifiedNameTest = fullQualifiedNameTest;
-		this.pathToSolver = pathToSolver;
 		this.patchAsString = patchAsString;
 	}
 
 	@Override
 	public void onReceive(Object message) throws Exception {
-		if (message instanceof String) {//The executed  test must a string to start the client
+		if (message instanceof String) {//The executed test must a string to start the client
+			File outputZip = File.createTempFile("test", ".zip");
+			Ziper ziper = new Ziper(outputZip.getAbsolutePath(), rootProject);
+			ziper.zipIt("src", new File(rootProject + "/src/"));
+			ziper.zipIt("target", new File(rootProject + "/target/classes"));
+			ziper.zipIt("target", new File(rootProject + "/target/test-classes"));
+			ziper.zipIt("target", new File(System.getenv().get("HOME")+"/.m2/repository/junit/junit/4.11/junit-4.11.jar"));
+			ziper.close();
+			byte [] content = Files.readAllBytes(Paths.get(outputZip.getAbsolutePath()));
 			Config config = new Config();
 			this.sender = getSender();//keeping the executed test in order to send it the result
-			config.setProjectSourcePath(sourcePath);
-			config.setProjectClasspath(classPath);
 			config.setType(StatementType.CONDITIONAL);
-			config.setSolverPath(pathToSolver);
+			config.setSynthesis(Config.NopolSynthesis.BRUTPOL);
 			config.setProjectTests(new String[]{fullQualifiedNameTest});
-			actorNopol.tell(config, getSelf());
+			ConfigActor configActor = new ConfigActor(config, content);
+			actorNopol.tell(configActor, getSelf());
 			//NoPol's response handeling
 		} else if (message instanceof List && (!((List) message).isEmpty() && ((List) message).get(0) instanceof Patch)) {
 			Patch patch = (Patch) ((List) message).get(0);

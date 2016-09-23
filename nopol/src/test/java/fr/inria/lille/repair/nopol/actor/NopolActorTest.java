@@ -19,10 +19,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class NopolActorTest {
 
-	private static final String[] sourcePath = new String[]{"../test-projects/src/main/java"};
-	private static final String classPath = "../test-projects/target/classes:../test-projects/target/test-classes";
 	private static final String fullQualifiedNameTest = "nopol_examples.nopol_example_1.NopolExampleTest";
-	private static final String pathToSolver = "lib/z3/z3_for_linux";
 	private static final String patchAsString = "index <= 0";
 
 	static ActorSystem system;
@@ -35,7 +32,7 @@ public class NopolActorTest {
 		String ACTOR_NAME = config.getString("nopol.actor.name");
 		system = ActorSystem.create(ACTOR_SYSTEM_NAME, config);
 		actorNopol = system.actorOf(Props.create(NoPolActor.class, system), ACTOR_NAME);
-		ActorRef actorClient = system.actorOf(Props.create(ActorClient.class, sourcePath, classPath, fullQualifiedNameTest, pathToSolver, patchAsString), "Client");
+		ActorRef actorClient = system.actorOf(Props.create(ActorClient.class, "../test-projects",fullQualifiedNameTest, patchAsString), "Client");
 		Timeout timeout = new Timeout(10000);
 		Future<Object> future = Patterns.ask(actorClient, "start", timeout);
 		Patch patch = (Patch) Await.result(future, timeout.duration());
