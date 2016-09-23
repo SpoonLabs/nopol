@@ -64,11 +64,11 @@ public class InternalNopolActor extends UntypedActor {
 
 	private String getClasspathFromTargetFolder(File folder) {
 		File[] files = folder.listFiles();
-		String cp = folder.getAbsolutePath();
-		for (int i = 1; i < files.length; i++) {
+		String cp = folder.getAbsolutePath() + ":";
+		for (int i = 0; i < files.length; i++) {
 			File file = files[i];
 			if (file.getName().endsWith("jar")) {
-				cp += ":" + file.getAbsolutePath();
+				cp += file.getAbsolutePath() + ":";
 			}
 		}
 		return cp;
