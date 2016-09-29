@@ -40,7 +40,7 @@ public class OperationCodeLine extends CodeLine implements OperatorVisitor<Strin
 
     @Override
     public String visitTernaryOperator(TernaryOperator<?, ?, ?, ?> operator) {
-        return String.format("(%s)%s(%s)%s(%s)", subContent(0), operator.firstSymbol(), subContent(1), operator.secondSymbol(), subContent(2));
+        return String.format("((%s)%s(%s)%s(%s))", subContent(0), operator.firstSymbol(), subContent(1), operator.secondSymbol(), subContent(2));
     }
 
     private String subContent(int index) {
