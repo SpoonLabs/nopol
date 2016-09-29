@@ -108,9 +108,22 @@ public class CodeSynthesisTest {
 		Specification secondSpecification = new Specification<>(secondValues, 10);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Number.class, (List) asList(firstSpecification, secondSpecification));
 		assertTrue(genesis.isSuccessful());
-		assertTrue(genesis.returnStatement(), asList("(array.length)-((isEmpty)?((1)+(1)):(1))", "((isEmpty)?(iterations):(array.length)) - (1)").contains(genesis.returnStatement()));
+		assertTrue(genesis.returnStatement(), asList("((array.length)-((isEmpty)?((1)+(1)):(1)))", "(((isEmpty)?(iterations):(array.length))) - (1)").contains(genesis.returnStatement()));
 	}
-	
+
+	@Test
+	public void testSynthesisTernaryOperator() throws Exception {
+		Collection<OperatorTheory> theories = (List) asList(new NumberComparisonTheory(), new IfThenElseTheory(), new LinearTheory());
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MetaMap.newHashMap(asList("0","1"), asList(0, 1)), theories);
+		Map<String, Object> firstValues = (Map) MetaMap.newHashMap(asList("0", "cond", "size"), asList(0, true, 4));
+		Map<String, Object> secondValues = (Map) MetaMap.newHashMap(asList("0", "cond", "size"), asList(0, false, 7));
+		Specification firstSpecification = new Specification<>(firstValues, false);
+		Specification secondSpecification = new Specification<>(secondValues, true);
+		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Boolean.class, (List) asList(firstSpecification, secondSpecification));
+		assertTrue(genesis.isSuccessful());
+		assertEquals(genesis.returnStatement(), "1 == ((cond)?(size):(1))", genesis.returnStatement());
+	}
+
 	@Test
 	public void goldbachConjectureSynthesis() {
 		Collection<OperatorTheory> theories = (List) asList(new NumberComparisonTheory(), new LinearTheory());
