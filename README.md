@@ -124,8 +124,6 @@ Usage: java -jar nopol.jar
   [--complianceLevel <complianceLevel>]
         The Java version of the project. (default: 7)
 
-  [--maxTime <maxTime>]
-        The maximum time execution in minute. (default: 60)
 ```
 
 ## Contact
