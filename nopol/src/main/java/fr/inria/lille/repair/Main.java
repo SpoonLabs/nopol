@@ -272,7 +272,7 @@ public class Main {
         maxTime.setLongFlag("maxTime");
         maxTime.setStringParser(JSAP.INTEGER_PARSER);
         maxTime.setDefault("60");
-        maxTime.setHelp("The maximum time execution in minute.");
+        maxTime.setHelp("The maximum time execution in minute (whole execution time of NOPOL -- experimental do not use)");
         jsap.registerParameter(maxTime);
     }
 }
