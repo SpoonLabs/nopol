@@ -122,7 +122,12 @@ public abstract class AbstractValue implements Value {
                 // big hack
                 // isAssignableTo is not in the API, so we have to set it accessible
                 ref = ((ObjectReference) this.getRealValue()).referenceType();
-                java.lang.reflect.Method isAssignableTo = ref.getClass().getDeclaredMethod("isAssignableTo", ReferenceType.class);
+                java.lang.reflect.Method isAssignableTo = null;
+                try {
+                    isAssignableTo = ref.getClass().getSuperclass().getSuperclass().getDeclaredMethod("isAssignableTo", ReferenceType.class);            // big hack            // big hack
+                } catch (NoSuchMethodException e) {
+                    isAssignableTo = ref.getClass().getDeclaredMethod("isAssignableTo", ReferenceType.class);            // big hack            // big hack
+                }
                 isAssignableTo.setAccessible(true);
                 try {
                     return (boolean) isAssignableTo.invoke(ref, refAss);

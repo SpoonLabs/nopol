@@ -1,14 +1,19 @@
 package fr.inria.lille.spirals.evo;
 
 import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.patch.Patch;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import xxl.java.container.classic.MetaSet;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class TestPatchEvo {
 
@@ -47,15 +52,23 @@ public class TestPatchEvo {
 			System.out.println(entry.getValue()+" "+entry.getKey());
 		}
 
+		assertFalse(Main.patches.get("test_evo_example_generated_0").isEmpty());
+
 		//check if we got the rights patches
 		assertEquals("evo_examples.evo_example_1.EvoExample:9: CONDITIONAL number < evo_examples.evo_example_1.EvoExample.this.value", Main.patches.get("basic").get(0).toString());
-		assertEquals("evo_examples.evo_example_1.EvoExample:9: CONDITIONAL number < 1",Main.patches.get("test_evo_example_generated_0").get(0).toString());
+		fixComparison(Main.patches.get("test_evo_example_generated_0").get(0), "number < 1", "number <= 0" );
 		assertEquals(0, Main.patches.get("test_evo_example_generated_1").size());
 		assertEquals(1, Main.keptMethods.size());
 
 		//remove java tests
 		FileUtils.deleteDirectory(new File(destSrcTestFolder));
 		FileUtils.deleteDirectory(new File(destCpTestFolder));
+	}
+
+	private void fixComparison(Patch foundPatch, String... expectedFixes) {
+		Collection<String> possibleFixes = MetaSet.newHashSet(expectedFixes);
+		assertTrue(foundPatch + " is not a valid patch",
+				possibleFixes.contains(foundPatch.asString()));
 	}
 
 }
