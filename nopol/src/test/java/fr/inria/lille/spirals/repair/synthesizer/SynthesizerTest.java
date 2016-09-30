@@ -107,7 +107,7 @@ public class SynthesizerTest {
 
 		Config config = new Config();
 
-		test(5, oracle, 20, new String[] {"0 <= a", "1 <= a"}, config);
+		test(5, oracle, 20, new String[] {"0 <= a", "1 <= a", "r <= a"}, config);
     }
 
     @Test

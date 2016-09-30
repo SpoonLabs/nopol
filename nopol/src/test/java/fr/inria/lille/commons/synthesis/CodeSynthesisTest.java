@@ -7,11 +7,7 @@ import fr.inria.lille.commons.synthesis.operator.Operator;
 import fr.inria.lille.commons.synthesis.smt.SMTLib;
 import fr.inria.lille.commons.synthesis.smt.locationVariables.LocationVariableContainer;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
-import fr.inria.lille.commons.synthesis.theory.EmptyTheory;
-import fr.inria.lille.commons.synthesis.theory.IfThenElseTheory;
-import fr.inria.lille.commons.synthesis.theory.LinearTheory;
-import fr.inria.lille.commons.synthesis.theory.NumberComparisonTheory;
-import fr.inria.lille.commons.synthesis.theory.OperatorTheory;
+import fr.inria.lille.commons.synthesis.theory.*;
 import fr.inria.lille.commons.trace.Specification;
 import org.junit.Test;
 import org.smtlib.ISort;
@@ -25,9 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class CodeSynthesisTest {
@@ -37,14 +31,14 @@ public class CodeSynthesisTest {
 		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis();
 		Expression<?> outputExpression = synthesiser.outputExpressionFor(Integer.class);
 		assertEquals(SMTLib.numberSort(), outputExpression.smtSort());
-		
+
 		Map<String, Integer> inputs = MetaMap.newHashMap(asList("a", "b"), asList(1, 2));
 		Collection<Expression<?>> inputExpressions = synthesiser.inputExpressions((Collection) asList(inputs), outputExpression);
 		assertEquals(2, inputExpressions.size());
-		Multimap<ISort,ObjectTemplate<?>> bySort = ObjectTemplate.bySort((List) inputExpressions);
+		Multimap<ISort, ObjectTemplate<?>> bySort = ObjectTemplate.bySort((List) inputExpressions);
 		assertEquals(MetaSet.newHashSet(SMTLib.numberSort()), bySort.keySet());
 	}
-	
+
 	@Test
 	public void scriptResolutionWithoutComponents() {
 		Collection<OperatorTheory> theories = (List) asList(new EmptyTheory());
@@ -57,7 +51,7 @@ public class CodeSynthesisTest {
 		assertTrue(genesis.isSuccessful());
 		assertEquals("array.length", genesis.returnStatement());
 	}
-	
+
 	@Test
 	public void scriptResolutionWithoutInputs() {
 		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis();
@@ -69,7 +63,7 @@ public class CodeSynthesisTest {
 		assertTrue(genesis.isSuccessful());
 		assertEquals("0", genesis.returnStatement());
 	}
-	
+
 	@Test
 	public void scriptResolutionWithOneTheory() {
 		Collection<OperatorTheory> theories = (List) asList(new LinearTheory());
@@ -82,7 +76,7 @@ public class CodeSynthesisTest {
 		assertTrue(genesis.isSuccessful());
 		assertTrue(genesis.returnStatement(), asList("iterations + array.length", "array.length + iterations").contains(genesis.returnStatement()));
 	}
-	
+
 	@Test
 	public void scriptResolutionWithOneTheoryBooleanOutput() {
 		Collection<OperatorTheory> theories = (List) asList(new NumberComparisonTheory());
@@ -97,7 +91,7 @@ public class CodeSynthesisTest {
 		assertTrue(genesis.isSuccessful());
 		assertEquals(genesis.returnStatement(), "iterations <= array.length", genesis.returnStatement());
 	}
-	
+
 	@Test
 	public void scriptResolutionWithTwoTheories() {
 		Collection<OperatorTheory> theories = (List) asList(new IfThenElseTheory(), new LinearTheory());
@@ -114,14 +108,14 @@ public class CodeSynthesisTest {
 	@Test
 	public void testSynthesisTernaryOperator() throws Exception {
 		Collection<OperatorTheory> theories = (List) asList(new NumberComparisonTheory(), new IfThenElseTheory(), new LinearTheory());
-		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MetaMap.newHashMap(asList("0","1"), asList(0, 1)), theories);
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MetaMap.newHashMap(asList("0", "1"), asList(0, 1)), theories);
 		Map<String, Object> firstValues = (Map) MetaMap.newHashMap(asList("0", "cond", "size"), asList(0, true, 4));
 		Map<String, Object> secondValues = (Map) MetaMap.newHashMap(asList("0", "cond", "size"), asList(0, false, 7));
 		Specification firstSpecification = new Specification<>(firstValues, false);
 		Specification secondSpecification = new Specification<>(secondValues, true);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Boolean.class, (List) asList(firstSpecification, secondSpecification));
 		assertTrue(genesis.isSuccessful());
-		assertEquals(genesis.returnStatement(), "1 == ((cond)?(size):(1))", genesis.returnStatement());
+		assertTrue(genesis.returnStatement() + " is not a valid patch", Arrays.asList("0 == ((cond)?(size):(0))", "1 == ((cond)?(size):(1))").contains(genesis.returnStatement()));
 	}
 
 	@Test
@@ -129,7 +123,7 @@ public class CodeSynthesisTest {
 		Collection<OperatorTheory> theories = (List) asList(new NumberComparisonTheory(), new LinearTheory());
 		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MetaMap.newHashMap(), theories);
 		Map<String, Object> first = (Map) MetaMap.newHashMap(asList("p", "q", "n"), asList(3, 3, 6));
-		Map<String, Object> second  = (Map) MetaMap.newHashMap(asList("p", "q", "n"), asList(13, 5, 18));
+		Map<String, Object> second = (Map) MetaMap.newHashMap(asList("p", "q", "n"), asList(13, 5, 18));
 		Map<String, Object> third = (Map) MetaMap.newHashMap(asList("p", "q", "n"), asList(2, 5, 6));
 		Map<String, Object> fourth = (Map) MetaMap.newHashMap(asList("p", "q", "n"), asList(13, 5, 12));
 		Specification firstS = new Specification<Boolean>(first, true); // true is the expected value
@@ -140,13 +134,13 @@ public class CodeSynthesisTest {
 		assertTrue(genesis.isSuccessful());
 		assertTrue(asList("(q + p) == n", "p == (n) - (q)", "q + p <= n").contains(genesis.returnStatement()));
 	}
-	
+
 	@Test
 	public void synthesisWithCharactersInSpecifications() {
 		Collection<OperatorTheory> theories = (List) asList(new NumberComparisonTheory(), new LinearTheory());
 		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), (Map) MetaMap.newHashMap(), theories);
 		Map<String, Object> first = (Map) MetaMap.newHashMap(asList("value", "letter"), asList((int) 'a', 'a'));
-		Map<String, Object> second  = (Map) MetaMap.newHashMap(asList("value", "letter"), asList((int) 'b', 'b'));
+		Map<String, Object> second = (Map) MetaMap.newHashMap(asList("value", "letter"), asList((int) 'b', 'b'));
 		Map<String, Object> third = (Map) MetaMap.newHashMap(asList("value", "letter"), asList((int) 'z', 'c'));
 		Map<String, Object> fourth = (Map) MetaMap.newHashMap(asList("value", "letter"), asList((int) 'x', 'd'));
 		Specification firstS = new Specification<>(first, true);
@@ -157,11 +151,11 @@ public class CodeSynthesisTest {
 		assertTrue(genesis.isSuccessful());
 		assertTrue(genesis.returnStatement(), asList("letter == value", "value == letter").contains(genesis.returnStatement()));
 	}
-	
+
 	@Test
 	public void reduceValuesWithConstants() {
 		Map<String, Integer> constants = MetaMap.newHashMap(asList("one", "two", "three"), asList(1, 2, 3));
-		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), constants , (List) asList());
+		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), constants, (List) asList());
 		Map<String, Object> inputA = (Map) MetaMap.newHashMap(asList("v", "w", "x", "y", "z"), asList(0, 1, 'a', 2, 3));
 		Map<String, Object> inputB = (Map) MetaMap.newHashMap(asList("v", "w", "x", "y", "z"), asList(0, 1, 'a', 0, 3));
 		Map<String, Object> inputC = (Map) MetaMap.newHashMap(asList("v", "w", "x", "y", "z"), asList(0, 1, 'a', 2, 3));
@@ -173,14 +167,14 @@ public class CodeSynthesisTest {
 		assertFalse(inputB.containsKey("w") || inputB.containsKey("z"));
 		assertFalse(inputC.containsKey("w") || inputC.containsKey("z"));
 	}
-	
+
 	@Test
 	public void defaultConstants() {
 		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis();
-		Map<String, Integer> expectedDefaultContants = MetaMap.newHashMap(asList("-1", "0", "1"), asList(-1 , 0, 1));
+		Map<String, Integer> expectedDefaultContants = MetaMap.newHashMap(asList("-1", "0", "1"), asList(-1, 0, 1));
 		assertEquals(expectedDefaultContants, synthesiser.constants());
 	}
-	
+
 	@Test
 	public void justABooleanConstant() {
 		Map<String, Integer> locations = MetaMap.newHashMap();
@@ -191,7 +185,7 @@ public class CodeSynthesisTest {
 		assertEquals(8, synthesis.totalNumberOfLines());
 		assertEquals("true", synthesis.returnStatement());
 	}
-	
+
 	@Test
 	public void justAVariable() {
 		Map<String, Integer> locations = MetaMap.newHashMap();
@@ -199,14 +193,15 @@ public class CodeSynthesisTest {
 		CodeGenesis synthesis = new CodeGenesis(exampleWithoutOperators(), locations);
 		assertEquals("inhibit", synthesis.returnStatement());
 	}
-	
-	@Test public void justAnIntegerConstant() {
+
+	@Test
+	public void justAnIntegerConstant() {
 		Map<String, Integer> locations = MetaMap.newHashMap();
 		locations.put("L@out", 3);
 		CodeGenesis synthesis = new CodeGenesis(exampleWithoutOperators(), locations);
 		assertEquals("-1", synthesis.returnStatement());
 	}
-	
+
 	@Test
 	public void justOneComponent() {
 		Map<String, Integer> locations = MetaMap.newHashMap();
@@ -226,7 +221,7 @@ public class CodeSynthesisTest {
 		CodeGenesis synthesis = new CodeGenesis(exampleWithOperators(), locations);
 		assertEquals("(0) != (up_sep)", synthesis.returnStatement());
 	}
-	
+
 	@Test
 	public void moreThanOneComponent() {
 		Map<String, Integer> locations = MetaMap.newHashMap();
@@ -246,11 +241,11 @@ public class CodeSynthesisTest {
 		CodeGenesis synthesis = new CodeGenesis(exampleWithOperators(), locations);
 		assertEquals("(0) != (up_sep) == 0 <= inhibit < inhibit", synthesis.returnStatement());
 	}
-	
+
 	private LocationVariableContainer exampleWithoutOperators() {
 		return exampleWith((List) Arrays.asList());
 	}
-	
+
 	private LocationVariableContainer exampleWithOperators() {
 		Operator<?> lessThan = BinaryOperator.lessThan();
 		Operator<?> lessOrEqThan = BinaryOperator.lessOrEqualThan();
@@ -259,7 +254,7 @@ public class CodeSynthesisTest {
 		Collection<Operator<?>> operators = Arrays.asList(lessThan, lessOrEqThan, equals, distinct);
 		return exampleWith(operators);
 	}
-	
+
 	private LocationVariableContainer exampleWith(Collection<Operator<?>> operators) {
 		Expression<Number> up_sep = new Expression<>(Number.class, "up_sep");
 		Expression<Number> inhibit = new Expression<>(Number.class, "inhibit");
@@ -270,7 +265,7 @@ public class CodeSynthesisTest {
 		Expression<Boolean> constantTrue = new Expression<>(Boolean.class, "true");
 		Expression<Boolean> constantFalse = new Expression<>(Boolean.class, "false");
 		Expression<?> outputExpression = new Expression<>(Boolean.class, "...");
-		
+
 		Collection<Expression<?>> inputs = (List) Arrays.asList(up_sep, inhibit, down_sep, constantM1, constant0, constant1, constantTrue, constantFalse);
 		return new LocationVariableContainer(inputs, operators, outputExpression);
 	}
