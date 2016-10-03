@@ -1,10 +1,7 @@
 package fr.inria.lille.localization;
 
-import com.gzoltar.core.components.Statement;
-import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.repair.nopol.SourceLocation;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +11,5 @@ import java.util.Map;
 public interface FaultLocalizer {
 
 	Map<SourceLocation, List<TestResult>> getTestListPerStatement();
-
-	Collection<Statement> getStatements();
 
 }

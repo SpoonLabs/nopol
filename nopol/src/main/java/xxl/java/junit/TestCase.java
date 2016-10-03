@@ -10,6 +10,11 @@ public class TestCase {
         return new TestCase(qualifiedClassName, testName, testNumber);
     }
 
+    public static TestCase from(String fullQualifiedMethodTestName) {
+        String[] split = fullQualifiedMethodTestName.split("#");
+        return new TestCase(split[0], split[1], 0);
+    }
+
     public static Collection<String> testClasses(Collection<TestCase> testCases) {
         Collection<String> testClasses = MetaSet.newHashSet();
         for (TestCase testCase : testCases) {

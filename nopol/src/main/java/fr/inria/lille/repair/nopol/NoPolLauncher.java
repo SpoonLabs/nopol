@@ -15,7 +15,6 @@
  */
 package fr.inria.lille.repair.nopol;
 
-import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.synthesis.operator.Operator;
 import fr.inria.lille.repair.Main;
@@ -123,21 +122,21 @@ public class NoPolLauncher {
 			int countStatementSuccess = 0;
 			int countStatementFailed = 0;
 			int nextTest = coverage.nextSetBit(0);
-			while (nextTest != -1) {
-				TestResult testResult = nopol.getgZoltar().getGzoltar().getTestResults().get(nextTest);
+			/*while (nextTest != -1) {
+				TestResultImpl testResult = nopol.getgZoltar().getGzoltar().getTestResults().get(nextTest);
 				if (testResult.wasSuccessful()) {
 					countStatementSuccess += testResult.getCoveredComponents().size();
 				} else {
 					countStatementFailed += testResult.getCoveredComponents().size();
 				}
 				nextTest = coverage.nextSetBit(nextTest + 1);
-			}
+			}*/
 
 			System.out.println("Nb statement executed by the passing tests of the patched line: " + countStatementSuccess);
 			System.out.println("Nb statement executed by the failing tests of the patched line: " + countStatementFailed);
 		}
-		System.out.println("Nb statements: " + nopol.getgZoltar().getGzoltar().getSpectra().getNumberOfComponents());
-		System.out.println("Nb unit tests : " + nopol.getgZoltar().getGzoltar().getTestResults().size());
+//		System.out.println("Nb statements: " + nopol.getgZoltar().getGzoltar().getSpectra().getNumberOfComponents());
+//		System.out.println("Nb unit tests : " + nopol.getgZoltar().getGzoltar().getTestResults().size());
 		System.out.println("Nb Statements Analyzed : " + SynthesizerFactory.getNbStatementsAnalysed());
 		System.out.println("Nb Statements with Angelic Value Found : " + DefaultSynthesizer.getNbStatementsWithAngelicValue());
 		if (config.getSynthesis() == Config.NopolSynthesis.SMT) {

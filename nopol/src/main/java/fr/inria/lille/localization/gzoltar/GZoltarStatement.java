@@ -24,6 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * @author Favio D. DeMarco
  */
+@Deprecated
 final class GZoltarStatement implements SuspiciousStatement {
 
     private SourceLocation location;

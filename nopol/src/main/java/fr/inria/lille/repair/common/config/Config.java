@@ -1,12 +1,15 @@
 package fr.inria.lille.repair.common.config;
 
+import fr.inria.lille.localization.DumbFaultLocalizerImpl;
+import fr.inria.lille.localization.FaultLocalizer;
+import fr.inria.lille.localization.GZoltarFaultLocalizer;
+import fr.inria.lille.localization.OchiaiFaultLocalizer;
 import fr.inria.lille.repair.common.synth.StatementType;
 import xxl.java.library.FileLibrary;
 import xxl.java.library.JavaLibrary;
 
 import java.io.File;
 import java.io.IOException;
-
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Arrays;
@@ -18,6 +21,7 @@ import java.util.Properties;
 public class Config implements Serializable {
 
 	private static final long serialVersionUID = -2542128741040978263L;
+
 
 	public enum NopolMode {
 		REPAIR,
@@ -37,6 +41,12 @@ public class Config implements Serializable {
 	public enum NopolSolver {
 		Z3,
 		CVC4
+	}
+
+	public enum NopolLocalizer {
+		DUMB,
+		GZOLTAR,
+		OCHIAI
 	}
 
 	private final String filename = "config.ini";
@@ -75,22 +85,13 @@ public class Config implements Serializable {
 	private NopolSynthesis synthesis = NopolSynthesis.SMT;
 	private NopolOracle oracle = NopolOracle.ANGELIC;
 	private NopolSolver solver = NopolSolver.Z3;
+	private NopolLocalizer localizer = NopolLocalizer.DUMB;
 	private String solverPath;
 	private String[] projectSourcePath;
 	private String projectClasspath;
 	private String[] projectTests;
 
 	private int complianceLevel;
-
-	private boolean useFaultLocalization;
-
-	public boolean useFaultLocalization() {
-		return useFaultLocalization;
-	}
-
-	public void setUseFaultLocalization(boolean useFaultLocalization) {
-		this.useFaultLocalization = useFaultLocalization;
-	}
 
 	public Config() {
 		p = new Properties();
@@ -432,6 +433,27 @@ public class Config implements Serializable {
 	public void setMaxTimeBuildPatch(long maxTimeBuildPatch) {
 		this.maxTimeBuildPatch = maxTimeBuildPatch;
 	}
+
+	public FaultLocalizer getLocalizer(File[] sourceFiles, URL[] classpath, String[] testClasses) {
+		switch (this.localizer) {
+			case GZOLTAR:
+				try {
+					return new GZoltarFaultLocalizer(classpath, testClasses);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			case DUMB:
+				return new DumbFaultLocalizerImpl(sourceFiles, classpath, testClasses, this);
+			case OCHIAI:
+			default:
+				return new OchiaiFaultLocalizer(sourceFiles, classpath, testClasses, this);
+		}
+	}
+
+	public void setLocalizer(NopolLocalizer localizer) {
+		this.localizer = localizer;
+	}
+
 
 	@Override
 	public String toString() {

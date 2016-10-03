@@ -1,6 +1,6 @@
 package fr.inria.lille.repair.nopol.synth;
 
-import com.gzoltar.core.instr.testing.TestResult;
+import fr.inria.lille.localization.TestResult;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import xxl.java.junit.TestCase;

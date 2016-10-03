@@ -1,15 +1,14 @@
 package fr.inria.lille.localization;
 
+import xxl.java.junit.TestCase;
+
 /**
  * Created by bdanglot on 10/3/16.
  */
-public class TestResult {
+public interface TestResult {
 
-	private final String name;
-	private final boolean successful;
+	TestCase getTestCase();
 
-	public TestResult(String name, boolean successful) {
-		this.name = name;
-		this.successful = successful;
-	}
+	boolean isSuccessful();
+
 }

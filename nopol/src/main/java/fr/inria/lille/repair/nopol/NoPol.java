@@ -16,13 +16,9 @@
 package fr.inria.lille.repair.nopol;
 
 import com.gzoltar.core.components.Statement;
-import com.gzoltar.core.components.count.ComponentCount;
-import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.localization.FaultLocalizer;
-import fr.inria.lille.localization.FaultLocalizerImpl;
-import fr.inria.lille.localization.StatementExt;
-import fr.inria.lille.localization.gzoltar.GZoltarSuspiciousProgramStatements;
+import fr.inria.lille.localization.TestResult;
 import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.TestClassesFinder;
 import fr.inria.lille.repair.common.config.Config;
@@ -44,16 +40,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 
 /**
  * @author Favio D. DeMarco
  */
 public class NoPol {
-
-	@Deprecated
-	private GZoltarSuspiciousProgramStatements gZoltar;//TODO Replace GZoltar by generics Localizer
 
 	private FaultLocalizer localizer;
 
@@ -91,22 +83,9 @@ public class NoPol {
 
 	public List<Patch> build(String[] testClasses) {
 
-		this.localizer = new FaultLocalizerImpl(this.sourceFiles, this.classpath, testClasses, config);
-
 		Map<SourceLocation, List<TestResult>> testListPerStatement;
-		Collection<Statement> statements;
-
-//		if (this.config.useFaultLocalization()) {
-			gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath, testClasses);
-			statements = gZoltar.sortBySuspiciousness(testClasses);
-			if (statements.isEmpty()) {
-				throw new NoSuspiciousStatementException("NoPol did not find any suspicious statement.", "No suspicious statement");
-			}
-			testListPerStatement = getTestListPerStatement(gZoltar.getGzoltar().getTestResults());
-		/*} else {
-			statements = this.localizer.getStatements();
-			testListPerStatement = this.localizer.getTestListPerStatement();
-		}*/
+		this.localizer = config.getLocalizer(this.sourceFiles, this.classpath, testClasses);
+		testListPerStatement = this.localizer.getTestListPerStatement();
 
 		if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
 			try {
@@ -124,25 +103,10 @@ public class NoPol {
 				throw new RuntimeException("Unable to write transformed test", e);
 			}
 		}
-
-		return solveWithMultipleBuild(statements, testListPerStatement);
+		return solveWithMultipleBuild(testListPerStatement);
 	}
 
-	private Map<SourceLocation, List<TestResult>> getTestListPerStatement(List<TestResult> testResults) {
-		Map<SourceLocation, List<TestResult>> results = new HashMap<>();
-		for (TestResult testResult : testResults) {
-			List<ComponentCount> components = testResult.getCoveredComponents();
-			for (ComponentCount component1 : components) {
-				Statement component = (Statement) component1.getComponent();
-				SourceLocation sourceLocation = new SourceLocation(component.getMethod().getParent().getLabel(), component.getLineNumber());
-				if (!results.containsKey(sourceLocation)) {
-					results.put(sourceLocation, new ArrayList<TestResult>());
-				}
-				results.get(sourceLocation).add(testResult);
-			}
-		}
-		return results;
-	}
+
 
 	/*
 	 * First algorithm of Nopol,
@@ -151,16 +115,19 @@ public class NoPol {
 	 * build
 	 * try to find patch
 	 */
-	private List<Patch> solveWithMultipleBuild(Collection<Statement> statements, Map<SourceLocation, List<TestResult>> testListPerStatement) {
+	private List<Patch> solveWithMultipleBuild(Map<SourceLocation, List<TestResult>> testListPerStatement) {
 		List<Patch> patches = new ArrayList<>();
-		for (Iterator<Statement> iterator = statements.iterator(); iterator.hasNext() &&
+
+		for (SourceLocation sourceLocation : testListPerStatement.keySet()) {
+
+		/*for (Iterator<Statement> iterator = statements.iterator(); iterator.hasNext() &&
 				// limit the execution time
 				System.currentTimeMillis() - startTime <= TimeUnit.MINUTES.toMillis(config.getMaxTime()); ) {
 			Statement statement = iterator.next();
 			if (((StatementExt) statement).getEf() == 0) {
 				continue;
 			}
-			if (((StatementExt) statement).getNf() != 0) {
+			if (((StatementExt) statement).getNbTotalFailedTest() != 0) {
 				continue;
 			}
 			try {
@@ -168,7 +135,12 @@ public class NoPol {
 					continue;
 				NoPol.currentStatement = statement;
 				logger.debug("Analysing {}", statement);
-				SourceLocation sourceLocation = new SourceLocation(statement.getMethod().getParent().getName(), statement.getLineNumber());
+				SourceLocation sourceLocation = new SourceLocation(statement.getMethod().getParent().getName(), statement.getLineNumber());*/
+
+			try {
+
+				logger.debug("Analysing {}", sourceLocation);
+
 				Synthesizer synth = new SynthesizerFactory(sourceFiles, spooner, config).getFor(sourceLocation);
 
 				if (synth == Synthesizer.NO_OP_SYNTHESIZER) {
@@ -177,15 +149,14 @@ public class NoPol {
 
 				List<TestResult> tests = testListPerStatement.get(sourceLocation);
 
-
 				Set<String> failingClassTest = new HashSet<>();
 				for (int i = 0; i < tests.size(); i++) {
 					TestResult testResult = tests.get(i);
-					if (!testResult.wasSuccessful()) {
-						failingClassTest.add(testResult.getName().split("#")[0]);
+					if (!testResult.isSuccessful()) {
+						failingClassTest.add(testResult.getTestCase().className());
 					}
 				}
-				Collection<TestCase> failingTest = failingTests(failingClassTest.toArray(new String[0]), new URLClassLoader(classpath));
+				Collection<TestCase> failingTest = failingTests(failingClassTest.toArray(new String[0]), new URLClassLoader(classpath));//TODO [0] ?
 
 				if (failingTest.isEmpty()) {
 					continue;
@@ -193,13 +164,13 @@ public class NoPol {
 				List<Patch> tmpPatches = synth.buildPatch(classpath, tests, failingTest, config.getMaxTimeBuildPatch());
 				for (int i = 0; i < tmpPatches.size(); i++) {
 					Patch patch = tmpPatches.get(i);
-					if (isOk(patch, gZoltar.getGzoltar().getTestResults(), synth.getProcessor())) {
+					if (isOk(patch, tests, synth.getProcessor())) {
 						patches.add(patch);
 						if (config.isOnlyOneSynthesisResult()) {
 							break;
 						}
 					} else {
-						logger.debug("Could not find a patch in {}", statement);
+						logger.debug("Could not find a patch in {}", sourceLocation);
 					}
 				}
 
@@ -210,6 +181,7 @@ public class NoPol {
 		return patches;
 	}
 
+	@Deprecated
 	private boolean isInTest(Statement statement) {
 		return statement.getMethod().getParent().getName().contains("Test");
 	}
@@ -232,6 +204,7 @@ public class NoPol {
 		return listener.failedTests();
 	}
 
+	@Deprecated
 	private Collection<TestCase> failingTests(String[] testClasses) {
 		TestCasesListener listener = new TestCasesListener();
 		TestSuiteExecution.runCasesIn(testClasses, spooner.dumpedToClassLoader(), listener, this.config);
@@ -243,6 +216,7 @@ public class NoPol {
 	 *
 	 * @param clpath
 	 */
+	@Deprecated
 	private URL[] addJPFLibraryToCassPath(URL[] clpath) {
 
 		List<URL> classpath = new ArrayList<>();
@@ -257,7 +231,4 @@ public class NoPol {
 		return spooner;
 	}
 
-	public GZoltarSuspiciousProgramStatements getgZoltar() {
-		return gZoltar;
-	}
 }

@@ -16,12 +16,12 @@
 package fr.inria.lille.repair.nopol.synth;
 
 
-import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.commons.trace.SpecificationTestCasesListener;
+import fr.inria.lille.localization.TestResult;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.NoPolLauncher;
 import fr.inria.lille.repair.nopol.SourceLocation;

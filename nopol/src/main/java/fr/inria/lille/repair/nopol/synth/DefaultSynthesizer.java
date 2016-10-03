@@ -15,11 +15,11 @@
  */
 package fr.inria.lille.repair.nopol.synth;
 
-import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.trace.Specification;
+import fr.inria.lille.localization.TestResult;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.patch.StringPatch;
@@ -97,8 +97,8 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
 		Map<String, Number> constants = new HashMap<>();
 		DefaultConstantCollector constantCollector = new DefaultConstantCollector(constants);
 		spoonedProject.forked(sourceLocation.getContainingClassName()).process(constantCollector);
-
 		ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis(constants);
+
 		CodeGenesis genesis = synthesis.codesSynthesisedFrom(
 				(Class<T>) (type.getType()), data);
 		if (!genesis.isSuccessful()) {

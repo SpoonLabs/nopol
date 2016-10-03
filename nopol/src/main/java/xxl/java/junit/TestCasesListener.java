@@ -109,7 +109,7 @@ public class TestCasesListener extends RunListener {
     }
 
     protected TestCase testCaseOf(Description description) {
-        return TestCase.from(description.getClassName(), description.getMethodName(), numberOfTests());
+        return TestCase.from(description.getClassName(), description.getMethodName(), this.numberOfTests());
     }
 
     private TestCase addTestCaseTo(Collection<TestCase> collection, Description description) {
