@@ -1,8 +1,9 @@
-package fr.inria.lille.localization;
+package fr.inria.lille.localization.gzoltar;
 
 import com.gzoltar.core.GZoltar;
 import com.gzoltar.core.components.Statement;
 import com.gzoltar.core.instr.testing.TestResult;
+import fr.inria.lille.localization.StatementExt;
 import fr.inria.lille.localization.metric.Metric;
 import fr.inria.lille.localization.metric.Ochiai;
 

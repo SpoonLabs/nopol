@@ -13,20 +13,21 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.repair.nopol.sps.gzoltar;
+package fr.inria.lille.localization;
 
-import com.google.common.base.Function;
-import fr.inria.lille.repair.nopol.sps.SuspiciousStatement;
+import com.gzoltar.core.components.Statement;
+
+import java.util.List;
 
 /**
+ * A list of potential bug root-cause.
+ *
  * @author Favio D. DeMarco
  */
-enum GZoltarStatementWrapperFunction implements Function<com.gzoltar.core.components.Statement, SuspiciousStatement> {
+public interface SuspiciousProgramStatements {
 
-    INSTANCE;
-
-    @Override
-    public SuspiciousStatement apply(final com.gzoltar.core.components.Statement statement) {
-        return new GZoltarStatement(statement);
-    }
+    /**
+     * @return a ranked list of potential bug root-cause.
+     */
+    List<Statement> sortBySuspiciousness(final String... testClasses);
 }

@@ -13,14 +13,13 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.repair.nopol.sps.gzoltar;
+package fr.inria.lille.localization.gzoltar;
 
 import com.google.common.base.Predicate;
 import com.gzoltar.core.GZoltar;
 import com.gzoltar.core.components.Statement;
-import fr.inria.lille.localization.WGzoltar;
-import fr.inria.lille.repair.nopol.sps.SuspiciousProgramStatements;
-import fr.inria.lille.repair.nopol.sps.SuspiciousStatement;
+import fr.inria.lille.localization.SuspiciousProgramStatements;
+import fr.inria.lille.localization.SuspiciousStatement;
 
 import java.io.IOException;
 import java.net.URL;
@@ -35,6 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgramStatements {
 
+    @Deprecated //unused
     private enum IsSuspicious implements Predicate<Statement> {
         INSTANCE;
 
@@ -60,6 +60,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
         return new GZoltarSuspiciousProgramStatements(checkNotNull(classpath), checkNotNull(Arrays.asList("")));//getRootPackage(tests))));
     }
 
+    @Deprecated //unused
     private static String getRootPackage(String[] classes) {
         String rootPackage = classes[0].substring(0, classes[0].lastIndexOf('.'));
         for (int i = 1; i < classes.length; i++) {
@@ -109,7 +110,7 @@ public final class GZoltarSuspiciousProgramStatements implements SuspiciousProgr
     /**
      * @param testClasses
      * @return a ranked list of potential bug root-cause.
-     * @see fr.inria.lille.repair.nopol.sps.SuspiciousProgramStatements#sortBySuspiciousness(String...)
+     * @see SuspiciousProgramStatements#sortBySuspiciousness(String...)
      */
 
     public List<Statement> sortBySuspiciousness(final String... testClasses) {

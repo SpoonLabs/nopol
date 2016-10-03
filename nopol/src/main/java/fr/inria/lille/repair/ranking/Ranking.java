@@ -3,9 +3,9 @@ package fr.inria.lille.repair.ranking;
 import com.gzoltar.core.components.Statement;
 import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.localization.StatementExt;
+import fr.inria.lille.localization.gzoltar.GZoltarSuspiciousProgramStatements;
 import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.TestClassesFinder;
-import fr.inria.lille.repair.nopol.sps.gzoltar.GZoltarSuspiciousProgramStatements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

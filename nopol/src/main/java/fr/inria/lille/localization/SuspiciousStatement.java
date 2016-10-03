@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.repair.nopol.sps;
+package fr.inria.lille.localization;
 
 import com.gzoltar.core.components.Statement;
 import fr.inria.lille.repair.nopol.SourceLocation;

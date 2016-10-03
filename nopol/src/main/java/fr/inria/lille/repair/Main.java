@@ -16,10 +16,7 @@
 package fr.inria.lille.repair;
 
 
-import com.martiansoftware.jsap.FlaggedOption;
-import com.martiansoftware.jsap.JSAP;
-import com.martiansoftware.jsap.JSAPException;
-import com.martiansoftware.jsap.JSAPResult;
+import com.martiansoftware.jsap.*;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.synth.StatementType;
@@ -43,6 +40,7 @@ public class Main {
             if (!parseArguments(args, config)) {
                 return;
             }
+
             File[] sourceFiles = new File[config.getProjectSourcePath().length];
             for (int i = 0; i < config.getProjectSourcePath().length; i++) {
                 String path = config.getProjectSourcePath()[i];
@@ -96,6 +94,8 @@ public class Main {
             showUsage();
             return false;
         }
+
+        config.setUseFaultLocalization(jsapConfig.getBoolean("faultLocalization"));
 
         config.setType(strToStatementType(jsapConfig.getString("type")));
         config.setMode(strToMode(jsapConfig.getString("mode")));
@@ -274,5 +274,11 @@ public class Main {
         maxTime.setDefault("60");
         maxTime.setHelp("The maximum time execution in minute (whole execution time of NOPOL -- experimental do not use)");
         jsap.registerParameter(maxTime);
+
+        Switch faultLocation = new Switch("faultLocalization")
+                .setShortFlag('z')
+                .setLongFlag("faultLocalization");
+        faultLocation.setHelp("Tell if using a fault localizer or not");
+        jsap.registerParameter(faultLocation);
     }
 }

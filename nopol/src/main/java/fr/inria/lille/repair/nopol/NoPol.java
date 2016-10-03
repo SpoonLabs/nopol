@@ -19,7 +19,10 @@ import com.gzoltar.core.components.Statement;
 import com.gzoltar.core.components.count.ComponentCount;
 import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.commons.spoon.SpoonedProject;
+import fr.inria.lille.localization.FaultLocalizer;
+import fr.inria.lille.localization.FaultLocalizerImpl;
 import fr.inria.lille.localization.StatementExt;
+import fr.inria.lille.localization.gzoltar.GZoltarSuspiciousProgramStatements;
 import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.TestClassesFinder;
 import fr.inria.lille.repair.common.config.Config;
@@ -28,7 +31,6 @@ import fr.inria.lille.repair.nopol.patch.TestPatch;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.spoon.symbolic.AssertReplacer;
 import fr.inria.lille.repair.nopol.spoon.symbolic.TestExecutorProcessor;
-import fr.inria.lille.repair.nopol.sps.gzoltar.GZoltarSuspiciousProgramStatements;
 import fr.inria.lille.repair.nopol.synth.Synthesizer;
 import fr.inria.lille.repair.nopol.synth.SynthesizerFactory;
 import org.slf4j.Logger;
@@ -50,9 +52,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class NoPol {
 
+	@Deprecated
+	private GZoltarSuspiciousProgramStatements gZoltar;//TODO Replace GZoltar by generics Localizer
+
+	private FaultLocalizer localizer;
+
 	public static Statement currentStatement;
 	private URL[] classpath;
-	private GZoltarSuspiciousProgramStatements gZoltar;
 	private final TestPatch testPatch;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final SpoonedProject spooner;
@@ -61,19 +67,17 @@ public class NoPol {
 	public long startTime;
 	private Config config;
 
+
 	public NoPol(ProjectReference project, Config config) {
 		this.config = config;
 		this.classpath = project.classpath();
 		this.sourceFiles = project.sourceFiles();
-		this.testClasses = project.testClasses();
-
-		// get all test classes of the current project
-		/*if (this.testClasses == null || this.testClasses.length == 0) {
-			this.testClasses = new TestClassesFinder().findIn(classpath, false);
-		}*/
-		spooner = new SpoonedProject(this.sourceFiles, classpath, config);
-		testPatch = new TestPatch(sourceFiles[0], spooner, config);
-		startTime = System.currentTimeMillis();
+		this.spooner = new SpoonedProject(this.sourceFiles, this.classpath, config);
+		if (project.testClasses() != null) {
+			this.testClasses = project.testClasses();
+		}
+		this.testPatch = new TestPatch(this.sourceFiles[0], this.spooner, config);
+		this.startTime = System.currentTimeMillis();
 	}
 
 	public NoPol(final File[] sourceFiles, final URL[] classpath, Config config) {
@@ -82,17 +86,27 @@ public class NoPol {
 
 	public List<Patch> build() {
 		this.testClasses = new TestClassesFinder().findIn(classpath, false);
-		return build(testClasses);
+		return build(this.testClasses);
 	}
 
 	public List<Patch> build(String[] testClasses) {
-		gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath, testClasses);
-		Collection<Statement> statements = gZoltar.sortBySuspiciousness(testClasses);
-		if (statements.isEmpty()) {
-			throw new NoSuspiciousStatementException("NoPol did not find any suspicious statement.", "No suspicious statement");
-		}
 
-		Map<SourceLocation, List<TestResult>> testListPerStatement = getTestListPerStatement();
+		this.localizer = new FaultLocalizerImpl(this.sourceFiles, this.classpath, testClasses, config);
+
+		Map<SourceLocation, List<TestResult>> testListPerStatement;
+		Collection<Statement> statements;
+
+//		if (this.config.useFaultLocalization()) {
+			gZoltar = GZoltarSuspiciousProgramStatements.create(this.classpath, testClasses);
+			statements = gZoltar.sortBySuspiciousness(testClasses);
+			if (statements.isEmpty()) {
+				throw new NoSuspiciousStatementException("NoPol did not find any suspicious statement.", "No suspicious statement");
+			}
+			testListPerStatement = getTestListPerStatement(gZoltar.getGzoltar().getTestResults());
+		/*} else {
+			statements = this.localizer.getStatements();
+			testListPerStatement = this.localizer.getTestListPerStatement();
+		}*/
 
 		if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
 			try {
@@ -114,9 +128,8 @@ public class NoPol {
 		return solveWithMultipleBuild(statements, testListPerStatement);
 	}
 
-	private Map<SourceLocation, List<TestResult>> getTestListPerStatement() {
+	private Map<SourceLocation, List<TestResult>> getTestListPerStatement(List<TestResult> testResults) {
 		Map<SourceLocation, List<TestResult>> results = new HashMap<>();
-		List<TestResult> testResults = gZoltar.getGzoltar().getTestResults();
 		for (TestResult testResult : testResults) {
 			List<ComponentCount> components = testResult.getCoveredComponents();
 			for (ComponentCount component1 : components) {

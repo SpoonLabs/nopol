@@ -82,6 +82,16 @@ public class Config implements Serializable {
 
 	private int complianceLevel;
 
+	private boolean useFaultLocalization;
+
+	public boolean useFaultLocalization() {
+		return useFaultLocalization;
+	}
+
+	public void setUseFaultLocalization(boolean useFaultLocalization) {
+		this.useFaultLocalization = useFaultLocalization;
+	}
+
 	public Config() {
 		p = new Properties();
 		try {
