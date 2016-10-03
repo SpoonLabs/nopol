@@ -123,6 +123,8 @@ Usage: java -jar nopol.jar
 
   [--complianceLevel <complianceLevel>]
         The Java version of the project. (default: 7)
+  [(-z|--flocal) < ochiai|dumb|gzoltar>]
+        Define the fault localizer to be used. (default: ochiai)
 
 ```
 
