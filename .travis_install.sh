@@ -19,3 +19,8 @@ cd ..
 # compile Nopol
 cd "nopol"
 mvn clean package -DskipTests
+
+cd ..
+git clone https://github.com/danglotb/CoCoSpoon.git
+cd CoCoSpoon
+mvn clean install
