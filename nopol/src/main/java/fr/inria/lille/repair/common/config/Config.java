@@ -85,7 +85,7 @@ public class Config implements Serializable {
 	private NopolSynthesis synthesis = NopolSynthesis.SMT;
 	private NopolOracle oracle = NopolOracle.ANGELIC;
 	private NopolSolver solver = NopolSolver.Z3;
-	private NopolLocalizer localizer = NopolLocalizer.DUMB;
+	private NopolLocalizer localizer = NopolLocalizer.OCHIAI;
 	private String solverPath;
 	private String[] projectSourcePath;
 	private String projectClasspath;
