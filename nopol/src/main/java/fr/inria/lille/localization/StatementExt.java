@@ -2,13 +2,8 @@ package fr.inria.lille.localization;
 
 import com.gzoltar.core.components.Component;
 import com.gzoltar.core.components.Statement;
-import com.sun.xml.internal.ws.api.server.AbstractServerAsyncTransport;
 import fr.inria.lille.localization.metric.Metric;
-import fr.inria.lille.localization.metric.Ochiai;
 import fr.inria.lille.repair.nopol.SourceLocation;
-
-import javax.swing.*;
-import java.util.concurrent.Phaser;
 
 /**
  * Created by spirals on 24/07/15.
