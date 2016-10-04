@@ -22,17 +22,24 @@ The dynamic synthesis part of Nopol is described in [DynaMoth: Dynamic Code Synt
 
 Nopol requires Java and an SMT solver installed on the machine (e.g. Z3)
 
-1) First compile:
+1) CoCoSpoon:
 
 ```
-cd nopol
+git clone https://github.com/danglotb/CoCoSpoon.git
+cd CoCoSpoon
+git checkout java7
+mvn clean install
+```
 
+2) Compile NoPol:
+
+```
+cd ../nopol/nopol
 export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-
 mvn package -DskipTests
 ```
 
-2) Compile the test-projects
+3) Compile the test-projects
 
 ```
 cd ../test-projects/
@@ -40,7 +47,7 @@ cd ../test-projects/
 mvn test -DskipTests 
 ```
 
-3) Execute Nopol (parameters explained below)
+4) Execute Nopol (parameters explained below)
 
 ```
 cd ../test-projects/
@@ -49,7 +56,6 @@ java -jar nopol.jar \
 -c target/classes:target/test-classes:/home/martin/.m2/repository/junit/junit/4.11/junit-4.11.jar:/home/martin/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar \
 -t symbolic_examples.symbolic_example_1.NopolExampleTest \
 -p ../nopol/lib/z3/z3_for_linux
-
 ```
 
 It should output somehting like:
