@@ -7,6 +7,7 @@ import fr.inria.lille.spirals.repair.expression.access.Literal;
 import fr.inria.lille.spirals.repair.expression.factory.AccessFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -15,7 +16,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 
-public class DynamothConstantCollector extends DefaultConstantCollector {
+public class DynamothConstantCollector extends AbstractProcessor<CtLiteral> {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -69,10 +70,7 @@ public class DynamothConstantCollector extends DefaultConstantCollector {
         if (parent != null) {
             return;
         }
-        Class type = null;
-        if (ctLiteral.getValue() != null) {
-            type = ctLiteral.getValue().getClass();
-        }
+
         Object value = ctLiteral.getValue();
         if (value == null) {
             return;
