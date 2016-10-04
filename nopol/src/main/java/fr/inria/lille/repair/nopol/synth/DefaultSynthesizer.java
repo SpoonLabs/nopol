@@ -26,8 +26,7 @@ import fr.inria.lille.repair.common.patch.StringPatch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
-import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.ConstantCollector;
+import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.DefaultConstantCollector;
 import org.slf4j.LoggerFactory;
 import xxl.java.junit.TestCase;
 
@@ -90,8 +89,8 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
 			return Collections.EMPTY_LIST;
 		}
 		nbStatementsWithAngelicValue++;
-		Candidates constantes = new Candidates();
-		ConstantCollector constantCollector = new ConstantCollector(constantes, null, config);
+//		Candidates constantes = new Candidates();
+		DefaultConstantCollector constantCollector = new DefaultConstantCollector();
 		spoonedProject.forked(sourceLocation.getContainingClassName()).process(constantCollector);
 		Map<String, Integer> intConstants = new HashMap();
 		intConstants.put("-1", -1);

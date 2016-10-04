@@ -7,7 +7,6 @@ import fr.inria.lille.spirals.repair.expression.access.Literal;
 import fr.inria.lille.spirals.repair.expression.factory.AccessFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtLocalVariable;
@@ -16,7 +15,7 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 
-public class ConstantCollector extends AbstractProcessor<CtLiteral> {
+public class DynamothConstantCollector extends DefaultConstantCollector {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -25,7 +24,7 @@ public class ConstantCollector extends AbstractProcessor<CtLiteral> {
     private final Config config;
 
 
-    public ConstantCollector(Candidates candidates, String buggyMethod, Config config) {
+    public DynamothConstantCollector(Candidates candidates, String buggyMethod, Config config) {
         super();
         this.config = config;
         this.candidates = candidates;
