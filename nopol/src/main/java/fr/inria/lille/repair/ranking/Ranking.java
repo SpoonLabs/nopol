@@ -2,6 +2,7 @@ package fr.inria.lille.repair.ranking;
 
 import com.gzoltar.core.components.Statement;
 import com.gzoltar.core.instr.testing.TestResult;
+import fr.inria.lille.localization.AbstractStatement;
 import fr.inria.lille.localization.GZoltarFaultLocalizer;
 import fr.inria.lille.localization.StatementExt;
 import fr.inria.lille.localization.metric.Ochiai;
@@ -58,7 +59,7 @@ public class Ranking {
 		int successfulTests = 0;
 		int nbTest = 0;
 
-		List<StatementExt> suspiciousStatements = gZoltar.getStatements();
+		List<AbstractStatement> suspiciousStatements = gZoltar.getStatements();
 
 
 		String output = "";
@@ -79,7 +80,8 @@ public class Ranking {
 		output += "\n/************************/\n";
 		output += "/* Suspicious statement */\n";
 		output += "/************************/\n";
-		for (StatementExt statement : suspiciousStatements) {
+		for (AbstractStatement abstractStatement: suspiciousStatements) {
+			StatementExt statement = (StatementExt) abstractStatement;
 			String cl = statement.getLabel();
 			int line = statement.getLineNumber();
 

@@ -69,8 +69,12 @@ public final class GZoltarFaultLocalizer extends GZoltar implements FaultLocaliz
 		this.statements = sortBySuspiciousness(test);
 	}
 
-	public List<StatementExt> getStatements() {
-		return statements;
+	public List<AbstractStatement> getStatements() {
+		List<AbstractStatement> abstractStatements = new ArrayList<>();
+		for (StatementExt statement : this.statements) {
+			abstractStatements.add(statement);
+		}
+		return abstractStatements;
 	}
 
 	public List<com.gzoltar.core.instr.testing.TestResult> getTestResults() {

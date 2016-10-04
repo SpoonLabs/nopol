@@ -12,4 +12,6 @@ public interface FaultLocalizer {
 
 	Map<SourceLocation, List<TestResult>> getTestListPerStatement();
 
+	List<AbstractStatement> getStatements();
+
 }

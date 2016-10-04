@@ -22,9 +22,12 @@ public class CocoSpoonBasedSpectrumBasedFaultLocalizer extends DumbFaultLocalize
 	private int nbSucceedTest;
 	private int nbFailingTest;
 
+	private List<StatementSourceLocation> statements;
+
 	public CocoSpoonBasedSpectrumBasedFaultLocalizer(File[] sourcesClasses, URL[] classpath, String[] testClasses, Config config, Metric metric) {
 		super(sourcesClasses, classpath, testClasses, config);
 		this.metric = metric;
+		this.statements = new ArrayList<>();
 	}
 
 	@Override
@@ -64,7 +67,6 @@ public class CocoSpoonBasedSpectrumBasedFaultLocalizer extends DumbFaultLocalize
 	}
 
 	private void sortBySuspiciousness() {
-		List<StatementSourceLocation> sources = new ArrayList<>();
 		for (SourceLocation sourceLocation : this.countPerSourceLocation.keySet()) {
 			StatementSourceLocation current = new StatementSourceLocation(sourceLocation);
 			int ef = 0;
@@ -79,9 +81,9 @@ public class CocoSpoonBasedSpectrumBasedFaultLocalizer extends DumbFaultLocalize
 			current.setNp(nbSucceedTest - ep);
 			current.setEp(ep);
 			current.setEf(ef);
-			sources.add(current);
+			statements.add(current);
 		}
-		Collections.sort(sources, new Comparator<StatementSourceLocation>() {
+		Collections.sort(statements, new Comparator<StatementSourceLocation>() {
 			@Override
 			public int compare(StatementSourceLocation o1, StatementSourceLocation o2) {
 				return Double.compare(metric.value(o1.getEf(), o1.getEp(), o1.getNf(), o1.getNp()),
@@ -90,10 +92,18 @@ public class CocoSpoonBasedSpectrumBasedFaultLocalizer extends DumbFaultLocalize
 		});
 
 		LinkedHashMap<SourceLocation, List<TestResult>> map = new LinkedHashMap<>();
-		for (StatementSourceLocation source : sources) {
+		for (StatementSourceLocation source : statements) {
 			map.put(source.getLocation(), this.countPerSourceLocation.get(source.getLocation()));
 		}
 		this.countPerSourceLocation = map;
 	}
 
+	@Override
+	public List<AbstractStatement> getStatements() {
+		List<AbstractStatement> abstractStatements = new ArrayList<>();
+		for (StatementSourceLocation statement : this.statements) {
+			abstractStatements.add(statement);
+		}
+		return abstractStatements;
+	}
 }

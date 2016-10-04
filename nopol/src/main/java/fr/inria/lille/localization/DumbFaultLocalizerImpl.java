@@ -119,4 +119,8 @@ public class DumbFaultLocalizerImpl implements FaultLocalizer {
 		return this.countPerSourceLocation;
 	}
 
+	@Override
+	public List<AbstractStatement> getStatements() {
+		throw new UnsupportedOperationException();
+	}
 }
