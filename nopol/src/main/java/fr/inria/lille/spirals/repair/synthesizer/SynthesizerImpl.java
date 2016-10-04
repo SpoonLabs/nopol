@@ -389,7 +389,7 @@ public class SynthesizerImpl implements Synthesizer {
     private Candidates collectLiterals() {
         Candidates candidates = new Candidates();
         try {
-            spoon.processClass(location.getContainingClassName(), new ConstantCollector(candidates, buggyMethod, config));
+            spoon.processClass(location.getContainingClassName(), new DynamothConstantCollector(candidates, buggyMethod, config));
         } catch (Exception e) {
             logger.warn("Unable to collect literals", e);
         }
