@@ -5,10 +5,15 @@ import fr.inria.lille.commons.spoon.filter.CodeSnippetFilter;
 import fr.inria.lille.commons.spoon.util.SpoonElementLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
+import fr.inria.lille.commons.synthesis.CodeGenesis;
+import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
+import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.infinitel.loop.implant.LoopStatisticsTest;
 import fr.inria.lille.repair.nopol.NopolTest;
+import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.DefaultConstantCollector;
 import org.junit.Ignore;
 import org.junit.Test;
+import spoon.Launcher;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
@@ -21,13 +26,17 @@ import xxl.java.junit.TestCase;
 import xxl.java.library.FileLibrary;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class ValuesCollectorTest {
 
@@ -385,6 +394,78 @@ public class ValuesCollectorTest {
 				"(!(a < b))",
 				"((a * b) < 11)");
 		checkFoundFromIf(ifStatement, expected, (Multimap) Multimap.newSetMultimap());
+	}
+
+	@Test
+	public void collectConstantsWorth() throws Exception {
+
+		/* Here, we test that the constant collector is working: effectively collect literals (long and integer)
+		 * and that this collect is worth it: without nopol can not produce a patch */
+
+		List<String> knownPatches = Arrays.asList("-1 <= a", "1 <= a", "(r)<=(a)", "(-1)<(a)", "(0)<=(a)", "0 <= a", "-1 < a");
+
+		Collection specifications = getSpecificationExample5();
+
+		Map<String, Number> constants = new HashMap<>();
+		ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis(constants);
+
+		//first we run code genesis without collecting constants: i.e. the map is empty
+		CodeGenesis genesis = synthesis.codesSynthesisedFrom(
+				(StatementType.PRECONDITION).getType(), specifications);
+		//TODO actually, the patch provided is good too, constants are not necessary
+		assertFalse(knownPatches.contains(genesis.returnStatement()));
+
+		//then we collect constant
+		DefaultConstantCollector collector = new DefaultConstantCollector(constants);
+		Launcher l = new Launcher();
+		l.addInputResource("../test-projects/src/main/java/nopol_examples/nopol_example_5/NopolExample.java");
+		l.addProcessor(collector);
+		l.buildModel();
+		l.process();
+
+		assertEquals(3 , constants.size());
+
+		genesis = synthesis.codesSynthesisedFrom(
+				(StatementType.PRECONDITION).getType(), specifications);
+		//the return statement is a known patch
+		assertTrue(knownPatches.contains(genesis.returnStatement()));
+	}
+
+	/**
+	 * @return the collection of the specifications of the example 5
+	 */
+	private Collection getSpecificationExample5() {
+		Map<String, Object> values = (Map) MetaMap.newHashMap(
+				asList("a","nopol_examples.nopol_example_5.NopolExample.this.unreachableFromInnterStaticClass!=null","r"),
+				asList(-5,false,1)
+		);
+		Map<String, Object> values2 = (Map) MetaMap.newHashMap(
+				asList("a","nopol_examples.nopol_example_5.NopolExample.this.unreachableFromInnterStaticClass!=null","r"),
+				asList(2,false,1)
+		);
+		Map<String, Object> values3 = (Map) MetaMap.newHashMap(
+				asList("a","nopol_examples.nopol_example_5.NopolExample.this.unreachableFromInnterStaticClass!=null","r"),
+				asList(10,false,1)
+		);
+		Map<String, Object> values4 = (Map) MetaMap.newHashMap(
+				asList("a","nopol_examples.nopol_example_5.NopolExample.this.unreachableFromInnterStaticClass!=null","r"),
+				asList(-2,false,1)
+		);
+		Map<String, Object> values5 = (Map) MetaMap.newHashMap(
+				asList("a","nopol_examples.nopol_example_5.NopolExample.this.unreachableFromInnterStaticClass!=null","r"),
+				asList(1,false,1)
+		);
+		Map<String, Object> values6 = (Map) MetaMap.newHashMap(
+				asList("a","nopol_examples.nopol_example_5.NopolExample.this.unreachableFromInnterStaticClass!=null","r"),
+				asList(0,false,1)
+		);
+		Specification spec = new Specification(values,false);
+		Specification spec2 = new Specification(values2,true);
+		Specification spec3 = new Specification(values3,true);
+		Specification spec4 = new Specification(values4,false);
+		Specification spec5 = new Specification(values5,true);
+		Specification spec6 = new Specification(values6,true);
+		return Arrays.asList(spec, spec2, spec3, spec4, spec4, spec5, spec6);
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
