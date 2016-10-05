@@ -66,7 +66,7 @@ public final class GZoltarFaultLocalizer extends GZoltar implements FaultLocaliz
 			this.addPackageToInstrument(packageName);
 		}
 
-		this.statements = sortBySuspiciousness(test);
+		this.statements = run(test);
 	}
 
 	public List<AbstractStatement> getStatements() {
@@ -110,8 +110,7 @@ public final class GZoltarFaultLocalizer extends GZoltar implements FaultLocaliz
 	 * @param testClasses
 	 * @return a ranked list of potential bug root-cause.
 	 */
-
-	private List<StatementExt> sortBySuspiciousness(final String... testClasses) {
+	private List<StatementExt> run(final String... testClasses) {
 		for (String className : checkNotNull(testClasses)) {
 			this.addTestToExecute(className); // we want to execute the test
 			this.addClassNotToInstrument(className); // we don't want to include the test as root-cause
