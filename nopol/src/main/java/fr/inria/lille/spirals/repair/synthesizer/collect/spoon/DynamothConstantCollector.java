@@ -24,9 +24,7 @@ public class DynamothConstantCollector extends AbstractProcessor<CtLiteral> {
     private final String buggyMethod;
     private final Config config;
 
-
     public DynamothConstantCollector(Candidates candidates, String buggyMethod, Config config) {
-        super();
         this.config = config;
         this.candidates = candidates;
         this.buggyMethod = buggyMethod;

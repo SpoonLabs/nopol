@@ -154,7 +154,7 @@ public class CodeSynthesisTest {
 
 	@Test
 	public void reduceValuesWithConstants() {
-		Map<String, Integer> constants = MetaMap.newHashMap(asList("one", "two", "three"), asList(1, 2, 3));
+		Map<String, Number> constants = MetaMap.<String, Number>newHashMap(Arrays.<String>asList("one", "two", "three"), Arrays.<Number>asList(1, 2, 3));
 		ConstraintBasedSynthesis synthesiser = new ConstraintBasedSynthesis(SolverFactory.solverLogic(), constants, (List) asList());
 		Map<String, Object> inputA = (Map) MetaMap.newHashMap(asList("v", "w", "x", "y", "z"), asList(0, 1, 'a', 2, 3));
 		Map<String, Object> inputB = (Map) MetaMap.newHashMap(asList("v", "w", "x", "y", "z"), asList(0, 1, 'a', 0, 3));

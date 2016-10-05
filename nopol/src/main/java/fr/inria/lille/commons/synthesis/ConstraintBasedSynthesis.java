@@ -17,6 +17,7 @@ import xxl.java.container.classic.MetaMap;
 import xxl.java.container.map.Multimap;
 import xxl.java.library.ClassLibrary;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -27,10 +28,14 @@ import static xxl.java.library.LoggerLibrary.*;
 
 public class ConstraintBasedSynthesis {
 
+    private ISymbol logic;
+    private Map<String, Number> constants;
+    private Collection<OperatorTheory> theories;
+    private SynthesisScriptBuilder scriptBuilder;
     public static int level = 0;
     public static Collection<Operator<?>> operators;
 
-    public ConstraintBasedSynthesis(Map<String, Integer> constants) {
+    public ConstraintBasedSynthesis(Map<String, Number> constants) {
         this.logic = SolverFactory.solverLogic();
         this.theories = SynthesisTheoriesBuilder.theoriesForConstraintBasedSynthesis(logic);
         this.constants = constants;
@@ -43,10 +48,10 @@ public class ConstraintBasedSynthesis {
     }
 
     public ConstraintBasedSynthesis(ISymbol logic) {
-        this(logic, MetaMap.newHashMap(asList("-1", "0", "1"), asList(-1, 0, 1)), SynthesisTheoriesBuilder.theoriesForConstraintBasedSynthesis(logic));
+        this(logic, MetaMap.<String, Number>newHashMap(asList("-1", "0", "1"), Arrays.<Number>asList(-1, 0, 1)), SynthesisTheoriesBuilder.theoriesForConstraintBasedSynthesis(logic));
     }
 
-    public ConstraintBasedSynthesis(ISymbol logic, Map<String, Integer> constants, Collection<OperatorTheory> theories) {
+    public ConstraintBasedSynthesis(ISymbol logic, Map<String, Number> constants, Collection<OperatorTheory> theories) {
         this.logic = logic;
         this.theories = theories;
         this.constants = constants;
@@ -91,7 +96,7 @@ public class ConstraintBasedSynthesis {
     }
 
     protected Collection<String> reduceInputsWithConstants(Collection<Map<String, Object>> inputs) {
-        Collection<Integer> constantValues = constants().values();
+        Collection<Number> constantValues = constants().values();
         Collection<String> duplicates = MetaList.newLinkedList();
         Multimap<String, Object> multimap = Multimap.newSetMultimap();
         multimap.addAll(inputs);
@@ -192,7 +197,7 @@ public class ConstraintBasedSynthesis {
         return scriptBuilder;
     }
 
-    protected Map<String, Integer> constants() {
+    protected Map<String, Number> constants() {
         return constants;
     }
 
@@ -204,8 +209,5 @@ public class ConstraintBasedSynthesis {
         return loggerFor(this);
     }
 
-    private ISymbol logic;
-    private Map<String, Integer> constants;
-    private Collection<OperatorTheory> theories;
-    private SynthesisScriptBuilder scriptBuilder;
+
 }
