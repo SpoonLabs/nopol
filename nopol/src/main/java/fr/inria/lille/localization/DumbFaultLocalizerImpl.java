@@ -33,6 +33,7 @@ public class DumbFaultLocalizerImpl implements FaultLocalizer {
 
 	/**
 	 * run all testClasses to build the covered code
+	 *
 	 * @param testClasses
 	 * @param config
 	 * @param spooner
@@ -42,14 +43,13 @@ public class DumbFaultLocalizerImpl implements FaultLocalizer {
 		ClassLoader cl = spooner.processedAndDumpedToClassLoader(processor);
 		TestCasesListener listener = new TestCasesListener();
 		Map<String, Boolean> resultsPerNameOfTest = new HashMap<>();
-		Map<String, Map<String, Map<Integer, Boolean>>> linesExecutedPerTestNames = new HashMap<>();
+		Map<String, Map<SourceLocation, Boolean>> linesExecutedPerTestNames = new HashMap<>();
 		for (int i = 0; i < testClasses.length; i++) {
 			try {
 				for (String methodName : this.getTestMethods(cl.loadClass(testClasses[i]))) {
 					String testMethod = testClasses[i] + "#" + methodName;
 					TestSuiteExecution.runTest(testMethod, cl, listener, config);
 					linesExecutedPerTestNames.put(testMethod, copyExecutedLinesAndReinit(_Instrumenting.lines));
-					//Since we executed one test at the time, the listener contains one and only one TestCase
 					resultsPerNameOfTest.put(testMethod, listener.numberOfFailedTests() == 0);
 				}
 			} catch (ClassNotFoundException e) {
@@ -59,22 +59,37 @@ public class DumbFaultLocalizerImpl implements FaultLocalizer {
 		buildTestResultPerSourceLocation(resultsPerNameOfTest, linesExecutedPerTestNames);
 	}
 
+
+	/**
+	 * This method copy the original map given, and set all its boolean at false to re-run a new test case
+	 *
+	 * @param original map to copy and reinit
+	 * @return a copy of the map original
+	 */
+	protected Map<SourceLocation, Boolean> copyExecutedLinesAndReinit(Map<String, Map<Integer, Boolean>> original) {
+		Map<SourceLocation, Boolean> copy = new HashMap<>();
+		for (String s : original.keySet()) {
+			for (Integer i : original.get(s).keySet()) {
+				copy.put(new SourceLocation(s, i), original.get(s).get(i));
+				original.get(s).put(i, false);
+			}
+		}
+		return copy;
+	}
+
 	/**
 	 * @param resultsPerNameOfTest
 	 * @param linesExecutedPerTestNames
 	 */
-	protected void buildTestResultPerSourceLocation(Map<String, Boolean> resultsPerNameOfTest, Map<String, Map<String, Map<Integer, Boolean>>> linesExecutedPerTestNames) {
+	protected void buildTestResultPerSourceLocation(Map<String, Boolean> resultsPerNameOfTest, Map<String, Map<SourceLocation, Boolean>> linesExecutedPerTestNames) {
 		this.countPerSourceLocation = new HashMap<>();
 		for (String fullQualifiedMethodTestName : linesExecutedPerTestNames.keySet()) {
-			for (String className : linesExecutedPerTestNames.get(fullQualifiedMethodTestName).keySet()) {
-				Map<Integer, Boolean> coveredLines = linesExecutedPerTestNames.get(fullQualifiedMethodTestName).get(className);
-				for (Integer line : coveredLines.keySet()) {
-					SourceLocation sourceLocation = new SourceLocation(className, line);
-					if (coveredLines.get(line)) {
-						if (!this.countPerSourceLocation.containsKey(sourceLocation))
-							this.countPerSourceLocation.put(sourceLocation, new ArrayList<TestResult>());
-						this.countPerSourceLocation.get(sourceLocation).add(new TestResultImpl(TestCase.from(fullQualifiedMethodTestName), resultsPerNameOfTest.get(fullQualifiedMethodTestName)));
-					}
+			Map<SourceLocation, Boolean> coveredLines = linesExecutedPerTestNames.get(fullQualifiedMethodTestName);
+			for (SourceLocation sourceLocation : coveredLines.keySet()) {
+				if (coveredLines.get(sourceLocation)) {
+					if (!this.countPerSourceLocation.containsKey(sourceLocation))
+						this.countPerSourceLocation.put(sourceLocation, new ArrayList<TestResult>());
+					this.countPerSourceLocation.get(sourceLocation).add(new TestResultImpl(TestCase.from(fullQualifiedMethodTestName), resultsPerNameOfTest.get(fullQualifiedMethodTestName)));
 				}
 			}
 		}
@@ -95,24 +110,6 @@ public class DumbFaultLocalizerImpl implements FaultLocalizer {
 		return methodsNames;
 	}
 
-	/**
-	 * This method copy the original map given, and set all its boolean at false to re-run a new test case
-	 *
-	 * @param original map to copy and reinit
-	 * @return a copy of the map original
-	 */
-	protected Map<String, Map<Integer, Boolean>> copyExecutedLinesAndReinit(Map<String, Map<Integer, Boolean>> original) {
-		Map<String, Map<Integer, Boolean>> copy = new HashMap<>();
-		for (String s : original.keySet()) {
-			Map<Integer, Boolean> internalCopy = new HashMap<>();
-			for (Integer i : original.get(s).keySet()) {
-				internalCopy.put(i, original.get(s).get(i));
-				original.get(s).put(i, false);
-			}
-			copy.put(s, internalCopy);
-		}
-		return copy;
-	}
 
 	@Override
 	public Map<SourceLocation, List<TestResult>> getTestListPerStatement() {

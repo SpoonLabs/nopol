@@ -35,7 +35,7 @@ public class CocoSpoonBasedSpectrumBasedFaultLocalizer extends DumbFaultLocalize
 		ClassLoader cl = spooner.processedAndDumpedToClassLoader(processor);
 		TestCasesListener listener = new TestCasesListener();
 		Map<String, Boolean> resultsPerNameOfTest = new HashMap<>();
-		Map<String, Map<String, Map<Integer, Boolean>>> linesExecutedPerTestNames = new HashMap<>();
+		Map<String, Map<SourceLocation, Boolean>> linesExecutedPerTestNames = new HashMap<>();
 		nbFailingTest = 0;
 		nbSucceedTest = 0;
 		for (int i = 0; i < testClasses.length; i++) {
