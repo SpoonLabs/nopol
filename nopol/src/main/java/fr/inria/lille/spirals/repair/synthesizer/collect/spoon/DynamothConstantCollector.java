@@ -8,12 +8,7 @@ import fr.inria.lille.spirals.repair.expression.factory.AccessFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.code.CtAssignment;
 import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtThrow;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 
 public class DynamothConstantCollector extends AbstractProcessor<CtLiteral> {
@@ -33,51 +28,21 @@ public class DynamothConstantCollector extends AbstractProcessor<CtLiteral> {
     @Override
     public boolean isToBeProcessed(CtLiteral candidate) {
         CtMethod parent = candidate.getParent(CtMethod.class);
+        Object value = candidate.getValue();
         if (parent == null) {
             return false;
+        } else if (value instanceof Boolean || value == null) {
+            return false;
         }
-        if (buggyMethod != null) {
-            return parent.getSimpleName().equals(buggyMethod);
-        }
-        return true;
+        return (this.buggyMethod == null || parent.getSimpleName().equals(this.buggyMethod)) &&
+                Number.class.isAssignableFrom(value.getClass());
     }
 
     @Override
     public void process(CtLiteral ctLiteral) {
-        if (ctLiteral.getValue() instanceof Boolean) {
-            return;
-        } else if (ctLiteral.getValue() instanceof Number) {
-            if (ctLiteral.getValue().equals(1) ||
-                    ctLiteral.getValue().equals(0)) {
-                return;
-            }
-        }
-        CtElement parent = ctLiteral.getParent(CtLocalVariable.class);
-        if (parent != null) {
-            return;
-        }
-        parent = ctLiteral.getParent(CtAssignment.class);
-        if (parent != null) {
-            return;
-        }
-        parent = ctLiteral.getParent(CtField.class);
-        if (parent != null) {
-            return;
-        }
-        parent = ctLiteral.getParent(CtThrow.class);
-        if (parent != null) {
-            return;
-        }
-
-        Object value = ctLiteral.getValue();
-        if (value == null) {
-            return;
-        }
-        if (Number.class.isAssignableFrom(value.getClass())) {
-            Literal constant = AccessFactory.literal(ctLiteral.getValue(), config);
-            if (candidates.add(constant)) {
-                logger.debug("[data] " + constant);
-            }
+        Literal constant = AccessFactory.literal(ctLiteral.getValue(), config);
+        if (candidates.add(constant)) {
+            logger.debug("[data] " + constant);
         }
     }
 }
