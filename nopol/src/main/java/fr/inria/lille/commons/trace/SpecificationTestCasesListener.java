@@ -67,7 +67,8 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 		}
 
 		if (output.equals(reference) && this.keys.equals(inputs.keySet())) {
-			this.logger.warn("You may have some redundant test: same input and same outcome, only one will be used: discarded.");// case 3
+			this.logger.warn("You may have some redundant test: same input and same outcome: inputs={} : output={}.", inputs, output);// case 3
+			this.logger.warn("Only one will be used: discarded.");// case 3
 			// already there, we don't duplicate the specification line which would slow SMT afterwards
 			return;
 		}
@@ -77,10 +78,10 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 		// we discard it
 		this.inconsistentInputs.add(inputs);
 		if (!this.keys.equals(inputs.keySet())) {
-			this.logger.debug("Malformed problems: the same input value has different outcome: discarded.");// case 2
+			this.logger.debug("Ill-formed problem: not the input variables in input={} reference={}", inputs, this.keys);// case 2
 			consistentInputs().remove(inputs);
 		} else {
-			this.logger.debug("Inconsistent specification: same input with same outcome, the condition can be flipped with no impact: discarded.");// case 1
+			this.logger.debug("Same input with different outcome, logical contradiction, discarding the second one {}, {}, {}", inputs, consistentInputs.get(inputs), output);// case 1
 		}
 	}
 
