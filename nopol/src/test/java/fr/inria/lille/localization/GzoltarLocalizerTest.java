@@ -49,11 +49,11 @@ public class GzoltarLocalizerTest {
 
 		List<AbstractStatement> sortedStatements = localizer.getStatements();
 
-		assertEquals(0.534, metric.value(sortedStatements.get(0).getEf(), sortedStatements.get(0).getEp(), sortedStatements.get(0).getNf(), sortedStatements.get(0).getNp()), 10E1);
-		assertEquals(0.5, metric.value(sortedStatements.get(1).getEf(), sortedStatements.get(1).getEp(), sortedStatements.get(1).getNf(), sortedStatements.get(1).getNp()), 10E1);
-		assertEquals(0.471, metric.value(sortedStatements.get(2).getEf(), sortedStatements.get(2).getEp(), sortedStatements.get(2).getNf(), sortedStatements.get(2).getNp()), 10E1);
-		assertEquals(0.0, metric.value(sortedStatements.get(3).getEf(), sortedStatements.get(3).getEp(), sortedStatements.get(3).getNf(), sortedStatements.get(3).getNp()), 10E1);
-		assertEquals(0.0, metric.value(sortedStatements.get(4).getEf(), sortedStatements.get(4).getEp(), sortedStatements.get(4).getNf(), sortedStatements.get(4).getNp()), 10E1);
+		assertEquals(0.534, sortedStatements.get(0).getSuspiciousness(), 10E-3);
+		assertEquals(0.5, sortedStatements.get(1).getSuspiciousness(), 10E-3);
+		assertEquals(0.471, sortedStatements.get(2).getSuspiciousness(), 10E-3);
+		assertEquals(0.0, sortedStatements.get(3).getSuspiciousness(), 10E-3);
+		assertEquals(0.0, sortedStatements.get(4).getSuspiciousness(), 10E-3);
 
 		//Rank 1
 		assertEquals(sourceLocation5, ((StatementSourceLocation)sortedStatements.get(0)).getLocation());
