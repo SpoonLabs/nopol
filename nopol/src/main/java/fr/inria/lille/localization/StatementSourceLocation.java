@@ -1,5 +1,6 @@
 package fr.inria.lille.localization;
 
+import fr.inria.lille.localization.metric.Metric;
 import fr.inria.lille.repair.nopol.SourceLocation;
 
 /**
@@ -9,7 +10,8 @@ public class StatementSourceLocation extends AbstractStatement {
 
 	private final SourceLocation location;
 
-	public StatementSourceLocation(SourceLocation location) {
+	public StatementSourceLocation(Metric metric, SourceLocation location) {
+		super(metric);
 		this.location = location;
 	}
 

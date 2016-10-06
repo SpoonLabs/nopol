@@ -5,7 +5,6 @@ import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.localization.AbstractStatement;
 import fr.inria.lille.localization.GZoltarFaultLocalizer;
 import fr.inria.lille.localization.StatementExt;
-import fr.inria.lille.localization.metric.Ochiai;
 import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.TestClassesFinder;
 import org.slf4j.Logger;
@@ -89,11 +88,7 @@ public class Ranking {
 					"%s:%d -> %s (ep: %d, ef: %d, np: %d, nf: %d)\n",
 					cl,
 					line,
-					statement.getSuspiciousness(new Ochiai()), //TODO
-					statement.getEp(),
-					statement.getEf(),
-					statement.getNp(),
-					statement.getNf());
+					statement.getSuspiciousness());
 		}
 		return output;
 	}

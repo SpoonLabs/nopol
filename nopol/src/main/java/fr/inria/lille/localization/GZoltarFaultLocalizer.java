@@ -149,7 +149,7 @@ public final class GZoltarFaultLocalizer extends GZoltar implements FaultLocaliz
 				}
 				nextTest = coverage.nextSetBit(nextTest + 1);
 			}
-			StatementExt s = new StatementExt(statement);
+			StatementExt s = new StatementExt(this.metric, statement);
 			s.setEf(executedAndFailedCount);
 			s.setEp(executedAndPassedCount);
 			s.setNp(successfulTests - executedAndPassedCount);
@@ -160,8 +160,7 @@ public final class GZoltarFaultLocalizer extends GZoltar implements FaultLocaliz
 			@Override
 			public int compare(final StatementExt o1, final StatementExt o2) {
 				// reversed parameters because we want a descending order list
-				return Double.compare(metric.value(o2.getEf(), o2.getEp(), o2.getNf(), o2.getNp()),
-						metric.value(o1.getEf(), o1.getEp(), o1.getNf(), o1.getNp()));
+				return Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness());
 			}
 		});
 		return result;

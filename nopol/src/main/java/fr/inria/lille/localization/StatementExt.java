@@ -12,21 +12,17 @@ public class StatementExt extends StatementSourceLocation {
 
     private Statement statement;
 
-    public StatementExt(Component c, int lN) {
-        super(new SourceLocation(c.getLabel(), lN));
+    public StatementExt(Metric metric, Component c, int lN) {
+        super(metric, new SourceLocation(c.getLabel(), lN));
         this.statement = new Statement(c, lN);
     }
 
-    public StatementExt(Statement s) {
-        super(new SourceLocation(s.getClazz().getLabel(), s.getLineNumber()));
+    public StatementExt(Metric metric, Statement s) {
+        super(metric, new SourceLocation(s.getClazz().getLabel(), s.getLineNumber()));
         this.statement = new Statement(s.getParent(), s.getLineNumber());
         this.statement.setLabel(s.getLabel());
         this.statement.setSuspiciousness(s.getSuspiciousness());
         this.statement.setLineNumber(s.getLineNumber());
-    }
-
-    public double getSuspiciousness(Metric metric) {
-        return metric.value(super.getEf(), super.getEp(), super.getNf(), super.getNp());
     }
 
     public int getLineNumber() {

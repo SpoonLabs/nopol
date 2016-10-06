@@ -68,7 +68,7 @@ public class CocoSpoonBasedSpectrumBasedFaultLocalizer extends DumbFaultLocalize
 
 	private void sortBySuspiciousness() {
 		for (SourceLocation sourceLocation : this.countPerSourceLocation.keySet()) {
-			StatementSourceLocation current = new StatementSourceLocation(sourceLocation);
+			StatementSourceLocation current = new StatementSourceLocation(this.metric, sourceLocation);
 			int ef = 0;
 			int ep = 0;
 			for (TestResult results : this.countPerSourceLocation.get(sourceLocation)) {
@@ -86,8 +86,7 @@ public class CocoSpoonBasedSpectrumBasedFaultLocalizer extends DumbFaultLocalize
 		Collections.sort(statements, new Comparator<StatementSourceLocation>() {
 			@Override
 			public int compare(StatementSourceLocation o1, StatementSourceLocation o2) {
-				return Double.compare(metric.value(o2.getEf(), o2.getEp(), o2.getNf(), o2.getNp()),
-						metric.value(o1.getEf(), o1.getEp(), o1.getNf(), o1.getNp()));
+				return Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness());
 			}
 		});
 

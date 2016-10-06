@@ -1,5 +1,7 @@
 package fr.inria.lille.localization;
 
+import fr.inria.lille.localization.metric.Metric;
+
 /**
  * Created by bdanglot on 10/3/16.
  */
@@ -12,6 +14,12 @@ public abstract class AbstractStatement {
 	private int np;
 
 	private int nf;
+
+	private Metric metric;
+
+	public AbstractStatement(Metric metric) {
+		this.metric = metric;
+	}
 
 	public int getEf() {
 		return ef;
@@ -43,6 +51,10 @@ public abstract class AbstractStatement {
 
 	public void setNp(int np) {
 		this.np = np;
+	}
+
+	public double getSuspiciousness() {
+		return this.metric.value(this.ef, this.ep, this.nf, this.np);
 	}
 
 }
