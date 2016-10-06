@@ -71,7 +71,7 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
 		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
 		int dataSize = data.size();
 		if (dataSize < 2) {
-			LoggerFactory.getLogger(this.getClass()).info("{} input values set(s). There are not enough tests for {} otherwise the patch would be \"true\" or \"false\"",
+			LoggerFactory.getLogger(this.getClass()).info("{} input values set(s). A trivial patch is \"true\" or \"false\"",
 					dataSize, sourceLocation);
 			return Collections.EMPTY_LIST;
 		}
