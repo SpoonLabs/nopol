@@ -86,8 +86,8 @@ public class CocoSpoonBasedSpectrumBasedFaultLocalizer extends DumbFaultLocalize
 		Collections.sort(statements, new Comparator<StatementSourceLocation>() {
 			@Override
 			public int compare(StatementSourceLocation o1, StatementSourceLocation o2) {
-				return Double.compare(metric.value(o1.getEf(), o1.getEp(), o1.getNf(), o1.getNp()),
-						metric.value(o2.getEf(), o2.getEp(), o2.getNf(), o2.getNp()));
+				return Double.compare(metric.value(o2.getEf(), o2.getEp(), o2.getNf(), o2.getNp()),
+						metric.value(o1.getEf(), o1.getEp(), o1.getNf(), o1.getNp()));
 			}
 		});
 

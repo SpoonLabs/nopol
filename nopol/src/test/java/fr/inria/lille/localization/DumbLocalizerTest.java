@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by bdanglot on 10/4/16.
@@ -28,10 +29,11 @@ public class DumbLocalizerTest {
 		};
 		String [] testClasses = new String[] {"nopol_examples.nopol_example_1.NopolExampleTest"};
 		Config config = new Config();
-		config.setLocalizer(Config.NopolLocalizer.DUMB);
 		DumbFaultLocalizerImpl localizer = new DumbFaultLocalizerImpl(sources, classpath, testClasses, config);
 
 		Map<SourceLocation, List<TestResult>> executedSourceLocationPerTest = localizer.getTestListPerStatement();
 		assertEquals(8, executedSourceLocationPerTest.keySet().size());
+
+		assertTrue(executedSourceLocationPerTest.keySet().contains(new SourceLocation("nopol_examples.nopol_example_1.NopolExample", 16)));
 	}
 }

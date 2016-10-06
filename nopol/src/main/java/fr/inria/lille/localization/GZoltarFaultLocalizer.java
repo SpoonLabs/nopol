@@ -160,8 +160,8 @@ public final class GZoltarFaultLocalizer extends GZoltar implements FaultLocaliz
 			@Override
 			public int compare(final StatementExt o1, final StatementExt o2) {
 				// reversed parameters because we want a descending order list
-				return Double.compare(metric.value(o1.getEf(), o1.getEp(), o1.getNf(), o1.getNp()),
-						metric.value(o2.getEf(), o2.getEp(), o2.getNf(), o2.getNp()));
+				return Double.compare(metric.value(o2.getEf(), o2.getEp(), o2.getNf(), o2.getNp()),
+						metric.value(o1.getEf(), o1.getEp(), o1.getNf(), o1.getNp()));
 			}
 		});
 		return result;
