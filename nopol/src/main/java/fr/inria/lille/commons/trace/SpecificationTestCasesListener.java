@@ -66,7 +66,7 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 			return;
 		}
 
-		if (output.equals(reference)) {
+		if (output.equals(reference) && this.keys.equals(inputs.keySet())) {
 			this.logger.warn("You may have some redundant test: same input and same outcome, only one will be used: discarded.");// case 3
 			// already there, we don't duplicate the specification line which would slow SMT afterwards
 			return;
