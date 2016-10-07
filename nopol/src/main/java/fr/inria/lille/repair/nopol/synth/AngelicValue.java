@@ -1,7 +1,7 @@
 package fr.inria.lille.repair.nopol.synth;
 
-import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.commons.trace.Specification;
+import fr.inria.lille.localization.TestResult;
 import xxl.java.junit.TestCase;
 
 import java.net.URL;
@@ -15,6 +15,7 @@ public interface AngelicValue<T> {
 
     Collection<Specification<T>> buildFor(final URL[] classpath, List<TestResult> testClasses, final Collection<TestCase> failures);
 
+    //TODO UNUSED
     Collection<Specification<T>> buildFor(final URL[] classpath, final String[] testClasses, final Collection<TestCase> failures);
 
     boolean isAViablePatch();

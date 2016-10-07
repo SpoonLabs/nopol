@@ -49,6 +49,8 @@ public final class SourceLocation implements Serializable {
         this.endSource = endSource;
     }
 
+
+
     /**
      * @param containingClassName
      * @param lineNumber

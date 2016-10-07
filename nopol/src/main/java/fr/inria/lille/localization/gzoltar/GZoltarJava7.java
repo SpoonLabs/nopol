@@ -13,7 +13,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.repair.nopol.sps.gzoltar;
+package fr.inria.lille.localization.gzoltar;
 
 import com.gzoltar.core.GZoltar;
 import com.gzoltar.core.agent.AgentCreator;
@@ -45,6 +45,7 @@ import static java.io.File.separator;
  *
  * @author Favio D. DeMarco
  */
+@Deprecated
 public final class GZoltarJava7 extends GZoltar {
 
     private static final String JAVA_EXECUTABLE = System.getProperty("java.home") + separator + "bin" + separator

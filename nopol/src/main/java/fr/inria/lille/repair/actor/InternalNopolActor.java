@@ -33,6 +33,8 @@ public class InternalNopolActor extends UntypedActor {
 				config.setSolverPath(pathToSolver);
 			}
 
+			config.setLocalizer(Config.NopolLocalizer.OCHIAI);
+
 			config.setProjectSourcePath(new String[] {tempDirectory.toString() + "/src/"});
 			config.setProjectClasspath(getClasspathFromTargetFolder(new File(tempDirectory.getCanonicalPath() + "/target")));
 

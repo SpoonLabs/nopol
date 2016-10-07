@@ -13,17 +13,18 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.repair.nopol.sps.gzoltar;
+package fr.inria.lille.localization.gzoltar;
 
 import com.gzoltar.core.components.Statement;
+import fr.inria.lille.localization.SuspiciousStatement;
 import fr.inria.lille.repair.nopol.SourceLocation;
-import fr.inria.lille.repair.nopol.sps.SuspiciousStatement;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * @author Favio D. DeMarco
  */
+@Deprecated
 final class GZoltarStatement implements SuspiciousStatement {
 
     private SourceLocation location;
@@ -38,7 +39,7 @@ final class GZoltarStatement implements SuspiciousStatement {
     }
 
     /**
-     * @see java.lang.Object#equals(java.lang.Object)
+     * @see Object#equals(Object)
      */
     @Override
     public boolean equals(final Object obj) {
@@ -84,7 +85,7 @@ final class GZoltarStatement implements SuspiciousStatement {
     }
 
     /**
-     * @see java.lang.Object#hashCode()
+     * @see Object#hashCode()
      */
     @Override
     public int hashCode() {
@@ -92,7 +93,7 @@ final class GZoltarStatement implements SuspiciousStatement {
     }
 
     /**
-     * @see java.lang.Object#toString()
+     * @see Object#toString()
      */
     @Override
     public String toString() {

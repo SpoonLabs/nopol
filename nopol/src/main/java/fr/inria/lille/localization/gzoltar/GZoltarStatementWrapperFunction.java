@@ -13,19 +13,21 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.repair.nopol.sps;
+package fr.inria.lille.localization.gzoltar;
 
-import com.gzoltar.core.components.Statement;
-import fr.inria.lille.repair.nopol.SourceLocation;
+import com.google.common.base.Function;
+import fr.inria.lille.localization.SuspiciousStatement;
 
 /**
  * @author Favio D. DeMarco
  */
-public interface SuspiciousStatement {
+@Deprecated
+enum GZoltarStatementWrapperFunction implements Function<com.gzoltar.core.components.Statement, SuspiciousStatement> {
 
-    SourceLocation getSourceLocation();
+    INSTANCE;
 
-    double getSuspiciousness();
-
-    Statement getStatement();
+    @Override
+    public SuspiciousStatement apply(final com.gzoltar.core.components.Statement statement) {
+        return new GZoltarStatement(statement);
+    }
 }
