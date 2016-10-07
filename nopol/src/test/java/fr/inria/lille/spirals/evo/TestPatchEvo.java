@@ -46,7 +46,9 @@ public class TestPatchEvo {
 		FileUtils.deleteDirectory(new File(destCpTestFolder));
 		
 		Main.solverPath = "lib/z3/z3_for_linux";
-		Main.tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, generateTest, testClasses, whetherSavePatch, patchSaveFolder, new Config());
+		Config config = new Config();
+		config.setLocalizer(Config.NopolLocalizer.GZOLTAR);
+		Main.tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, generateTest, testClasses, whetherSavePatch, patchSaveFolder, config);
 		
 		for(Map.Entry entry : Main.patches.entrySet()){
 			System.out.println(entry.getValue()+" "+entry.getKey());

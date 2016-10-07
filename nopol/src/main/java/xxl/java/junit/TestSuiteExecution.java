@@ -1,6 +1,6 @@
 package xxl.java.junit;
 
-import com.gzoltar.core.instr.testing.TestResult;
+import fr.inria.lille.localization.TestResult;
 import fr.inria.lille.repair.common.config.Config;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
@@ -40,7 +40,7 @@ public class TestSuiteExecution {
     }
 
     public static Result runTestCase(TestResult testCase, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
-        return executionResult(new JUnitSingleTestResultRunner(testCase, listener), classLoaderForTestThread, config);
+        return executionResult(new JUnitSingleTestResultRunner(testCase.getTestCase().toString(), listener), classLoaderForTestThread, config);
     }
 
     public static CompoundResult runTestCases(Collection<TestCase> testCases, ClassLoader classLoaderForTestThread, Config config) {
@@ -66,7 +66,7 @@ public class TestSuiteExecution {
     public static CompoundResult runTestResult(Collection<TestResult> testCases, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
         List<Result> results = MetaList.newArrayList(testCases.size());
         for (TestResult testCase : testCases) {
-            if (testCase.getName().startsWith("junit.")) {
+            if (testCase.getTestCase().className().startsWith("junit.")) {
                 continue;
             }
             results.add(runTestCase(testCase, classLoaderForTestThread, listener, config));
