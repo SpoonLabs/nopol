@@ -32,7 +32,7 @@ public class NopolTest extends TestUtility {
 		Config config = new Config();
 		config.setType(StatementType.CONDITIONAL);
 		Patch patch = test(2, 11, failedTests, config);
-		fixComparison(patch, "a <= b", "a < b", "1 <= (b - a)", "0 <= (b - a)", "1 < (b - a)", "0 < (b - a)", "a < b");
+		fixComparison(patch, "a <= b", "a < b", "1 <= (b - a)", "0 <= (b - a)", "1 < (b - a)", "0 < (b - a)", "a < b", "2 <= (b - a)");
 	}
 
 	@Test
@@ -87,7 +87,9 @@ public class NopolTest extends TestUtility {
 				"((a)!=((1)+(1)))&&(intermediaire == 0)",
 				"(intermediaire == 0) && (!(a + -1 <= (intermediaire) - (-1)))",
 				"(-1 + 1 == intermediaire) && (1 < a - 1)",
-				"(-1 + 1 == intermediaire) && (1 < (a) - (1))");
+				"(-1 + 1 == intermediaire) && (1 < (a) - (1))",
+				"(intermediaire < 1) && ((2) != (a))",
+				"(intermediaire == 0) && (3 <= a)");
 	}
 
 	@Test

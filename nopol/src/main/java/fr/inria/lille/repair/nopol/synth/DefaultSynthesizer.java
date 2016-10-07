@@ -26,8 +26,7 @@ import fr.inria.lille.repair.common.patch.StringPatch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
-import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.ConstantCollector;
+import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.DefaultConstantCollector;
 import org.slf4j.LoggerFactory;
 import xxl.java.junit.TestCase;
 
@@ -75,6 +74,8 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
 					dataSize, sourceLocation);
 			return Collections.EMPTY_LIST;
 		}
+
+		// TODO this loop is useless (if with empty body)
 		// the synthesizer do an infinite loop when all data does not have the same input size
 		int firstDataSize = data.iterator().next().inputs().size();
 		for (Iterator<Specification<T>> iterator = data.iterator(); iterator.hasNext(); ) {
@@ -89,23 +90,15 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
 			LoggerFactory.getLogger(this.getClass()).info("Changing only this statement does not solve the bug. {}", sourceLocation);
 			return Collections.EMPTY_LIST;
 		}
+
 		nbStatementsWithAngelicValue++;
-		Candidates constantes = new Candidates();
-		ConstantCollector constantCollector = new ConstantCollector(constantes, null, config);
+
+		//collects available constants
+		Map<String, Number> constants = new HashMap<>();
+		DefaultConstantCollector constantCollector = new DefaultConstantCollector(constants);
 		spoonedProject.forked(sourceLocation.getContainingClassName()).process(constantCollector);
-		Map<String, Integer> intConstants = new HashMap();
-		intConstants.put("-1", -1);
-		intConstants.put("0", 0);
-		intConstants.put("1", 1);
-		/*for (int i = 0; i < constantes.size(); i++) {
-			Expression expression = constantes.get(i);
-			if(expression instanceof PrimitiveConstant) {
-				if(expression.getType() == Integer.class) {
-					intConstants.put(expression.getValue() + "", expression.getValue());
-				}
-			}
-		}*/
-		ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis(intConstants);
+
+		ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis(constants);
 		CodeGenesis genesis = synthesis.codesSynthesisedFrom(
 				(Class<T>) (type.getType()), data);
 		if (!genesis.isSuccessful()) {
