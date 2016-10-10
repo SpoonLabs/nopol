@@ -52,7 +52,7 @@ public class Specification<T> {
 
     @Override
     public String toString() {
-        return format("input: %s. output: %s", inputs().toString(), output().toString());
+        return format("collected data: %s. outcome: %s", inputs().toString(), output().toString());
     }
 
     private T expectedOutput;
