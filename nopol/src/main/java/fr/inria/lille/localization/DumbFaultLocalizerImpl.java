@@ -12,6 +12,7 @@ import xxl.java.junit.TestSuiteExecution;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -104,10 +105,18 @@ public class DumbFaultLocalizerImpl implements FaultLocalizer {
 	protected List<String> getTestMethods(Class classOfTestCase) {
 		List<String> methodsNames = new ArrayList<>();
 		for (Method method : classOfTestCase.getMethods()) {
-			if (method.getAnnotation(Test.class) != null)
+			if (method.getAnnotation(Test.class) != null || isPublicTestMethod(method))
 				methodsNames.add(method.getName());
 		}
 		return methodsNames;
+	}
+
+	private boolean isPublicTestMethod(Method m) {
+		return this.isTestMethod(m) && Modifier.isPublic(m.getModifiers());
+	}
+
+	private boolean isTestMethod(Method m) {
+		return m.getParameterTypes().length == 0 && m.getName().startsWith("test") && m.getReturnType().equals(Void.TYPE);
 	}
 
 
