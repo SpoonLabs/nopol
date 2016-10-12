@@ -80,6 +80,11 @@ NoPol Execution time : 3262ms
 ----PATCH FOUND----
 symbolic_examples.symbolic_example_1.NopolExample:12: CONDITIONAL index < 1
 ```
+
+NoPol (SMT and Dynamoth) returns also a unix code (integer):
+* 0 if a patch has been found
+* -1 otherwise
+
 Parameter `-c` can be found with `mvn dependency:build-classpath`.
 
 ## Minimal Usage
