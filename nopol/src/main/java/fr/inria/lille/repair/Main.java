@@ -31,6 +31,7 @@ import xxl.java.library.JavaLibrary;
 
 import java.io.File;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Iterator;
 
 public class Main {
@@ -42,6 +43,17 @@ public class Main {
 			initJSAP();
 			if (!parseArguments(args, config)) {
 				return;
+			}
+
+			//For using Dynamoth, you must add tools.jar in the classpath
+			if (config.getSynthesis() == Config.NopolSynthesis.BRUTPOL) {
+				URLClassLoader loader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+				try {
+					loader.loadClass("com.sun.jdi.Value");
+				} catch (ClassNotFoundException e) {
+					System.err.println("For using Dynamoth, you must add tools.jar in your classpath from your installed jdk");
+					System.exit(-1);
+				}
 			}
 
 			File[] sourceFiles = new File[config.getProjectSourcePath().length];
