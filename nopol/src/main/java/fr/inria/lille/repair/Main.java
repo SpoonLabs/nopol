@@ -38,6 +38,7 @@ public class Main {
 	private static JSAP jsap = new JSAP();
 
 	public static void main(String[] args) {
+		int returnCode = -1;
 		try {
 			Config config = new Config();
 			initJSAP();
@@ -65,6 +66,7 @@ public class Main {
 
 			URL[] classpath = JavaLibrary.classpathFrom(config.getProjectClasspath());
 
+
 			switch (config.getMode()) {
 				case REPAIR:
 					switch (config.getType()) {
@@ -74,7 +76,7 @@ public class Main {
 							infinitel.repair();
 							break;
 						default:
-							NoPolLauncher.launch(sourceFiles, classpath, config);
+							returnCode = NoPolLauncher.launch(sourceFiles, classpath, config).isEmpty() ? -1 : 0;
 							break;
 					}
 					break;
@@ -87,7 +89,7 @@ public class Main {
 			e.printStackTrace();
 			showUsage();
 		}
-		System.exit(1);
+		System.exit(returnCode);
 	}
 
 	private static void showUsage() {
