@@ -1,11 +1,11 @@
-package fr.inria.lille.spirals.repair.synthesizer;
+package fr.inria.lille.spirals.repair.synthesis;
 
 import fr.inria.lille.spirals.repair.commons.Candidates;
 
 /**
  * Created by Thomas Durieux on 06/03/15.
  */
-public interface Synthesizer {
+public interface DynamothCodeGenesis {
 
     /**
      * Run the synthesizer

@@ -1,4 +1,4 @@
-package fr.inria.lille.spirals.repair.synthesizer;
+package fr.inria.lille.spirals.repair.synthesis;
 
 import com.sun.jdi.*;
 import com.sun.jdi.event.*;
@@ -12,10 +12,10 @@ import fr.inria.lille.spirals.repair.commons.Candidates;
 import fr.inria.lille.spirals.repair.expression.Expression;
 import fr.inria.lille.spirals.repair.expression.access.*;
 import fr.inria.lille.spirals.repair.expression.factory.AccessFactory;
-import fr.inria.lille.spirals.repair.synthesizer.collect.DataCollector;
-import fr.inria.lille.spirals.repair.synthesizer.collect.DataCombiner;
-import fr.inria.lille.spirals.repair.synthesizer.collect.SpoonElementsCollector;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.*;
+import fr.inria.lille.spirals.repair.synthesis.collect.DataCollector;
+import fr.inria.lille.spirals.repair.synthesis.collect.DataCombiner;
+import fr.inria.lille.spirals.repair.synthesis.collect.SpoonElementsCollector;
+import fr.inria.lille.spirals.repair.synthesis.collect.spoon.*;
 import fr.inria.lille.spirals.repair.vm.DebugJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Thomas Durieux on 06/03/15.
  */
-public class SynthesizerImpl implements Synthesizer {
+public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final File[] projectRoots;
@@ -74,7 +74,7 @@ public class SynthesizerImpl implements Synthesizer {
      * @param oracle the oracle of the project Map<testClass#testMethod, {value iteration 1, value iteration 2, ...}>
      * @param tests tests to execute
      */
-    public SynthesizerImpl(SpoonedProject spoon, File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, Config config) {
+    public DynamothCodeGenesisImpl(SpoonedProject spoon, File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, Config config) {
         this(projectRoots, location, classpath, oracle, tests,5*60 /* 5 minutes, default in repair mode */, config);
         this.spoon = spoon;
     }
@@ -87,7 +87,7 @@ public class SynthesizerImpl implements Synthesizer {
      * @param oracle the oracle of the project Map<testClass#testMethod, {value iteration 1, value iteration 2, ...}>
      * @param tests tests to execute
      */
-    public SynthesizerImpl(File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, int dataCollectionTimeoutInSeconds, Config config) {
+    public DynamothCodeGenesisImpl(File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, int dataCollectionTimeoutInSeconds, Config config) {
         this.projectRoots = projectRoots;
         this.location = location;
         this.dataCollectionTimeoutInSeconds=dataCollectionTimeoutInSeconds;

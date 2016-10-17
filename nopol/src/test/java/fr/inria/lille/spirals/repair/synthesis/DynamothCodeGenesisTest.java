@@ -1,11 +1,10 @@
-package fr.inria.lille.spirals.repair.synthesizer;
+package fr.inria.lille.spirals.repair.synthesis;
 
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.spirals.repair.commons.Candidates;
 import fr.inria.lille.spirals.repair.expression.Expression;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import xxl.java.library.JavaLibrary;
 
@@ -18,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 
-public class SynthesizerTest {
+public class DynamothCodeGenesisTest {
 
     @Test
     public void test1() throws InterruptedException {
@@ -88,11 +87,11 @@ public class SynthesizerTest {
 
 		Config config = new Config();
 
-        Synthesizer synthesizer = createSynthesizer(4, oracle, 27, config);
-        System.out.println("basic: "+synthesizer.getCollectedExpressions());    
-        check(synthesizer.getCollectedExpressions(), "initializedVariableShouldBeCollected");
-        check(synthesizer.getCollectedExpressions(), "otherInitializedVariableShouldBeCollected");
-        check(synthesizer.getValidExpressions(), new String[] {"1 != ((java.lang.String) a).length()", "a.length() != 1"});
+        DynamothCodeGenesis dynamothCodeGenesis = createSynthesizer(4, oracle, 27, config);
+        System.out.println("basic: "+ dynamothCodeGenesis.getCollectedExpressions());
+        check(dynamothCodeGenesis.getCollectedExpressions(), "initializedVariableShouldBeCollected");
+        check(dynamothCodeGenesis.getCollectedExpressions(), "otherInitializedVariableShouldBeCollected");
+        check(dynamothCodeGenesis.getValidExpressions(), new String[] {"1 != ((java.lang.String) a).length()", "a.length() != 1"});
     }
 
     @Test
@@ -158,25 +157,25 @@ public class SynthesizerTest {
 
         config.setOnlyOneSynthesisResult(false);
         
-        Synthesizer synthesizer = createSynthesizer(12, oracle, 5, config);
-        System.out.println("basic: "+synthesizer.getCollectedExpressions());
-        assertEquals(13, synthesizer.getCollectedExpressions().size());
+        DynamothCodeGenesis dynamothCodeGenesis = createSynthesizer(12, oracle, 5, config);
+        System.out.println("basic: "+ dynamothCodeGenesis.getCollectedExpressions());
+        assertEquals(13, dynamothCodeGenesis.getCollectedExpressions().size());
         
-        check(synthesizer.getCollectedExpressions(), "list");
+        check(dynamothCodeGenesis.getCollectedExpressions(), "list");
         
         // other constants of the program
-        check(synthesizer.getCollectedExpressions(), "3");
+        check(dynamothCodeGenesis.getCollectedExpressions(), "3");
 
         // other variables
-        check(synthesizer.getCollectedExpressions(), "list2");
+        check(dynamothCodeGenesis.getCollectedExpressions(), "list2");
         
         // method calls
-        check(synthesizer.getCollectedExpressions(), "this.foo((java.util.List) list)");
-        check(synthesizer.getCollectedExpressions(), "this.foo((java.util.List) list2)");
+        check(dynamothCodeGenesis.getCollectedExpressions(), "this.foo((java.util.List) list)");
+        check(dynamothCodeGenesis.getCollectedExpressions(), "this.foo((java.util.List) list2)");
         
         // the valid patches
-        check(synthesizer.getValidExpressions(), "(list == null) || (list.size() == 0)");
-        check(synthesizer.getValidExpressions(), "(list == null) || list.isEmpty()");
+        check(dynamothCodeGenesis.getValidExpressions(), "(list == null) || (list.size() == 0)");
+        check(dynamothCodeGenesis.getValidExpressions(), "(list == null) || list.isEmpty()");
     }
 
     @Test
@@ -189,15 +188,15 @@ public class SynthesizerTest {
 		Config config = new Config();
         config.setOnlyOneSynthesisResult(false);
 
-        Synthesizer synthesizer = createSynthesizer(13, oracle, 4, config);
-        System.out.println("basic: "+synthesizer.getCollectedExpressions());
-        //assertEquals(12,synthesizer.getCollectedExpressions().size());
+        DynamothCodeGenesis dynamothCodeGenesis = createSynthesizer(13, oracle, 4, config);
+        System.out.println("basic: "+ dynamothCodeGenesis.getCollectedExpressions());
+        //assertEquals(12,dynamothCodeGenesis.getCollectedExpressions().size());
 
         // the valid patches
-        check(synthesizer.getValidExpressions(), "(list == null) || list.isEmpty()");
+        check(dynamothCodeGenesis.getValidExpressions(), "(list == null) || list.isEmpty()");
     }
 
-    private Synthesizer createSynthesizer(int nopolExampleNumber, Map<String, Object[]> o, int line, Config config) {
+    private DynamothCodeGenesis createSynthesizer(int nopolExampleNumber, Map<String, Object[]> o, int line, Config config) {
         String executionType = "nopol";
         String pack = executionType + "_examples." + executionType + "_example_" + nopolExampleNumber;
         String className = pack + ".NopolExample";
@@ -214,16 +213,16 @@ public class SynthesizerTest {
         String classpath = "../test-projects/target/test-classes"+File.pathSeparatorChar+"../test-projects/target/classes/"+File.pathSeparatorChar+"misc/nopol-example/junit-4.11.jar"+File.pathSeparatorChar+"misc/nopol-example/hamcrest-core-1.3.jar";
         SourceLocation location = new SourceLocation(className, line);
         File[] files = new File []{new File("../test-projects/src/main/java/"), new File("../test-projects/src/test/java/")};
-        Synthesizer synthesizer = new SynthesizerImpl(files, location, JavaLibrary.classpathFrom(classpath), oracle, tests.toArray(new String[0]),5 /* seconds, a goood value for tests */, config);
-        synthesizer.run(TimeUnit.MINUTES.toMillis(15));
-        return synthesizer;
+        DynamothCodeGenesis dynamothCodeGenesis = new DynamothCodeGenesisImpl(files, location, JavaLibrary.classpathFrom(classpath), oracle, tests.toArray(new String[0]),5 /* seconds, a goood value for tests */, config);
+        dynamothCodeGenesis.run(TimeUnit.MINUTES.toMillis(15));
+        return dynamothCodeGenesis;
     }
     
-    private Synthesizer test(int nopolExampleNumber, Map<String, Object[]> o, int line, String[] patch, Config config) {
-		Synthesizer synthesizer = createSynthesizer(nopolExampleNumber, o, line, config);
-        Candidates expressions = synthesizer.getValidExpressions();
+    private DynamothCodeGenesis test(int nopolExampleNumber, Map<String, Object[]> o, int line, String[] patch, Config config) {
+		DynamothCodeGenesis dynamothCodeGenesis = createSynthesizer(nopolExampleNumber, o, line, config);
+        Candidates expressions = dynamothCodeGenesis.getValidExpressions();
         check(expressions, patch);
-        return synthesizer;
+        return dynamothCodeGenesis;
     }
 
 

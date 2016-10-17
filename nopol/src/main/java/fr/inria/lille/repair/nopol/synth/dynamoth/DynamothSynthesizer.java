@@ -1,4 +1,4 @@
-package fr.inria.lille.repair.nopol.synth.brutpol;
+package fr.inria.lille.repair.nopol.synth.dynamoth;
 
 import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
@@ -10,14 +10,15 @@ import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.NoPolLauncher;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
-import fr.inria.lille.repair.nopol.spoon.brutpol.ConditionalInstrumenter;
+import fr.inria.lille.repair.nopol.spoon.dynamoth.ConditionalInstrumenter;
 import fr.inria.lille.repair.nopol.synth.AngelicExecution;
 import fr.inria.lille.repair.nopol.synth.AngelicValue;
-import fr.inria.lille.repair.nopol.synth.DefaultSynthesizer;
+import fr.inria.lille.repair.nopol.synth.SMTNopolSynthesizer;
 import fr.inria.lille.repair.nopol.synth.Synthesizer;
 import fr.inria.lille.spirals.repair.commons.Candidates;
 import fr.inria.lille.spirals.repair.expression.Expression;
-import fr.inria.lille.spirals.repair.synthesizer.SynthesizerImpl;
+import fr.inria.lille.spirals.repair.synthesis.DynamothCodeGenesis;
+import fr.inria.lille.spirals.repair.synthesis.DynamothCodeGenesisImpl;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
@@ -40,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by spirals on 25/03/15.
  */
-public class BrutSynthesizer<T> implements Synthesizer {
+public class DynamothSynthesizer<T> implements Synthesizer {
 
     private final Logger testsOutput = LoggerFactory.getLogger(getClass().getName());
     private final NopolProcessor nopolProcessor;
@@ -51,7 +52,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
     private final AngelicValue angelicValue;
     private final Config config;
 
-    public BrutSynthesizer(AngelicValue angelicValue, File[] sourceFolders, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, SpoonedProject spooner, Config config) {
+    public DynamothSynthesizer(AngelicValue angelicValue, File[] sourceFolders, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, SpoonedProject spooner, Config config) {
         this.sourceLocation = sourceLocation;
         this.config = config;
         this.type = type;
@@ -102,7 +103,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
             oracle.put(next, passedTests.get(next).toArray());
         }
         if (determineViability(failures, firstResult, secondResult)) {
-            DefaultSynthesizer.nbStatementsWithAngelicValue++;
+            SMTNopolSynthesizer.nbStatementsWithAngelicValue++;
             testCasesListener = new TestRunListener();
             AngelicExecution.disable();
             TestSuiteExecution.runTestResult(testClasses, classLoader, testCasesListener, config);
@@ -147,7 +148,7 @@ public class BrutSynthesizer<T> implements Synthesizer {
             this.sourceLocation.setSourceStart(position.getSourceStart());
             this.sourceLocation.setSourceEnd(position.getSourceEnd());
 
-            SynthesizerImpl synthesizer = new SynthesizerImpl(spooner, sourceFolders, sourceLocation, classpath, oracle, oracle.keySet().toArray(new String[0]), config);
+            DynamothCodeGenesis synthesizer = new DynamothCodeGenesisImpl(spooner, sourceFolders, sourceLocation, classpath, oracle, oracle.keySet().toArray(new String[0]), config);
             Candidates run = synthesizer.run(remainingTime);
             if (run.size() > 0) {
                 List<Patch> patches = new ArrayList<>();

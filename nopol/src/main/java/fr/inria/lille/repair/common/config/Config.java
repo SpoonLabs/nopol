@@ -35,7 +35,7 @@ public class Config implements Serializable {
 
 	public enum NopolSynthesis {
 		SMT,
-		BRUTPOL
+		DYNAMOTH
 	}
 
 	public enum NopolSolver {

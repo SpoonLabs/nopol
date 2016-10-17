@@ -1,4 +1,4 @@
-package fr.inria.lille.spirals.repair.synthesizer.collect.filter;
+package fr.inria.lille.spirals.repair.synthesis.collect.filter;
 
 import com.sun.jdi.*;
 import fr.inria.lille.spirals.repair.vm.DebugJUnitRunner;

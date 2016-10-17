@@ -26,7 +26,7 @@ import fr.inria.lille.repair.common.patch.StringPatch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.DefaultConstantCollector;
+import fr.inria.lille.spirals.repair.synthesis.collect.spoon.DefaultConstantCollector;
 import org.slf4j.LoggerFactory;
 import xxl.java.junit.TestCase;
 
@@ -36,7 +36,7 @@ import java.util.*;
 /**
  * @author Favio D. DeMarco
  */
-public final class DefaultSynthesizer<T> implements Synthesizer {
+public final class SMTNopolSynthesizer<T> implements Synthesizer {
 
 	private final SourceLocation sourceLocation;
 	private final AngelicValue constraintModelBuilder;
@@ -46,9 +46,9 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
 	private static int nbVariables;
 	private final SpoonedProject spoonedProject;
 	private NopolProcessor conditionalProcessor;
-	private Config config;
+	private Config config;//TODO remove this unused field
 
-	public DefaultSynthesizer(SpoonedProject spoonedProject, AngelicValue constraintModelBuilder, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, Config config) {
+	public SMTNopolSynthesizer(SpoonedProject spoonedProject, AngelicValue constraintModelBuilder, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, Config config) {
 		this.constraintModelBuilder = constraintModelBuilder;
 		this.config = config;
 		this.sourceLocation = sourceLocation;
@@ -60,7 +60,7 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see fr.inria.lille.jefix.synth.Synthesizer#buildPatch(java.net.URL[], java.lang.String[])
+	 * @see fr.inria.lille.jefix.synth.DynamothCodeGenesis#buildPatch(java.net.URL[], java.lang.String[])
 	 */
 	@Override
 	public List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
@@ -104,8 +104,8 @@ public final class DefaultSynthesizer<T> implements Synthesizer {
 		if (!genesis.isSuccessful()) {
 			return Collections.EMPTY_LIST;
 		}
-		DefaultSynthesizer.dataSize = dataSize;
-		DefaultSynthesizer.nbVariables = data.iterator().next().inputs().keySet().size();
+		SMTNopolSynthesizer.dataSize = dataSize;
+		SMTNopolSynthesizer.nbVariables = data.iterator().next().inputs().keySet().size();
 		return Collections.singletonList((Patch) new StringPatch(genesis.returnStatement(), sourceLocation, type));
 	}
 

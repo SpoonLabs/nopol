@@ -1,4 +1,4 @@
-package fr.inria.lille.spirals.repair.synthesizer.collect.spoon;
+package fr.inria.lille.spirals.repair.synthesis.collect.spoon;
 
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtLiteral;

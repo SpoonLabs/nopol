@@ -21,7 +21,7 @@ import fr.inria.lille.repair.Main;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
-import fr.inria.lille.repair.nopol.synth.DefaultSynthesizer;
+import fr.inria.lille.repair.nopol.synth.SMTNopolSynthesizer;
 import fr.inria.lille.repair.nopol.synth.SynthesizerFactory;
 import org.apache.commons.io.FileUtils;
 import spoon.reflect.declaration.CtClass;
@@ -138,9 +138,9 @@ public class NoPolLauncher {
 //		System.out.println("Nb statements: " + nopol.getgZoltar().getGzoltar().getSpectra().getNumberOfComponents());
 //		System.out.println("Nb unit tests : " + nopol.getgZoltar().getGzoltar().getTestResults().size());
 		System.out.println("Nb Statements Analyzed : " + SynthesizerFactory.getNbStatementsAnalysed());
-		System.out.println("Nb Statements with Angelic Value Found : " + DefaultSynthesizer.getNbStatementsWithAngelicValue());
+		System.out.println("Nb Statements with Angelic Value Found : " + SMTNopolSynthesizer.getNbStatementsWithAngelicValue());
 		if (config.getSynthesis() == Config.NopolSynthesis.SMT) {
-			System.out.println("Nb inputs in SMT : " + DefaultSynthesizer.getDataSize());
+			System.out.println("Nb inputs in SMT : " + SMTNopolSynthesizer.getDataSize());
 			System.out.println("Nb SMT level: " + ConstraintBasedSynthesis.level);
 			if (ConstraintBasedSynthesis.operators != null) {
 				System.out.println("Nb SMT components: [" + ConstraintBasedSynthesis.operators.size() + "] " + ConstraintBasedSynthesis.operators);
@@ -160,7 +160,7 @@ public class NoPolLauncher {
 				}
 			}
 
-			System.out.println("Nb variables in SMT : " + DefaultSynthesizer.getNbVariables());
+			System.out.println("Nb variables in SMT : " + SMTNopolSynthesizer.getNbVariables());
 		}
 		System.out.println("Nb run failing test  : " + nbFailingTestExecution);
 		System.out.println("Nb run passing test : " + nbPassedTestExecution);

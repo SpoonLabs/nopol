@@ -1,4 +1,4 @@
-package fr.inria.lille.spirals.repair.synthesizer.collect.spoon;
+package fr.inria.lille.spirals.repair.synthesis.collect.spoon;
 
 import fr.inria.lille.repair.nopol.SourceLocation;
 import org.slf4j.Logger;
@@ -10,7 +10,6 @@ import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtTypedElement;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AbstractFilter;
 

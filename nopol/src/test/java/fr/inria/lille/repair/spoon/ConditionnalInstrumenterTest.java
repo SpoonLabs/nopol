@@ -5,7 +5,7 @@ import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.synth.StatementTypeDetector;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
-import fr.inria.lille.repair.nopol.spoon.brutpol.ConditionalInstrumenter;
+import fr.inria.lille.repair.nopol.spoon.dynamoth.ConditionalInstrumenter;
 import fr.inria.lille.repair.nopol.spoon.smt.ConditionalReplacer;
 import org.junit.Test;
 import spoon.Launcher;
@@ -34,7 +34,7 @@ public class ConditionnalInstrumenterTest {
 	@Test
 	public void testConditionnalInstrumenter() throws Exception {
 		Config config = new Config();
-		config.setSynthesis(Config.NopolSynthesis.BRUTPOL);
+		config.setSynthesis(Config.NopolSynthesis.DYNAMOTH);
 		File fileClassToSpoon = new File("src/test/resources/spoon/example/Thaliana.java");
 		File[] sourceFiles = {fileClassToSpoon};
 		SpoonedProject spooner = new SpoonedProject(sourceFiles

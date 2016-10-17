@@ -1,4 +1,4 @@
-package fr.inria.lille.repair.nopol.spoon.brutpol;
+package fr.inria.lille.repair.nopol.spoon.dynamoth;
 
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.spoon.smt.ConditionalProcessor;

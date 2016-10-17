@@ -1,4 +1,4 @@
-package fr.inria.lille.spirals.repair.synthesizer.collect;
+package fr.inria.lille.spirals.repair.synthesis.collect;
 
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.spirals.repair.commons.Candidates;

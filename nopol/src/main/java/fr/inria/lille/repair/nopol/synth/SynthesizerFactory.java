@@ -28,7 +28,7 @@ import fr.inria.lille.repair.nopol.spoon.smt.ConditionalReplacer;
 import fr.inria.lille.repair.nopol.spoon.symbolic.LiteralReplacer;
 import fr.inria.lille.repair.nopol.spoon.symbolic.SymbolicConditionalAdder;
 import fr.inria.lille.repair.nopol.spoon.symbolic.SymbolicConditionalReplacer;
-import fr.inria.lille.repair.nopol.synth.brutpol.BrutSynthesizer;
+import fr.inria.lille.repair.nopol.synth.dynamoth.DynamothSynthesizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.processing.Processor;
@@ -48,7 +48,7 @@ public final class SynthesizerFactory {
     private final SpoonedProject spooner;
     private final Config config;
     private static int nbStatementsAnalysed = 0;
-    private static RuntimeValues<Boolean> runtimeValuesInstance = RuntimeValues.newInstance();
+    private static RuntimeValues<Boolean> runtimeValuesInstance = RuntimeValues.newInstance();//TODO remove this unused field
 
 	/**
 	 *
@@ -134,18 +134,18 @@ public final class SynthesizerFactory {
         if (Integer.class.equals(detector.getType().getType())) {
             RuntimeValues<Integer> runtimeValuesInstance = RuntimeValues.newInstance();
             constraintModelBuilder = new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, config);
-            return new DefaultSynthesizer<>(spooner, constraintModelBuilder, statement, detector.getType(), nopolProcessor, config);
+            return new SMTNopolSynthesizer<>(spooner, constraintModelBuilder, statement, detector.getType(), nopolProcessor, config);
         }
         if (Double.class.equals(detector.getType().getType())) {
             RuntimeValues<Double> runtimeValuesInstance = RuntimeValues.newInstance();
             constraintModelBuilder = new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, config);
-            return new DefaultSynthesizer<>(spooner, constraintModelBuilder, statement, detector.getType(), nopolProcessor, config);
+            return new SMTNopolSynthesizer<>(spooner, constraintModelBuilder, statement, detector.getType(), nopolProcessor, config);
         }
         switch (config.getSynthesis()) {
             case SMT:
-                return new DefaultSynthesizer(spooner, constraintModelBuilder, statement, detector.getType(), nopolProcessor, config);
-            case BRUTPOL:
-                return new BrutSynthesizer(constraintModelBuilder, sourceFolders, statement, detector.getType(), nopolProcessor, spooner, config);
+                return new SMTNopolSynthesizer(spooner, constraintModelBuilder, statement, detector.getType(), nopolProcessor, config);
+            case DYNAMOTH:
+                return new DynamothSynthesizer(constraintModelBuilder, sourceFolders, statement, detector.getType(), nopolProcessor, spooner, config);
         }
         return Synthesizer.NO_OP_SYNTHESIZER;
     }

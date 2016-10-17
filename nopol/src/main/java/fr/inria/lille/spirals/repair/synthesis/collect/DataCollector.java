@@ -1,4 +1,4 @@
-package fr.inria.lille.spirals.repair.synthesizer.collect;
+package fr.inria.lille.spirals.repair.synthesis.collect;
 
 import com.sun.jdi.*;
 import com.sun.jdi.request.BreakpointRequest;
@@ -11,9 +11,9 @@ import fr.inria.lille.spirals.repair.expression.access.Variable;
 import fr.inria.lille.spirals.repair.expression.factory.AccessFactory;
 import fr.inria.lille.spirals.repair.expression.value.ArrayValue;
 import fr.inria.lille.spirals.repair.expression.value.TypeValue;
-import fr.inria.lille.spirals.repair.synthesizer.collect.filter.FieldFilter;
-import fr.inria.lille.spirals.repair.synthesizer.collect.filter.MethodFilter;
-import fr.inria.lille.spirals.repair.synthesizer.collect.spoon.StatCollector;
+import fr.inria.lille.spirals.repair.synthesis.collect.filter.FieldFilter;
+import fr.inria.lille.spirals.repair.synthesis.collect.filter.MethodFilter;
+import fr.inria.lille.spirals.repair.synthesis.collect.spoon.StatCollector;
 import fr.inria.lille.spirals.repair.vm.DebugJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

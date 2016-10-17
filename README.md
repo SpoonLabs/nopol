@@ -126,7 +126,7 @@ Usage: java -jar nopol.jar
   [(-o|--oracle) <angelic|symbolic>]
         Define the oracle (only used with repair mode). (default: angelic)
 
-  [(-y|--synthesis) <smt|brutpol>]
+  [(-y|--synthesis) <smt|dynamoth>]
         Define the patch synthesis. (default: smt)
 
   [(-l|--solver) <z3|cvc4>]

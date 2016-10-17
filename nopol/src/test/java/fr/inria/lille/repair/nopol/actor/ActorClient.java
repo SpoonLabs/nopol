@@ -3,7 +3,6 @@ package fr.inria.lille.repair.nopol.actor;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import fr.inria.lille.repair.actor.ConfigActor;
-import fr.inria.lille.repair.actor.NoPolActor;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
@@ -49,7 +48,7 @@ public class ActorClient extends UntypedActor {
 			Config config = new Config();
 			this.sender = getSender();//keeping the executed test in order to send it the result
 			config.setType(StatementType.CONDITIONAL);
-			config.setSynthesis(Config.NopolSynthesis.BRUTPOL);
+			config.setSynthesis(Config.NopolSynthesis.DYNAMOTH);
 			config.setProjectTests(new String[]{fullQualifiedNameTest});
 			ConfigActor configActor = new ConfigActor(config, content);
 			actorNopol.tell(configActor, getSelf());

@@ -1,4 +1,4 @@
-package fr.inria.lille.spirals.repair.synthesizer;
+package fr.inria.lille.spirals.repair.synthesis;
 
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
