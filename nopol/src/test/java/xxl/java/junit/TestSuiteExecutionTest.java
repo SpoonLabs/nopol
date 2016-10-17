@@ -1,18 +1,15 @@
 package xxl.java.junit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import fr.inria.lille.repair.common.config.Config;
+import org.junit.Test;
+import org.junit.runner.Result;
+import xxl.java.library.FileLibrary;
 
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
 
-import fr.inria.lille.repair.common.config.Config;
-import org.junit.Test;
-import org.junit.runner.Result;
-
-import xxl.java.library.FileLibrary;
+import static org.junit.Assert.*;
 
 public class TestSuiteExecutionTest {
 
@@ -26,7 +23,7 @@ public class TestSuiteExecutionTest {
 	
 	@Test
 	public void runSingleTest() {
-		TestCase testCase = TestCase.from(sampleTestClass(), "joinTrue", 1);
+		TestCase testCase = TestCase.from(sampleTestClass(), "joinTrue");
 		Result result = TestSuiteExecution.runTestCase(testCase, classLoaderWithTestClass(), new Config());
 		assertTrue(result.wasSuccessful());
 		assertEquals(1, result.getRunCount());
@@ -44,11 +41,14 @@ public class TestSuiteExecutionTest {
 	
 	@Test
 	public void doNotUseSameTestNameTwice() {
+
+		/* According to the name, we do not run twice the same test, i.e. test with same name */
+
 		TestCasesListener listener = new TestCasesListener();
 		TestSuiteExecution.runCasesIn(new String[]{ sampleTestClass(), sampleTestClass() }, classLoaderWithTestClass(), listener, new Config());
-		assertEquals(6, listener.allTests().size());
-		assertEquals(4, listener.successfulTests().size());
-		assertEquals(2, listener.failedTests().size());
+		assertEquals(3, listener.allTests().size());
+		assertEquals(2, listener.successfulTests().size());
+		assertEquals(1, listener.failedTests().size());
 	}
 	
 	@Test

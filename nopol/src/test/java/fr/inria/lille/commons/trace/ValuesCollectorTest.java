@@ -142,9 +142,9 @@ public class ValuesCollectorTest {
 
 		/* test the consistency management of specification */
 
-		TestCase testA = TestCase.from("com.example", "testA", 1);
-		TestCase testB = TestCase.from("com.example", "testB", 2);
-		TestCase testC = TestCase.from("com.example", "testC", 3);
+		TestCase testA = TestCase.from("com.example", "testA");
+		TestCase testB = TestCase.from("com.example", "testB");
+		TestCase testC = TestCase.from("com.example", "testC");
 		RuntimeValues<Boolean> runtimeValues = RuntimeValues.newInstance();
 
 		Collection<Specification<Boolean>> specifications;

@@ -6,13 +6,13 @@ import java.util.Collection;
 
 public class TestCase {
 
-    public static TestCase from(String qualifiedClassName, String testName, int testNumber) {
-        return new TestCase(qualifiedClassName, testName, testNumber);
+    public static TestCase from(String qualifiedClassName, String testName) {
+        return new TestCase(qualifiedClassName, testName);
     }
 
     public static TestCase from(String fullQualifiedMethodTestName) {
         String[] split = fullQualifiedMethodTestName.split("#");
-        return new TestCase(split[0], split[1], 0);
+        return new TestCase(split[0], split[1]);
     }
 
     public static Collection<String> testClasses(Collection<TestCase> testCases) {
@@ -31,9 +31,8 @@ public class TestCase {
         return testNames;
     }
 
-    private TestCase(String qualifiedClassName, String testName, int testNumber) {
+    private TestCase(String qualifiedClassName, String testName) {
         this.qualifiedClassName = qualifiedClassName;
-        this.testNumber = testNumber;
         this.testName = testName;
     }
 
@@ -43,10 +42,6 @@ public class TestCase {
 
     public String testName() {
         return testName;
-    }
-
-    public int testNumber() {
-        return testNumber;
     }
 
     @Override
@@ -60,7 +55,6 @@ public class TestCase {
         int result = 1;
         result = prime * result + ((className() == null) ? 0 : className().hashCode());
         result = prime * result + ((testName() == null) ? 0 : testName().hashCode());
-        result = prime * result + testNumber();
         return result;
     }
 
@@ -83,12 +77,9 @@ public class TestCase {
                 return false;
         } else if (!testName().equals(other.testName()))
             return false;
-        if (testNumber() != other.testNumber())
-            return false;
         return true;
     }
 
-    private int testNumber;
     private String testName;
     private String qualifiedClassName;
 }
