@@ -6,16 +6,14 @@ import fr.inria.lille.commons.trace.RuntimeValuesInstrumenter;
 import fr.inria.lille.repair.nopol.spoon.smt.ConditionalProcessor;
 import fr.inria.lille.repair.nopol.synth.AngelicExecution;
 import spoon.processing.AbstractProcessor;
-import spoon.reflect.code.CtCodeSnippetStatement;
-import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtLocalVariable;
-import spoon.reflect.code.CtStatement;
+import spoon.reflect.code.*;
 import xxl.java.container.classic.MetaMap;
 import xxl.java.container.map.Multimap;
 
 import java.util.Collection;
 
 import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newLocalVariableDeclaration;
+import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newLocalVariableDeclarationString;
 import static fr.inria.lille.commons.spoon.util.SpoonStatementLibrary.insertBeforeUnderSameParent;
 
 public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtStatement> {
@@ -34,10 +32,21 @@ public final class ConditionalLoggingInstrumenter extends AbstractProcessor<CtSt
     public void process(CtStatement statement) {
         String evaluationAccess = "runtimeAngelicValue";
 
-        CtLocalVariable<Boolean> defaultValue = newLocalVariableDeclaration(statement.getFactory(), Boolean.class, "spoonDefaultValue", "false");
+        CtLocalVariable defaultValue = newLocalVariableDeclarationString(statement.getFactory(), Boolean.class, "spoonDefaultValue", "false");
         insertBeforeUnderSameParent(defaultValue, statement);
-        CtCodeSnippetStatement defaultValueEvaluation = getFactory().Code().createCodeSnippetStatement("try{spoonDefaultValue=" + subprocessor().getDefaultValue() + ";}catch(" + Exception.class.getCanonicalName() + " e){}");
-        insertBeforeUnderSameParent(defaultValueEvaluation, statement);
+
+        CtTry aTry = getFactory().Core().createTry();
+        CtAssignment variableAssignment = getFactory().Code().createVariableAssignment(defaultValue.getReference(), false, getFactory().Code().createCodeSnippetExpression(subprocessor().getDefaultValue()));
+        aTry.setBody(getFactory().Code().createCtBlock(variableAssignment));
+
+        CtCatch aCatch = getFactory().Core().createCatch();
+        CtCatchVariable<Exception> nopolProcessorException = getFactory().Code().createCatchVariable(getFactory().Type().createReference(Exception.class), "__NopolProcessorException");
+        aCatch.setParameter(nopolProcessorException);
+        aCatch.setBody(getFactory().Core().createBlock());
+
+        aTry.addCatcher(aCatch);
+
+        insertBeforeUnderSameParent(aTry, statement);
 
         String evaluationValue = angelicInvocation("spoonDefaultValue");
         CtLocalVariable<Boolean> evaluation = newLocalVariableDeclaration(statement.getFactory(), Boolean.class, evaluationAccess, evaluationValue);
