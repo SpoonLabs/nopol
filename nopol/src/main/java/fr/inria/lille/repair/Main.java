@@ -46,7 +46,7 @@ public class Main {
 			}
 
 			//For using Dynamoth, you must add tools.jar in the classpath
-			if (config.getSynthesis() == Config.NopolSynthesis.BRUTPOL) {
+			if (config.getSynthesis() == Config.NopolSynthesis.DYNAMOTH) {
 				URLClassLoader loader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 				try {
 					loader.loadClass("com.sun.jdi.Value");
@@ -131,8 +131,8 @@ public class Main {
 	private static Config.NopolSynthesis strToSynthesis(String str) {
 		if (str.equals("smt")) {
 			return Config.NopolSynthesis.SMT;
-		} else if (str.equals("brutpol")) {
-			return Config.NopolSynthesis.BRUTPOL;
+		} else if (str.equals("dynamoth")) {
+			return Config.NopolSynthesis.DYNAMOTH;
 		}
 		throw new RuntimeException("Unknow Nopol oracle " + str);
 	}
@@ -225,7 +225,7 @@ public class Main {
 		synthesisOpt.setAllowMultipleDeclarations(false);
 		synthesisOpt.setLongFlag("synthesis");
 		synthesisOpt.setShortFlag('y');
-		synthesisOpt.setUsageName("smt|brutpol");
+		synthesisOpt.setUsageName("smt|dynamoth");
 		synthesisOpt.setStringParser(JSAP.STRING_PARSER);
 		synthesisOpt.setDefault("smt");
 		synthesisOpt.setHelp("Define the patch synthesis.");

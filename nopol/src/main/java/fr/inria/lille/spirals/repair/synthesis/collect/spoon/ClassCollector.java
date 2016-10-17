@@ -1,4 +1,4 @@
-package fr.inria.lille.spirals.repair.synthesizer.collect.spoon;
+package fr.inria.lille.spirals.repair.synthesis.collect.spoon;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
