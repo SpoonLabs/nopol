@@ -78,7 +78,6 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 		if (!this.keys.equals(inputs.keySet())) {
 			this.logger.debug("Ill-formed problem: not the input variables in input={} reference={}", inputs, this.keys);// case 2
 			this.inconsistentInputs.add(inputs);
-			consistentInputs().remove(inputs);
 		} else {
 			this.logger.debug("Same input with different outcome, logical contradiction, discarding the second one discarded={}, current output={}, reference output={}", inputs, output, consistentInputs.get(inputs));// case 1
 			this.inconsistentInputs.add(inputs);
