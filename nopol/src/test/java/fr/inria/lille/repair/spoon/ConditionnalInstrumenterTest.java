@@ -2,8 +2,10 @@ package fr.inria.lille.repair.spoon;
 
 import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
+import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.synth.StatementTypeDetector;
+import fr.inria.lille.repair.nopol.spoon.ConditionalLoggingInstrumenter;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.spoon.dynamoth.ConditionalInstrumenter;
 import fr.inria.lille.repair.nopol.spoon.smt.ConditionalReplacer;
@@ -55,6 +57,69 @@ public class ConditionnalInstrumenterTest {
 		spoonCl.process(detector);
 		NopolProcessor nopolProcessor = new ConditionalReplacer(detector.statement());
 		Processor<CtStatement> processor = new ConditionalInstrumenter(nopolProcessor, config.getType().getType());
+		spoonCl.process(processor);
+
+		CtType<Object> spoonThaliana = spoonCl.spoonFactory().Type().get("spoon.example.Thaliana");
+
+		assertTrue(!(spoonThaliana.getElements(new TypeFilter<CtTry>(CtTry.class) {
+			@Override
+			public boolean matches(CtTry element) {
+				return true;
+			}
+		}).isEmpty()));
+
+		assertEquals("__NopolProcessorException", spoonThaliana.getElements(new TypeFilter<CtCatch>(CtCatch.class) {
+			@Override
+			public boolean matches(CtCatch element) {
+				return true;
+			}
+		}).get(0).getParameter().getSimpleName());
+
+		ifStatement = l.getFactory().Class().get("spoon.example.Thaliana").getElements(new TypeFilter<CtIf>(CtIf.class) {
+			@Override
+			public boolean matches(CtIf element) {
+				return "throwingExceptionDueToTheName".equals(((CtMethod) element.getParent(CtMethod.class)).getSimpleName());
+			}
+		}).get(0);
+
+		spoonCl = spooner.forked("spoon.example.Thaliana");
+		detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config.getType());
+		spoonCl.process(detector);
+		nopolProcessor = new ConditionalReplacer(detector.statement());
+		processor = new ConditionalInstrumenter(nopolProcessor, config.getType().getType());
+		try {
+			spoonCl.process(processor);
+			fail();
+		} catch (DynamicCompilationException exception) {
+			assertEquals("Aborting: dynamic compilation failed", exception.getMessage());
+		}
+	}
+
+	@Test
+	public void testConditionnalLoggingInstrumenter() throws Exception {
+
+		Config config = new Config();
+		config.setSynthesis(Config.NopolSynthesis.DYNAMOTH);
+		File fileClassToSpoon = new File("src/test/resources/spoon/example/Thaliana.java");
+		File[] sourceFiles = {fileClassToSpoon};
+		SpoonedProject spooner = new SpoonedProject(sourceFiles
+				, new URL[]{fileClassToSpoon.toURI().toURL()}, config);
+
+		Launcher l = new Launcher();
+		l.addInputResource("src/test/resources/spoon/example/Thaliana.java");
+		l.buildModel();
+		CtIf ifStatement = l.getFactory().Class().get("spoon.example.Thaliana").getElements(new TypeFilter<CtIf>(CtIf.class) {
+			@Override
+			public boolean matches(CtIf element) {
+				return "method".equals(((CtMethod) element.getParent(CtMethod.class)).getSimpleName());
+			}
+		}).get(0);
+
+		SpoonedClass spoonCl = spooner.forked("spoon.example.Thaliana");
+		StatementTypeDetector detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config.getType());
+		spoonCl.process(detector);
+		NopolProcessor nopolProcessor = new ConditionalReplacer(detector.statement());
+		Processor<CtStatement> processor = new ConditionalLoggingInstrumenter(RuntimeValues.<Boolean>newInstance(), nopolProcessor);
 		spoonCl.process(processor);
 
 		CtType<Object> spoonThaliana = spoonCl.spoonFactory().Type().get("spoon.example.Thaliana");
