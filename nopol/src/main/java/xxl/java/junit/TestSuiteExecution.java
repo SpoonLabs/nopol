@@ -92,7 +92,7 @@ public class TestSuiteExecution {
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
-            logDebug(logger(), String.format("Timeout after %d seconds. Infinite loop?", secondsForTimeout()));
+            logDebug(logger(), String.format("Timeout after %d seconds. Infinite loop?", config.getTimeoutTestExecution()));
             throw new RuntimeException(e);
         } finally {
             executor.shutdownNow();
@@ -108,10 +108,6 @@ public class TestSuiteExecution {
         return descriptions;
     }
 
-    protected static long secondsForTimeout() {
-        return secondsForTimeout;
-    }
-
     private static RunListener nullRunListener() {
         return Singleton.of(NullRunListener.class);
     }
@@ -119,9 +115,5 @@ public class TestSuiteExecution {
     private static Logger logger() {
         return loggerFor(TestSuiteExecution.class);
     }
-
-    @Deprecated
-    private static long secondsForTimeout = 0L;//MINUTES.toSeconds(Config.INSTANCE.getTimeoutTestExecution());
-
 
 }
