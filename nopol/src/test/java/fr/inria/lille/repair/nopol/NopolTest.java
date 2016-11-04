@@ -10,6 +10,7 @@ import org.junit.Test;
 import java.util.Collection;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 
 public class NopolTest extends TestUtility {
 
@@ -104,6 +105,37 @@ public class NopolTest extends TestUtility {
 		Patch patch = test(8, 12, failedTests, config);
 		fixComparison(patch, "((a * b))<=(100)", "(a * b) <= 100");
 	}
+
+	@Test
+	public void preconditionThenConditional() {
+
+		/* Test the PRE_THEN_COND mode.
+			For the example 1, Nopol find a patch in CONDITIONAL mode but not in PRECONDITION mode.
+		 */
+
+		Collection<String> failedTests = asList("test5", "test6");
+		Config config = new Config();
+		config.setType(StatementType.PRE_THEN_COND);
+		Patch patch = test(1, 12, failedTests, config);
+		assertEquals(StatementType.CONDITIONAL, config.getType());
+		fixComparison(patch, "index <= 0", "index < 1", "index <= -1", "index <= 0");
+	}
+
+	@Test
+	public void preconditionThenConditionalPrecondition() {
+
+		/* Test the PRE_THEN_COND mode.
+			For the example 1, Nopol find a patch in PRECONDITION mode but not in CONDITIONAL mode.
+		 */
+
+		Collection<String> failedTests = asList("test4", "test5");
+		Config config = new Config();
+		config.setType(StatementType.PRE_THEN_COND);
+		Patch patch = test(5, 20, failedTests, config);
+		assertEquals(StatementType.PRECONDITION, config.getType());
+		fixComparison(patch, "-1 <= a", "1 <= a", "(r)<=(a)", "(-1)<(a)", "(0)<=(a)", "0 <= a");
+	}
+
 
 	public static String absolutePathOf(int exampleNumber) {
 		return "../test-projects/src/main/java/nopol_examples/nopol_example_" + exampleNumber + "/NopolExample.java";
