@@ -23,6 +23,7 @@ import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.TestClassesFinder;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
+import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.patch.TestPatch;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.spoon.symbolic.AssertReplacer;
@@ -103,9 +104,18 @@ public class NoPol {
 				throw new RuntimeException("Unable to write transformed test", e);
 			}
 		}
+
+		if (config.getType() == StatementType.PRE_THEN_COND) {
+			config.setType(StatementType.PRECONDITION);
+			List<Patch> patches = solveWithMultipleBuild(testListPerStatement);
+			if (!patches.isEmpty()) {
+				return patches;
+			} else {
+				config.setType(StatementType.CONDITIONAL);
+			}
+		}
 		return solveWithMultipleBuild(testListPerStatement);
 	}
-
 
 
 	/*

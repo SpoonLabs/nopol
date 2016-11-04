@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtStatement;
+import xxl.java.compiler.DynamicCompilationException;
 
 import java.io.File;
 
@@ -122,7 +123,11 @@ public final class SynthesizerFactory {
             switch (config.getOracle()) {
                 case ANGELIC:
                     Processor<CtStatement> processor = new ConditionalLoggingInstrumenter(runtimeValuesInstance, nopolProcessor);
-                    constraintModelBuilder = new ConstraintModelBuilder(runtimeValuesInstance, statement, processor, spooner, config);
+                    try {
+                        constraintModelBuilder = new ConstraintModelBuilder(runtimeValuesInstance, statement, processor, spooner, config);
+                    } catch (DynamicCompilationException e) {
+                        return NO_OP_SYNTHESIZER;
+                    }
                     break;
                 case SYMBOLIC:
                     constraintModelBuilder = new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, config);

@@ -75,6 +75,10 @@ public class NoPolLauncher {
 		System.out.println("JAVA_HOME: " + System.getenv("JAVA_HOME"));
 		System.out.println("PATH: " + System.getenv("PATH"));
 
+		return runNopol(sourceFile, classpath, config, args);
+	}
+
+	private static List<Patch> runNopol(File[] sourceFile, URL[] classpath, Config config, String[] args) {
 		long executionTime = System.currentTimeMillis();
 		NoPol nopol = new NoPol(sourceFile, classpath, config);
 		List<Patch> patches = null;
