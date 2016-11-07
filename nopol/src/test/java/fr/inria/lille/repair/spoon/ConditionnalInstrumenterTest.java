@@ -55,7 +55,7 @@ public class ConditionnalInstrumenterTest {
 		SpoonedClass spoonCl = spooner.forked("spoon.example.Thaliana");
 		StatementTypeDetector detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config.getType());
 		spoonCl.process(detector);
-		NopolProcessor nopolProcessor = new ConditionalReplacer(detector.statement());
+		NopolProcessor nopolProcessor = new ConditionalReplacer(detector.getStatement());
 		Processor<CtStatement> processor = new ConditionalInstrumenter(nopolProcessor, config.getType().getType());
 		spoonCl.process(processor);
 
@@ -85,7 +85,7 @@ public class ConditionnalInstrumenterTest {
 		spoonCl = spooner.forked("spoon.example.Thaliana");
 		detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config.getType());
 		spoonCl.process(detector);
-		nopolProcessor = new ConditionalReplacer(detector.statement());
+		nopolProcessor = new ConditionalReplacer(detector.getStatement());
 		processor = new ConditionalInstrumenter(nopolProcessor, config.getType().getType());
 		try {
 			spoonCl.process(processor);
@@ -118,7 +118,7 @@ public class ConditionnalInstrumenterTest {
 		SpoonedClass spoonCl = spooner.forked("spoon.example.Thaliana");
 		StatementTypeDetector detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config.getType());
 		spoonCl.process(detector);
-		NopolProcessor nopolProcessor = new ConditionalReplacer(detector.statement());
+		NopolProcessor nopolProcessor = new ConditionalReplacer(detector.getStatement());
 		Processor<CtStatement> processor = new ConditionalLoggingInstrumenter(RuntimeValues.<Boolean>newInstance(), nopolProcessor);
 		spoonCl.process(processor);
 
@@ -148,7 +148,7 @@ public class ConditionnalInstrumenterTest {
 		spoonCl = spooner.forked("spoon.example.Thaliana");
 		detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config.getType());
 		spoonCl.process(detector);
-		nopolProcessor = new ConditionalReplacer(detector.statement());
+		nopolProcessor = new ConditionalReplacer(detector.getStatement());
 		processor = new ConditionalInstrumenter(nopolProcessor, config.getType().getType());
 		try {
 			spoonCl.process(processor);

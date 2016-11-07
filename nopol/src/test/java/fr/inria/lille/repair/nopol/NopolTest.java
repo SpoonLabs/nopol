@@ -10,7 +10,6 @@ import org.junit.Test;
 import java.util.Collection;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
 
 public class NopolTest extends TestUtility {
 
@@ -117,7 +116,6 @@ public class NopolTest extends TestUtility {
 		Config config = new Config();
 		config.setType(StatementType.PRE_THEN_COND);
 		Patch patch = test(1, 12, failedTests, config);
-		assertEquals(StatementType.CONDITIONAL, config.getType());
 		fixComparison(patch, "index <= 0", "index < 1", "index <= -1", "index <= 0");
 	}
 
@@ -132,7 +130,6 @@ public class NopolTest extends TestUtility {
 		Config config = new Config();
 		config.setType(StatementType.PRE_THEN_COND);
 		Patch patch = test(5, 20, failedTests, config);
-		assertEquals(StatementType.PRECONDITION, config.getType());
 		fixComparison(patch, "-1 <= a", "1 <= a", "(r)<=(a)", "(-1)<(a)", "(0)<=(a)", "0 <= a");
 	}
 

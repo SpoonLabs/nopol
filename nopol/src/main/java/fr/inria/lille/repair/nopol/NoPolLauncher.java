@@ -136,8 +136,8 @@ public class NoPolLauncher {
 				nextTest = coverage.nextSetBit(nextTest + 1);
 			}*/
 
-			System.out.println("Nb statement executed by the passing tests of the patched line: " + countStatementSuccess);
-			System.out.println("Nb statement executed by the failing tests of the patched line: " + countStatementFailed);
+			System.out.println("Nb getStatement executed by the passing tests of the patched line: " + countStatementSuccess);
+			System.out.println("Nb getStatement executed by the failing tests of the patched line: " + countStatementFailed);
 		}
 //		System.out.println("Nb statements: " + nopol.getgZoltar().getGzoltar().getSpectra().getNumberOfComponents());
 //		System.out.println("Nb unit tests : " + nopol.getgZoltar().getGzoltar().getTestResults().size());
