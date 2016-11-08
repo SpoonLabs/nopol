@@ -121,6 +121,9 @@ public class NoPol {
 		List<Patch> patches = new ArrayList<>();
 		for (SourceLocation sourceLocation : testListPerStatement.keySet()) {
 			patches.addAll(runOnStatement(sourceLocation, testListPerStatement.get(sourceLocation)));
+			if (config.isOnlyOneSynthesisResult() && !patches.isEmpty()) {
+				return patches;
+			}
 		}
 		return patches;
 	}
@@ -140,9 +143,10 @@ public class NoPol {
 			return patches;
 		}
 		final List<NopolProcessor> nopolProcessors = builder.getNopolProcessors();
-		if (nopolProcessors  != null) {
-			for (NopolProcessor nopolProcessor : nopolProcessors) {
-				patches.addAll(runNopolProcessor(tests, sourceLocation, spoonCl, nopolProcessor));
+		for (NopolProcessor nopolProcessor : nopolProcessors) {
+			patches.addAll(runNopolProcessor(tests, sourceLocation, spoonCl, nopolProcessor));
+			if (config.isOnlyOneSynthesisResult() && !patches.isEmpty()) {
+				return patches;
 			}
 		}
 		return patches;
