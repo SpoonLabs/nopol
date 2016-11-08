@@ -89,11 +89,7 @@ public class NoPol {
 	}
 
 	public List<Patch> build(String[] testClasses) {
-
-		Map<SourceLocation, List<TestResult>> testListPerStatement;
 		this.localizer = config.getLocalizer(this.sourceFiles, this.classpath, testClasses);
-		testListPerStatement = this.localizer.getTestListPerStatement();
-
 		if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
 			try {
 				SpoonedProject jpfSpoon = new SpoonedProject(this.sourceFiles, classpath, config);
@@ -110,7 +106,7 @@ public class NoPol {
 				throw new RuntimeException("Unable to write transformed test", e);
 			}
 		}
-		return solveWithMultipleBuild(testListPerStatement);
+		return solveWithMultipleBuild(this.localizer.getTestListPerStatement());
 	}
 
 
@@ -123,66 +119,61 @@ public class NoPol {
 	 */
 	private List<Patch> solveWithMultipleBuild(Map<SourceLocation, List<TestResult>> testListPerStatement) {
 		List<Patch> patches = new ArrayList<>();
-
 		for (SourceLocation sourceLocation : testListPerStatement.keySet()) {
+			patches.addAll(runOnStatement(sourceLocation, testListPerStatement.get(sourceLocation)));
+		}
+		return patches;
+	}
 
-			try {
+	private List<Patch> runOnStatement(SourceLocation sourceLocation, List<TestResult> tests) {
+		List<Patch> patches = new ArrayList<>();
+		logger.debug("Analysing {}", sourceLocation);
+		SpoonedClass spoonCl = spooner.forked(sourceLocation.getRootClassName());
+		if (spoonCl == null || spoonCl.getSimpleType() == null) {
+			return patches;
+		}
+		NopolProcessorBuilder builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), sourceLocation.getLineNumber(), config);
+		try {
+			spoonCl.process(builder);
+		} catch (DynamicCompilationException ignored) {
+			logger.debug("Aborting: dynamic compilation failed");
+			return patches;
+		}
+		final List<NopolProcessor> nopolProcessors = builder.getNopolProcessors();
+		if (nopolProcessors  != null) {
+			for (NopolProcessor nopolProcessor : nopolProcessors) {
+				patches.addAll(runNopolProcessor(tests, sourceLocation, spoonCl, nopolProcessor));
+			}
+		}
+		return patches;
+	}
 
-				logger.debug("Analysing {}", sourceLocation);
-
-				SpoonedClass spoonCl = spooner.forked(sourceLocation.getRootClassName());
-				if (spoonCl == null || spoonCl.getSimpleType() == null) {
-					continue;
+	private List<Patch> runNopolProcessor(List<TestResult> tests, SourceLocation sourceLocation, SpoonedClass spoonCl, NopolProcessor nopolProcessor) {
+		AngelicValue angelicValue;
+		List<Patch> patches = new ArrayList<>();
+		try {
+			angelicValue = buildConstraintsModelBuilder(nopolProcessor, sourceLocation, spooner);
+		} catch (UnsupportedOperationException | DynamicCompilationException ignored) {
+			return patches;
+		}
+		Synthesizer synth = SynthesizerFactory.build(sourceFiles, spooner, config, sourceLocation, nopolProcessor, angelicValue, spoonCl);
+		if (synth == Synthesizer.NO_OP_SYNTHESIZER) {
+			return patches;
+		}
+		Collection<TestCase> failingTest = reRunFailingTestCases(getFailingTestCase(tests), new URLClassLoader(classpath));
+		if (failingTest.isEmpty()) {
+			return patches;
+		}
+		List<Patch> tmpPatches = synth.buildPatch(classpath, tests, failingTest, config.getMaxTimeBuildPatch());
+		for (int i = 0; i < tmpPatches.size(); i++) {
+			Patch patch = tmpPatches.get(i);
+			if (isOk(patch, tests, synth.getProcessor())) {
+				patches.add(patch);
+				if (config.isOnlyOneSynthesisResult()) {
+					return patches;
 				}
-
-				NopolProcessorBuilder builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), sourceLocation.getLineNumber(), config);
-				spoonCl.process(builder);
-
-				for (NopolProcessor nopolProcessor : builder.getNopolProcessors()) {
-
-					final AngelicValue angelicValue = buildConstraintsModelBuilder(nopolProcessor, sourceLocation, spooner);
-					if (angelicValue == null) {
-						System.out.println("NO ANGELIC VALUE");
-						continue;
-					}
-
-					Synthesizer synth = SynthesizerFactory.build(sourceFiles, spooner, config, sourceLocation, nopolProcessor, angelicValue, spoonCl);
-
-					if (synth == Synthesizer.NO_OP_SYNTHESIZER) {
-						System.out.println("NO OP");
-						continue;
-					}
-
-					List<TestResult> tests = testListPerStatement.get(sourceLocation);
-
-					Set<String> failingClassTest = new HashSet<>();
-					for (int i = 0; i < tests.size(); i++) {
-						TestResult testResult = tests.get(i);
-						if (!testResult.isSuccessful()) {
-							failingClassTest.add(testResult.getTestCase().className());
-						}
-					}
-
-					Collection<TestCase> failingTest = failingTests(failingClassTest.toArray(new String[0]), new URLClassLoader(classpath));//TODO [0] ?
-
-					if (failingTest.isEmpty()) {
-						continue;
-					}
-					List<Patch> tmpPatches = synth.buildPatch(classpath, tests, failingTest, config.getMaxTimeBuildPatch());
-					for (int i = 0; i < tmpPatches.size(); i++) {
-						Patch patch = tmpPatches.get(i);
-						if (isOk(patch, tests, synth.getProcessor())) {
-							patches.add(patch);
-							if (config.isOnlyOneSynthesisResult()) {
-								break;
-							}
-						} else {
-							logger.debug("Could not find a patch in {}", sourceLocation);
-						}
-					}
-				}
-			} catch (RuntimeException re) {
-				re.printStackTrace();
+			} else {
+				logger.debug("Could not find a patch in {}", sourceLocation);
 			}
 		}
 		return patches;
@@ -194,22 +185,12 @@ public class NoPol {
 			switch (config.getOracle()) {
 				case ANGELIC:
 					Processor<CtStatement> processor = new ConditionalLoggingInstrumenter(runtimeValuesInstance, nopolProcessor);
-					try {
-						return new ConstraintModelBuilder(runtimeValuesInstance, statement, processor, spooner, config);
-					} catch (DynamicCompilationException e) {
-						e.printStackTrace();
-						return null;
-					}
+					return new ConstraintModelBuilder(runtimeValuesInstance, statement, processor, spooner, config);
 				case SYMBOLIC:
 					return new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, config);
 			}
 		}
-		return null;
-	}
-
-	@Deprecated
-	private boolean isInTest(Statement statement) {
-		return statement.getMethod().getParent().getName().contains("Test");
+		throw new UnsupportedOperationException();
 	}
 
 	private boolean isOk(Patch newRepair, List<TestResult> testClasses, NopolProcessor processor) {
@@ -217,40 +198,22 @@ public class NoPol {
 		return testPatch.passesAllTests(newRepair, testClasses, processor);
 	}
 
-	/**
-	 * returns the list of failing tests
-	 *
-	 * @param testClasses
-	 * @return the list of failing tests
-	 */
-	private Collection<TestCase> failingTests(String[] testClasses,
-											  ClassLoader testClassLoader) {
+	private String[] getFailingTestCase(List<TestResult> tests) {
+		Set<String> failingClassTest = new HashSet<>();
+		for (int i = 0; i < tests.size(); i++) {
+			TestResult testResult = tests.get(i);
+			if (!testResult.isSuccessful()) {
+				failingClassTest.add(testResult.getTestCase().className());
+			}
+		}
+		return failingClassTest.toArray(new String[0]);
+	}
+
+	private Collection<TestCase> reRunFailingTestCases(String[] testClasses,
+													   ClassLoader testClassLoader) {
 		TestCasesListener listener = new TestCasesListener();
 		TestSuiteExecution.runCasesIn(testClasses, testClassLoader, listener, this.config);
 		return listener.failedTests();
-	}
-
-	@Deprecated
-	private Collection<TestCase> failingTests(String[] testClasses) {
-		TestCasesListener listener = new TestCasesListener();
-		TestSuiteExecution.runCasesIn(testClasses, spooner.dumpedToClassLoader(), listener, this.config);
-		return listener.failedTests();
-	}
-
-	/**
-	 * Add JPF library to class path
-	 *
-	 * @param clpath
-	 */
-	@Deprecated
-	private URL[] addJPFLibraryToCassPath(URL[] clpath) {
-
-		List<URL> classpath = new ArrayList<>();
-		for (int i = 0; i < clpath.length; i++) {
-			classpath.add(clpath[i]);
-		}
-
-		return classpath.toArray(new URL[]{});
 	}
 
 	public SpoonedProject getSpooner() {
