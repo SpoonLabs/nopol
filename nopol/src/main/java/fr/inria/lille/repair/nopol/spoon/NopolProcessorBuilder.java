@@ -34,6 +34,7 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
 		this.file = checkNotNull(file);
 		this.line = line;
 		this.config = config;
+		this.nopolProcessors = new ArrayList<>();
 	}
 
 	public List<NopolProcessor> getNopolProcessors() {
@@ -53,7 +54,6 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
 
 	@Override
 	public void process(CtStatement statement) {
-		nopolProcessors = new ArrayList<>();
 		StatementType typeToAnalyse = config.getType();
 		if (typeToAnalyse == StatementType.PRE_THEN_COND) {
 			if (SpoonConditionalPredicate.INSTANCE.apply(statement)) {
@@ -62,7 +62,9 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
 				} else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
 					nopolProcessors.add(new SymbolicConditionalReplacer(statement));
 				}
-			} else if (SpoonStatementPredicate.INSTANCE.apply(statement)) {
+			}
+
+			if (SpoonStatementPredicate.INSTANCE.apply(statement)) {
 				if (config.getOracle() == Config.NopolOracle.ANGELIC) {
 					nopolProcessors.add(new ConditionalAdder(statement));
 				} else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
