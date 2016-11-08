@@ -209,8 +209,7 @@ public class NoPol {
 		return failingClassTest.toArray(new String[0]);
 	}
 
-	private Collection<TestCase> reRunFailingTestCases(String[] testClasses,
-													   ClassLoader testClassLoader) {
+	private Collection<TestCase> reRunFailingTestCases(String[] testClasses, ClassLoader testClassLoader) {
 		TestCasesListener listener = new TestCasesListener();
 		TestSuiteExecution.runCasesIn(testClasses, testClassLoader, listener, this.config);
 		return listener.failedTests();

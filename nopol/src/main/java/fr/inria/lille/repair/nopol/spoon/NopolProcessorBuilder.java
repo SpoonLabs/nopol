@@ -52,45 +52,45 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
 	}
 
 	@Override
-	public void process(CtStatement element) {
+	public void process(CtStatement statement) {
 		nopolProcessors = new ArrayList<>();
 		StatementType typeToAnalyse = config.getType();
 		if (typeToAnalyse == StatementType.PRE_THEN_COND) {
-			if (SpoonConditionalPredicate.INSTANCE.apply(element)) {
+			if (SpoonConditionalPredicate.INSTANCE.apply(statement)) {
 				if (config.getOracle() == Config.NopolOracle.ANGELIC) {
-					nopolProcessors.add(new ConditionalReplacer(element));
+					nopolProcessors.add(new ConditionalReplacer(statement));
 				} else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-					nopolProcessors.add(new SymbolicConditionalReplacer(element));
+					nopolProcessors.add(new SymbolicConditionalReplacer(statement));
 				}
-			} else if (SpoonStatementPredicate.INSTANCE.apply(element)) {
+			} else if (SpoonStatementPredicate.INSTANCE.apply(statement)) {
 				if (config.getOracle() == Config.NopolOracle.ANGELIC) {
-					nopolProcessors.add(new ConditionalAdder(element));
+					nopolProcessors.add(new ConditionalAdder(statement));
 				} else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-					nopolProcessors.add(new SymbolicConditionalAdder(element));
+					nopolProcessors.add(new SymbolicConditionalAdder(statement));
 				}
 			}
 		} else if (typeToAnalyse == StatementType.CONDITIONAL
-				&& SpoonConditionalPredicate.INSTANCE.apply(element)) {
+				&& SpoonConditionalPredicate.INSTANCE.apply(statement)) {
 			if (config.getOracle() == Config.NopolOracle.ANGELIC) {
-				nopolProcessors.add(new ConditionalReplacer(element));
+				nopolProcessors.add(new ConditionalReplacer(statement));
 			} else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-				nopolProcessors.add(new SymbolicConditionalReplacer(element));
+				nopolProcessors.add(new SymbolicConditionalReplacer(statement));
 			}
 		} else if (typeToAnalyse == StatementType.PRECONDITION
-				&& SpoonStatementPredicate.INSTANCE.apply(element)) {
+				&& SpoonStatementPredicate.INSTANCE.apply(statement)) {
 			if (config.getOracle() == Config.NopolOracle.ANGELIC) {
-				nopolProcessors.add(new ConditionalAdder(element));
+				nopolProcessors.add(new ConditionalAdder(statement));
 			} else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-				nopolProcessors.add(new SymbolicConditionalAdder(element));
+				nopolProcessors.add(new SymbolicConditionalAdder(statement));
 			}
 		} else if (typeToAnalyse == StatementType.INTEGER_LITERAL &&
-				SpoonIntegerStatement.INSTANCE.apply(element) ||
+				SpoonIntegerStatement.INSTANCE.apply(statement) ||
 				typeToAnalyse == StatementType.INTEGER_LITERAL &&
-						SpoonBooleanStatement.INSTANCE.apply(element) ||
+						SpoonBooleanStatement.INSTANCE.apply(statement) ||
 				typeToAnalyse == StatementType.DOUBLE_LITERAL
-						&& SpoonDoubleStatement.INSTANCE.apply(element)) {
+						&& SpoonDoubleStatement.INSTANCE.apply(statement)) {
 			if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-				final LiteralReplacer nopolProcessor = new LiteralReplacer(typeToAnalyse.getType(), element);
+				final LiteralReplacer nopolProcessor = new LiteralReplacer(typeToAnalyse.getType(), statement);
 				nopolProcessors.add(nopolProcessor);
 			}
 		}
