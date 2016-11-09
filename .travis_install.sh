@@ -21,7 +21,7 @@ cd "nopol"
 mvn clean package -DskipTests
 
 cd ..
-git clone https://github.com/danglotb/CoCoSpoon.git
+git clone https://github.com/SpoonLabs/CoCoSpoon.git
 cd CoCoSpoon
 git checkout java7
 mvn clean install
