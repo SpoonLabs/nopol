@@ -167,7 +167,9 @@ public class Main {
 	}
 
 	private static StatementType strToStatementType(String str) {
-		if (str.equals("loop")) {
+		if (str.equals("pre_then_cond")) {
+			return StatementType.PRE_THEN_COND;
+		} else if (str.equals("loop")) {
 			return StatementType.LOOP;
 		} else if (str.equals("condition")) {
 			return StatementType.CONDITIONAL;
@@ -205,9 +207,9 @@ public class Main {
 		typeOpt.setAllowMultipleDeclarations(false);
 		typeOpt.setLongFlag("type");
 		typeOpt.setShortFlag('e');
-		typeOpt.setUsageName("loop|condition|precondition|arithmetic");
+		typeOpt.setUsageName("pre_then_cond|loop|condition|precondition|arithmetic");
 		typeOpt.setStringParser(JSAP.STRING_PARSER);
-		typeOpt.setDefault("condition");
+		typeOpt.setDefault("pre_then_cond");
 		typeOpt.setHelp("The type of statement to analyze (only used with repair mode).");
 		jsap.registerParameter(typeOpt);
 

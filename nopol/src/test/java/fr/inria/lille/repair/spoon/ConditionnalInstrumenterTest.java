@@ -4,11 +4,10 @@ import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.repair.common.config.Config;
-import fr.inria.lille.repair.common.synth.StatementTypeDetector;
 import fr.inria.lille.repair.nopol.spoon.ConditionalLoggingInstrumenter;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
+import fr.inria.lille.repair.nopol.spoon.NopolProcessorBuilder;
 import fr.inria.lille.repair.nopol.spoon.dynamoth.ConditionalInstrumenter;
-import fr.inria.lille.repair.nopol.spoon.smt.ConditionalReplacer;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.processing.Processor;
@@ -23,10 +22,9 @@ import xxl.java.compiler.DynamicCompilationException;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * Created by bdanglot on 9/29/16.
@@ -52,10 +50,13 @@ public class ConditionnalInstrumenterTest {
 			}
 		}).get(0);
 
+
 		SpoonedClass spoonCl = spooner.forked("spoon.example.Thaliana");
-		StatementTypeDetector detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config.getType());
-		spoonCl.process(detector);
-		NopolProcessor nopolProcessor = new ConditionalReplacer(detector.statement());
+		NopolProcessorBuilder builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config);
+		spoonCl.process(builder);
+		List<NopolProcessor> nopolProcessors = builder.getNopolProcessors();
+		assertEquals(1, nopolProcessors.size());
+		NopolProcessor nopolProcessor = nopolProcessors.get(0);
 		Processor<CtStatement> processor = new ConditionalInstrumenter(nopolProcessor, config.getType().getType());
 		spoonCl.process(processor);
 
@@ -83,10 +84,13 @@ public class ConditionnalInstrumenterTest {
 		}).get(0);
 
 		spoonCl = spooner.forked("spoon.example.Thaliana");
-		detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config.getType());
-		spoonCl.process(detector);
-		nopolProcessor = new ConditionalReplacer(detector.statement());
+		builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config);
+		spoonCl.process(builder);
+		nopolProcessors = builder.getNopolProcessors();
+		assertEquals(1, nopolProcessors.size());
+		nopolProcessor = nopolProcessors.get(0);
 		processor = new ConditionalInstrumenter(nopolProcessor, config.getType().getType());
+
 		try {
 			spoonCl.process(processor);
 			fail();
@@ -116,9 +120,11 @@ public class ConditionnalInstrumenterTest {
 		}).get(0);
 
 		SpoonedClass spoonCl = spooner.forked("spoon.example.Thaliana");
-		StatementTypeDetector detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config.getType());
-		spoonCl.process(detector);
-		NopolProcessor nopolProcessor = new ConditionalReplacer(detector.statement());
+		NopolProcessorBuilder builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config);
+		spoonCl.process(builder);
+		List<NopolProcessor> nopolProcessors = builder.getNopolProcessors();
+		assertEquals(1, nopolProcessors.size());
+		NopolProcessor nopolProcessor = nopolProcessors.get(0);
 		Processor<CtStatement> processor = new ConditionalLoggingInstrumenter(RuntimeValues.<Boolean>newInstance(), nopolProcessor);
 		spoonCl.process(processor);
 
@@ -146,9 +152,11 @@ public class ConditionnalInstrumenterTest {
 		}).get(0);
 
 		spoonCl = spooner.forked("spoon.example.Thaliana");
-		detector = new StatementTypeDetector(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config.getType());
-		spoonCl.process(detector);
-		nopolProcessor = new ConditionalReplacer(detector.statement());
+		builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config);
+		spoonCl.process(builder);
+		nopolProcessors = builder.getNopolProcessors();
+		assertEquals(1, nopolProcessors.size());
+		nopolProcessor = nopolProcessors.get(0);
 		processor = new ConditionalInstrumenter(nopolProcessor, config.getType().getType());
 		try {
 			spoonCl.process(processor);
