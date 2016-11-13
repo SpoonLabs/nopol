@@ -199,7 +199,12 @@ public class NoPol {
 
 	private boolean isOk(Patch newRepair, List<TestResult> testClasses, NopolProcessor processor) {
 		logger.trace("Suggested patch: {}", newRepair);
-		return testPatch.passesAllTests(newRepair, testClasses, processor);
+		try {
+			return testPatch.passesAllTests(newRepair, testClasses, processor);
+		} catch (DynamicCompilationException e) {
+			logger.error("Patch malformed " + newRepair.asString(), e);
+			return false;
+		}
 	}
 
 	private String[] getFailingTestCase(List<TestResult> tests) {

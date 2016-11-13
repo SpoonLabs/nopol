@@ -67,7 +67,8 @@ public enum SpoonStatementPredicate implements Predicate<CtElement> {
                 // target, CtStatementList<?> statements)
                 && isInsideIfLoopCaseBlock
                 // cannot insert if inside update statement in for loop declaration
-                && !isInsideForDeclaration;
+                && !isInsideForDeclaration
+                && isInBlock;
         return result;
     }
 
