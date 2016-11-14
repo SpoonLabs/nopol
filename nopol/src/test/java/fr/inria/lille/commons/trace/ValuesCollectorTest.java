@@ -9,7 +9,6 @@ import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.infinitel.loop.implant.LoopStatisticsTest;
-import fr.inria.lille.repair.nopol.NopolTest;
 import fr.inria.lille.spirals.repair.synthesis.collect.spoon.DefaultConstantCollector;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -26,17 +25,10 @@ import xxl.java.junit.TestCase;
 import xxl.java.library.FileLibrary;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 public class ValuesCollectorTest {
@@ -483,7 +475,8 @@ public class ValuesCollectorTest {
 	}
 
 	private CtElement elementInNopolProject(int exampleNumber, String codeSnippet) {
-		return elementInClass(NopolTest.absolutePathOf(exampleNumber), codeSnippet);
+		final String pathToExampleSource = "../test-projects/src/main/java/nopol_examples/nopol_example_" + exampleNumber + "/NopolExample.java";
+		return elementInClass(pathToExampleSource, codeSnippet);
 	}
 
 	private CtElement elementInInfinitelProject(int exampleNumber, String codeSnippet) {

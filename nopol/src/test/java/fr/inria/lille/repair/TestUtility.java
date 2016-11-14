@@ -3,6 +3,7 @@ package fr.inria.lille.repair;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
+import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.NoPol;
 import xxl.java.container.classic.MetaSet;
 import xxl.java.junit.TestCase;
@@ -21,81 +22,76 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by Thomas Durieux on 03/03/15.
  */
-public abstract class TestUtility {
-    protected String solver = "z3";
-    protected String solverPath =  "lib/z3/z3_for_linux";
-    protected String executionType;
+public class TestUtility {
 
-    public TestUtility(String executionType) {
-        this.executionType = executionType;
-    }
+	private static final String SOLVER = "z3";
+	private static final String SOLVER_PATH = "lib/z3/z3_for_linux";
 
-    public ProjectReference projectForExample(int nopolExampleNumber) {
-        String sourceFile = "../test-projects/src/";
-        String classpath = "../test-projects/target/test-classes"+File.pathSeparatorChar+"../test-projects/target/classes"+File.pathSeparatorChar+"misc/nopol-example/junit-4.11.jar";
-        String[] testClasses = new String[] { executionType + "_examples." + executionType + "_example_"
-                + nopolExampleNumber + ".NopolExampleTest" };
-        return new ProjectReference(sourceFile, classpath, testClasses);
-    }
+	public static ProjectReference projectForExample(String executionType, int nopolExampleNumber) {
+		String sourceFile = "../test-projects/src/";
+		String classpath = "../test-projects/target/test-classes" + File.pathSeparatorChar + "../test-projects/target/classes" + File.pathSeparatorChar + "misc/nopol-example/junit-4.11.jar";
+		String[] testClasses = new String[]{executionType + "_examples." + executionType + "_example_"
+				+ nopolExampleNumber + ".NopolExampleTest"};
+		return new ProjectReference(sourceFile, classpath, testClasses);
+	}
 
-    protected  List<Patch> patchFor(ProjectReference project, Config config) {
-        for (int i = 0; i < project.sourceFiles().length; i++) {
-            File file = project.sourceFiles()[i];
-            clean(file.getParent());
-        }
-        List<Patch> patches;
-        switch (this.executionType) {
-            case "symbolic":
-                config.setOracle(Config.NopolOracle.SYMBOLIC);
-                break;
-            case "nopol":
-                config.setOracle(Config.NopolOracle.ANGELIC);
-                break;
-            default:
-                throw new RuntimeException("Execution type not found");
-        }
-        NoPol nopol = new NoPol(project.sourceFiles(), project.classpath(), config);
-        patches = nopol.build(project.testClasses());
+	public static List<Patch> patchFor(String executionType, ProjectReference project, Config config) {
+		for (int i = 0; i < project.sourceFiles().length; i++) {
+			File file = project.sourceFiles()[i];
+			clean(file.getParent());
+		}
+		List<Patch> patches;
+		switch (executionType) {
+			case "symbolic":
+				config.setOracle(Config.NopolOracle.SYMBOLIC);
+				break;
+			case "nopol":
+				config.setOracle(Config.NopolOracle.ANGELIC);
+				break;
+			default:
+				throw new RuntimeException("Execution type not found");
+		}
+		NoPol nopol = new NoPol(project.sourceFiles(), project.classpath(), config);
+		patches = nopol.build(project.testClasses());
 
-        for (int i = 0; i < project.sourceFiles().length; i++) {
-            File file = project.sourceFiles()[i];
-            clean(file.getParent());
-        }
-        return patches;
-    }
+		for (int i = 0; i < project.sourceFiles().length; i++) {
+			File file = project.sourceFiles()[i];
+			clean(file.getParent());
+		}
+		return patches;
+	}
 
-    protected void fixComparison(Patch foundPatch, String... expectedFixes) {
-        Collection<String> possibleFixes = MetaSet.newHashSet(expectedFixes);
-        assertTrue(foundPatch + " is not a valid patch",
-                possibleFixes.contains(foundPatch.asString()));
-    }
+	public static List<Patch> setupAndRun(String executionType, int projectNumber, Config config, TestCasesListener listener) {
+		ProjectReference project = projectForExample(executionType, projectNumber);
+		SolverFactory.setSolver(SOLVER, SOLVER_PATH);
+		URLClassLoader classLoader = new URLClassLoader(project.classpath());
+		TestSuiteExecution.runCasesIn(project.testClasses(), classLoader, listener, config);
+		return patchFor(executionType, project, config);
+	}
 
-    protected Patch test(int projectNumber, int linePosition,
-                         Collection<String> expectedFailedTests, Config config) {
-        ProjectReference project = projectForExample(projectNumber);
-        SolverFactory.setSolver(solver, solverPath);
-        TestCasesListener listener = new TestCasesListener();
-        URLClassLoader classLoader = new URLClassLoader(project.classpath());
-        TestSuiteExecution.runCasesIn(project.testClasses(), classLoader,
-                listener, config);
-        Collection<String> failedTests = TestCase.testNames(listener
-                .failedTests());
-        assertEquals(expectedFailedTests.size(), failedTests.size());
-        assertTrue(expectedFailedTests.containsAll(failedTests));
-        List<Patch> patches = patchFor(project, config);
-        assertEquals(patches.toString(), 1, patches.size());
-        Patch patch = patches.get(0);
-        assertEquals(patch.getType(), config.getType());
-        assertEquals(linePosition, patch.getLineNumber());
-        System.out.println(String.format("Patch for nopol example %d: %s",
-                projectNumber, patch.asString()));
-        return patch;
-    }
+	public static void assertPatches(int linePosition, Collection<String> expectedFailedTests, StatementType expectedType, TestCasesListener listener, List<Patch> patches) {
+		Collection<String> failedTests = TestCase.testNames(listener
+				.failedTests());
+		Patch patch = patches.get(0);
 
-    void clean(String folderPath) {
-        String path = folderPath + "/spooned";
-        if (FileLibrary.isValidPath(path)) {
-            FileLibrary.deleteDirectory(path);
-        }
-    }
+		assertEquals(expectedFailedTests.size(), failedTests.size());
+		assertTrue(expectedFailedTests.containsAll(failedTests));
+		assertEquals(patches.toString(), 1, patches.size());
+
+		assertEquals(expectedType, patch.getType());
+		assertEquals(linePosition, patch.getLineNumber());
+	}
+
+	public static void assertAgainstKnownPatches(Patch foundPatch, String... expectedFixes) {
+		Collection<String> possibleFixes = MetaSet.newHashSet(expectedFixes);
+		assertTrue(foundPatch + " is not a valid patch",
+				possibleFixes.contains(foundPatch.asString()));
+	}
+
+	private static void clean(String folderPath) {
+		String path = folderPath + "/spooned";
+		if (FileLibrary.isValidPath(path)) {
+			FileLibrary.deleteDirectory(path);
+		}
+	}
 }
