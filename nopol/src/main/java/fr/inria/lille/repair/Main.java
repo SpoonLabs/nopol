@@ -26,6 +26,7 @@ import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.infinitel.Infinitel;
 import fr.inria.lille.repair.nopol.NoPolLauncher;
 import fr.inria.lille.repair.ranking.Ranking;
+import org.slf4j.LoggerFactory;
 import xxl.java.library.FileLibrary;
 import xxl.java.library.JavaLibrary;
 
@@ -33,6 +34,7 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Iterator;
+import java.util.concurrent.*;
 
 public class Main {
 	private static JSAP jsap = new JSAP();
@@ -40,7 +42,7 @@ public class Main {
 	public static void main(String[] args) {
 		int returnCode = -1;
 		try {
-			Config config = new Config();
+			final Config config = new Config();
 			initJSAP();
 			if (!parseArguments(args, config)) {
 				return;
@@ -57,14 +59,14 @@ public class Main {
 				}
 			}
 
-			File[] sourceFiles = new File[config.getProjectSourcePath().length];
+			final File[] sourceFiles = new File[config.getProjectSourcePath().length];
 			for (int i = 0; i < config.getProjectSourcePath().length; i++) {
 				String path = config.getProjectSourcePath()[i];
 				File sourceFile = FileLibrary.openFrom(path);
 				sourceFiles[i] = sourceFile;
 			}
 
-			URL[] classpath = JavaLibrary.classpathFrom(config.getProjectClasspath());
+			final URL[] classpath = JavaLibrary.classpathFrom(config.getProjectClasspath());
 
 
 			switch (config.getMode()) {
@@ -76,7 +78,19 @@ public class Main {
 							infinitel.repair();
 							break;
 						default:
-							returnCode = NoPolLauncher.launch(sourceFiles, classpath, config).isEmpty() ? -1 : 0;
+							final ExecutorService executor = Executors.newSingleThreadExecutor();
+							final Future nopolExecution = executor.submit(
+									new Callable() {
+										@Override
+										public Object call() throws Exception {
+											return NoPolLauncher.launch(sourceFiles, classpath, config).isEmpty() ? -1 : 0;
+										}
+									});
+							try {
+								returnCode = (int) nopolExecution.get(config.getMaxTime(), TimeUnit.MINUTES);
+							} catch (TimeoutException exception) {
+								LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + config.getMaxTime() + " " + TimeUnit.MINUTES, exception);
+							}
 							break;
 					}
 					break;
@@ -125,7 +139,7 @@ public class Main {
 		config.setProjectSourcePath(jsapConfig.getStringArray("source"));
 		config.setProjectTests(jsapConfig.getStringArray("test"));
 		config.setComplianceLevel(jsapConfig.getInt("complianceLevel", 7));
-		config.setMaxTime(jsapConfig.getInt("maxTime", 60));
+		config.setMaxTime(jsapConfig.getInt("maxTime", 10));
 		config.setLocalizer(strToLocalizer(jsapConfig.getString("faultLocalization")));
 		return true;
 	}
@@ -298,8 +312,8 @@ public class Main {
 		maxTime.setAllowMultipleDeclarations(false);
 		maxTime.setLongFlag("maxTime");
 		maxTime.setStringParser(JSAP.INTEGER_PARSER);
-		maxTime.setDefault("60");
-		maxTime.setHelp("The maximum time execution in minute (whole execution time of NOPOL -- experimental do not use)");
+		maxTime.setDefault("10");
+		maxTime.setHelp("The maximum time execution in minute for the whole execution of Nopol.(default: 10)");
 		jsap.registerParameter(maxTime);
 
 		FlaggedOption faultLocalization = new FlaggedOption("faultLocalization");

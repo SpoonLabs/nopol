@@ -119,9 +119,8 @@ Usage: java -jar nopol.jar
   [(-m|--mode) <repair|ranking>]
         Define the mode of execution. (default: repair)
 
-  [(-e|--type) <loop|condition|precondition>]
-        The type of statement to analyze (only used with repair mode). (default:
-        condition)
+  [(-e|--type) <pre_then_cond|loop|condition|precondition|arithmetic>]
+        The type of statement to analyze (only used with repair mode). (default: pre_then_cond)
 
   [(-o|--oracle) <angelic|symbolic>]
         Define the oracle (only used with repair mode). (default: angelic)
@@ -132,8 +131,24 @@ Usage: java -jar nopol.jar
   [(-l|--solver) <z3|cvc4>]
         Define the solver (only used with smt synthesis). (default: z3)
 
+  [(-p|--solver-path) <solverPath>]
+        Define the solver binary path (only used with smt synthesis).
+
+  (-s|--source) source1:source2:...:sourceN 
+        Define the path to the source code of the project.
+
+  (-c|--classpath) <classpath>
+        Define the classpath of the project.
+
+  [(-t|--test) test1:test2:...:testN ]
+        Define the tests of the project.
+
   [--complianceLevel <complianceLevel>]
-        The Java version of the project. (default: 7)
+        The compliance level of the project. (default: 7)
+
+  [--maxTime <maxTime>]
+        The maximum time execution in minute for the whole execution of Nopol.(default: 10)
+
   [(-z|--flocal) < ochiai|dumb|gzoltar>]
         Define the fault localizer to be used. (default: ochiai)
 
