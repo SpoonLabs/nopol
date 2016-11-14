@@ -32,7 +32,6 @@ import xxl.java.junit.TestCase;
 
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.*;
 
 /**
  * @author Favio D. DeMarco
@@ -99,7 +98,8 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 		DefaultConstantCollector constantCollector = new DefaultConstantCollector(constants);
 		spoonedProject.forked(sourceLocation.getContainingClassName()).process(constantCollector);
 		final ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis(constants);
-		final CodeGenesis genesis = runGenesisWithinTime(maxTimeBuildPatch, data, synthesis);
+		final CodeGenesis genesis = synthesis.codesSynthesisedFrom(
+				(Class<T>) (type.getType()), data);
 
 		if (genesis == null || !genesis.isSuccessful()) {
 			return Collections.EMPTY_LIST;
@@ -107,26 +107,6 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 		SMTNopolSynthesizer.dataSize = dataSize;
 		SMTNopolSynthesizer.nbVariables = data.iterator().next().inputs().keySet().size();
 		return Collections.singletonList((Patch) new StringPatch(genesis.returnStatement(), sourceLocation, type));
-	}
-
-	private CodeGenesis runGenesisWithinTime(long maxTimeBuildPatch, final Collection<Specification<T>> data, final ConstraintBasedSynthesis synthesis) {
-		CodeGenesis codeGenesis;
-		final ExecutorService executor = Executors.newSingleThreadExecutor();
-		final Future nopolExecution = executor.submit(
-				new Callable() {
-					@Override
-					public Object call() throws Exception {
-						return synthesis.codesSynthesisedFrom(
-								(Class<T>) (type.getType()), data);
-					}
-				});
-		try {
-			codeGenesis = (CodeGenesis) nopolExecution.get(maxTimeBuildPatch, TimeUnit.SECONDS);
-			return codeGenesis;
-		} catch (ExecutionException | InterruptedException | TimeoutException exception) {
-			LoggerFactory.getLogger(this.getClass()).error("Timeout: genesis time > " + maxTimeBuildPatch + " " + TimeUnit.SECONDS, exception);
-			return null;
-		}
 	}
 
 	public static int getNbStatementsWithAngelicValue() {

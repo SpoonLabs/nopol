@@ -131,18 +131,6 @@ Usage: java -jar nopol.jar
   [(-l|--solver) <z3|cvc4>]
         Define the solver (only used with smt synthesis). (default: z3)
 
-  [(-p|--solver-path) <solverPath>]
-        Define the solver binary path (only used with smt synthesis).
-
-  (-s|--source) source1:source2:...:sourceN 
-        Define the path to the source code of the project.
-
-  (-c|--classpath) <classpath>
-        Define the classpath of the project.
-
-  [(-t|--test) test1:test2:...:testN ]
-        Define the tests of the project.
-
   [--complianceLevel <complianceLevel>]
         The compliance level of the project. (default: 7)
 
