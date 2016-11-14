@@ -79,6 +79,7 @@ public class Config implements Serializable {
 	private double variableWeight;
 	private long timeoutTestExecution;
 	private long maxTimeBuildPatch;
+	private long maxTimeEachType;
 
 	private NopolMode mode = NopolMode.REPAIR;
 	private StatementType type = StatementType.CONDITIONAL;
@@ -125,6 +126,7 @@ public class Config implements Serializable {
 			variableWeight = Double.parseDouble(p.getProperty("variable", "0"));
 			timeoutTestExecution = Long.parseLong(p.getProperty("timeoutTestExecution", "5"));
 			maxTimeBuildPatch = Long.parseLong(p.getProperty("maxTimeBuildPatch", "15L"));
+			maxTimeEachType = Long.parseLong(p.getProperty("maxTimeEachType", "300L"));
 			complianceLevel = Integer.parseInt(p.getProperty("complianceLevel", "7"));
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to load config file", e);
@@ -143,6 +145,14 @@ public class Config implements Serializable {
 			sourceFiles[i] = sourceFile;
 		}
 		return sourceFiles;
+	}
+
+	public long getMaxTimeEachType() {
+		return maxTimeEachType;
+	}
+
+	public void setMaxTimeEachType(long maxTimeEachType) {
+		this.maxTimeEachType = maxTimeEachType;
 	}
 
 	public int getSynthesisDepth() {
