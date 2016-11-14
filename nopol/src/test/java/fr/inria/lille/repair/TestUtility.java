@@ -3,7 +3,6 @@ package fr.inria.lille.repair;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
-import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.NoPol;
 import xxl.java.container.classic.MetaSet;
 import xxl.java.junit.TestCase;
@@ -23,9 +22,9 @@ import static org.junit.Assert.assertTrue;
  * Created by Thomas Durieux on 03/03/15.
  */
 public abstract class TestUtility {
-    String solver = "z3";
-    String solverPath =  "lib/z3/z3_for_linux";
-    String executionType;
+    protected String solver = "z3";
+    protected String solverPath =  "lib/z3/z3_for_linux";
+    protected String executionType;
 
     public TestUtility(String executionType) {
         this.executionType = executionType;
@@ -39,7 +38,7 @@ public abstract class TestUtility {
         return new ProjectReference(sourceFile, classpath, testClasses);
     }
 
-    private List<Patch> patchFor(ProjectReference project, Config config) {
+    protected  List<Patch> patchFor(ProjectReference project, Config config) {
         for (int i = 0; i < project.sourceFiles().length; i++) {
             File file = project.sourceFiles()[i];
             clean(file.getParent());
@@ -72,7 +71,7 @@ public abstract class TestUtility {
     }
 
     protected Patch test(int projectNumber, int linePosition,
-                       Collection<String> expectedFailedTests, Config config) {
+                         Collection<String> expectedFailedTests, Config config) {
         ProjectReference project = projectForExample(projectNumber);
         SolverFactory.setSolver(solver, solverPath);
         TestCasesListener listener = new TestCasesListener();
@@ -81,8 +80,8 @@ public abstract class TestUtility {
                 listener, config);
         Collection<String> failedTests = TestCase.testNames(listener
                 .failedTests());
-        // assertEquals(expectedFailedTests.size(), failedTests.size());
-        // assertTrue(expectedFailedTests.containsAll(failedTests));
+        assertEquals(expectedFailedTests.size(), failedTests.size());
+        assertTrue(expectedFailedTests.containsAll(failedTests));
         List<Patch> patches = patchFor(project, config);
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);

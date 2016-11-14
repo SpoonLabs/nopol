@@ -56,45 +56,66 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
 	public void process(CtStatement statement) {
 		StatementType typeToAnalyse = config.getType();
 		if (typeToAnalyse == StatementType.PRE_THEN_COND) {
-			if (SpoonConditionalPredicate.INSTANCE.apply(statement)) {
-				if (config.getOracle() == Config.NopolOracle.ANGELIC) {
-					nopolProcessors.add(new ConditionalReplacer(statement));
-				} else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-					nopolProcessors.add(new SymbolicConditionalReplacer(statement));
-				}
-			}
-
-			if (SpoonStatementPredicate.INSTANCE.apply(statement)) {
-				if (config.getOracle() == Config.NopolOracle.ANGELIC) {
-					nopolProcessors.add(new ConditionalAdder(statement));
-				} else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-					nopolProcessors.add(new SymbolicConditionalAdder(statement));
-				}
-			}
+			preThenCondProcessors(statement);
 		} else if (typeToAnalyse == StatementType.CONDITIONAL
 				&& SpoonConditionalPredicate.INSTANCE.apply(statement)) {
-			if (config.getOracle() == Config.NopolOracle.ANGELIC) {
-				nopolProcessors.add(new ConditionalReplacer(statement));
-			} else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-				nopolProcessors.add(new SymbolicConditionalReplacer(statement));
-			}
+			nopolProcessors.add(conditionalProcessor(statement));
 		} else if (typeToAnalyse == StatementType.PRECONDITION
 				&& SpoonStatementPredicate.INSTANCE.apply(statement)) {
-			if (config.getOracle() == Config.NopolOracle.ANGELIC) {
-				nopolProcessors.add(new ConditionalAdder(statement));
-			} else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-				nopolProcessors.add(new SymbolicConditionalAdder(statement));
-			}
+			nopolProcessors.add(preConditionProcessor(statement));
 		} else if (typeToAnalyse == StatementType.INTEGER_LITERAL &&
 				SpoonIntegerStatement.INSTANCE.apply(statement) ||
 				typeToAnalyse == StatementType.INTEGER_LITERAL &&
 						SpoonBooleanStatement.INSTANCE.apply(statement) ||
 				typeToAnalyse == StatementType.DOUBLE_LITERAL
 						&& SpoonDoubleStatement.INSTANCE.apply(statement)) {
-			if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-				final LiteralReplacer nopolProcessor = new LiteralReplacer(typeToAnalyse.getType(), statement);
-				nopolProcessors.add(nopolProcessor);
+			nopolProcessors.add(literalProcessor(statement, typeToAnalyse));
+		}
+	}
+
+	private NopolProcessor literalProcessor(CtStatement statement, StatementType typeToAnalyse) {
+		if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
+			return new LiteralReplacer(typeToAnalyse.getType(), statement, typeToAnalyse);
+		}
+		throw new UnsupportedOperationException("Wrong oracle for Literal replace : " + config.getOracle() + "should be symbolic");
+	}
+
+	private NopolProcessor preConditionProcessor(CtStatement statement) {
+		if (config.getOracle() == Config.NopolOracle.ANGELIC) {
+			return new ConditionalAdder(statement);
+		} else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
+			return new SymbolicConditionalAdder(statement);
+		}
+		return null;
+	}
+
+	private NopolProcessor conditionalProcessor(CtStatement statement) {
+		if (config.getOracle() == Config.NopolOracle.ANGELIC) {
+			return new ConditionalReplacer(statement);
+		} else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
+			return new SymbolicConditionalReplacer(statement);
+		}
+		return null;
+	}
+
+	private void preThenCondProcessors(CtStatement statement) {
+		NopolProcessor nopolProcessor = null;
+		if (SpoonConditionalPredicate.INSTANCE.apply(statement)) {
+			if (config.getOracle() == Config.NopolOracle.ANGELIC) {
+				nopolProcessor = new ConditionalReplacer(statement);
+			} else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
+				nopolProcessor = new SymbolicConditionalReplacer(statement);
 			}
+			nopolProcessors.add(nopolProcessor);
+		}
+
+		if (SpoonStatementPredicate.INSTANCE.apply(statement)) {
+			if (config.getOracle() == Config.NopolOracle.ANGELIC) {
+				nopolProcessor = new ConditionalAdder(statement);
+			} else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
+				nopolProcessor = new SymbolicConditionalAdder(statement);
+			}
+			nopolProcessors.add(nopolProcessor);
 		}
 	}
 }

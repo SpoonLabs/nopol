@@ -1,6 +1,7 @@
 package fr.inria.lille.repair.nopol.spoon.symbolic;
 
 import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
+import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import gov.nasa.jpf.symbc.Debug;
 import spoon.reflect.code.CtAssignment;
@@ -14,8 +15,8 @@ import static fr.inria.lille.commons.spoon.util.SpoonModelLibrary.newLocalVariab
 
 public class LiteralReplacer extends NopolProcessor {
 
-    public LiteralReplacer(Class<?> cl, CtStatement statement) {
-        super(statement);
+    public LiteralReplacer(Class<?> cl, CtStatement statement, StatementType statementType) {
+        super(statement, statementType);
         if (statement instanceof CtAssignment<?, ?>) {
             super.setDefaultValue(((CtAssignment<?, ?>) statement).getAssignment().toString());
         } else if (statement instanceof CtLocalVariable<?>) {

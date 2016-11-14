@@ -1,5 +1,6 @@
 package fr.inria.lille.repair.nopol.spoon.symbolic;
 
+import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.spoon.smt.ConditionalProcessor;
 import gov.nasa.jpf.symbc.Debug;
@@ -8,7 +9,7 @@ import spoon.reflect.code.*;
 public class SymbolicConditionalReplacer extends NopolProcessor {
 
     public SymbolicConditionalReplacer(CtStatement target) {
-        super(target);
+        super(target, StatementType.CONDITIONAL);
         setDefaultValue(((CtIf) target).getCondition().toString());
         super.setType(Boolean.class);
     }

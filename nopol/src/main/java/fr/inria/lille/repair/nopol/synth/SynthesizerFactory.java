@@ -49,9 +49,9 @@ public final class SynthesizerFactory {
 		}
 		switch (config.getSynthesis()) {
 			case SMT:
-				return new SMTNopolSynthesizer(spooner, constraintModelBuilder, statement, config.getType(), nopolProcessor, config);
+				return new SMTNopolSynthesizer(spooner, constraintModelBuilder, statement, nopolProcessor.getStatementType(), nopolProcessor, config);
 			case DYNAMOTH:
-				return new DynamothSynthesizer(constraintModelBuilder, sourceFolders, statement, config.getType(), nopolProcessor, spooner, config);
+				return new DynamothSynthesizer(constraintModelBuilder, sourceFolders, statement, nopolProcessor.getStatementType(), nopolProcessor, spooner, config);
 		}
 		return Synthesizer.NO_OP_SYNTHESIZER;
 	}
