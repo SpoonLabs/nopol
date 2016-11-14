@@ -61,7 +61,7 @@ public class Config implements Serializable {
 	private boolean sortExpressions;
 	private int maxLineInvocationPerTest;
 	private int timeoutMethodInvocation;
-	private int maxTime = 10;
+	private int maxTime = 600;
 
 	private double addWeight;
 	private double subWeight;

@@ -32,6 +32,7 @@ import xxl.java.junit.TestCase;
 
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * @author Favio D. DeMarco
@@ -64,7 +65,7 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 	 */
 	@Override
 	public List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
-		Collection<Specification<T>> data = constraintModelBuilder.buildFor(classpath, testClasses, failures);
+		final Collection<Specification<T>> data = constraintModelBuilder.buildFor(classpath, testClasses, failures);
 
 		// XXX FIXME TODO move this
 		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
@@ -97,16 +98,35 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 		Map<String, Number> constants = new HashMap<>();
 		DefaultConstantCollector constantCollector = new DefaultConstantCollector(constants);
 		spoonedProject.forked(sourceLocation.getContainingClassName()).process(constantCollector);
-		ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis(constants);
+		final ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis(constants);
+		final CodeGenesis genesis = runGenesisWithinTime(maxTimeBuildPatch, data, synthesis);
 
-		CodeGenesis genesis = synthesis.codesSynthesisedFrom(
-				(Class<T>) (type.getType()), data);
-		if (!genesis.isSuccessful()) {
+		if (genesis == null || !genesis.isSuccessful()) {
 			return Collections.EMPTY_LIST;
 		}
 		SMTNopolSynthesizer.dataSize = dataSize;
 		SMTNopolSynthesizer.nbVariables = data.iterator().next().inputs().keySet().size();
 		return Collections.singletonList((Patch) new StringPatch(genesis.returnStatement(), sourceLocation, type));
+	}
+
+	private CodeGenesis runGenesisWithinTime(long maxTimeBuildPatch, final Collection<Specification<T>> data, final ConstraintBasedSynthesis synthesis) {
+		CodeGenesis codeGenesis;
+		final ExecutorService executor = Executors.newSingleThreadExecutor();
+		final Future nopolExecution = executor.submit(
+				new Callable() {
+					@Override
+					public Object call() throws Exception {
+						return synthesis.codesSynthesisedFrom(
+								(Class<T>) (type.getType()), data);
+					}
+				});
+		try {
+			codeGenesis = (CodeGenesis) nopolExecution.get(maxTimeBuildPatch, TimeUnit.SECONDS);
+			return codeGenesis;
+		} catch (ExecutionException | InterruptedException | TimeoutException exception) {
+			LoggerFactory.getLogger(this.getClass()).error("Timeout: genesis time > " + maxTimeBuildPatch + " " + TimeUnit.SECONDS, exception);
+			return null;
+		}
 	}
 
 	public static int getNbStatementsWithAngelicValue() {
