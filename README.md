@@ -25,9 +25,8 @@ Nopol requires Java and an SMT solver installed on the machine (e.g. Z3)
 1) CoCoSpoon:
 
 ```
-git clone https://github.com/danglotb/CoCoSpoon.git
+git clone https://github.com/SpoonLabs/CoCoSpoon.git
 cd CoCoSpoon
-git checkout java7
 mvn clean install
 ```
 
