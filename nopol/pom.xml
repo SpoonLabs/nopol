@@ -89,11 +89,15 @@
             <groupId>gov.nasa.jpf</groupId>
             <artifactId>jpf</artifactId>
             <version>1154</version>
+            <optional>true</optional>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>gov.nasa.jpf</groupId>
             <artifactId>jpf-symbc</artifactId>
             <version>576</version>
+            <optional>true</optional>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.microsoft.z3</groupId>
@@ -156,11 +160,10 @@
             <artifactId>CocoSpoon</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
-
-
     </dependencies>
 
     <dependencyManagement>
+
         <dependencies>
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -269,7 +272,7 @@
                         </goals>
                         <configuration>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>allinone</shadedClassifierName>
+                            <shadedClassifierName>all-in-one</shadedClassifierName>
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
