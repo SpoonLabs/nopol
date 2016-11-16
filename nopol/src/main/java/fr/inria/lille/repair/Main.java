@@ -87,9 +87,9 @@ public class Main {
 										}
 									});
 							try {
-								returnCode = (int) nopolExecution.get(config.getMaxTime(), TimeUnit.SECONDS);
+								returnCode = (int) nopolExecution.get(config.getMaxTimeInMinutes(), TimeUnit.MINUTES);
 							} catch (TimeoutException exception) {
-								LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + config.getMaxTime() + " " + TimeUnit.SECONDS, exception);
+								LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + config.getMaxTimeInMinutes() + " " + TimeUnit.MINUTES, exception);
 							}
 							break;
 					}
@@ -139,7 +139,7 @@ public class Main {
 		config.setProjectSourcePath(jsapConfig.getStringArray("source"));
 		config.setProjectTests(jsapConfig.getStringArray("test"));
 		config.setComplianceLevel(jsapConfig.getInt("complianceLevel", 7));
-		config.setMaxTime(jsapConfig.getInt("maxTime", 600));
+		config.setMaxTimeInMinutes(jsapConfig.getInt("maxTime", 10));
 		config.setLocalizer(strToLocalizer(jsapConfig.getString("faultLocalization")));
 		return true;
 	}
@@ -312,8 +312,8 @@ public class Main {
 		maxTime.setAllowMultipleDeclarations(false);
 		maxTime.setLongFlag("maxTime");
 		maxTime.setStringParser(JSAP.INTEGER_PARSER);
-		maxTime.setDefault("600");
-		maxTime.setHelp("The maximum time execution in minute for the whole execution of Nopol.(default: 600)");
+		maxTime.setDefault("10");
+		maxTime.setHelp("The maximum time execution in minute for the whole execution of Nopol.(default: 10)");
 		jsap.registerParameter(maxTime);
 
 		FlaggedOption faultLocalization = new FlaggedOption("faultLocalization");

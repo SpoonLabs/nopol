@@ -167,9 +167,9 @@ public class NoPol {
 					}
 				});
 		try {
-			return (List) nopolExecution.get(config.getMaxTimeEachType(), TimeUnit.SECONDS);
+			return (List) nopolExecution.get(config.getMaxTimeEachTypeOfFixInMinutes(), TimeUnit.MINUTES);
 		} catch (ExecutionException | InterruptedException | TimeoutException exception) {
-			LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + config.getMaxTime() + " " + TimeUnit.SECONDS, exception);
+			LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + config.getMaxTimeInMinutes() + " " + TimeUnit.MINUTES, exception);
 			return Collections.emptyList();
 		}
 	}
