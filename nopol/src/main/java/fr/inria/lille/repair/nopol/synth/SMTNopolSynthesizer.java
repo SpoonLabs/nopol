@@ -64,7 +64,7 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 	 */
 	@Override
 	public List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
-		Collection<Specification<T>> data = constraintModelBuilder.buildFor(classpath, testClasses, failures);
+		final Collection<Specification<T>> data = constraintModelBuilder.buildFor(classpath, testClasses, failures);
 
 		// XXX FIXME TODO move this
 		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
@@ -97,11 +97,11 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 		Map<String, Number> constants = new HashMap<>();
 		DefaultConstantCollector constantCollector = new DefaultConstantCollector(constants);
 		spoonedProject.forked(sourceLocation.getContainingClassName()).process(constantCollector);
-		ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis(constants);
-
-		CodeGenesis genesis = synthesis.codesSynthesisedFrom(
+		final ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis(constants);
+		final CodeGenesis genesis = synthesis.codesSynthesisedFrom(
 				(Class<T>) (type.getType()), data);
-		if (!genesis.isSuccessful()) {
+
+		if (genesis == null || !genesis.isSuccessful()) {
 			return Collections.EMPTY_LIST;
 		}
 		SMTNopolSynthesizer.dataSize = dataSize;

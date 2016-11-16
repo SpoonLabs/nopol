@@ -22,6 +22,7 @@ import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.localization.FaultLocalizer;
 import fr.inria.lille.localization.TestResult;
+import fr.inria.lille.repair.Main;
 import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.TestClassesFinder;
 import fr.inria.lille.repair.common.config.Config;
@@ -47,6 +48,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
+import java.util.concurrent.*;
 
 
 /**
@@ -144,12 +146,32 @@ public class NoPol {
 		}
 		final List<NopolProcessor> nopolProcessors = builder.getNopolProcessors();
 		for (NopolProcessor nopolProcessor : nopolProcessors) {
-			patches.addAll(runNopolProcessor(tests, sourceLocation, spoonCl, nopolProcessor));
+			patches.addAll(executeNopolProcessor(tests, sourceLocation, spoonCl, nopolProcessor));
 			if (config.isOnlyOneSynthesisResult() && !patches.isEmpty()) {
 				return patches;
 			}
 		}
 		return patches;
+	}
+
+	/**
+	 * Method used as proxy for runNopolProcessor to handle timeout
+	 */
+	private List<Patch> executeNopolProcessor(final List<TestResult> tests, final SourceLocation sourceLocation, final SpoonedClass spoonCl, final NopolProcessor nopolProcessor) {
+		final ExecutorService executor = Executors.newSingleThreadExecutor();
+		final Future nopolExecution = executor.submit(
+				new Callable() {
+					@Override
+					public Object call() throws Exception {
+						return runNopolProcessor(tests, sourceLocation, spoonCl, nopolProcessor);
+					}
+				});
+		try {
+			return (List) nopolExecution.get(config.getMaxTimeEachTypeOfFixInMinutes(), TimeUnit.MINUTES);
+		} catch (ExecutionException | InterruptedException | TimeoutException exception) {
+			LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + config.getMaxTimeInMinutes() + " " + TimeUnit.MINUTES, exception);
+			return Collections.emptyList();
+		}
 	}
 
 	private List<Patch> runNopolProcessor(List<TestResult> tests, SourceLocation sourceLocation, SpoonedClass spoonCl, NopolProcessor nopolProcessor) {

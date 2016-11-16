@@ -244,7 +244,7 @@ public class Main {
         logger.debug("testClasses = "+testClasses);
 
 
-        config.setMaxTime(maxTime);
+        config.setMaxTimeInMinutes(maxTime);
         config.setType(nopolType);
         NoPol nopol = new NoPol(sourceFiles, classPath, config);
         List<Patch> currentPatches;

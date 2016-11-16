@@ -118,9 +118,8 @@ Usage: java -jar nopol.jar
   [(-m|--mode) <repair|ranking>]
         Define the mode of execution. (default: repair)
 
-  [(-e|--type) <loop|condition|precondition>]
-        The type of statement to analyze (only used with repair mode). (default:
-        condition)
+  [(-e|--type) <pre_then_cond|condition|precondition>]
+        The type of statement to analyze (only used with repair mode). (default: pre_then_cond)
 
   [(-o|--oracle) <angelic|symbolic>]
         Define the oracle (only used with repair mode). (default: angelic)
@@ -133,6 +132,10 @@ Usage: java -jar nopol.jar
 
   [--complianceLevel <complianceLevel>]
         The Java version of the project. (default: 7)
+
+  [--maxTime <maxTime>]
+        The maximum time execution in minute for the whole execution of Nopol.(default: 10)
+
   [(-z|--flocal) < ochiai|dumb|gzoltar>]
         Define the fault localizer to be used. (default: ochiai)
 

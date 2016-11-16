@@ -61,7 +61,7 @@ public class Config implements Serializable {
 	private boolean sortExpressions;
 	private int maxLineInvocationPerTest;
 	private int timeoutMethodInvocation;
-	private int maxTime = 60;
+	private int maxTimeInMinutes = 10;
 
 	private double addWeight;
 	private double subWeight;
@@ -79,6 +79,7 @@ public class Config implements Serializable {
 	private double variableWeight;
 	private long timeoutTestExecution;
 	private long maxTimeBuildPatch;
+	private long maxTimeEachTypeOfFixInMinutes;
 
 	private NopolMode mode = NopolMode.REPAIR;
 	private StatementType type = StatementType.CONDITIONAL;
@@ -125,6 +126,7 @@ public class Config implements Serializable {
 			variableWeight = Double.parseDouble(p.getProperty("variable", "0"));
 			timeoutTestExecution = Long.parseLong(p.getProperty("timeoutTestExecution", "5"));
 			maxTimeBuildPatch = Long.parseLong(p.getProperty("maxTimeBuildPatch", "15L"));
+			maxTimeEachTypeOfFixInMinutes = Long.parseLong(p.getProperty("maxTimeEachTypeOfFixInMinutes", "5"));
 			complianceLevel = Integer.parseInt(p.getProperty("complianceLevel", "7"));
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to load config file", e);
@@ -143,6 +145,14 @@ public class Config implements Serializable {
 			sourceFiles[i] = sourceFile;
 		}
 		return sourceFiles;
+	}
+
+	public long getMaxTimeEachTypeOfFixInMinutes() {
+		return maxTimeEachTypeOfFixInMinutes;
+	}
+
+	public void setMaxTimeEachTypeOfFixInMinutes(long maxTimeEachTypeOfFixInMinutes) {
+		this.maxTimeEachTypeOfFixInMinutes = maxTimeEachTypeOfFixInMinutes;
 	}
 
 	public int getSynthesisDepth() {
@@ -409,12 +419,12 @@ public class Config implements Serializable {
 		this.complianceLevel = complianceLevel;
 	}
 
-	public int getMaxTime() {
-		return maxTime;
+	public int getMaxTimeInMinutes() {
+		return maxTimeInMinutes;
 	}
 
-	public void setMaxTime(int maxTime) {
-		this.maxTime = maxTime;
+	public void setMaxTimeInMinutes(int maxTimeInMinutes) {
+		this.maxTimeInMinutes = maxTimeInMinutes;
 	}
 
 
