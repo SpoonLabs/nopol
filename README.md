@@ -119,7 +119,7 @@ Usage: java -jar nopol.jar
   [(-m|--mode) <repair|ranking>]
         Define the mode of execution. (default: repair)
 
-  [(-e|--type) <pre_then_cond|loop|condition|precondition|arithmetic>]
+  [(-e|--type) <pre_then_cond|condition|precondition>]
         The type of statement to analyze (only used with repair mode). (default: pre_then_cond)
 
   [(-o|--oracle) <angelic|symbolic>]
@@ -132,7 +132,7 @@ Usage: java -jar nopol.jar
         Define the solver (only used with smt synthesis). (default: z3)
 
   [--complianceLevel <complianceLevel>]
-        The compliance level of the project. (default: 7)
+        The Java version of the project. (default: 7)
 
   [--maxTime <maxTime>]
         The maximum time execution in minute for the whole execution of Nopol.(default: 10)
