@@ -1,6 +1,6 @@
 package fr.inria.lille.repair.spoon;
 
-import fr.inria.lille.repair.nopol.spoon.SpoonStatementPredicate;
+import fr.inria.lille.repair.nopol.spoon.SpoonPredicate;
 import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.code.CtFor;
@@ -20,7 +20,7 @@ public class testSpoonPredicate {
 	@Test
 	public void testStatementPredicate() throws Exception {
 
-		/* test the filter on statement of the SpoonStatementPredicate
+		/* test the filter on statement of the SpoonPredicate.canBeRepairedByAddingPrecondition
 			it must return true in case we can try to fix at the given statement, false otherwise.
 		*/
 
@@ -57,13 +57,13 @@ public class testSpoonPredicate {
 			}
 		}).get(0);
 
-		assertFalse(SpoonStatementPredicate.INSTANCE.apply(forLoop.getExpression()));
-		assertFalse(SpoonStatementPredicate.INSTANCE.apply(forLoop.getForUpdate().get(0)));
-		assertFalse(SpoonStatementPredicate.INSTANCE.apply(forLoop.getForInit().get(0)));
-		assertFalse(SpoonStatementPredicate.INSTANCE.apply(invocationOfIsAGreatClass));
-		assertFalse(SpoonStatementPredicate.INSTANCE.apply(invocationOfSuper));
-		assertFalse(SpoonStatementPredicate.INSTANCE.apply(returnTrue));
+		assertFalse(SpoonPredicate.canBeRepairedByAddingPrecondition(forLoop.getExpression()));
+		assertFalse(SpoonPredicate.canBeRepairedByAddingPrecondition(forLoop.getForUpdate().get(0)));
+		assertFalse(SpoonPredicate.canBeRepairedByAddingPrecondition(forLoop.getForInit().get(0)));
+		assertFalse(SpoonPredicate.canBeRepairedByAddingPrecondition(invocationOfIsAGreatClass));
+		assertFalse(SpoonPredicate.canBeRepairedByAddingPrecondition(invocationOfSuper));
+		assertFalse(SpoonPredicate.canBeRepairedByAddingPrecondition(returnTrue));
 
-		assertTrue(SpoonStatementPredicate.INSTANCE.apply(invocationOfIsAGreatClass.getParent()));
+		assertTrue(SpoonPredicate.canBeRepairedByAddingPrecondition(invocationOfIsAGreatClass.getParent()));
 	}
 }

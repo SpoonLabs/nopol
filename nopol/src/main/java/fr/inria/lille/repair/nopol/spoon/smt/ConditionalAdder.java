@@ -24,7 +24,6 @@ public class ConditionalAdder extends ConditionalProcessor {
         newIf.setParent(parent);
         element.replace(newIf);
         // this should be after the replace to avoid an StackOverflowException caused by the circular reference.
-        // see SpoonStatementPredicate
         newIf.setThenStatement(element);
         // Fix : warning: ignoring inconsistent parent for [CtElem1] ( [CtElem2] != [CtElem3] )
         newIf.getThenStatement().setParent(newIf);
