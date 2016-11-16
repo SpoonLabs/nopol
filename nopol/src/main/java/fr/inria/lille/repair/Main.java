@@ -140,6 +140,7 @@ public class Main {
 		config.setProjectTests(jsapConfig.getStringArray("test"));
 		config.setComplianceLevel(jsapConfig.getInt("complianceLevel", 7));
 		config.setMaxTimeInMinutes(jsapConfig.getInt("maxTime", 10));
+		config.setMaxTimeEachTypeOfFixInMinutes(jsapConfig.getInt("maxTimeType", 5));
 		config.setLocalizer(strToLocalizer(jsapConfig.getString("faultLocalization")));
 		return true;
 	}
@@ -315,6 +316,15 @@ public class Main {
 		maxTime.setDefault("10");
 		maxTime.setHelp("The maximum time execution in minute for the whole execution of Nopol.(default: 10)");
 		jsap.registerParameter(maxTime);
+
+		FlaggedOption maxTimeByTypeInMinutes = new FlaggedOption("maxTimeType");
+		maxTimeByTypeInMinutes.setRequired(false);
+		maxTimeByTypeInMinutes.setAllowMultipleDeclarations(false);
+		maxTimeByTypeInMinutes.setLongFlag("maxTimeType");
+		maxTimeByTypeInMinutes.setStringParser(JSAP.INTEGER_PARSER);
+		maxTimeByTypeInMinutes.setDefault("5");
+		maxTimeByTypeInMinutes.setHelp("The maximum time execution in minute for one type of patch. (default: 5)");
+		jsap.registerParameter(maxTimeByTypeInMinutes);
 
 		FlaggedOption faultLocalization = new FlaggedOption("faultLocalization");
 		faultLocalization.setRequired(false);
