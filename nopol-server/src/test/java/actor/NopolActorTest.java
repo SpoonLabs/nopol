@@ -6,7 +6,6 @@ import akka.actor.Props;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 import com.typesafe.config.ConfigFactory;
-import fr.inria.lille.repair.actor.NoPolActor;
 import fr.inria.lille.repair.common.patch.Patch;
 import org.junit.Test;
 import scala.concurrent.Await;

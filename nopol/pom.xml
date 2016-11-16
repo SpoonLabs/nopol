@@ -144,18 +144,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-actor_2.11</artifactId>
-            <version>2.3-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-remote_2.11</artifactId>
-            <version>2.3-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
             <groupId>fil.iagl.cocospoon</groupId>
             <artifactId>CocoSpoon</artifactId>
             <version>1.0.0-SNAPSHOT</version>
@@ -423,14 +411,6 @@
     </build>
 
     <repositories>
-
-        <repository>
-            <id>akka-snapshots</id>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <url>http://repo.akka.io/snapshots/</url>
-        </repository>
 
         <repository>
             <id>inria</id>
