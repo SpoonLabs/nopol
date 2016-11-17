@@ -2,7 +2,7 @@
 # test script for Travis
 
 cd nopol-server
-./gradlew test
+mvn clean package
 cd ..
 
 cd nopol

@@ -1,7 +1,6 @@
 <<<<<<< HEAD
 # System
 .DS_Store
-*.log
 solver*
 
 # Maven
@@ -40,5 +39,4 @@ z3
 
 # Nopol-Server
 nopol-server/out
-nopol-server/.gradle
-nopol-server/build
+nopol-server/target
