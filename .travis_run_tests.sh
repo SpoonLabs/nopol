@@ -1,6 +1,10 @@
 #!/bin/bash
 # test script for Travis
 
+cd nopol-server
+./gradlew test
+cd ..
+
 cd nopol
 
 cd ..
