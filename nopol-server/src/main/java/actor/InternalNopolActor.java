@@ -42,27 +42,18 @@ public class InternalNopolActor extends UntypedActor {
 			config.setProjectSourcePath(new String[] {tempDirectory.toString() + "/src/"});
 			config.setProjectClasspath(getClasspathFromTargetFolder(new File(tempDirectory.getCanonicalPath() + "/target")));
 
+			System.out.println(tempDirectory);
+
 			List<Patch> patches = Collections.EMPTY_LIST;
 			try {
 				patches = NoPolLauncher.launch(config.buildSourceFiles(), config.buildClasspath(), config);
-
-				//Internal debug
-				if (patches.isEmpty())
-					System.out.println("No Patch Found!");
-				else
-					for (Patch patch : patches)
-						System.out.println(patch);
-
 			} catch (NoSuspiciousStatementException | NoFailingTestCaseException noFix) {
-				//internal debug
-				System.out.println(noFix.toString());
 				client.tell(noFix, ActorRef.noSender());
 			} catch (Exception e) {
 				throw new RuntimeException("Error launch NoPol", e);
 			} finally {
 				getSender().tell(NoPolActor.Message.AVAILABLE, getSelf());
 			}
-
 			client.tell(patches, ActorRef.noSender());
 		} else
 			unhandled(message);//Unsupported message type
