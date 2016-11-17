@@ -1,6 +1,5 @@
 package counter;
 
-import counter.Counter;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -21,10 +20,10 @@ public class CounterTest {
 		Counter.run();
 		String url = "http://localhost:5050";
 		sendTo(url, "test");
-		sendTo(url, "start");
-		sendTo(url, "repair-attempt");
-		sendTo(url, "successful-repair");
-		sendTo(url, "toy-project");
+		sendTo(url, "START_PLUGIN");
+		sendTo(url, "REPAIR_ATTEMPT");
+		sendTo(url, "REPAIR_SUCCESS");
+		sendTo(url, "GENERATE_TOY_PROJECT");
 		Counter.stop();
 	}
 

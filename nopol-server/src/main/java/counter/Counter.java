@@ -49,12 +49,11 @@ public class Counter {
 	}
 
 	private static boolean isHandled(String target) {
-		return asList("test", "start", "repair-attempt", "successful-repair", "toy-project").contains(target);
+		return asList("test", "START_PLUGIN", "REPAIR_ATTEMPT", "REPAIR_SUCCESS", "GENERATE_TOY_PROJECT").contains(target);
 	}
 
 	private static void count(String countName) throws IOException {
 		checkpath();
-		System.err.println("count" + countName);
 		String path = "out/counter/" + countName;
 		final File file = new File(path);
 		String valueToWrite = "1";
