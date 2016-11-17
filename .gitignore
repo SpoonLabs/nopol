@@ -38,3 +38,7 @@ log
 # Nopol
 z3
 
+# Nopol-Server
+nopol-server/out
+nopol-server/.gradle
+nopol-server/build
