@@ -22,18 +22,14 @@ public class InternalNopolActor extends UntypedActor {
 
 	@Override
 	public void onReceive(Object message) throws Exception {
-		if (message instanceof Object[]) {
+		if (message instanceof ConfigActor) {
 
-			Object [] messageAsArray = (Object[]) message;
+			ConfigActor configActor = (ConfigActor) message;
 
-			if (!(messageAsArray[0] instanceof Config)) {
-				unhandled(message);//Unsupported message type
-			}
-
-			Config config = ((Config) messageAsArray[0]);
+			Config config = configActor.getConfig();
 			File tempDirectory = Files.createTempDir();
-			UnZiper.unZipIt(((byte[]) messageAsArray[1]), tempDirectory.getAbsolutePath());
-			ActorRef client = ((ActorRef) messageAsArray[2]);
+			UnZiper.unZipIt(configActor.getContent(), tempDirectory.getAbsolutePath());
+			ActorRef client = configActor.getClient();
 
 			if (config.getSynthesis() == Config.NopolSynthesis.SMT) {
 				config.setSolverPath(pathToSolver);

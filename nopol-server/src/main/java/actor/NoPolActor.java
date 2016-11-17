@@ -22,21 +22,13 @@ public class NoPolActor extends UntypedActor {
 
 	@Override
 	public void onReceive(Object message) {
-		if (message instanceof Object[]) {
-			Object [] messageAsArray = (Object[]) message;
-
-			if (!(messageAsArray[0] instanceof Config)) {
-				unhandled(message);//Unsupported message type
-			}
-
-			Object[] newMessage = new Object[] {messageAsArray[0], messageAsArray[1], getSender()};
-
+		if (message instanceof ConfigActor) {
 			boolean taskSent = false;
 			//Looking for free actor
 			for (ActorRef actorRef : this.pool.keySet()) {
 				if (this.pool.get(actorRef)) {
 					taskSent = true;
-					actorRef.tell(newMessage, getSelf());
+					actorRef.tell(message, getSelf());
 					this.pool.put(actorRef, Boolean.FALSE);
 					break;
 				}
@@ -67,6 +59,10 @@ public class NoPolActor extends UntypedActor {
 		ActorSystem system = ActorSystem.create(ACTOR_SYSTEM_NAME, config);
 		ActorRef actorNopol = system.actorOf(Props.create(NoPolActor.class, system), ACTOR_NAME);
 		System.out.println(actorNopol);
+	}
+
+	public static void main(String[] args) {
+		run();
 	}
 
 }
