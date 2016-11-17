@@ -49,7 +49,8 @@ public class ActorClient extends UntypedActor {
 			config.setType(StatementType.CONDITIONAL);
 			config.setSynthesis(Config.NopolSynthesis.DYNAMOTH);
 			config.setProjectTests(new String[]{fullQualifiedNameTest});
-			ConfigActor configActor = new ConfigActorImpl(config, content, getSelf());
+			ConfigActor configActor = new ConfigActorImpl(config, content);
+			configActor.setClient(getSelf());
 			actorNopol.tell(configActor, getSelf());
 			//NoPol's response handeling
 		} else if (message instanceof List && (!((List) message).isEmpty() && ((List) message).get(0) instanceof Patch)) {

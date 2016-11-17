@@ -14,5 +14,6 @@ public interface ConfigActor extends Serializable {
     Config getConfig();
     byte[] getContent();
     ActorRef getClient();
+    void setClient(ActorRef client);
 
 }

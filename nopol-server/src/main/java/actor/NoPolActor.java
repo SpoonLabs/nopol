@@ -24,6 +24,7 @@ public class NoPolActor extends UntypedActor {
 	public void onReceive(Object message) {
 		if (message instanceof ConfigActor) {
 			boolean taskSent = false;
+			((ConfigActor)message).setClient(getSender());
 			//Looking for free actor
 			for (ActorRef actorRef : this.pool.keySet()) {
 				if (this.pool.get(actorRef)) {
