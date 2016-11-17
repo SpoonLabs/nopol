@@ -40,7 +40,6 @@ public class NopolTest {
 		final TestCasesListener listener = new TestCasesListener();
 
 		List<Patch> patches = TestUtility.setupAndRun(executionType, 2, config, listener);
-
 		TestUtility.assertPatches(11, expectedFailedTests, expectedStatementType, listener, patches);
 		TestUtility.assertAgainstKnownPatches(patches.get(0),  "a <= b", "a < b", "1 <= (b - a)", "0 <= (b - a)", "1 < (b - a)", "0 < (b - a)", "a < b", "2 <= (b - a)");
 	}

@@ -78,7 +78,7 @@ public final class JPFRunner<T> implements AngelicValue<T> {
 	}
 
 	@Override
-	public Collection<Specification<T>> buildFor(final URL[] classpath, final List<TestResult> testClasses, final Collection<TestCase> failures) {
+	public Collection<Specification<T>> collectSpecifications(final URL[] classpath, final List<TestResult> testClasses, final Collection<TestCase> failures) {
 		SpoonedClass fork = cleanSpoon.forked(sourceLocation.getContainingClassName());
 		final LoggingInstrumenter<T> logging = createLoggingInstrumenter();
 		final ClassLoader unitTestClassLoader = fork.processedAndDumpedToClassLoader(logging);
@@ -92,7 +92,7 @@ public final class JPFRunner<T> implements AngelicValue<T> {
 	}
 
 	@Override
-	public Collection<Specification<T>> buildFor(final URL[] classpath, final String[] testClasses, final Collection<TestCase> failures) {
+	public Collection<Specification<T>> collectSpecifications(final URL[] classpath, final String[] testClasses, final Collection<TestCase> failures) {
 		final LoggingInstrumenter<T> logging = createLoggingInstrumenter();
 		SpoonedClass fork = cleanSpoon.forked(sourceLocation.getContainingClassName());
 		final ClassLoader unitTestClassLoader = fork.processedAndDumpedToClassLoader(logging);

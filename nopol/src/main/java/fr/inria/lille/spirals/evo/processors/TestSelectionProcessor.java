@@ -1,13 +1,12 @@
 package fr.inria.lille.spirals.evo.processors;
 
-import java.lang.annotation.Annotation;
-import java.util.List;
-
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
+
+import java.lang.annotation.Annotation;
+import java.util.List;
 
 /**
  * This processor remove all methods that are not methodTested and not in keptMethods list.
@@ -32,7 +31,7 @@ public class TestSelectionProcessor extends AbstractProcessor<CtMethod<?>>{
 
         boolean isTest = false;
         for(CtAnnotation<? extends Annotation> annotation : element.getAnnotations()){
-            if(annotation.getSignature().equals("@org.junit.Test")){
+            if (annotation.getType().equals(annotation.getFactory().Annotation().createReference(org.junit.Test.class))) {
                 isTest = true;
             }
         }

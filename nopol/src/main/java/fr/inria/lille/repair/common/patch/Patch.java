@@ -15,8 +15,10 @@
  */
 package fr.inria.lille.repair.common.patch;
 
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.SourceLocation;
+import spoon.reflect.factory.Factory;
 
 import java.io.File;
 import java.io.Serializable;
@@ -40,5 +42,7 @@ public interface Patch extends Serializable {
     StatementType getType();
 
     SourceLocation getSourceLocation();
+
+    String toDiff(Factory spoon, Config config);
 
 }

@@ -12,7 +12,7 @@ public enum StatementType {
 
     private Class<?> type;
 
-    private StatementType(Class<?> type) {
+    StatementType(Class<?> type) {
         this.type = type;
     }
 

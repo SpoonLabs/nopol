@@ -133,7 +133,7 @@ public class IfCountingInstrumentingProcessor extends
         boolean hasTestAnnotation = false; // to detect TestCase under JUnit 4.x
         List<CtAnnotation<?>> listAnnotation = method.getAnnotations();
         for (CtAnnotation<?> tmp : listAnnotation) {
-            if (tmp.getSignature().equals("@org.junit.Test")) {
+            if (tmp.getType().equals(method.getFactory().Annotation().createReference(org.junit.Test.class))) {
                 hasTestAnnotation = true;
             }
         }

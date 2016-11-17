@@ -18,7 +18,7 @@ public class CodeSnippetFilter extends AbstractFilter<CtElement> {
     @Override
     public boolean matches(CtElement element) {
         SourcePosition position = element.getPosition();
-        if (position != null) {
+        if (position != null && position != SourcePosition.NOPOSITION) {
             return FileLibrary.isSameFile(classSourceFile(), position.getFile()) && codeSnippet().equals(element.toString());
         }
         return false;

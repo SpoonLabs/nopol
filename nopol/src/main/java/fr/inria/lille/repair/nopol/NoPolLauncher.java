@@ -28,8 +28,17 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.lang.String.format;
 
@@ -173,8 +182,23 @@ public class NoPolLauncher {
 
 		if (patches != null && !patches.isEmpty()) {
 			System.out.println("----PATCH FOUND----");
-			for (Patch patch : patches) {
+			for (int i = 0; i < patches.size(); i++) {
+				Patch patch = patches.get(i);
 				System.out.println(patch);
+				System.out.println(String.format("%s:%d: %s", patch.getSourceLocation().getContainingClassName(), patch.getLineNumber(), patch.getType()));
+				String diffPatch = patch.toDiff(nopol.getSpooner().spoonFactory(), config);
+				System.out.println(diffPatch);
+
+				if (config.getOutputFolder() != null) {
+					File patchLocation = new File(config.getOutputFolder() + "/patch_" + (i + 1) + ".diff");
+					try{
+						PrintWriter writer = new PrintWriter(patchLocation, "UTF-8");
+						writer.print(diffPatch);
+						writer.close();
+					} catch (IOException e) {
+						System.err.println("Unable to write the patch: " + e.getMessage());
+					}
+				}
 			}
 		}
 	}

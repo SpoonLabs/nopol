@@ -15,8 +15,11 @@
  */
 package fr.inria.lille.repair.common.patch;
 
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.SourceLocation;
+import fr.inria.lille.spirals.diff.PatchGenerator;
+import spoon.reflect.factory.Factory;
 
 import java.io.File;
 
@@ -42,7 +45,7 @@ public class StringPatch implements Patch {
     }
 
     /**
-     * @see fr.inria.lille.repair.nopol.patch.Patch#asString()
+     * @see Patch#asString()
      */
     @Override
     public String asString() {
@@ -58,7 +61,7 @@ public class StringPatch implements Patch {
     }
 
     /**
-     * @see fr.inria.lille.repair.nopol.patch.Patch#getFile()
+     * @see Patch#getFile(File)
      */
     @Override
     public File getFile(final File sourceFolder) {
@@ -66,7 +69,7 @@ public class StringPatch implements Patch {
     }
 
     /**
-     * @see fr.inria.lille.repair.nopol.patch.Patch#getLineNumber()
+     * @see Patch#getLineNumber()
      */
     @Override
     public int getLineNumber() {
@@ -81,6 +84,11 @@ public class StringPatch implements Patch {
     @Override
     public SourceLocation getSourceLocation() {
         return this.location;
+    }
+
+    @Override
+    public String toDiff(Factory spoon, Config config) {
+        return new PatchGenerator(this, spoon, config).getPatch();
     }
 
     /**

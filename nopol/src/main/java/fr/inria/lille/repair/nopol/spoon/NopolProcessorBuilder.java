@@ -44,7 +44,7 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
     @Override
     public boolean isToBeProcessed(CtStatement candidate) {
         SourcePosition position = candidate.getPosition();
-        if (position == null) {
+        if (position == null || position == SourcePosition.NOPOSITION) {
             return false;
         }
         boolean isSameFile = FileLibrary.isSameFile(file, position.getFile());
