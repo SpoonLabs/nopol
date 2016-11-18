@@ -1,9 +1,9 @@
-package fr.inria.lille.repair.actor;
+package actor;
 
 
 import akka.actor.*;
-import com.martiansoftware.jsap.JSAPException;
 import com.typesafe.config.ConfigFactory;
+import fr.inria.lille.repair.common.config.Config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,14 +23,13 @@ public class NoPolActor extends UntypedActor {
 	@Override
 	public void onReceive(Object message) {
 		if (message instanceof ConfigActor) {
-			ConfigActor configActor = (ConfigActor) message;
-			configActor.setClient(getSender());
 			boolean taskSent = false;
+			((ConfigActor)message).setClient(getSender());
 			//Looking for free actor
 			for (ActorRef actorRef : this.pool.keySet()) {
 				if (this.pool.get(actorRef)) {
 					taskSent = true;
-					actorRef.tell(configActor, getSelf());
+					actorRef.tell(message, getSelf());
 					this.pool.put(actorRef, Boolean.FALSE);
 					break;
 				}
@@ -51,9 +50,9 @@ public class NoPolActor extends UntypedActor {
 
 	enum Message {AVAILABLE}
 
-	static String pathToSolver;// = "/home/bdanglot/workspace/nopol/nopol/lib/z3/z3_for_linux";
+	static String pathToSolver;
 
-	public static void main(String[] args) throws JSAPException {
+	public static void run() {
 		com.typesafe.config.Config config = ConfigFactory.load("nopol");
 		pathToSolver = config.getString("nopol.solver.path");
 		String ACTOR_SYSTEM_NAME = config.getString("nopol.system.name");
@@ -61,6 +60,10 @@ public class NoPolActor extends UntypedActor {
 		ActorSystem system = ActorSystem.create(ACTOR_SYSTEM_NAME, config);
 		ActorRef actorNopol = system.actorOf(Props.create(NoPolActor.class, system), ACTOR_NAME);
 		System.out.println(actorNopol);
+	}
+
+	public static void main(String[] args) {
+		run();
 	}
 
 }

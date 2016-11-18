@@ -1,4 +1,4 @@
-package fr.inria.lille.repair.actor;
+package actor;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
@@ -13,7 +13,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
-import static fr.inria.lille.repair.actor.NoPolActor.pathToSolver;
+import static actor.NoPolActor.pathToSolver;
 
 /**
  * Created by bdanglot on 9/16/16.
@@ -24,10 +24,12 @@ public class InternalNopolActor extends UntypedActor {
 	public void onReceive(Object message) throws Exception {
 		if (message instanceof ConfigActor) {
 
-			Config config = ((ConfigActor) message).config;
-			ActorRef client = ((ConfigActor) message).client;
+			ConfigActor configActor = (ConfigActor) message;
+
+			Config config = configActor.getConfig();
 			File tempDirectory = Files.createTempDir();
-			UnZiper.unZipIt(((ConfigActor) message).content, tempDirectory.getAbsolutePath());
+			UnZiper.unZipIt(configActor.getContent(), tempDirectory.getAbsolutePath());
+			ActorRef client = configActor.getClient();
 
 			if (config.getSynthesis() == Config.NopolSynthesis.SMT) {
 				config.setSolverPath(pathToSolver);
@@ -36,27 +38,18 @@ public class InternalNopolActor extends UntypedActor {
 			config.setProjectSourcePath(new String[] {tempDirectory.toString() + "/src/"});
 			config.setProjectClasspath(getClasspathFromTargetFolder(new File(tempDirectory.getCanonicalPath() + "/target")));
 
+			System.out.println(tempDirectory);
+
 			List<Patch> patches = Collections.EMPTY_LIST;
 			try {
 				patches = NoPolLauncher.launch(config.buildSourceFiles(), config.buildClasspath(), config);
-
-				//Internal debug
-				if (patches.isEmpty())
-					System.out.println("No Patch Found!");
-				else
-					for (Patch patch : patches)
-						System.out.println(patch);
-
 			} catch (NoSuspiciousStatementException | NoFailingTestCaseException noFix) {
-				//internal debug
-				System.out.println(noFix.toString());
 				client.tell(noFix, ActorRef.noSender());
 			} catch (Exception e) {
 				throw new RuntimeException("Error launch NoPol", e);
 			} finally {
 				getSender().tell(NoPolActor.Message.AVAILABLE, getSelf());
 			}
-
 			client.tell(patches, ActorRef.noSender());
 		} else
 			unhandled(message);//Unsupported message type

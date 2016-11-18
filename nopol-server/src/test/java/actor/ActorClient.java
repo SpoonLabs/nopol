@@ -1,8 +1,7 @@
-package fr.inria.lille.repair.nopol.actor;
+package actor;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
-import fr.inria.lille.repair.actor.ConfigActor;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
@@ -12,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static fr.inria.lille.repair.nopol.actor.NopolActorTest.actorNopol;
+import static actor.NopolActorTest.actorNopol;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -50,7 +49,8 @@ public class ActorClient extends UntypedActor {
 			config.setType(StatementType.CONDITIONAL);
 			config.setSynthesis(Config.NopolSynthesis.DYNAMOTH);
 			config.setProjectTests(new String[]{fullQualifiedNameTest});
-			ConfigActor configActor = new ConfigActor(config, content);
+			ConfigActor configActor = new ConfigActorImpl(config, content);
+			configActor.setClient(getSelf());
 			actorNopol.tell(configActor, getSelf());
 			//NoPol's response handeling
 		} else if (message instanceof List && (!((List) message).isEmpty() && ((List) message).get(0) instanceof Patch)) {

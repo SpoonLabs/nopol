@@ -1,4 +1,4 @@
-package fr.inria.lille.repair.nopol.actor;
+package actor;
 
 import java.io.*;
 import java.util.ArrayList;

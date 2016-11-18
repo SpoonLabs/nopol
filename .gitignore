@@ -1,7 +1,5 @@
-<<<<<<< HEAD
 # System
 .DS_Store
-*.log
 solver*
 
 # Maven
@@ -38,3 +36,6 @@ log
 # Nopol
 z3
 
+# Nopol-Server
+nopol-server/out
+nopol-server/target

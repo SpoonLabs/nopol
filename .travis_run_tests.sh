@@ -1,6 +1,10 @@
 #!/bin/bash
 # test script for Travis
 
+cd nopol-server
+mvn clean package
+cd ..
+
 cd nopol
 
 cd ..
