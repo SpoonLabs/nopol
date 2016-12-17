@@ -25,39 +25,53 @@ Nopol requires Java and an SMT solver installed on the machine (e.g. Z3)
 1) CoCoSpoon:
 
 ```
-git clone https://github.com/SpoonLabs/CoCoSpoon.git
-cd CoCoSpoon
-mvn clean install
+$ git clone https://github.com/SpoonLabs/CoCoSpoon.git
+$ cd CoCoSpoon
+$ mvn clean install
 ```
 
 2) Compile NoPol:
 
 ```
-cd ../nopol/nopol
-export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-mvn package -DskipTests
+$ cd ../nopol/nopol
+$ export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+$ mvn package -DskipTests
 ```
 
-3) Compile the test-projects
+3) Locate the Nopol jar file produced at step 2)
 
 ```
-cd ../test-projects/
+$ ls target/*jar
+target/nopol-0.2-SNAPSHOT.jar
+target/nopol-0.2-SNAPSHOT-jar-with-dependencies.jar # we use this one
+```
+In the following, `nopol.jar` refers to the jar file with dependencies (`target/nopol-<VERSION>-SNAPSHOT-jar-with-dependencies.jar`)
+
+4) Compile the test-projects
+
+```
+$ cd ../test-projects/
 # compiling app (in target/classes) and tests (in target/test-classes), but don't run the tests (they obviously fail, because the goal is to repair them)
-mvn test -DskipTests 
+$ mvn test -DskipTests 
 ```
 
-4) Execute Nopol (parameters explained below)
+
+5) Execute Nopol (parameters explained below)
+
+(Long commands are broken in several lines, separated by a backslash, which means an escaped linebreak in Unix shells.)
 
 ```
-cd ../test-projects/
-java -jar nopol.jar \
+$ cd ../test-projects/
+$ java -jar nopol.jar \
 -s src/main/java/ \
 -c target/classes:target/test-classes:/home/martin/.m2/repository/junit/junit/4.11/junit-4.11.jar:/home/martin/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar \
 -t symbolic_examples.symbolic_example_1.NopolExampleTest \
 -p ../nopol/lib/z3/z3_for_linux
 ```
 
-It should output somehting like:
+If you keep `nopol.jar` instead of the actual jar located at the previous step, you'll get `Error: unable to access jarfile nopol.jar` (see above).
+
+It should output something like:
 ```
 ----INFORMATION----
 Nb classes : 34
