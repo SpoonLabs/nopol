@@ -23,6 +23,7 @@ public class MethodTestRunner {
             };
             Future<Object> future = executor.submit(task);
             try {
+                executor.shutdown();
                 future.get(4, TimeUnit.MINUTES);
             } catch (Exception ex) {
                 // handle other exceptions

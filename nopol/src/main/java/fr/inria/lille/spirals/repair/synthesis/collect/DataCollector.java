@@ -448,6 +448,7 @@ public class DataCollector {
             boolean cast = !(variableType.containsKey(exp.toString()) || exp.toString().equals("this") || exp instanceof fr.inria.lille.spirals.repair.expression.access.Method);
             Future<Value> future = executor.submit(task);
             try {
+                executor.shutdown();
                 Value result = future.get(this.config.getTimeoutMethodInvocation(), TimeUnit.SECONDS);
                 if (result != null) {
                     List<String> argumentTypes = new ArrayList<String>();
