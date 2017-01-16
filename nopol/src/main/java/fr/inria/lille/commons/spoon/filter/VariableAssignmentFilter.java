@@ -13,7 +13,7 @@ public class VariableAssignmentFilter extends AbstractFilter<CtAssignment<?, ?>>
 
     @Override
     public boolean matches(CtAssignment<?, ?> element) {
-        return element.getAssigned().getSignature().equals(variable().getSignature());
+        return element.getAssigned().getShortRepresentation().equals(variable().getShortRepresentation());
     }
 
     private CtVariable<?> variable() {

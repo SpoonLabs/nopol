@@ -12,6 +12,7 @@ import xxl.java.junit.TestSuiteExecution;
 import xxl.java.library.FileLibrary;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.List;
@@ -36,10 +37,17 @@ public class TestUtility {
 	}
 
 	public static List<Patch> patchFor(String executionType, ProjectReference project, Config config) {
+		config.setLocalizer(Config.NopolLocalizer.GZOLTAR);
+		String[] sourceFiles = new String[project.sourceFiles().length];
 		for (int i = 0; i < project.sourceFiles().length; i++) {
 			File file = project.sourceFiles()[i];
 			clean(file.getParent());
+			try {
+				sourceFiles[i] = file.getCanonicalPath();
+			} catch (IOException ignore) {
+			}
 		}
+		config.setProjectSourcePath(sourceFiles);
 		List<Patch> patches;
 		switch (executionType) {
 			case "symbolic":

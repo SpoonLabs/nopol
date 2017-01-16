@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.processing.Processor;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.cu.SourcePosition;
 import xxl.java.compiler.DynamicCompilationException;
 import xxl.java.junit.TestCase;
 import xxl.java.junit.TestCasesListener;
@@ -146,6 +147,10 @@ public class NoPol {
 		}
 		final List<NopolProcessor> nopolProcessors = builder.getNopolProcessors();
 		for (NopolProcessor nopolProcessor : nopolProcessors) {
+			SourcePosition position = nopolProcessor.getTarget().getPosition();
+			sourceLocation.setSourceStart(position.getSourceStart());
+			sourceLocation.setSourceEnd(position.getSourceEnd());
+
 			patches.addAll(executeNopolProcessor(tests, sourceLocation, spoonCl, nopolProcessor));
 			if (config.isOnlyOneSynthesisResult() && !patches.isEmpty()) {
 				return patches;

@@ -107,7 +107,7 @@
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
-            <version>5.1.1</version>
+            <version>5.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.smtlib</groupId>
@@ -147,6 +147,12 @@
             <groupId>fil.iagl.cocospoon</groupId>
             <artifactId>CocoSpoon</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.cloudbees</groupId>
+            <artifactId>diff4j</artifactId>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 

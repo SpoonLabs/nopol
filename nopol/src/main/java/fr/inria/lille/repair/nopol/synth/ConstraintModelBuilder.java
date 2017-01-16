@@ -66,14 +66,14 @@ public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
     }
 
     @Override
-    public Collection<Specification<Boolean>> buildFor(URL[] classpath, String[] testClasses, Collection<TestCase> failures) {
+    public Collection<Specification<Boolean>> collectSpecifications(URL[] classpath, String[] testClasses, Collection<TestCase> failures) {
         return null;
     }
 
     /**
-     * @see fr.inria.lille.repair.nopol.synth.ConstraintModelBuilder#buildFor(URL[], List, Collection)
+     * @see AngelicValue#collectSpecifications(URL[], List, Collection)
      */
-    public Collection<Specification<Boolean>> buildFor(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
+    public Collection<Specification<Boolean>> collectSpecifications(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
         int nbFailingTestExecution = 0;
         int nbPassedTestExecution = 0;
         SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<>(runtimeValues);
@@ -114,7 +114,7 @@ public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
     }
 
     /**
-     * @see fr.inria.lille.repair.nopol.synth.ConstraintModelBuilder#isAViablePatch()
+     * @see AngelicValue#isAViablePatch()
      */
     public boolean isAViablePatch() {
         return viablePatch;

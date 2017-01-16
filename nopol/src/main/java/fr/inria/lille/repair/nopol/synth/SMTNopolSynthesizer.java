@@ -39,7 +39,7 @@ import java.util.*;
 public final class SMTNopolSynthesizer<T> implements Synthesizer {
 
 	private final SourceLocation sourceLocation;
-	private final AngelicValue constraintModelBuilder;
+	private final AngelicValue angelicValue;
 	private final StatementType type;
 	public static int nbStatementsWithAngelicValue = 0;
 	private static int dataSize = 0;
@@ -48,8 +48,8 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 	private NopolProcessor conditionalProcessor;
 	private Config config;//TODO remove this unused field
 
-	public SMTNopolSynthesizer(SpoonedProject spoonedProject, AngelicValue constraintModelBuilder, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, Config config) {
-		this.constraintModelBuilder = constraintModelBuilder;
+	public SMTNopolSynthesizer(SpoonedProject spoonedProject, AngelicValue angelicValue, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, Config config) {
+		this.angelicValue = angelicValue;
 		this.config = config;
 		this.sourceLocation = sourceLocation;
 		this.type = type;
@@ -57,21 +57,20 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 		conditionalProcessor = processor;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 *
-	 * @see fr.inria.lille.jefix.synth.DynamothCodeGenesis#buildPatch(java.net.URL[], java.lang.String[])
+	 *
+	 * @see Synthesizer#buildPatch(URL[], List, Collection, long)
 	 */
 	@Override
 	public List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
-		final Collection<Specification<T>> data = constraintModelBuilder.buildFor(classpath, testClasses, failures);
+		final Collection<Specification<T>> data = angelicValue.collectSpecifications(classpath, testClasses, failures);
 
 		// XXX FIXME TODO move this
 		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
 		int dataSize = data.size();
 		if (dataSize < 2) {
-			LoggerFactory.getLogger(this.getClass()).info("Not enough specifications: {}. A trivial patch is \"true\" or \"false\", please write new tests specifying {}.",
-					dataSize, sourceLocation);
+			LoggerFactory.getLogger(this.getClass()).info("Not enough specifications: {}. A trivial patch is \"true\" or \"false\", please write new tests specifying {}.", dataSize, sourceLocation);
 			return Collections.EMPTY_LIST;
 		}
 
@@ -81,12 +80,12 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 		for (Iterator<Specification<T>> iterator = data.iterator(); iterator.hasNext(); ) {
 			Specification<T> next = iterator.next();
 			if (next.inputs().size() != firstDataSize) {
-				//return NO_PATCH;
+				//return Collections.EMPTY_LIST;
 			}
 		}
 
 		// and it should be a viable patch, ie. fix the bug
-		if (!constraintModelBuilder.isAViablePatch()) {
+		if (!angelicValue.isAViablePatch()) {
 			LoggerFactory.getLogger(this.getClass()).info("Changing only this statement does not solve the bug. {}", sourceLocation);
 			return Collections.EMPTY_LIST;
 		}
@@ -98,8 +97,7 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 		DefaultConstantCollector constantCollector = new DefaultConstantCollector(constants);
 		spoonedProject.forked(sourceLocation.getContainingClassName()).process(constantCollector);
 		final ConstraintBasedSynthesis synthesis = new ConstraintBasedSynthesis(constants);
-		final CodeGenesis genesis = synthesis.codesSynthesisedFrom(
-				(Class<T>) (type.getType()), data);
+		final CodeGenesis genesis = synthesis.codesSynthesisedFrom((Class<T>) (type.getType()), data);
 
 		if (genesis == null || !genesis.isSuccessful()) {
 			return Collections.EMPTY_LIST;

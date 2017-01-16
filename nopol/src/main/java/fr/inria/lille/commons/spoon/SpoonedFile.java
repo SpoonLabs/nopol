@@ -48,7 +48,7 @@ public abstract class SpoonedFile {
         this.projectClasspath = projectClasspath;
         factory = SpoonModelLibrary.newFactory();
         factory.getEnvironment().setComplianceLevel(config.getComplianceLevel());
-        factory.getEnvironment().setGenerateJavadoc(false);
+        factory.getEnvironment().setCommentEnabled(false);
         factory.getEnvironment().setLevel(Level.OFF.toString());
         factory = SpoonModelLibrary.modelFor(factory, sourceFiles, projectClasspath());
         compiler = new DynamicClassCompiler(compilationClasspath(), config);

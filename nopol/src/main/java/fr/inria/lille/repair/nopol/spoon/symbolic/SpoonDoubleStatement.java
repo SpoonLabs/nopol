@@ -43,7 +43,7 @@ public enum SpoonDoubleStatement implements Predicate<CtElement> {
     @Override
     public boolean apply(final CtElement candidate) {
         SourcePosition position = candidate.getPosition();
-        if (position == null) {
+        if (position == null || position == SourcePosition.NOPOSITION) {
             return false;
         }
 

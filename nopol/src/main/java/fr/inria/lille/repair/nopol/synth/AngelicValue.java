@@ -13,10 +13,17 @@ import java.util.List;
  */
 public interface AngelicValue<T> {
 
-    Collection<Specification<T>> buildFor(final URL[] classpath, List<TestResult> testClasses, final Collection<TestCase> failures);
+    /**
+     * Collects the runtime value and the angelic value required to pass the test suite
+     * @param classpath the classpath of the project
+     * @param testClasses the list of test to execute
+     * @param failures the list of test that fail
+     * @return the collection of runtime values associate to an angelic value
+     */
+    Collection<Specification<T>> collectSpecifications(final URL[] classpath, List<TestResult> testClasses, final Collection<TestCase> failures);
 
     //TODO UNUSED
-    Collection<Specification<T>> buildFor(final URL[] classpath, final String[] testClasses, final Collection<TestCase> failures);
+    Collection<Specification<T>> collectSpecifications(final URL[] classpath, final String[] testClasses, final Collection<TestCase> failures);
 
     boolean isAViablePatch();
 }

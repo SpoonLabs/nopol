@@ -60,7 +60,7 @@ public class DelegatingProcessor extends AbstractProcessor<CtStatement> {
         boolean isPracticable = this.predicate.apply(candidate);
         if (isPracticable) {
             SourcePosition position = candidate.getPosition();
-            if (position == null) {
+            if (position == null || position == SourcePosition.NOPOSITION) {
                 return false;
             }
             boolean isSameFile = false;

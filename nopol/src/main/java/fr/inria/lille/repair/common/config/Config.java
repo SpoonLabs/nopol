@@ -62,6 +62,7 @@ public class Config implements Serializable {
 	private int maxLineInvocationPerTest;
 	private int timeoutMethodInvocation;
 	private int maxTimeInMinutes = 10;
+	private String outputFolder;
 
 	private double addWeight;
 	private double subWeight;
@@ -109,6 +110,7 @@ public class Config implements Serializable {
 			sortExpressions = Boolean.parseBoolean(p.getProperty("sortExpression", "true"));
 			maxLineInvocationPerTest = Integer.parseInt(p.getProperty("maxLineInvocationPerTest", "150"));
 			timeoutMethodInvocation = Integer.parseInt(p.getProperty("timeoutMethodInvocation", "2000"));
+			outputFolder = p.getProperty("outputFolder", null);
 
 			addWeight = Double.parseDouble(p.getProperty("addOp", "0"));
 			subWeight = Double.parseDouble(p.getProperty("subOp", "0"));
@@ -464,6 +466,14 @@ public class Config implements Serializable {
 		this.localizer = localizer;
 	}
 
+	public String getOutputFolder() {
+		return outputFolder;
+	}
+
+	public void setOutputFolder(String outputFolder) {
+		this.outputFolder = outputFolder;
+	}
+
 
 	@Override
 	public String toString() {
@@ -500,6 +510,7 @@ public class Config implements Serializable {
 				", projectClasspath='" + projectClasspath + '\'' +
 				", projectTests=" + Arrays.toString(projectTests) +
 				", complianceLevel=" + complianceLevel +
+				", outputFolder=" + outputFolder +
 				'}';
 	}
 }

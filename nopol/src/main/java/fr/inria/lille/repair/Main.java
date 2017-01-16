@@ -142,6 +142,7 @@ public class Main {
 		config.setMaxTimeInMinutes(jsapConfig.getInt("maxTime", 10));
 		config.setMaxTimeEachTypeOfFixInMinutes(jsapConfig.getInt("maxTimeType", 5));
 		config.setLocalizer(strToLocalizer(jsapConfig.getString("faultLocalization")));
+		config.setOutputFolder(jsapConfig.getString("outputFolder"));
 		return true;
 	}
 
@@ -336,5 +337,15 @@ public class Main {
 		faultLocalization.setDefault("ochiai");
 		faultLocalization.setHelp("Define the fault localizer to be used.");
 		jsap.registerParameter(faultLocalization);
+
+
+		FlaggedOption outputFolder = new FlaggedOption("outputFolder");
+		outputFolder.setRequired(false);
+		outputFolder.setAllowMultipleDeclarations(false);
+		outputFolder.setLongFlag("output");
+		outputFolder.setStringParser(JSAP.STRING_PARSER);
+		outputFolder.setDefault(".");
+		outputFolder.setHelp("Define the location where the patches will be saved.");
+		jsap.registerParameter(outputFolder);
 	}
 }

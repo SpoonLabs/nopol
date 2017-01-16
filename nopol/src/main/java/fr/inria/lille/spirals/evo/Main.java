@@ -193,7 +193,7 @@ public class Main {
             methodLoop:
                 for(CtMethod<?> method : clazz.getAllMethods()){
                     for(CtAnnotation<? extends Annotation> annotation : method.getAnnotations()){
-                        if(annotation.getSignature().equals("@org.junit.Test")){
+                        if (annotation.getType().equals(method.getFactory().Annotation().createReference(org.junit.Test.class))) {
                             logger.debug("[FOUND] "+method.getSignature());
                             testsMethods.add(method);
                             continue methodLoop;

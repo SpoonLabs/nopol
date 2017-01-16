@@ -37,8 +37,13 @@ public class SubconditionVisitor extends CtScanner {
     }
 
     @Override
-    public <T, E extends CtExpression<?>> void visitCtArrayAccess(CtArrayAccess<T, E> arrayAccess) {
-        addFrom(arrayAccess);
+    public <T> void visitCtArrayRead(CtArrayRead<T> arrayRead) {
+        addFrom(arrayRead);
+    }
+
+    @Override
+    public <T> void visitCtArrayWrite(CtArrayWrite<T> arrayWrite) {
+        addFrom(arrayWrite);
     }
 
     @Override
