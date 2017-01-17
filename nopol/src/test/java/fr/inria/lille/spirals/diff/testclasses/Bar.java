@@ -25,4 +25,13 @@ public class Bar {
 			System.out.println("test");
 		}
 	}
+
+	public void m3(){
+		if (true) {
+
+		} else {
+			System.out.println("test1");
+			System.out.println("test2");
+		}
+	}
 }

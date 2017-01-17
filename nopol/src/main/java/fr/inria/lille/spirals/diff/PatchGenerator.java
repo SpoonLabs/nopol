@@ -201,13 +201,23 @@ public class PatchGenerator {
 	}
 
 	private boolean isElseIf(CtStatement parentLine) {
+		return isElseIf(parentLine, parentLine);
+	}
+
+	private boolean isElseIf(CtStatement original, CtStatement parentLine) {
 		if (parentLine.getParent() instanceof CtIf) {
-			if (((CtIf) parentLine.getParent()).getElseStatement() == parentLine) {
+			CtStatement elseStatement = ((CtIf) parentLine.getParent()).getElseStatement();
+			if (elseStatement == original) {
 				return true;
+			} else if (elseStatement instanceof CtBlock) {
+				CtBlock block = (CtBlock) elseStatement;
+				if (block.isImplicit() && block.getStatement(0) == original) {
+					return true;
+				}
 			}
 		}
 		if (parentLine.getParent() instanceof CtBlock) {
-			return isElseIf((CtStatement) parentLine.getParent());
+			return isElseIf(original, (CtStatement) parentLine.getParent());
 		}
 		return false;
 	}
