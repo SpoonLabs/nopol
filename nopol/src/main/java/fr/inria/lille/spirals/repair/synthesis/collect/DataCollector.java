@@ -468,7 +468,6 @@ public class DataCollector {
             	throw new RuntimeException(ex);
             } finally {
                 future.cancel(true);
-                executor.shutdown();
             }
         } catch (Exception e) {
             // ignore this exception cannot be handled

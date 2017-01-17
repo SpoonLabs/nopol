@@ -30,7 +30,6 @@ public class MethodTestRunner {
                 ex.printStackTrace();
             } finally {
                 future.cancel(true);
-                executor.shutdown();
             }
         }
     }

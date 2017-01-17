@@ -86,6 +86,7 @@ public class TestSuiteExecution {
         ExecutorService executor = Executors.newSingleThreadExecutor(new CustomClassLoaderThreadFactory(classLoaderForTestThread));
         Result result = null;
         try {
+            executor.shutdown();
             result = executor.submit(callable).get(config.getTimeoutTestExecution(), TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
