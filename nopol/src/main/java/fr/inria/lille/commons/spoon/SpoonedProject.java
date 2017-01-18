@@ -24,7 +24,12 @@ public class SpoonedProject extends SpoonedFile {
     }
 
     protected CtType<?> modelledClass(String qualifiedName) {
-        return typeFactory().get(qualifiedName);
+        CtType<?> ctType = typeFactory().get(qualifiedName);
+        // the modelled class can only be a top level class otherwise the class will not compile
+        if (!ctType.isTopLevel()) {
+            ctType = ctType.getTopLevelType();
+        }
+        return ctType;
     }
 
     protected Collection<CtType<?>> modelledClasses(Collection<String> qualifiedNames) {
