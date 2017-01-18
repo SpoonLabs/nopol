@@ -172,6 +172,7 @@ public class NoPol {
 					}
 				});
 		try {
+			executor.shutdown();
 			return (List) nopolExecution.get(config.getMaxTimeEachTypeOfFixInMinutes(), TimeUnit.MINUTES);
 		} catch (ExecutionException | InterruptedException | TimeoutException exception) {
 			LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + config.getMaxTimeInMinutes() + " " + TimeUnit.MINUTES, exception);

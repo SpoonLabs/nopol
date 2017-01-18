@@ -87,6 +87,7 @@ public class Main {
 										}
 									});
 							try {
+								executor.shutdown();
 								returnCode = (int) nopolExecution.get(config.getMaxTimeInMinutes(), TimeUnit.MINUTES);
 							} catch (TimeoutException exception) {
 								LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + config.getMaxTimeInMinutes() + " " + TimeUnit.MINUTES, exception);

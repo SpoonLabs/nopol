@@ -1,5 +1,6 @@
 package xxl.java.junit;
 
+import com.sun.jdi.Value;
 import fr.inria.lille.localization.TestResult;
 import fr.inria.lille.repair.common.config.Config;
 import org.junit.runner.Description;
@@ -85,8 +86,11 @@ public class TestSuiteExecution {
     private static Result executionResult(Callable<Result> callable, ClassLoader classLoaderForTestThread, Config config) {
         ExecutorService executor = Executors.newSingleThreadExecutor(new CustomClassLoaderThreadFactory(classLoaderForTestThread));
         Result result = null;
+
+        Future<Result> future = executor.submit(callable);
         try {
-            result = executor.submit(callable).get(config.getTimeoutTestExecution(), TimeUnit.SECONDS);
+            executor.shutdown();
+            result = future.get(config.getTimeoutTestExecution(), TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
