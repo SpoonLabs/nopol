@@ -256,4 +256,37 @@ public class PatchGeneratorTest {
 				+ "+\t\t\t}\n"
 				+ " \t\t}\n", test.getPatch());
 	}
+
+	@Test
+	public void preconditionInvocationInElseTest() {
+		Config config = new Config();
+		config.setProjectSourcePath(new String[] {"src/test/java/fr/inria/lille/spirals/diff/testclasses"});
+
+		Launcher spoon = new Launcher();
+		spoon.addInputResource("src/test/java/fr/inria/lille/spirals/diff/testclasses");
+		spoon.buildModel();
+
+		Factory factory = spoon.getFactory();
+		SourceLocation pathLocation = new SourceLocation("fr.inria.lille.spirals.diff.testclasses.Bar", 34);
+		pathLocation.setSourceStart(416);
+		pathLocation.setSourceEnd(443);
+
+		ExpressionPatch patch = new ExpressionPatch(
+				new LiteralImpl(ValueFactory.create(false), config),
+				pathLocation,
+				StatementType.PRECONDITION);
+		PatchGenerator test = new PatchGenerator(
+				patch,
+				factory, config);
+
+		Assert.assertEquals("--- src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
+				+ "+++ src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
+				+ "@@ -33,3 +33,5 @@\n"
+				+ " \t\t\tSystem.out.println(\"test1\");\n"
+				+ "-\t\t\tSystem.out.println(\"test2\");\n"
+				+ "+\t\t\tif (false) {\n"
+				+ "+\t\t\t\tSystem.out.println(\"test2\");\n"
+				+ "+\t\t\t}\n"
+				+ " \t\t}\n", test.getPatch());
+	}
 }
