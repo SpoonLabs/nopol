@@ -84,16 +84,23 @@ public final class GZoltarFaultLocalizer extends GZoltar implements FaultLocaliz
 	@Override
 	public Map<SourceLocation, List<fr.inria.lille.localization.TestResult>> getTestListPerStatement() {
 		Map<SourceLocation, List<fr.inria.lille.localization.TestResult>> results = new HashMap<>();
-		for (com.gzoltar.core.instr.testing.TestResult testResult : this.getTestResults()) {
+		List<TestResult> testResults = this.getTestResults();
+
+		for (int j = 0; j < testResults.size(); j++) {
+			TestResult testResult = testResults.get(j);
+			TestResultImpl test = new TestResultImpl(TestCase.from(testResult.getName()), testResult.wasSuccessful());
+
 			List<ComponentCount> components = testResult.getCoveredComponents();
-			for (ComponentCount component1 : components) {
+			for (int i = 0; i < components.size(); i++) {
+				ComponentCount component1 = components.get(i);
 				Statement component = (Statement) component1.getComponent();
 				String containingClass = component.getMethod().getParent().getLabel();
+
 				SourceLocation sourceLocation = new SourceLocation(containingClass, component.getLineNumber());
 				if (!results.containsKey(sourceLocation)) {
 					results.put(sourceLocation, new ArrayList<fr.inria.lille.localization.TestResult>());
 				}
-				results.get(sourceLocation).add(new TestResultImpl(TestCase.from(testResult.getName()), testResult.wasSuccessful()));
+				results.get(sourceLocation).add(test);
 			}
 		}
 
@@ -149,7 +156,7 @@ public final class GZoltarFaultLocalizer extends GZoltar implements FaultLocaliz
 				}
 				nextTest = coverage.nextSetBit(nextTest + 1);
 			}
-			StatementExt s = new StatementExt(this.metric, statement);
+			StatementExt s = new StatementExt(metric, statement);
 			s.setEf(executedAndFailedCount);
 			s.setEp(executedAndPassedCount);
 			s.setNp(successfulTests - executedAndPassedCount);
