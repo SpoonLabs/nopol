@@ -133,7 +133,7 @@ public class NoPol {
 
 	private List<Patch> runOnStatement(SourceLocation sourceLocation, List<TestResult> tests) {
 		List<Patch> patches = new ArrayList<>();
-		logger.debug("Analysing {}", sourceLocation);
+		logger.debug("Analysing {} which is executed by {} tests", sourceLocation, tests.size());
 		SpoonedClass spoonCl = spooner.forked(sourceLocation.getRootClassName());
 		if (spoonCl == null || spoonCl.getSimpleType() == null) {
 			return patches;
@@ -175,7 +175,7 @@ public class NoPol {
 			executor.shutdown();
 			return (List) nopolExecution.get(config.getMaxTimeEachTypeOfFixInMinutes(), TimeUnit.MINUTES);
 		} catch (ExecutionException | InterruptedException | TimeoutException exception) {
-			LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + config.getMaxTimeInMinutes() + " " + TimeUnit.MINUTES, exception);
+			LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + config.getMaxTimeEachTypeOfFixInMinutes() + " " + TimeUnit.MINUTES, exception);
 			return Collections.emptyList();
 		}
 	}
@@ -256,4 +256,7 @@ public class NoPol {
 		return spooner;
 	}
 
+	public FaultLocalizer getLocalizer() {
+		return localizer;
+	}
 }

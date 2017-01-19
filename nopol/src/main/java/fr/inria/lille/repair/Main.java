@@ -20,6 +20,7 @@ import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
+import com.martiansoftware.jsap.QualifiedSwitch;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.synth.StatementType;
@@ -144,6 +145,7 @@ public class Main {
 		config.setMaxTimeEachTypeOfFixInMinutes(jsapConfig.getInt("maxTimeType", 5));
 		config.setLocalizer(strToLocalizer(jsapConfig.getString("faultLocalization")));
 		config.setOutputFolder(jsapConfig.getString("outputFolder"));
+		config.setJson(jsapConfig.getBoolean("outputJson", false));
 		return true;
 	}
 
@@ -348,5 +350,13 @@ public class Main {
 		outputFolder.setDefault(".");
 		outputFolder.setHelp("Define the location where the patches will be saved.");
 		jsap.registerParameter(outputFolder);
+
+		QualifiedSwitch outputJson = new QualifiedSwitch("outputJson");
+		outputJson.setRequired(false);
+		outputJson.setAllowMultipleDeclarations(false);
+		outputJson.setLongFlag("json");
+		outputJson.setStringParser(JSAP.STRING_PARSER);
+		outputJson.setHelp("Output a json file in the current working directory.");
+		jsap.registerParameter(outputJson);
 	}
 }

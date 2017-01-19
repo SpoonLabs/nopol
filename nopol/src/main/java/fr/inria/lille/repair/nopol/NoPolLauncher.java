@@ -24,16 +24,19 @@ import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.synth.SMTNopolSynthesizer;
 import fr.inria.lille.repair.nopol.synth.SynthesizerFactory;
 import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -128,6 +131,7 @@ public class NoPolLauncher {
 				nbMethod += methods.size();
 			}
 		}
+
 		System.out.println("Nb classes : " + allClasses.size());
 		System.out.println("Nb methods : " + nbMethod);
 		if (NoPol.currentStatement != null) {
@@ -185,6 +189,7 @@ public class NoPolLauncher {
 			for (int i = 0; i < patches.size(); i++) {
 				Patch patch = patches.get(i);
 				System.out.println(patch);
+				System.out.println("Nb test that executes the patch: " + nopol.getLocalizer().getTestListPerStatement().get(patch.getSourceLocation()).size());
 				System.out.println(String.format("%s:%d: %s", patch.getSourceLocation().getContainingClassName(), patch.getLineNumber(), patch.getType()));
 				String diffPatch = patch.toDiff(nopol.getSpooner().spoonFactory(), config);
 				System.out.println(diffPatch);
@@ -199,6 +204,41 @@ public class NoPolLauncher {
 						System.err.println("Unable to write the patch: " + e.getMessage());
 					}
 				}
+			}
+		}
+		if (config.isJson()) {
+			JSONObject output = new JSONObject();
+
+			output.put("nb_classes", allClasses.size());
+			output.put("nb_methods", nbMethod);
+			output.put("nbStatement", SynthesizerFactory.getNbStatementsAnalysed());
+			output.put("nbAngelicValue", SMTNopolSynthesizer.getNbStatementsWithAngelicValue());
+			output.put("nb_failing_test", nbFailingTestExecution);
+			output.put("nb_passing_test", nbPassedTestExecution);
+			output.put("executionTime", executionTime);
+			output.put("date", new Date());
+			if (patches != null) {
+				for (int i = 0; i < patches.size(); i++) {
+					Patch patch = patches.get(i);
+
+					JSONObject patchOutput = new JSONObject();
+
+					JSONObject locationOutput = new JSONObject();
+					locationOutput.put("class", patch.getSourceLocation().getContainingClassName());
+					locationOutput.put("line", patch.getLineNumber());
+					patchOutput.put("patchLocation", locationOutput);
+					patchOutput.put("patchType", patch.getType());
+					patchOutput.put("nb_test_that_execute_statement", nopol.getLocalizer().getTestListPerStatement().get(patch.getSourceLocation()).size());
+					patchOutput.put("patch", patch.toDiff(nopol.getSpooner().spoonFactory(), config));
+
+					output.append("patch", patchOutput);
+				}
+			}
+
+			try (FileWriter writer = new FileWriter("output.json")) {
+				output.write(writer);
+				writer.close();
+			} catch (IOException ignore) {
 			}
 		}
 	}

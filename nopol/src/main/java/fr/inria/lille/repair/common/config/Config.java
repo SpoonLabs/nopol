@@ -21,7 +21,7 @@ import java.util.Properties;
 public class Config implements Serializable {
 
 	private static final long serialVersionUID = -2542128741040978263L;
-
+	private boolean json;
 
 	public enum NopolMode {
 		REPAIR,
@@ -474,6 +474,14 @@ public class Config implements Serializable {
 		this.outputFolder = outputFolder;
 	}
 
+	public void setJson(boolean json) {
+		this.json = json;
+	}
+
+	public boolean isJson() {
+		return json;
+	}
+
 
 	@Override
 	public String toString() {
@@ -511,6 +519,7 @@ public class Config implements Serializable {
 				", projectTests=" + Arrays.toString(projectTests) +
 				", complianceLevel=" + complianceLevel +
 				", outputFolder=" + outputFolder +
+				", json=" + json +
 				'}';
 	}
 }
