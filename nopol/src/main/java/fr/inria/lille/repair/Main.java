@@ -26,7 +26,6 @@ import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.infinitel.Infinitel;
 import fr.inria.lille.repair.nopol.NoPol;
-import fr.inria.lille.repair.nopol.NoPolLauncher;
 import fr.inria.lille.repair.ranking.Ranking;
 import org.slf4j.LoggerFactory;
 import xxl.java.library.FileLibrary;

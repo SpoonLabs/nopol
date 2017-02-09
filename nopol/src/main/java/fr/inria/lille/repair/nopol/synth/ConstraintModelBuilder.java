@@ -23,7 +23,6 @@ import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.commons.trace.SpecificationTestCasesListener;
 import fr.inria.lille.localization.TestResult;
 import fr.inria.lille.repair.common.config.Config;
-import fr.inria.lille.repair.nopol.NoPolLauncher;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
@@ -89,11 +88,7 @@ public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
         if (determineViability(firstResult, secondResult)) {
             /* to collect information for passing tests */
             TestSuiteExecution.runTestResult(testClasses, classLoader, listener, config);
-            nbFailingTestExecution += listener.numberOfFailedTests();
-            nbPassedTestExecution += listener.numberOfTests() - listener.numberOfFailedTests();
         }
-        NoPolLauncher.nbFailingTestExecution.add(nbFailingTestExecution);
-        NoPolLauncher.nbPassedTestExecution.add(nbPassedTestExecution);
         return listener.specifications();
     }
 
