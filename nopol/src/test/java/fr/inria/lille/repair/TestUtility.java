@@ -30,10 +30,9 @@ public class TestUtility {
 	private static final String SOLVER_PATH_DIR = "lib/z3/";
 	private static final String SOLVER_NAME_LINUX = "z3_for_linux";
 	private static final String SOLVER_NAME_MAC = "z3_for_mac";
-	private static String solverPath;
+	public static String solverPath;
 
 	static {
-		String OS = System.getProperty("os.name").toLowerCase();
 		if (Z3SolverFactory.isMac()) {
 			solverPath = SOLVER_PATH_DIR+SOLVER_NAME_MAC;
 		} else {

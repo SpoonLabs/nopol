@@ -1,5 +1,6 @@
 package fr.inria.lille.spirals.evo;
 
+import fr.inria.lille.repair.TestUtility;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import org.apache.commons.io.FileUtils;
@@ -45,7 +46,7 @@ public class TestPatchEvo {
 		FileUtils.deleteDirectory(new File(destSrcTestFolder));
 		FileUtils.deleteDirectory(new File(destCpTestFolder));
 		
-		Main.solverPath = "lib/z3/z3_for_linux";
+		Main.solverPath = TestUtility.solverPath;
 		Config config = new Config();
 		config.setLocalizer(Config.NopolLocalizer.GZOLTAR);
 		Main.tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, generateTest, testClasses, whetherSavePatch, patchSaveFolder, config);
