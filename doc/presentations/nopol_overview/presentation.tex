@@ -1,0 +1,309 @@
+\documentclass[onlymath]{beamer}
+
+% Think backwards: what do you want people to remember from your talk?
+% Don’t say everything.
+% Simplify.
+
+\setbeamertemplate{navigation symbols}{}%remove navigation symbols
+\setbeamercolor{normal text}{fg=white,bg=black!90}
+\setbeamercolor{structure}{fg=white}
+\setbeamercolor{alerted text}{fg=red!85!black}
+\setbeamercolor{item projected}{use=item,fg=black,bg=item.fg!35}
+\setbeamercolor*{palette primary}{use=structure,fg=structure.fg}
+\setbeamercolor*{palette secondary}{use=structure,fg=structure.fg!95!black}
+\setbeamercolor*{palette tertiary}{use=structure,fg=structure.fg!90!black}
+\setbeamercolor*{palette quaternary}{use=structure,fg=structure.fg!95!black,bg=black!80}
+\setbeamercolor*{frametitle}{fg=blue!40}
+\setbeamercolor*{framesubtitle}{fg=blue!30}
+\setbeamercolor*{block title}{parent=structure,bg=black!60}
+\setbeamercolor*{block body}{fg=black,bg=black!10}
+\setbeamercolor*{block title alerted}{parent=alerted text,bg=black!15}
+\setbeamercolor*{block title example}{parent=example text,bg=black!15}
+\usefonttheme{serif}
+
+\usepackage{listings}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{helvet}
+
+\usepackage{tikz}
+\usetikzlibrary{fadings}
+
+\title[{Nopol: Repairing Bugs in Conditional Expressions}]{Nopol: Repairing~Bugs~in~Conditional~Expressions}
+\author[Favio DeMarco]{Favio~DeMarco}
+\institute[U.B.A. - INRIA]{Universidad de Buenos Aires - INRIA}
+\date{\today}
+\subject{Computational Sciences}
+
+\begin{document}
+
+  \frame
+  {
+\begin{quote}
+    Take nothing on its looks; take everything on evidence. There's no better rule.
+\end{quote}    
+– Charles Dickens, ``Great Expectations.''
+  }
+
+\frame
+  {
+  \begin{center}
+  \includegraphics[width=7em]{logofcen}
+  \end{center}
+    \titlepage
+  }
+
+\input{introduction}
+
+\frame
+{
+    \frametitle{Overview}
+    \framesubtitle{Trial and error}
+  \begin{center}
+  \include{basic_algorithm}
+  \end{center}
+}
+
+
+\begin{frame}
+\frametitle{Problem II}
+\framesubtitle{Where is the bug?}
+  \begin{center}
+  \includegraphics[width=.8\paperwidth]{WheresWally}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Fault Localization (statement ranking)}
+      \framesubtitle{GZoltar - Ochiai coefficient}
+The suspiciousness $s_j$ of a statement $j$ depends on:
+\begin{itemize}
+ \item The number of \textbf{failing} test cases \textbf{executing} statement $j$ 
+ \item The number of \textbf{failing} test cases \textbf{not executing} statement $j$
+ \item The number of \textbf{successful} tests \textbf{executing} statement $j$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Fault Localization (statement ranking)}
+\framesubtitle{GZoltar - Ochiai coefficient}
+\begin{verbatim}
+MathUtils:413 - Suspiciousness: 0.23570226039551587
+MathUtils:431 - Suspiciousness: 0.1543033499620919
+\end{verbatim}
+\dots
+\begin{verbatim}
+MathUtils:460 - Suspiciousness: 0.11322770341445956
+MathUtils:412 - Suspiciousness: 0.11180339887498948
+\end{verbatim}
+\dots
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Fault Localization (statement ranking)}
+\framesubtitle{GZoltar - Ochiai coefficient}
+\begin{verbatim}
+...
+MathUtils:460 - Suspiciousness: 0.11322770341445956
+MathUtils:412 - Suspiciousness: 0.11180339887498948
+...
+\end{verbatim}
+
+\begin{lstlisting}[escapeinside=\[\]]
+411: public static int gcd(int u, int v) {
+412:   if ([\textbf{u * v == 0}]) {
+413:     return (Math.abs(u) + Math.abs(v));
+414:   }
+\end{lstlisting}
+\end{frame}
+
+
+\input{oracle_and_collection}
+
+\input{magic}
+
+% \begin{frame}
+% Slide sobre levels
+% \end{frame}
+
+
+ \begin{frame}[fragile]
+    \frametitle{Preconditions bugs}
+      \framesubtitle{Commons Collections - SequencedHashMap class}
+\begin{lstlisting}
+private Entry findEntry(Map.Entry e) {
+  if (e == null)
+    return null;
+  Entry entry = entries.get(e.getKey());
+  if (entry.equals(e)) // entry can be null
+    return entry;
+  else
+    return null;
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Addition of Precondition Check (IF-APC)}
+Kai Pan et al.\footnote{Toward an understanding of bug fix patterns}:
+\begin{quotation}
+This bug fix adds an if predicate to ensure a precondition is met before an
+object is accessed or an operation is performed.
+\end{quotation}
+
+\vspace{1em}
+
+\begin{lstlisting}[basicstyle=\scriptsize]
+- lastChunk.init(seg,expander,x,styles,
+
+-   fontRenderContext, context.rules.getDefault());
+
++ if (!lastChunk.initialized)
+
++   lastChunk.init(seg,expander,x,styles,
+
++     fontRenderContext, context.rules.getDefault());
+\end{lstlisting}
+\end{frame}
+
+  \frame
+  {
+    \frametitle{Problems}
+\begin{itemize}
+\item It won't work with infinite loop bugs.
+\item Can't automate the testing process.
+\item It's not easy to find candidates.
+\end{itemize}    
+  }
+
+  \frame
+  {
+    \frametitle{Problems}
+    \framesubtitle{Test quality}
+   \begin{quote}
+    Quality is free, but only to those who are willing to pay heavily for it.
+   \end{quote}
+    Tom DeMarco, Peopleware   
+  }
+  
+  \frame
+  {
+    \frametitle{Limitations}
+    \framesubtitle{Test quality}
+\begin{itemize}
+\item Only 1 set of input values.
+\item Branch coverage.
+\item A \textit{removed} precondition can generate an infinite loop.
+\item Tests that exercise both branches.
+\item Generates \textit{a} fix not \textbf{THE} fix.
+\end{itemize}        
+  }
+
+  \frame
+  {  
+    \frametitle{Contributions}
+      \framesubtitle{Process}
+\begin{itemize}
+\item Statement ranking (GZoltar)  $\rightarrow$
+\item Ad hoc code manipulation and values capturing $\rightarrow$
+\item Repair Constraint  $\rightarrow$
+\item Program Synthesis (OGCBPS\footnote{Oracle-Guided Component-Based Program Synthesis} -paper-)
+\end{itemize}
+}
+
+
+  \frame
+  {
+    \frametitle{Experimental methodology}
+    Seeded and wild bugs.
+  }
+  
+  \frame
+  {
+    \frametitle{Evaluation / Validation}
+    Generated patches vs. reality.
+  }
+  
+  \frame
+  {
+    \frametitle{Perspectives}
+    
+  }
+  
+  \frame
+  {
+    \frametitle{Conclusion}
+    
+  }
+
+  \frame
+  {
+    \frametitle{Contribution}
+    
+  }
+  
+ \begin{frame}[fragile]
+    \frametitle{Case study}
+      \framesubtitle{Commons Math - MathUtils class}
+\begin{lstlisting}[escapeinside=\[\]]
+411: public static int gcd(int u, int v) {
+412:   if ([\textbf{u * v == 0}]) {
+413:     return (Math.abs(u) + Math.abs(v));
+414:   }
+...
+\end{lstlisting}
+\end{frame}
+
+ \begin{frame}[fragile]
+    \frametitle{Case study}
+      \framesubtitle{Commons Math}
+        \begin{lstlisting}[escapeinside=\[\]]
+assertEquals([\textbf{3 * (1$<<$15)}]
+        , gcd(3 * (1<<20), 9 * (1<<15)));
+	\end{lstlisting}
+\end{frame}
+
+ \begin{frame}[fragile]
+    \frametitle{Case study}
+      \framesubtitle{Statement ranking (GZoltar)}
+\begin{verbatim}
+MathUtils:413 Suspiciousness 0.23570226039551587
+MathUtils:431 Suspiciousness 0.1543033499620919
+\end{verbatim}
+\dots
+\begin{verbatim}
+MathUtils:460 Suspiciousness 0.11322770341445956
+MathUtils:412 Suspiciousness 0.11180339887498948
+\end{verbatim}
+\end{frame}
+
+ \begin{frame}[fragile]
+    \frametitle{Case study}
+      \framesubtitle{Ad hoc code manipulation and values capturing (OGCBPS -paper-)}
+\begin{lstlisting}[escapeinside=\[\]]
+411: public static int gcd(int u, int v) {
+412:   if ([\textbf{true}]) {
+413:     return (Math.abs(u) + Math.abs(v));
+414:   }
+...
+\end{lstlisting}
+\end{frame}
+
+ \begin{frame}[fragile]
+    \frametitle{What are conditional bugs?}
+    \framesubtitle{Commons Math - MathUtils class}
+        \begin{lstlisting}[escapeinside=\[\]]
+public static int gcd(int u, int v) {
+    if ([\textbf{(u == 0) $||$ (v == 0)}]) {
+        return (Math.abs(u) + Math.abs(v));
+    }
+    // ...
+}
+	\end{lstlisting}
+\end{frame}
+
+\end{document}
