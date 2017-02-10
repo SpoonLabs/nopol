@@ -1,5 +1,8 @@
 language: java
-
+os:
+  - linux
+  - osx
+  
 sudo: true
 
 install: "./.travis_install.sh"
