@@ -38,7 +38,7 @@ public class Z3SolverFactory extends SolverFactory {
     }
 
 
-    private static boolean isMac() {
+    public static boolean isMac() {
         String OS = System.getProperty("os.name").toLowerCase();
         return (OS.indexOf("mac") >= 0);
     }

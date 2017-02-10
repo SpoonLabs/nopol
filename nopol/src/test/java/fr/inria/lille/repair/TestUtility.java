@@ -1,6 +1,7 @@
 package fr.inria.lille.repair;
 
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
+import fr.inria.lille.commons.synthesis.smt.solver.Z3SolverFactory;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
@@ -26,7 +27,18 @@ import static org.junit.Assert.assertTrue;
 public class TestUtility {
 
 	private static final String SOLVER = "z3";
-	private static final String SOLVER_PATH = "lib/z3/z3_for_linux";
+	private static final String SOLVER_PATH_DIR = "lib/z3/";
+	private static final String SOLVER_NAME_LINUX = "z3_for_linux";
+	private static final String SOLVER_NAME_MAC = "z3_for_mac";
+	public static String solverPath;
+
+	static {
+		if (Z3SolverFactory.isMac()) {
+			solverPath = SOLVER_PATH_DIR+SOLVER_NAME_MAC;
+		} else {
+			solverPath = SOLVER_PATH_DIR+SOLVER_NAME_LINUX;
+		}
+	}
 
 	public static ProjectReference projectForExample(String executionType, int nopolExampleNumber) {
 		String sourceFile = "../test-projects/src/";
@@ -71,7 +83,7 @@ public class TestUtility {
 
 	public static List<Patch> setupAndRun(String executionType, int projectNumber, Config config, TestCasesListener listener) {
 		ProjectReference project = projectForExample(executionType, projectNumber);
-		SolverFactory.setSolver(SOLVER, SOLVER_PATH);
+		SolverFactory.setSolver(SOLVER, solverPath);
 		URLClassLoader classLoader = new URLClassLoader(project.classpath());
 		TestSuiteExecution.runCasesIn(project.testClasses(), classLoader, listener, config);
 		return patchFor(executionType, project, config);
