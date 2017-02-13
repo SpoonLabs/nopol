@@ -87,11 +87,14 @@ public class NoPol {
 	}
 
 	public List<Patch> build() {
-		this.testClasses = new TestClassesFinder().findIn(classpath, false);
+		if (this.testClasses == null) {
+			this.testClasses = new TestClassesFinder().findIn(classpath, false);
+		}
+
 		return build(this.testClasses);
 	}
 
-	public List<Patch> build(String[] testClasses) {
+	private List<Patch> build(String[] testClasses) {
 		this.localizer = config.getLocalizer(this.sourceFiles, this.classpath, testClasses);
 		if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
 			try {
