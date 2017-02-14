@@ -217,18 +217,6 @@ public class SpoonModelLibrary {
         loop.setLoopingExpression(loopingCondition);
     }
 
-    public static CoreFactory coreFactoryOf(CtElement element) {
-        return element.getFactory().Core();
-    }
-
-    public static CodeFactory codeFactoryOf(CtElement element) {
-        return element.getFactory().Code();
-    }
-
-    public static Environment newEnvironment() {
-        return newFactory().getEnvironment();
-    }
-
     public static Factory newFactory() {
         return launcher().createFactory();
     }

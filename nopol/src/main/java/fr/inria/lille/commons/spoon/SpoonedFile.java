@@ -37,25 +37,36 @@ import static xxl.java.library.LoggerLibrary.loggerFor;
 
 public abstract class SpoonedFile {
 
+    private File[] sourceFiles;
+    private URL[] projectClasspath;
+    private URL[] compilationClasspath;
+    private Factory factory;
+    private ProcessingManager manager;
+    private DynamicClassCompiler compiler;
+    private Map<String, byte[]> compiledClasses;
+    private DefaultJavaPrettyPrinter prettyPrinter;
+
     protected final Config config;
 
-    protected abstract Collection<? extends CtType<?>> modelledClasses();
-
     public SpoonedFile(File[] sourceFiles, URL[] projectClasspath, Config config) {
-        //logDebug(logger(), format("[Building Spoon model from %s]", sourceFiles));
         this.config = config;
         this.sourceFiles = sourceFiles;
         this.projectClasspath = projectClasspath;
+
         factory = SpoonModelLibrary.newFactory();
         factory.getEnvironment().setComplianceLevel(config.getComplianceLevel());
         factory.getEnvironment().setCommentEnabled(false);
         factory.getEnvironment().setLevel(Level.OFF.toString());
+
         factory = SpoonModelLibrary.modelFor(factory, sourceFiles, projectClasspath());
+
         compiler = new DynamicClassCompiler(compilationClasspath(), config);
-        manager = new RuntimeProcessingManager(spoonFactory());
+        manager = new RuntimeProcessingManager(factory);
         compiledClasses = MetaMap.newHashMap();
         prettyPrinter = new DefaultJavaPrettyPrinter(spoonEnvironment());
     }
+
+    protected abstract Collection<? extends CtType<?>> modelledClasses();
 
     public void generateOutputFile(File destinationFolder) {
         Processor<?> writer = new JavaOutputProcessor(destinationFolder, new DefaultJavaPrettyPrinter(new StandardEnvironment()));
@@ -237,13 +248,4 @@ public abstract class SpoonedFile {
     private Logger logger() {
         return loggerFor(this);
     }
-
-    private File[] sourceFiles;
-    private URL[] projectClasspath;
-    private URL[] compilationClasspath;
-    private Factory factory;
-    private ProcessingManager manager;
-    private DynamicClassCompiler compiler;
-    private Map<String, byte[]> compiledClasses;
-    private DefaultJavaPrettyPrinter prettyPrinter;
 }

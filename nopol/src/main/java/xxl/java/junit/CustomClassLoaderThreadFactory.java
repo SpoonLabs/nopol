@@ -1,5 +1,6 @@
 package xxl.java.junit;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 public final class CustomClassLoaderThreadFactory implements ThreadFactory {
@@ -10,8 +11,7 @@ public final class CustomClassLoaderThreadFactory implements ThreadFactory {
 
     @Override
     public Thread newThread(Runnable r) {
-        Thread newThread = new Thread(r);
-        newThread.setDaemon(true);
+        Thread newThread = Executors.defaultThreadFactory().newThread(r);
         newThread.setContextClassLoader(customClassLoader());
         return newThread;
     }

@@ -35,6 +35,8 @@ log
 
 # Nopol
 z3
+nopol/src-gen
+nopol/target-gen
 
 # Nopol-Server
 nopol-server/out

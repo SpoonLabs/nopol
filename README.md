@@ -64,12 +64,12 @@ $ mvn test -DskipTests
 $ cd ../test-projects/
 $ java -jar nopol.jar \
 -s src/main/java/ \
--c target/classes:target/test-classes:/home/martin/.m2/repository/junit/junit/4.11/junit-4.11.jar:/home/martin/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar \
+-c target/classes:target/test-classes:/home/<user>/.m2/repository/junit/junit/4.11/junit-4.11.jar:/home/<user>/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar \
 -t symbolic_examples.symbolic_example_1.NopolExampleTest \
 -p ../nopol/lib/z3/z3_for_linux
 ```
 
-If you keep `nopol.jar` instead of the actual jar located at the previous step, you'll get `Error: unable to access jarfile nopol.jar` (see above).
+If you keep `nopol.jar` instead of the actual jar located at the previous step, you'll get `Error: unable to access jarfile nopol.jar` (see above). You should replace also `<user>` by your own username.
 
 It should output something like:
 ```
