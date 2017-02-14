@@ -248,13 +248,8 @@ public class Main {
         config.setType(nopolType);
         NoPol nopol = new NoPol(sourceFiles, classPath, config);
         List<Patch> currentPatches;
-        if(testClasses == null){
-            currentPatches = nopol.build();   
-        }
-        else{
-            currentPatches = nopol.build(testClasses);
-        }
-
+        currentPatches = nopol.build();
+        
         return currentPatches;
     }
 
