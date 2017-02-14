@@ -1,14 +1,6 @@
 #!/bin/bash
 # test script for Travis
 
-cd nopol-server
-mvn clean package
-cd ..
-
-cd nopol
-
-cd ..
-
 echo ${JAVA_HOME}
 
 if [[ ${JAVA_HOME} == *"7"* ]]
@@ -20,19 +12,21 @@ then
     then
         exit 1
     fi
-    echo "Running test suite... "
-    cd nopol
-    mvn clean verify jacoco:report coveralls:report
-    if [[ $? != 0 ]]
-    then
-        exit 1
-    fi
-else
-    echo "Running test suite... "
-    cd nopol
-    mvn clean verify jacoco:report coveralls:report
-    if [[ $? != 0 ]]
-    then
-        exit 1
-    fi
+fi
+
+echo "Running test suite... "
+cd nopol
+mvn clean install jacoco:report coveralls:report
+if [[ $? != 0 ]]
+then
+    exit 1
+fi
+
+
+echo "Running nopol server"
+cd nopol-server
+mvn clean package
+if [[ $? != 0 ]]
+then
+    exit 1
 fi
