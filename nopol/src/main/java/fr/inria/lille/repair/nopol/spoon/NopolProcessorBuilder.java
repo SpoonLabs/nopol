@@ -52,53 +52,64 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
         return isSameLine && isSameFile && super.isToBeProcessed(candidate);
     }
 
-    @Override
-    public void process(CtStatement statement) {
-        StatementType typeToAnalyse = config.getType();
-        if (typeToAnalyse == StatementType.PRE_THEN_COND) {
-
-            if (SpoonPredicate.canBeRepairedByAddingPrecondition(statement)) {
-                if (config.getOracle() == Config.NopolOracle.ANGELIC) {
-                    nopolProcessors.add(new ConditionalAdder(statement));
-                } else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-                    nopolProcessors.add(new SymbolicConditionalAdder(statement));
-                }
-            }
-
-            if (SpoonPredicate.canBeRepairedByChangingCondition(statement)) {
-                if (config.getOracle() == Config.NopolOracle.ANGELIC) {
-                    nopolProcessors.add(new ConditionalReplacer(statement));
-                } else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-                    nopolProcessors.add(new SymbolicConditionalReplacer(statement));
-                }
-            }
-
-        } else if (typeToAnalyse == StatementType.CONDITIONAL
-                && SpoonPredicate.canBeRepairedByChangingCondition(statement)) {
+    private void conditionalReplacer(CtStatement statement) {
+        if (SpoonPredicate.canBeRepairedByChangingCondition(statement)) {
             if (config.getOracle() == Config.NopolOracle.ANGELIC) {
                 nopolProcessors.add(new ConditionalReplacer(statement));
             } else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
                 nopolProcessors.add(new SymbolicConditionalReplacer(statement));
             }
-        } else if (typeToAnalyse == StatementType.PRECONDITION
-                && SpoonPredicate.canBeRepairedByAddingPrecondition(statement)) {
+        }
+    }
+
+    private void preconditionalReplacer(CtStatement statement) {
+        if (SpoonPredicate.canBeRepairedByAddingPrecondition(statement)) {
             if (config.getOracle() == Config.NopolOracle.ANGELIC) {
                 nopolProcessors.add(new ConditionalAdder(statement));
             } else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
                 nopolProcessors.add(new SymbolicConditionalAdder(statement));
             }
+        }
+    }
 
-        } else if (typeToAnalyse == StatementType.INTEGER_LITERAL &&
-                SpoonIntegerStatement.INSTANCE.apply(statement) ||
-                typeToAnalyse == StatementType.INTEGER_LITERAL &&
-                        SpoonBooleanStatement.INSTANCE.apply(statement) ||
-                typeToAnalyse == StatementType.DOUBLE_LITERAL
-                        && SpoonDoubleStatement.INSTANCE.apply(statement)) {
+    private void symbolicReplacer(CtStatement statement) {
+        StatementType typeToAnalyse = config.getType();
+        if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
             if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-                if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-                    nopolProcessors.add(new LiteralReplacer(typeToAnalyse.getType(), statement, typeToAnalyse));
-                }
+                nopolProcessors.add(new LiteralReplacer(typeToAnalyse.getType(), statement, typeToAnalyse));
             }
+        }
+    }
+
+    @Override
+    public void process(CtStatement statement) {
+        StatementType typeToAnalyse = config.getType();
+
+        switch (typeToAnalyse) {
+            case PRE_THEN_COND:
+                this.preconditionalReplacer(statement);
+                this.conditionalReplacer(statement);
+                break;
+
+            case CONDITIONAL:
+                this.conditionalReplacer(statement);
+                break;
+
+            case PRECONDITION:
+                this.preconditionalReplacer(statement);
+                break;
+
+            case INTEGER_LITERAL:
+                if (SpoonIntegerStatement.INSTANCE.apply(statement) || SpoonBooleanStatement.INSTANCE.apply(statement)) {
+                    this.symbolicReplacer(statement);
+                }
+                break;
+
+            case DOUBLE_LITERAL:
+                if (SpoonDoubleStatement.INSTANCE.apply(statement)) {
+                    this.symbolicReplacer(statement);
+                }
+                break;
         }
     }
 }
