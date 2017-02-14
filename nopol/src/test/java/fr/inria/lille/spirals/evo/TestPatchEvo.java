@@ -54,8 +54,9 @@ public class TestPatchEvo {
 		for(Map.Entry entry : Main.patches.entrySet()){
 			System.out.println(entry.getValue()+" "+entry.getKey());
 		}
-
-		assertFalse(Main.patches.get("test_evo_example_generated_0").isEmpty());
+		assertFalse(Main.patches == null);
+		assertFalse(Main.patches.isEmpty());
+		assertFalse(Main.patches.get("test_evo_example_generated_0") == null || Main.patches.get("test_evo_example_generated_0").isEmpty());
 
 		//check if we got the rights patches
 		//assertEquals("evo_examples.evo_example_1.EvoExample:9: CONDITIONAL number < evo_examples.evo_example_1.EvoExample.this.value", Main.patches.get("basic").get(0).toString());
