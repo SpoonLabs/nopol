@@ -50,7 +50,6 @@ public class Config implements Serializable {
 	}
 
 	private final String filename = "config.ini";
-	private Properties p;
 
 	private int synthesisDepth;
 	private boolean collectStaticMethods;
@@ -100,7 +99,7 @@ public class Config implements Serializable {
 	}
 
 	private void initFromFile() {
-		p = new Properties();
+		Properties p = new Properties();
 		try {
 			ClassLoader classLoader = getClass().getClassLoader();
 			p.load(classLoader.getResourceAsStream(filename));
