@@ -74,9 +74,10 @@ public class Main {
 
 			switch (config.getMode()) {
 				case REPAIR:
+					final ProjectReference project = new ProjectReference(sourceFiles, classpath, config.getProjectTests());
+
 					switch (config.getType()) {
 						case LOOP:
-							ProjectReference project = new ProjectReference(sourceFiles, classpath, config.getProjectTests());
 							Infinitel infinitel = new Infinitel(project, config);
 							infinitel.repair();
 							break;
@@ -86,7 +87,7 @@ public class Main {
 									new Callable() {
 										@Override
 										public Object call() throws Exception {
-											NoPol nopol = new NoPol(sourceFiles, classpath, config);
+											NoPol nopol = new NoPol(project, config);
 											return nopol.build().isEmpty() ? -1 : 0;
 										}
 									});

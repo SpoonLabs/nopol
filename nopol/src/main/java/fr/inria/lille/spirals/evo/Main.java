@@ -1,6 +1,7 @@
 package fr.inria.lille.spirals.evo;
 
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
+import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
@@ -247,15 +248,12 @@ public class Main {
         config.setMaxTimeInMinutes(maxTime);
         config.setType(nopolType);
         config.setProjectSourcePath(new String[] {srcClassFolder, srcTestFolder, destSrcTestFolder});
-        NoPol nopol = new NoPol(sourceFiles, classPath, config);
-        List<Patch> currentPatches;
-        if(testClasses == null){
-            currentPatches = nopol.build();   
-        }
-        else{
-            currentPatches = nopol.build(testClasses);
-        }
 
+        ProjectReference projectReference = new ProjectReference(sourceFiles, classPath, testClasses);
+        NoPol nopol = new NoPol(projectReference, config);
+        List<Patch> currentPatches;
+        currentPatches = nopol.build();
+        
         return currentPatches;
     }
 

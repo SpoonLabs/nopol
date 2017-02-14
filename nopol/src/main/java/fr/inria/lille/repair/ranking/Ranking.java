@@ -33,7 +33,7 @@ public class Ranking {
 	}
 
 	public Ranking(final File[] sourceFile, final URL[] classpath) {
-		this(new ProjectReference(sourceFile, classpath));
+		this(new ProjectReference(sourceFile, classpath, null));
 	}
 
 	public Ranking(ProjectReference project) {

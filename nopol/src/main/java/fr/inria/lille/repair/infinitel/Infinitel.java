@@ -33,7 +33,7 @@ public class Infinitel {
     }
 
     public Infinitel(File[] sourceFile, URL[] classpath, Config config) {
-        this(new ProjectReference(sourceFile, classpath), config);
+        this(new ProjectReference(sourceFile, classpath, null), config);
     }
 
     public Infinitel(ProjectReference project, Config config) {
