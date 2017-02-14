@@ -13,19 +13,21 @@ import spoon.reflect.factory.Factory;
 
 public class PatchGeneratorTest {
 
+	private static final String projectSourcePath = "src/test/java/fr/inria/lille/diff/testclasses";
+
 	@Test
 	public void simpleConditionChangeTest() {
 		Config config = new Config();
-		config.setProjectSourcePath(new String[] {"src/test/java/fr/inria/lille/spirals/diff/testclasses"});
+		config.setProjectSourcePath(new String[] {projectSourcePath});
 
 		Launcher spoon = new Launcher();
-		spoon.addInputResource("src/test/java/fr/inria/lille/spirals/diff/testclasses");
+		spoon.addInputResource(projectSourcePath);
 		spoon.buildModel();
 
 		Factory factory = spoon.getFactory();
 		SourceLocation pathLocation = new SourceLocation("fr.inria.lille.diff.testclasses.Bar", 6);
-		pathLocation.setSourceStart(91);
-		pathLocation.setSourceEnd(106);
+		pathLocation.setSourceStart(83);
+		pathLocation.setSourceEnd(98);
 
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), config),
@@ -35,8 +37,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, config);
 
-		Assert.assertEquals("--- src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
-				+ "+++ src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
+		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
+				+ "+++ "+projectSourcePath+"/Bar.java\n"
 				+ "@@ -5,4 +5,4 @@\n"
 				+ " \tpublic void m() {\n"
 				+ "-\t\tif (true) {\n"
@@ -49,16 +51,16 @@ public class PatchGeneratorTest {
 	@Test
 	public void conditionChangeElseIfTest() {
 		Config config = new Config();
-		config.setProjectSourcePath(new String[] {"src/test/java/fr/inria/lille/spirals/diff/testclasses"});
+		config.setProjectSourcePath(new String[] {projectSourcePath});
 
 		Launcher spoon = new Launcher();
-		spoon.addInputResource("src/test/java/fr/inria/lille/spirals/diff/testclasses");
+		spoon.addInputResource(projectSourcePath);
 		spoon.buildModel();
 
 		Factory factory = spoon.getFactory();
 		SourceLocation pathLocation = new SourceLocation("fr.inria.lille.diff.testclasses.Bar", 12);
-		pathLocation.setSourceStart(133);
-		pathLocation.setSourceEnd(148);
+		pathLocation.setSourceStart(125);
+		pathLocation.setSourceEnd(140);
 
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), config),
@@ -68,8 +70,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, config);
 
-		Assert.assertEquals("--- src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
-				+ "+++ src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
+		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
+				+ "+++ "+projectSourcePath+"/Bar.java\n"
 				+ "@@ -11,4 +11,4 @@\n"
 				+ " \n"
 				+ "-\t\t} else if (true) {\n"
@@ -83,16 +85,16 @@ public class PatchGeneratorTest {
 	@Test
 	public void simplePreconditionIfTest() {
 		Config config = new Config();
-		config.setProjectSourcePath(new String[] {"src/test/java/fr/inria/lille/spirals/diff/testclasses"});
+		config.setProjectSourcePath(new String[] {projectSourcePath});
 
 		Launcher spoon = new Launcher();
-		spoon.addInputResource("src/test/java/fr/inria/lille/spirals/diff/testclasses");
+		spoon.addInputResource(projectSourcePath);
 		spoon.buildModel();
 
 		Factory factory = spoon.getFactory();
 		SourceLocation pathLocation = new SourceLocation("fr.inria.lille.diff.testclasses.Bar", 6);
-		pathLocation.setSourceStart(91);
-		pathLocation.setSourceEnd(106);
+		pathLocation.setSourceStart(83);
+		pathLocation.setSourceEnd(98);
 
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), config),
@@ -102,8 +104,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, config);
 
-		Assert.assertEquals("--- src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
-				+ "+++ src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
+		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
+				+ "+++ "+projectSourcePath+"/Bar.java\n"
 				+ "@@ -5,4 +5,6 @@\n"
 				+ " \tpublic void m() {\n"
 				+ "-\t\tif (true) {\n"
@@ -118,16 +120,16 @@ public class PatchGeneratorTest {
 	@Test
 	public void preconditionElseIfTest() {
 		Config config = new Config();
-		config.setProjectSourcePath(new String[] {"src/test/java/fr/inria/lille/spirals/diff/testclasses"});
+		config.setProjectSourcePath(new String[] {projectSourcePath});
 
 		Launcher spoon = new Launcher();
-		spoon.addInputResource("src/test/java/fr/inria/lille/spirals/diff/testclasses");
+		spoon.addInputResource(projectSourcePath);
 		spoon.buildModel();
 
 		Factory factory = spoon.getFactory();
 		SourceLocation pathLocation = new SourceLocation("fr.inria.lille.diff.testclasses.Bar", 12);
-		pathLocation.setSourceStart(133);
-		pathLocation.setSourceEnd(148);
+		pathLocation.setSourceStart(125);
+		pathLocation.setSourceEnd(140);
 
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), config),
@@ -137,8 +139,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, config);
 
-		Assert.assertEquals("--- src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
-				+ "+++ src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
+		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
+				+ "+++ "+projectSourcePath+"/Bar.java\n"
 				+ "@@ -11,4 +11,8 @@\n"
 				+ " \n"
 				+ "-\t\t} else if (true) {\n"
@@ -155,16 +157,16 @@ public class PatchGeneratorTest {
 	@Test
 	public void preconditionInvocationTest() {
 		Config config = new Config();
-		config.setProjectSourcePath(new String[] {"src/test/java/fr/inria/lille/spirals/diff/testclasses"});
+		config.setProjectSourcePath(new String[] {projectSourcePath});
 
 		Launcher spoon = new Launcher();
-		spoon.addInputResource("src/test/java/fr/inria/lille/spirals/diff/testclasses");
+		spoon.addInputResource(projectSourcePath);
 		spoon.buildModel();
 
 		Factory factory = spoon.getFactory();
 		SourceLocation pathLocation = new SourceLocation("fr.inria.lille.diff.testclasses.Bar", 12);
-		pathLocation.setSourceStart(153);
-		pathLocation.setSourceEnd(179);
+		pathLocation.setSourceStart(145);
+		pathLocation.setSourceEnd(171);
 
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), config),
@@ -174,8 +176,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, config);
 
-		Assert.assertEquals("--- src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
-				+ "+++ src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
+		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
+				+ "+++ "+projectSourcePath+"/Bar.java\n"
 				+ "@@ -15,3 +15,5 @@\n"
 				+ " \n"
 				+ "-\t\tSystem.out.println(\"test\");\n"
@@ -189,16 +191,16 @@ public class PatchGeneratorTest {
 	@Test
 	public void preconditionMultiLineStatementTest() {
 		Config config = new Config();
-		config.setProjectSourcePath(new String[] {"src/test/java/fr/inria/lille/spirals/diff/testclasses"});
+		config.setProjectSourcePath(new String[] {projectSourcePath});
 
 		Launcher spoon = new Launcher();
-		spoon.addInputResource("src/test/java/fr/inria/lille/spirals/diff/testclasses");
+		spoon.addInputResource(projectSourcePath);
 		spoon.buildModel();
 
 		Factory factory = spoon.getFactory();
 		SourceLocation pathLocation = new SourceLocation("fr.inria.lille.diff.testclasses.Bar", 13);
-		pathLocation.setSourceStart(184);
-		pathLocation.setSourceEnd(258);
+		pathLocation.setSourceStart(176);
+		pathLocation.setSourceEnd(250);
 
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), config),
@@ -208,8 +210,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, config);
 
-		Assert.assertEquals("--- src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
-				+ "+++ src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
+		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
+				+ "+++ "+projectSourcePath+"/Bar.java\n"
 				+ "@@ -17,5 +17,7 @@\n"
 				+ " \n"
 				+ "-\t\tthrow new RuntimeException(\"FirstLine\" +\n"
@@ -227,16 +229,16 @@ public class PatchGeneratorTest {
 	@Test
 	public void preconditionInvocationInConditionTest() {
 		Config config = new Config();
-		config.setProjectSourcePath(new String[] {"src/test/java/fr/inria/lille/spirals/diff/testclasses"});
+		config.setProjectSourcePath(new String[] {projectSourcePath});
 
 		Launcher spoon = new Launcher();
-		spoon.addInputResource("src/test/java/fr/inria/lille/spirals/diff/testclasses");
+		spoon.addInputResource(projectSourcePath);
 		spoon.buildModel();
 
 		Factory factory = spoon.getFactory();
 		SourceLocation pathLocation = new SourceLocation("fr.inria.lille.diff.testclasses.Bar", 25);
-		pathLocation.setSourceStart(300);
-		pathLocation.setSourceEnd(326);
+		pathLocation.setSourceStart(292);
+		pathLocation.setSourceEnd(318);
 
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), config),
@@ -246,8 +248,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, config);
 
-		Assert.assertEquals("--- src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
-				+ "+++ src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
+		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
+				+ "+++ "+projectSourcePath+"/Bar.java\n"
 				+ "@@ -24,3 +24,5 @@\n"
 				+ " \t\tif (true) {\n"
 				+ "-\t\t\tSystem.out.println(\"test\");\n"
@@ -260,16 +262,16 @@ public class PatchGeneratorTest {
 	@Test
 	public void preconditionInvocationInElseTest() {
 		Config config = new Config();
-		config.setProjectSourcePath(new String[] {"src/test/java/fr/inria/lille/spirals/diff/testclasses"});
+		config.setProjectSourcePath(new String[] {projectSourcePath});
 
 		Launcher spoon = new Launcher();
-		spoon.addInputResource("src/test/java/fr/inria/lille/spirals/diff/testclasses");
+		spoon.addInputResource(projectSourcePath);
 		spoon.buildModel();
 
 		Factory factory = spoon.getFactory();
 		SourceLocation pathLocation = new SourceLocation("fr.inria.lille.diff.testclasses.Bar", 34);
-		pathLocation.setSourceStart(416);
-		pathLocation.setSourceEnd(443);
+		pathLocation.setSourceStart(408);
+		pathLocation.setSourceEnd(435);
 
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), config),
@@ -279,8 +281,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, config);
 
-		Assert.assertEquals("--- src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
-				+ "+++ src/test/java/fr/inria/lille/spirals/diff/testclasses/Bar.java\n"
+		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
+				+ "+++ "+projectSourcePath+"/Bar.java\n"
 				+ "@@ -33,3 +33,5 @@\n"
 				+ " \t\t\tSystem.out.println(\"test1\");\n"
 				+ "-\t\t\tSystem.out.println(\"test2\");\n"
