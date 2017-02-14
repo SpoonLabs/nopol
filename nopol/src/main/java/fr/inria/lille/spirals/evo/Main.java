@@ -246,6 +246,7 @@ public class Main {
 
         config.setMaxTimeInMinutes(maxTime);
         config.setType(nopolType);
+        config.setProjectSourcePath(new String[] {srcClassFolder, srcTestFolder, destSrcTestFolder});
         NoPol nopol = new NoPol(sourceFiles, classPath, config);
         List<Patch> currentPatches;
         currentPatches = nopol.build();

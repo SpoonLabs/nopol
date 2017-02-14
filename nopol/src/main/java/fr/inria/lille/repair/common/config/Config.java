@@ -50,7 +50,6 @@ public class Config implements Serializable {
 	}
 
 	private final String filename = "config.ini";
-	private final Properties p;
 
 	private int synthesisDepth;
 	private boolean collectStaticMethods;
@@ -96,7 +95,11 @@ public class Config implements Serializable {
 	private int complianceLevel;
 
 	public Config() {
-		p = new Properties();
+		this.initFromFile();
+	}
+
+	private void initFromFile() {
+		Properties p = new Properties();
 		try {
 			ClassLoader classLoader = getClass().getClassLoader();
 			p.load(classLoader.getResourceAsStream(filename));
@@ -133,20 +136,6 @@ public class Config implements Serializable {
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to load config file", e);
 		}
-	}
-
-	public URL[] buildClasspath() {
-		return JavaLibrary.classpathFrom(this.getProjectClasspath());
-	}
-
-	public File[] buildSourceFiles() {
-		File[] sourceFiles = new File[this.getProjectSourcePath().length];
-		for (int i = 0; i < this.getProjectSourcePath().length; i++) {
-			String path = this.getProjectSourcePath()[i];
-			File sourceFile = FileLibrary.openFrom(path);
-			sourceFiles[i] = sourceFile;
-		}
-		return sourceFiles;
 	}
 
 	public long getMaxTimeEachTypeOfFixInMinutes() {
@@ -446,20 +435,8 @@ public class Config implements Serializable {
 		this.maxTimeBuildPatch = maxTimeBuildPatch;
 	}
 
-	public FaultLocalizer getLocalizer(File[] sourceFiles, URL[] classpath, String[] testClasses) {
-		switch (this.localizer) {
-			case GZOLTAR:
-				try {
-					return new GZoltarFaultLocalizer(classpath, testClasses);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			case DUMB:
-				return new DumbFaultLocalizerImpl(sourceFiles, classpath, testClasses, this);
-			case OCHIAI:
-			default:
-				return new OchiaiFaultLocalizer(sourceFiles, classpath, testClasses, this);
-		}
+	public NopolLocalizer getLocalizer() {
+		return localizer;
 	}
 
 	public void setLocalizer(NopolLocalizer localizer) {

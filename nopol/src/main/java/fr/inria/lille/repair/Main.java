@@ -25,7 +25,7 @@ import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.infinitel.Infinitel;
-import fr.inria.lille.repair.nopol.NoPolLauncher;
+import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.repair.ranking.Ranking;
 import org.slf4j.LoggerFactory;
 import xxl.java.library.FileLibrary;
@@ -36,6 +36,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Iterator;
 import java.util.concurrent.*;
+
+import static java.lang.String.format;
 
 public class Main {
 	private static JSAP jsap = new JSAP();
@@ -84,7 +86,8 @@ public class Main {
 									new Callable() {
 										@Override
 										public Object call() throws Exception {
-											return NoPolLauncher.launch(sourceFiles, classpath, config).isEmpty() ? -1 : 0;
+											NoPol nopol = new NoPol(sourceFiles, classpath, config);
+											return nopol.build().isEmpty() ? -1 : 0;
 										}
 									});
 							try {
