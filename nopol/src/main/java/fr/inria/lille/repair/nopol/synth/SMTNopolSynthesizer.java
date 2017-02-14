@@ -26,7 +26,7 @@ import fr.inria.lille.repair.common.patch.StringPatch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
-import fr.inria.lille.spirals.repair.synthesis.collect.spoon.DefaultConstantCollector;
+import fr.inria.lille.repair.synthesis.collect.spoon.DefaultConstantCollector;
 import org.slf4j.LoggerFactory;
 import xxl.java.junit.TestCase;
 
