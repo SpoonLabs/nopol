@@ -20,7 +20,10 @@ import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedFile;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
+import fr.inria.lille.localization.DumbFaultLocalizerImpl;
 import fr.inria.lille.localization.FaultLocalizer;
+import fr.inria.lille.localization.GZoltarFaultLocalizer;
+import fr.inria.lille.localization.OchiaiFaultLocalizer;
 import fr.inria.lille.localization.TestResult;
 import fr.inria.lille.repair.Main;
 import fr.inria.lille.repair.ProjectReference;
@@ -50,6 +53,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
 import java.util.concurrent.*;
+
+import static fr.inria.lille.repair.common.config.Config.NopolLocalizer.DUMB;
+import static fr.inria.lille.repair.common.config.Config.NopolLocalizer.GZOLTAR;
+import static fr.inria.lille.repair.common.config.Config.NopolLocalizer.OCHIAI;
 
 
 /**
@@ -92,7 +99,7 @@ public class NoPol {
 	}
 
 	public List<Patch> build(String[] testClasses) {
-		this.localizer = config.getLocalizer(this.sourceFiles, this.classpath, testClasses);
+		this.localizer = this.getLocalizer(this.sourceFiles, this.classpath, testClasses);
 		if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
 			try {
 				SpoonedProject jpfSpoon = new SpoonedProject(this.sourceFiles, classpath, config);
@@ -110,6 +117,22 @@ public class NoPol {
 			}
 		}
 		return solveWithMultipleBuild(this.localizer.getTestListPerStatement());
+	}
+
+	private FaultLocalizer getLocalizer(File[] sourceFiles, URL[] classpath, String[] testClasses) {
+		switch (this.config.getLocalizer()) {
+			case GZOLTAR:
+				try {
+					return new GZoltarFaultLocalizer(classpath, testClasses);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			case DUMB:
+				return new DumbFaultLocalizerImpl(sourceFiles, classpath, testClasses, this.config);
+			case OCHIAI:
+			default:
+				return new OchiaiFaultLocalizer(sourceFiles, classpath, testClasses, this.config);
+		}
 	}
 
 
