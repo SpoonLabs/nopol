@@ -22,6 +22,7 @@ then
     exit 1
 fi
 
+cd ..
 
 echo "Running nopol server"
 cd nopol-server
