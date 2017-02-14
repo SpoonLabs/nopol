@@ -115,7 +115,7 @@ public class CodeSynthesisTest {
 		Specification secondSpecification = new Specification<>(secondValues, true);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Boolean.class, (List) asList(firstSpecification, secondSpecification));
 		assertTrue(genesis.isSuccessful());
-		assertTrue(genesis.returnStatement() + " is not a valid patch", Arrays.asList("0 == ((cond)?(size):(0))", "1 == ((cond)?(size):(1))").contains(genesis.returnStatement()));
+		assertTrue(genesis.returnStatement() + " is not a valid patch", Arrays.asList("0 == ((cond)?(size):(0))", "1 == ((cond)?(size):(1))","((cond)?(1):(size)) == size").contains(genesis.returnStatement()));
 	}
 
 	@Test
@@ -132,7 +132,7 @@ public class CodeSynthesisTest {
 		Specification fourthS = new Specification<Boolean>(fourth, false);
 		CodeGenesis genesis = synthesiser.codesSynthesisedFrom(Boolean.class, (List) asList(firstS, secondS, thirdS, fourthS));
 		assertTrue(genesis.isSuccessful());
-		assertTrue(asList("(q + p) == n", "p == (n) - (q)", "q + p <= n").contains(genesis.returnStatement()));
+		assertTrue(asList("(q + p) == n", "p == (n) - (q)", "q + p <= n","(n) - (q) == p").contains(genesis.returnStatement()));
 	}
 
 	@Test

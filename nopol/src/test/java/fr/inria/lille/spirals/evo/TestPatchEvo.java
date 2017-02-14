@@ -58,7 +58,8 @@ public class TestPatchEvo {
 		assertFalse(Main.patches.get("test_evo_example_generated_0").isEmpty());
 
 		//check if we got the rights patches
-		assertEquals("evo_examples.evo_example_1.EvoExample:9: CONDITIONAL number < evo_examples.evo_example_1.EvoExample.this.value", Main.patches.get("basic").get(0).toString());
+		//assertEquals("evo_examples.evo_example_1.EvoExample:9: CONDITIONAL number < evo_examples.evo_example_1.EvoExample.this.value", Main.patches.get("basic").get(0).toString());
+		fixComparison(Main.patches.get("basic").get(0), "number < evo_examples.evo_example_1.EvoExample.this.value", "number < 1");
 		fixComparison(Main.patches.get("test_evo_example_generated_0").get(0), "number < 1", "number <= 0" );
 		assertEquals(0, Main.patches.get("test_evo_example_generated_1").size());
 		assertEquals(1, Main.keptMethods.size());
