@@ -2,12 +2,28 @@
 
 ## Installation
 
-1. clone jpf-core and jpf-symbc into a jpf folder
-2. clone z3 for java (```git clone https://github.com/Z3Prover/z3```)
-3. build z3 (```python scripts/mk_make.py --java;cd build;make```)
-4. define a `DYLD_LIBRARY_PATH` (for mac) `LD_LIBRARY_PATH` (for linux) with this value: `${project_path}/lib:$DYLD_LIBRARY_PATH:<path_to_z3_build_folder>`
-5. create ```~/.jpf/site.properties```
-6. put in ```~/.jpf/site.properties```
+### Requirements
+
+- JDK 8
+- Ant
+
+### Install JPF Core
+1. clone jpf-core from https://github.com/grzesuav/jpf-core 
+2. Go to the directory and type: `ant`
+
+### Install JPF Symb
+1. clone jpf-symbc from https://github.com/grzesuav/jpf-symbc
+2. go to the cloned directory and type `ant`
+
+### Install Z3
+1. clone z3 for java (```git clone https://github.com/Z3Prover/z3```)
+2. build z3 (```python scripts/mk_make.py --java;cd build;make```)
+
+### Create properties
+
+1. define a `DYLD_LIBRARY_PATH` (for mac) `LD_LIBRARY_PATH` (for linux) with this value: `${project_path}/lib:$DYLD_LIBRARY_PATH:<path_to_z3_build_folder>`
+2. create ```~/.jpf/site.properties```
+3. put in ```~/.jpf/site.properties```
 
 ```property
 # JPF site configuration
