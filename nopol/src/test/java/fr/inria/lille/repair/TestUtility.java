@@ -71,7 +71,8 @@ public class TestUtility {
 			default:
 				throw new RuntimeException("Execution type not found");
 		}
-		NoPol nopol = new NoPol(project.sourceFiles(), project.classpath(), config);
+
+		NoPol nopol = new NoPol(project, config);
 		patches = nopol.build(project.testClasses());
 
 		for (int i = 0; i < project.sourceFiles().length; i++) {

@@ -109,10 +109,6 @@ public class NoPol {
 		this.testPatch = new TestPatch(this.sourceFiles[0], this.spooner, config);
 	}
 
-	public NoPol(final File[] sourceFiles, final URL[] classpath, Config config) {
-		this(new ProjectReference(sourceFiles, classpath), config);
-	}
-
 	public List<Patch> build() {
 		if (this.testClasses == null) {
 			this.testClasses = new TestClassesFinder().findIn(classpath, false);
