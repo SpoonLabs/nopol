@@ -3,10 +3,11 @@ package actor;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import com.google.common.io.Files;
+import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.NoFailingTestCaseException;
-import fr.inria.lille.repair.nopol.NoPolLauncher;
+import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.repair.nopol.NoSuspiciousStatementException;
 
 import java.io.File;
@@ -35,14 +36,17 @@ public class InternalNopolActor extends UntypedActor {
 				config.setSolverPath(pathToSolver);
 			}
 
-			config.setProjectSourcePath(new String[] {tempDirectory.toString() + "/src/"});
-			config.setProjectClasspath(getClasspathFromTargetFolder(new File(tempDirectory.getCanonicalPath() + "/target")));
+			String sourceFile = tempDirectory.toString() + "/src/";
+			String classPath = getClasspathFromTargetFolder(new File(tempDirectory.getCanonicalPath() + "/target"));
 
 			System.out.println(tempDirectory);
 
 			List<Patch> patches = Collections.EMPTY_LIST;
+			ProjectReference projectReference = new ProjectReference(sourceFile, classPath, config.getProjectTests());
+			config.setProjectSourcePath(new String[]{sourceFile});
 			try {
-				patches = NoPolLauncher.launch(config.buildSourceFiles(), config.buildClasspath(), config);
+				NoPol noPol = new NoPol(projectReference, config);
+				patches = noPol.build();
 			} catch (NoSuspiciousStatementException | NoFailingTestCaseException noFix) {
 				client.tell(noFix, ActorRef.noSender());
 			} catch (Exception e) {
