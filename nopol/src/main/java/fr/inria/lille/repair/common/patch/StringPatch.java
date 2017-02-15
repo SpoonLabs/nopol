@@ -18,7 +18,7 @@ package fr.inria.lille.repair.common.patch;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.SourceLocation;
-import fr.inria.lille.spirals.diff.PatchGenerator;
+import fr.inria.lille.diff.PatchGenerator;
 import spoon.reflect.factory.Factory;
 
 import java.io.File;

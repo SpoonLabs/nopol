@@ -9,7 +9,7 @@ import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.infinitel.loop.implant.LoopStatisticsTest;
-import fr.inria.lille.spirals.repair.synthesis.collect.spoon.DefaultConstantCollector;
+import fr.inria.lille.repair.synthesis.collect.spoon.DefaultConstantCollector;
 import org.junit.Ignore;
 import org.junit.Test;
 import spoon.Launcher;

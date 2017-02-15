@@ -1,9 +1,9 @@
-package fr.inria.lille.spirals.repair.synthesis;
+package fr.inria.lille.repair.synthesis;
 
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.spirals.repair.commons.Candidates;
-import fr.inria.lille.spirals.repair.expression.Expression;
+import fr.inria.lille.repair.expression.Expression;
 import org.junit.Assert;
 import org.junit.Test;
 import xxl.java.library.JavaLibrary;
