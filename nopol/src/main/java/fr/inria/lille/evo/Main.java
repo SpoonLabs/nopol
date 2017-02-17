@@ -40,7 +40,7 @@ public class Main {
     public final static Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static String solverPath =  null; //"lib/z3/z3_for_linux";
-    public static String evosuitePath =  null; //"misc/evo/evosuite-1.0.2.jar";
+    public static String evosuitePath =  null; // https://github.com/EvoSuite/evosuite/releases/download/v1.0.2/evosuite-1.0.2.jar
 
     public static List<CtMethod<?>>  keptMethods = new ArrayList<CtMethod<?>>();
     public static List<CtMethod<?>>  removedMethods = new ArrayList<CtMethod<?>>();
@@ -74,7 +74,7 @@ public class Main {
         options.addOption("patchSaveFolder",true,"location used to save the generated patches if any");
 
         options.addOption("solverPath", true, "path for the solver");
-        options.addOption("evosuitePath", true, "path of evosuite jar");
+        options.addOption("evosuitePath", true, "path of evosuite jar (https://github.com/EvoSuite/evosuite/releases/download/v1.0.2/evosuite-1.0.2.jar)");
 
 
         CommandLineParser parser = new DefaultParser();

@@ -42,7 +42,7 @@ public class TestUtility {
 
 	public static ProjectReference projectForExample(String executionType, int nopolExampleNumber) {
 		String sourceFile = "../test-projects/src/";
-		String classpath = "../test-projects/target/test-classes" + File.pathSeparatorChar + "../test-projects/target/classes" + File.pathSeparatorChar + "misc/nopol-example/junit-4.11.jar";
+		String classpath = "../test-projects/target/test-classes" + File.pathSeparatorChar + "../test-projects/target/classes" + File.pathSeparatorChar + "lib/junit-4.11.jar";
 		String[] testClasses = new String[]{executionType + "_examples." + executionType + "_example_"
 				+ nopolExampleNumber + ".NopolExampleTest"};
 		return new ProjectReference(sourceFile, classpath, testClasses);

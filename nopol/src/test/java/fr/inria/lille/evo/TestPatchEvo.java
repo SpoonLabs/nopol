@@ -28,8 +28,7 @@ public class TestPatchEvo {
 		String destCpTestFolder = "src/test/resources/evo/destCpTest";
 		String newTestFolder = "src/test/resources/evo/generated";
 		String patchSaveFolder = "src/test/resources/evo/patch";
-		//String dependencies = "junit-4.11.jar";
-		String dependencies = "misc/nopol-example/junit-4.11.jar";
+		String dependencies = "lib/junit-4.11.jar";
 		boolean generateTest = false;
 		boolean whetherSavePatch=true;
 		String[] testClasses = new String[] {"evo_examples.evo_example_1.EvoExampleTest"};
