@@ -75,9 +75,7 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
     private void symbolicReplacer(CtStatement statement) {
         StatementType typeToAnalyse = config.getType();
         if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-            if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
-                nopolProcessors.add(new LiteralReplacer(typeToAnalyse.getType(), statement, typeToAnalyse));
-            }
+            nopolProcessors.add(new LiteralReplacer(typeToAnalyse.getType(), statement, typeToAnalyse));
         }
     }
 
@@ -89,6 +87,11 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
             case PRE_THEN_COND:
                 this.preconditionalReplacer(statement);
                 this.conditionalReplacer(statement);
+                break;
+
+            case COND_THEN_PRE:
+                this.conditionalReplacer(statement);
+                this.preconditionalReplacer(statement);
                 break;
 
             case CONDITIONAL:
