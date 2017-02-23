@@ -5,7 +5,7 @@ import junit.framework.TestResult;
 
 /*
  * $ mkdir classes
- * $ javac -classpath /Users/virtual/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar -d classes SampleTestCase.java
+ * $ javac -getClasspath /Users/virtual/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar -d classes SampleTestCase.java
  * $ jar cf sampleTestCase.jar -C classes xxl
  */
 

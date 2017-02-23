@@ -11,14 +11,15 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.factory.Factory;
 
+import java.net.URL;
+
 public class PatchGeneratorTest {
 
 	private static final String projectSourcePath = "src/test/java/fr/inria/lille/diff/testclasses";
 
 	@Test
 	public void simpleConditionChangeTest() {
-		Config config = new Config();
-		config.setProjectSourcePath(new String[] {projectSourcePath});
+		Config config = new Config(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);
@@ -50,8 +51,7 @@ public class PatchGeneratorTest {
 
 	@Test
 	public void conditionChangeElseIfTest() {
-		Config config = new Config();
-		config.setProjectSourcePath(new String[] {projectSourcePath});
+		Config config = new Config(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);
@@ -84,8 +84,7 @@ public class PatchGeneratorTest {
 
 	@Test
 	public void simplePreconditionIfTest() {
-		Config config = new Config();
-		config.setProjectSourcePath(new String[] {projectSourcePath});
+		Config config = new Config(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);
@@ -119,8 +118,7 @@ public class PatchGeneratorTest {
 
 	@Test
 	public void preconditionElseIfTest() {
-		Config config = new Config();
-		config.setProjectSourcePath(new String[] {projectSourcePath});
+		Config config = new Config(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);
@@ -156,8 +154,7 @@ public class PatchGeneratorTest {
 
 	@Test
 	public void preconditionInvocationTest() {
-		Config config = new Config();
-		config.setProjectSourcePath(new String[] {projectSourcePath});
+		Config config = new Config(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);
@@ -190,8 +187,7 @@ public class PatchGeneratorTest {
 
 	@Test
 	public void preconditionMultiLineStatementTest() {
-		Config config = new Config();
-		config.setProjectSourcePath(new String[] {projectSourcePath});
+		Config config = new Config(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);
@@ -228,8 +224,7 @@ public class PatchGeneratorTest {
 
 	@Test
 	public void preconditionInvocationInConditionTest() {
-		Config config = new Config();
-		config.setProjectSourcePath(new String[] {projectSourcePath});
+		Config config = new Config(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);
@@ -261,8 +256,7 @@ public class PatchGeneratorTest {
 
 	@Test
 	public void preconditionInvocationInElseTest() {
-		Config config = new Config();
-		config.setProjectSourcePath(new String[] {projectSourcePath});
+		Config config = new Config(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);

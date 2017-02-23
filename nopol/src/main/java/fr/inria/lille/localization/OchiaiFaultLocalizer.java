@@ -11,7 +11,7 @@ import java.net.URL;
  */
 public class OchiaiFaultLocalizer extends CocoSpoonBasedSpectrumBasedFaultLocalizer {
 
-	public OchiaiFaultLocalizer(File[] sourcesClasses, URL[] classpath, String[] testClasses, Config config) {
-		super(sourcesClasses, classpath, testClasses, config, new Ochiai());
+	public OchiaiFaultLocalizer(Config config) {
+		super(config, new Ochiai());
 	}
 }

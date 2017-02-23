@@ -46,9 +46,7 @@ public class TestPatchEvo {
 		FileUtils.deleteDirectory(new File(destCpTestFolder));
 		
 		Main.solverPath = TestUtility.solverPath;
-		Config config = new Config();
-		config.setLocalizer(Config.NopolLocalizer.GZOLTAR);
-		Main.tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, generateTest, testClasses, whetherSavePatch, patchSaveFolder, config);
+		Main.tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, generateTest, testClasses, whetherSavePatch, patchSaveFolder);
 		
 		for(Map.Entry entry : Main.patches.entrySet()){
 			System.out.println(entry.getValue()+" "+entry.getKey());

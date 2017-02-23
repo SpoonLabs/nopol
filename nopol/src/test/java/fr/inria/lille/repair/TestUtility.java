@@ -11,7 +11,9 @@ import xxl.java.junit.TestCase;
 import xxl.java.junit.TestCasesListener;
 import xxl.java.junit.TestSuiteExecution;
 import xxl.java.library.FileLibrary;
+import xxl.java.library.JavaLibrary;
 
+import javax.swing.plaf.nimbus.State;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLClassLoader;
@@ -40,26 +42,17 @@ public class TestUtility {
 		}
 	}
 
-	public static ProjectReference projectForExample(String executionType, int nopolExampleNumber) {
+	public static Config configForExample(String executionType, int nopolExampleNumber) {
 		String sourceFile = "../test-projects/src/";
 		String classpath = "../test-projects/target/test-classes" + File.pathSeparatorChar + "../test-projects/target/classes" + File.pathSeparatorChar + "lib/junit-4.11.jar";
 		String[] testClasses = new String[]{executionType + "_examples." + executionType + "_example_"
 				+ nopolExampleNumber + ".NopolExampleTest"};
-		return new ProjectReference(sourceFile, classpath, testClasses);
+		return new Config(sourceFile, JavaLibrary.classpathFrom(classpath), testClasses);
 	}
 
-	public static List<Patch> patchFor(String executionType, ProjectReference project, Config config) {
+	public static List<Patch> patchFor(String executionType, Config config) {
 		config.setLocalizer(Config.NopolLocalizer.GZOLTAR);
-		String[] sourceFiles = new String[project.sourceFiles().length];
-		for (int i = 0; i < project.sourceFiles().length; i++) {
-			File file = project.sourceFiles()[i];
-			clean(file.getParent());
-			try {
-				sourceFiles[i] = file.getCanonicalPath();
-			} catch (IOException ignore) {
-			}
-		}
-		config.setProjectSourcePath(sourceFiles);
+
 		List<Patch> patches;
 		switch (executionType) {
 			case "symbolic":
@@ -72,22 +65,23 @@ public class TestUtility {
 				throw new RuntimeException("Execution type not found");
 		}
 
-		NoPol nopol = new NoPol(project, config);
-		patches = nopol.build(project.testClasses());
+		NoPol nopol = new NoPol(config);
+		patches = nopol.build();
 
-		for (int i = 0; i < project.sourceFiles().length; i++) {
-			File file = project.sourceFiles()[i];
+		for (int i = 0; i < config.getProjectSourcePath().length; i++) {
+			File file = config.getProjectSourcePath()[i];
 			clean(file.getParent());
 		}
 		return patches;
 	}
 
-	public static List<Patch> setupAndRun(String executionType, int projectNumber, Config config, TestCasesListener listener) {
-		ProjectReference project = projectForExample(executionType, projectNumber);
+	public static List<Patch> setupAndRun(String executionType, int projectNumber, TestCasesListener listener, StatementType type) {
+		Config config = configForExample(executionType, projectNumber);
+		config.setType(type);
 		SolverFactory.setSolver(SOLVER, solverPath);
-		URLClassLoader classLoader = new URLClassLoader(project.classpath());
-		TestSuiteExecution.runCasesIn(project.testClasses(), classLoader, listener, config);
-		return patchFor(executionType, project, config);
+		URLClassLoader classLoader = new URLClassLoader(config.getProjectClasspath());
+		TestSuiteExecution.runCasesIn(config.getProjectTests(), classLoader, listener, config);
+		return patchFor(executionType, config);
 	}
 
 	public static void assertPatches(int linePosition, Collection<String> expectedFailedTests, StatementType expectedType, TestCasesListener listener, List<Patch> patches) {

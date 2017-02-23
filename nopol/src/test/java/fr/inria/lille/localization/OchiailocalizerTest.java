@@ -28,7 +28,7 @@ public class OchiailocalizerTest {
                 new File("../test-projects/target/test-classes").toURI().toURL()
         };
         String[] testClasses = new String[]{"nopol_examples.nopol_example_1.NopolExampleTest"};
-        OchiaiFaultLocalizer localizer = new OchiaiFaultLocalizer(sources, classpath, testClasses, new Config());
+        OchiaiFaultLocalizer localizer = new OchiaiFaultLocalizer(new Config(sources, classpath, testClasses));
         Map<SourceLocation, List<TestResult>> executedSourceLocationPerTest = localizer.getTestListPerStatement();
         assertEquals(8, executedSourceLocationPerTest.keySet().size());
 

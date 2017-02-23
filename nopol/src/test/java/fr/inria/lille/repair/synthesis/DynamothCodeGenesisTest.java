@@ -1,5 +1,6 @@
 package fr.inria.lille.repair.synthesis;
 
+import fr.inria.lille.repair.TestUtility;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.common.Candidates;
@@ -29,7 +30,7 @@ public class DynamothCodeGenesisTest {
         oracle.put("test5", new Object[]{true});
         oracle.put("test9", new Object[]{false});
 
-		Config config = new Config();
+        Config config = TestUtility.configForExample("nopol",1);
 
 		test(1, oracle, 12, new String[] {"index <= 0", "index < 1"}, config);
     }
@@ -47,7 +48,7 @@ public class DynamothCodeGenesisTest {
         oracle.put("test8", new Object[]{false});
         oracle.put("test9", new Object[]{false});
 
-		Config config = new Config();
+        Config config = TestUtility.configForExample("nopol",2);
 
         test(2, oracle, 11, new String[] {"a < b"}, config);
     }
@@ -65,7 +66,7 @@ public class DynamothCodeGenesisTest {
         oracle.put("test8", new Object[]{false});
         oracle.put("test9", new Object[]{false});
 
-		Config config = new Config();
+        Config config = TestUtility.configForExample("nopol",3);
 
 		test(3, oracle, 11, new String[] {"tmp == 0", "0 == tmp"}, config);
     }
@@ -85,7 +86,7 @@ public class DynamothCodeGenesisTest {
         oracle.put("test10", new Object[]{false});
         oracle.put("test11", new Object[]{false});
 
-		Config config = new Config();
+        Config config = TestUtility.configForExample("nopol",4);
 
         DynamothCodeGenesis dynamothCodeGenesis = createSynthesizer(4, oracle, 27, config);
         System.out.println("basic: "+ dynamothCodeGenesis.getCollectedExpressions());
@@ -104,7 +105,7 @@ public class DynamothCodeGenesisTest {
         oracle.put("test5", new Object[]{false});
         oracle.put("test6", new Object[]{true});
 
-		Config config = new Config();
+        Config config = TestUtility.configForExample("nopol",5);
 
 		test(5, oracle, 20, new String[] {"0 <= a", "1 <= a", "r <= a"}, config);
     }
@@ -119,7 +120,7 @@ public class DynamothCodeGenesisTest {
         oracle.put("test5", new Object[]{false});
         oracle.put("test6", new Object[]{false});
 
-		Config config = new Config();
+        Config config = TestUtility.configForExample("nopol",6);
 
 		test(6, oracle, 7, new String[] {"a < b"}, config);
     }
@@ -140,7 +141,7 @@ public class DynamothCodeGenesisTest {
         oracle.put("test_10", new Object[]{false});
         oracle.put("test_11", new Object[]{false});
 
-		Config config = new Config();
+        Config config = TestUtility.configForExample("nopol",8);
 
         test(8, oracle, 12, new String[] {"(b * a) <= 100", "(a * b) <= 100", "a <= (100 / b)", "b <= (100 / a)"}, config);
     }
@@ -153,7 +154,7 @@ public class DynamothCodeGenesisTest {
         oracle.put("test_3", new Object[]{true});
         oracle.put("test_4", new Object[]{false});
 
-		Config config = new Config();
+        Config config = TestUtility.configForExample("nopol",12);
 
         config.setOnlyOneSynthesisResult(false);
         
@@ -185,7 +186,7 @@ public class DynamothCodeGenesisTest {
         oracle.put("test_2", new Object[]{false});
         oracle.put("test_3", new Object[]{false});
 
-		Config config = new Config();
+		Config config = TestUtility.configForExample("nopol",13);
         config.setOnlyOneSynthesisResult(false);
 
         DynamothCodeGenesis dynamothCodeGenesis = createSynthesizer(13, oracle, 4, config);

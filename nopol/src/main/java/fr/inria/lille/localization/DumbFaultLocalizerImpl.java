@@ -26,16 +26,15 @@ public class DumbFaultLocalizerImpl implements FaultLocalizer {
 
 	protected Map<SourceLocation, List<TestResult>> countPerSourceLocation;
 
-	public DumbFaultLocalizerImpl(File[] sourcesClasses, URL[] classpath, String[] testClasses, Config config) {
-		SpoonedProject spooner = new SpoonedProject(sourcesClasses, classpath, config);
+	public DumbFaultLocalizerImpl(Config config) {
+		SpoonedProject spooner = new SpoonedProject(config.getProjectSourcePath(), config);
 		WatcherProcessor processor = new WatcherProcessor();
-		runTests(testClasses, config, spooner, processor);
+		runTests(config.getProjectTests(), config, spooner, processor);
 	}
 
 	/**
-	 * run all testClasses to build the covered code
+	 * run all getTestClasses to build the covered code
 	 *
-	 * @param testClasses
 	 * @param config
 	 * @param spooner
 	 * @param processor

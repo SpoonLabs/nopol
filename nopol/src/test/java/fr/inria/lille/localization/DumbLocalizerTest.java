@@ -28,8 +28,8 @@ public class DumbLocalizerTest {
 				new File("../test-projects/target/test-classes").toURI().toURL()
 		};
 		String [] testClasses = new String[] {"nopol_examples.nopol_example_1.NopolExampleTest"};
-		Config config = new Config();
-		DumbFaultLocalizerImpl localizer = new DumbFaultLocalizerImpl(sources, classpath, testClasses, config);
+		Config config = new Config(sources, classpath, testClasses);
+		DumbFaultLocalizerImpl localizer = new DumbFaultLocalizerImpl(config);
 
 		Map<SourceLocation, List<TestResult>> executedSourceLocationPerTest = localizer.getTestListPerStatement();
 		assertEquals(8, executedSourceLocationPerTest.keySet().size());

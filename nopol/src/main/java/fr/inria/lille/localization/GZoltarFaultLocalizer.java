@@ -21,6 +21,7 @@ import com.gzoltar.core.components.count.ComponentCount;
 import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.localization.metric.Metric;
 import fr.inria.lille.localization.metric.Ochiai;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import xxl.java.junit.TestCase;
 
@@ -41,8 +42,8 @@ public final class GZoltarFaultLocalizer extends GZoltar implements FaultLocaliz
 
 	private List<StatementExt> statements;
 
-	public GZoltarFaultLocalizer(final URL[] classpath, String[] test) throws IOException {
-		this(classpath, checkNotNull(Arrays.asList("")), test, new Ochiai());
+	public GZoltarFaultLocalizer(Config config) throws IOException {
+		this(config.getProjectClasspath(), checkNotNull(Arrays.asList("")), config.getProjectTests(), new Ochiai());
 	}
 
 	public GZoltarFaultLocalizer(final URL[] classpath, Collection<String> packageNames, String[] test, Metric metric) throws IOException {

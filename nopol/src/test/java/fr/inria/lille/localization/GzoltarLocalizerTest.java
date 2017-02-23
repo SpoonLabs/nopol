@@ -2,6 +2,7 @@ package fr.inria.lille.localization;
 
 import fr.inria.lille.localization.metric.Metric;
 import fr.inria.lille.localization.metric.Ochiai;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import org.junit.Test;
 
@@ -31,7 +32,9 @@ public class GzoltarLocalizerTest {
 				new File("../test-projects/target/test-classes").toURI().toURL()
 		};
 		String[] testClasses = new String[]{"nopol_examples.nopol_example_1.NopolExampleTest"};
-		GZoltarFaultLocalizer localizer = new GZoltarFaultLocalizer(classpath, testClasses);
+
+		Config config = new Config(sources, classpath, testClasses);
+		GZoltarFaultLocalizer localizer = new GZoltarFaultLocalizer(config);
 		Map<SourceLocation, List<TestResult>> executedSourceLocationPerTest = localizer.getTestListPerStatement();
 		assertEquals(5, executedSourceLocationPerTest.keySet().size());//Gzoltar does not log in constructor: so there is only 5 logged statement
 

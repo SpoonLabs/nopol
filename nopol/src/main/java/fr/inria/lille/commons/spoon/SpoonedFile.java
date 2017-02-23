@@ -48,10 +48,10 @@ public abstract class SpoonedFile {
 
     protected final Config config;
 
-    public SpoonedFile(File[] sourceFiles, URL[] projectClasspath, Config config) {
+    public SpoonedFile(File[] sourceFiles, Config config) {
         this.config = config;
         this.sourceFiles = sourceFiles;
-        this.projectClasspath = projectClasspath;
+        this.projectClasspath = config.getProjectClasspath();
 
         factory = SpoonModelLibrary.newFactory();
         factory.getEnvironment().setComplianceLevel(config.getComplianceLevel());
@@ -60,7 +60,7 @@ public abstract class SpoonedFile {
 
         factory = SpoonModelLibrary.modelFor(factory, sourceFiles, projectClasspath());
 
-        compiler = new DynamicClassCompiler(compilationClasspath(), config);
+        compiler = new DynamicClassCompiler(compilationClasspath());
         manager = new RuntimeProcessingManager(factory);
         compiledClasses = MetaMap.newHashMap();
         prettyPrinter = new DefaultJavaPrettyPrinter(spoonEnvironment());

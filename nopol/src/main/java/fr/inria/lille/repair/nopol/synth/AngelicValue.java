@@ -15,7 +15,7 @@ public interface AngelicValue<T> {
 
     /**
      * Collects the runtime value and the angelic value required to pass the test suite
-     * @param classpath the classpath of the project
+     * @param classpath the getClasspath of the project
      * @param testClasses the list of test to execute
      * @param failures the list of test that fail
      * @return the collection of runtime values associate to an angelic value

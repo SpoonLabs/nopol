@@ -11,7 +11,7 @@ import static java.util.Arrays.asList;
 public class SpoonedClass extends SpoonedFile {
 
     public SpoonedClass(SpoonedProject parentProject, CtType<?> modelledClass, Config config) {
-        super(new File[]{modelledClass.getPosition().getFile()}, parentProject.projectClasspath(), config);
+        super(new File[] { modelledClass.getPosition().getFile() }, config);
         this.simpleType = modelledClass;
         this.parentProject = parentProject;
         qualifiedClassName = modelledClass.getQualifiedName();

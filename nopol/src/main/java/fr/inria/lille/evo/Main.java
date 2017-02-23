@@ -1,7 +1,6 @@
 package fr.inria.lille.evo;
 
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
-import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
@@ -70,7 +69,7 @@ public class Main {
         options.addOption("destSrcTestFolder", true, "java files where new tests will be added after validation. (ex: project/src/test) default: srcTestFolder");
         options.addOption("destCpTestFolder", true, "java files where new tests will be compiled after validation. (ex: project/target/test-classes) default: cpTestFolder");
         options.addOption("dependencies", true, "all other class or jar required for the news tests. cpClassFolde & cpTestFolder are not necessary. (ex: junit, hamcrest, evosuite)");
-        options.addOption("testClasses", true, "test classes used to generate patch (default : null = all classes)");
+        options.addOption("getTestClasses", true, "test classes used to generate patch (default : null = all classes)");
         options.addOption("patchSaveFolder",true,"location used to save the generated patches if any");
 
         options.addOption("solverPath", true, "path for the solver");
@@ -115,8 +114,8 @@ public class Main {
             dependencies = cmd.getOptionValue("dependencies");
         }
 
-        if (cmd.getOptionValue("testClasses") != null) {
-            testClasses = cmd.getOptionValue("testClasses");
+        if (cmd.getOptionValue("getTestClasses") != null) {
+            testClasses = cmd.getOptionValue("getTestClasses");
         }
         
         if (cmd.getOptionValue("patchSaveFolder") != null) {
@@ -139,8 +138,10 @@ public class Main {
             System.exit(0);
         }
 
+
         String[] testsClassesArray = (testClasses == null) ? null : testClasses.split(File.pathSeparator);
-        tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, true, testsClassesArray, whetherSavePatch, patchSaveFolder, new Config());
+
+        tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, true, testsClassesArray, whetherSavePatch, patchSaveFolder);
 
     }
 
@@ -221,7 +222,7 @@ public class Main {
      */
     public static List<Patch> NopolPatchGeneration(String cpClassFolder,String  cpTestFolder, 
             String srcClassFolder, String srcTestFolder, String destSrcTestFolder, 
-            String destCpTestFolder, String dependencies, String[] testClasses, Config config) {
+            String destCpTestFolder, String dependencies, String[] testClasses) {
 
         //sources contain main java and test java.
         String sources = srcClassFolder+File.pathSeparatorChar+srcTestFolder+File.pathSeparatorChar+destSrcTestFolder;
@@ -235,22 +236,20 @@ public class Main {
         }
 
 
-        //create classpath
+        //create getClasspath
         //URL[] classPath = FileUtils.getURLs(sources.split(File.pathSeparator));
         URL[] classPath = JavaLibrary.classpathFrom(cp);
 
         logger.debug("Launch nopol with:");
         logger.debug("sources = "+sources);
-        logger.debug("classpath = "+cp);
-        logger.debug("testClasses = "+testClasses);
+        logger.debug("getClasspath = "+cp);
+        logger.debug("getTestClasses = "+testClasses);
 
-
+        Config config = new Config(sourceFiles, classPath, testClasses);
         config.setMaxTimeInMinutes(maxTime);
         config.setType(nopolType);
-        config.setProjectSourcePath(new String[] {srcClassFolder, srcTestFolder, destSrcTestFolder});
 
-        ProjectReference projectReference = new ProjectReference(sourceFiles, classPath, testClasses);
-        NoPol nopol = new NoPol(projectReference, config);
+        NoPol nopol = new NoPol(config);
         List<Patch> currentPatches;
         currentPatches = nopol.build();
         
@@ -273,7 +272,7 @@ public class Main {
      */
     public static void tryAllTests(String cpClassFolder, String cpTestFolder, 
             String srcClassFolder, String srcTestFolder, String destSrcTestFolder, 
-            String destCpTestFolder, final String newTestFolder, String dependencies, boolean generateTest, String[] firstTestClasses, boolean whetherSavePatch, String patchSaveFolder, Config config){
+            String destCpTestFolder, final String newTestFolder, String dependencies, boolean generateTest, String[] firstTestClasses, boolean whetherSavePatch, String patchSaveFolder){
 
         //create dest folders if not exist
         new File(destSrcTestFolder).mkdirs();
@@ -283,7 +282,7 @@ public class Main {
         String className = null;
         String[] testClasses = firstTestClasses;
 
-        //build classpath
+        //build getClasspath
         final String classPath = cpClassFolder+File.pathSeparatorChar+dependencies;
         
         SolverFactory.setSolver(solver, solverPath);
@@ -291,7 +290,7 @@ public class Main {
         logger.debug("--------------------------------------------------");
         logger.debug(" ##### launch nopol without new tests ##### ");
 
-        currentPatches = NopolPatchGeneration(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, dependencies, testClasses, config);
+        currentPatches = NopolPatchGeneration(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, dependencies, testClasses);
         patches.put("basic", currentPatches);
         if(currentPatches.isEmpty()){
             logger.debug("### ----- NO PATCH FOUND -----");
@@ -341,7 +340,7 @@ public class Main {
 
 
             logger.debug("### Launch Nopol");
-            currentPatches = NopolPatchGeneration(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, dependencies, testClasses, config);
+            currentPatches = NopolPatchGeneration(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, dependencies, testClasses);
             if(!currentPatches.isEmpty()){
                 logger.debug("### ----- PATCH FOUND -----");
                 for (Patch patch : currentPatches) {

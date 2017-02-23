@@ -33,12 +33,14 @@ public class ConditionnalInstrumenterTest {
 
 	@Test
 	public void testConditionnalInstrumenter() throws Exception {
-		Config config = new Config();
-		config.setSynthesis(Config.NopolSynthesis.DYNAMOTH);
+
 		File fileClassToSpoon = new File("src/test/resources/spoon/example/Thaliana.java");
 		File[] sourceFiles = {fileClassToSpoon};
-		SpoonedProject spooner = new SpoonedProject(sourceFiles
-				, new URL[]{fileClassToSpoon.toURI().toURL()}, config);
+
+		Config config = new Config(sourceFiles, new URL[]{fileClassToSpoon.toURI().toURL()}, null);
+		config.setSynthesis(Config.NopolSynthesis.DYNAMOTH);
+
+		SpoonedProject spooner = new SpoonedProject(sourceFiles, config);
 
 		Launcher l = new Launcher();
 		l.addInputResource("src/test/resources/spoon/example/Thaliana.java");
@@ -101,13 +103,13 @@ public class ConditionnalInstrumenterTest {
 
 	@Test
 	public void testConditionnalLoggingInstrumenter() throws Exception {
-
-		Config config = new Config();
-		config.setSynthesis(Config.NopolSynthesis.DYNAMOTH);
 		File fileClassToSpoon = new File("src/test/resources/spoon/example/Thaliana.java");
 		File[] sourceFiles = {fileClassToSpoon};
-		SpoonedProject spooner = new SpoonedProject(sourceFiles
-				, new URL[]{fileClassToSpoon.toURI().toURL()}, config);
+
+		Config config = new Config(sourceFiles, new URL[]{fileClassToSpoon.toURI().toURL()}, null);
+		config.setSynthesis(Config.NopolSynthesis.DYNAMOTH);
+
+		SpoonedProject spooner = new SpoonedProject(sourceFiles, config);
 
 		Launcher l = new Launcher();
 		l.addInputResource("src/test/resources/spoon/example/Thaliana.java");

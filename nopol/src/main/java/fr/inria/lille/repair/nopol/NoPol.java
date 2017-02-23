@@ -28,8 +28,6 @@ import fr.inria.lille.localization.GZoltarFaultLocalizer;
 import fr.inria.lille.localization.OchiaiFaultLocalizer;
 import fr.inria.lille.localization.TestResult;
 import fr.inria.lille.repair.Main;
-import fr.inria.lille.repair.ProjectReference;
-import fr.inria.lille.repair.TestClassesFinder;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
@@ -63,10 +61,6 @@ import java.net.URLClassLoader;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static fr.inria.lille.repair.common.config.Config.NopolLocalizer.DUMB;
-import static fr.inria.lille.repair.common.config.Config.NopolLocalizer.GZOLTAR;
-import static fr.inria.lille.repair.common.config.Config.NopolLocalizer.OCHIAI;
-
 
 /**
  * @author Favio D. DeMarco
@@ -86,43 +80,31 @@ public class NoPol {
 	private Config config;
 
 
-	public NoPol(ProjectReference project, Config config) {
+	public NoPol(Config config) {
 		this.startTime = System.currentTimeMillis();
 		this.config = config;
-		this.classpath = project.classpath();
-		this.sourceFiles = project.sourceFiles();
+		this.classpath = config.getProjectClasspath();
+		this.sourceFiles = config.getProjectSourcePath();
 
 		StatementType type = config.getType();
-		String[] args = config.getProjectTests();
 		logger.info("Source files: " + Arrays.toString(sourceFiles));
 		logger.info("Classpath: " + Arrays.toString(classpath));
 		logger.info("Statement type: " + type);
-		logger.info("Args: " + Arrays.toString(args));
+		logger.info("Args: " + Arrays.toString(config.getProjectTests()));
 		logger.info("Config: " + config);
 		this.logSystemInformation();
 
-
-		this.spooner = new SpoonedProject(this.sourceFiles, this.classpath, config);
-		if (project.testClasses() != null) {
-			this.testClasses = project.testClasses();
-		}
+		this.spooner = new SpoonedProject(this.sourceFiles, config);
+		this.testClasses = config.getProjectTests();
 		this.testPatch = new TestPatch(this.sourceFiles[0], this.spooner, config);
 	}
 
 	public List<Patch> build() {
-		if (this.testClasses == null) {
-			this.testClasses = new TestClassesFinder().findIn(classpath, false);
-		}
-
-		return build(this.testClasses);
-	}
-
-	public List<Patch> build(String[] testClasses) {
-		this.localizer = this.getLocalizer(this.sourceFiles, this.classpath, testClasses);
+		this.localizer = this.createLocalizer();
 
 		if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
 			try {
-				SpoonedProject jpfSpoon = new SpoonedProject(this.sourceFiles, classpath, config);
+				SpoonedProject jpfSpoon = new SpoonedProject(this.sourceFiles, config);
 				String mainClass = "nopol.repair.NopolTestRunner";
 				TestExecutorProcessor.createMainTestClass(jpfSpoon, mainClass);
 				jpfSpoon.process(new AssertReplacer());
@@ -142,19 +124,19 @@ public class NoPol {
 		return patches;
 	}
 
-	private FaultLocalizer getLocalizer(File[] sourceFiles, URL[] classpath, String[] testClasses) {
+	private FaultLocalizer createLocalizer() {
 		switch (this.config.getLocalizer()) {
 			case GZOLTAR:
 				try {
-					return new GZoltarFaultLocalizer(classpath, testClasses);
+					return new GZoltarFaultLocalizer(this.config);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
 			case DUMB:
-				return new DumbFaultLocalizerImpl(sourceFiles, classpath, testClasses, this.config);
+				return new DumbFaultLocalizerImpl(this.config);
 			case OCHIAI:
 			default:
-				return new OchiaiFaultLocalizer(sourceFiles, classpath, testClasses, this.config);
+				return new OchiaiFaultLocalizer(this.config);
 		}
 	}
 

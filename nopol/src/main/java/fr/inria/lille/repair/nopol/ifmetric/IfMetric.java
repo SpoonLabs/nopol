@@ -45,10 +45,10 @@ public class IfMetric {
     static final String COMPUTE_METRIC_CALL = IfMetric.class.getName()
             + ".computeIfMetric(";
 
-    public IfMetric(File sourceFolder, String[] paths, Config config) {
+    public IfMetric(Config config) {
         this.config = config;
-        this.sourceFolder = sourceFolder;
-        this.classpath = createUrls(paths);
+        this.sourceFolder = config.getProjectSourcePath()[0];
+        this.classpath = config.getProjectClasspath();
         output1 = new File(sourceFolder.getAbsolutePath() + File.separatorChar + ".." + File.separatorChar + "IfMetricPurAndImpur");
         output2 = new File(sourceFolder.getAbsolutePath() + File.separatorChar + ".." + File.separatorChar + "IfMetricExecutionDuringTest");
         FileWriter writer = null;
@@ -61,7 +61,7 @@ public class IfMetric {
         IfMetric.writer = writer;
     }
 
-    private URL[] createUrls(String[] paths) {
+    private static URL[] createUrls(String[] paths) {
         int size = paths.length;
         URL[] urls = new URL[size];
         for (int i = 0; i < size; i += 1) {
@@ -93,7 +93,9 @@ public class IfMetric {
         String[] paths = args[1].split(Character
                 .toString(File.pathSeparatorChar));
 
-        new IfMetric(sourceFolder, paths, new Config()).run();
+        URL[] classpath = IfMetric.createUrls(paths);
+
+        new IfMetric(new Config(new File[]{ sourceFolder }, classpath, null)).run();
     }
 
     private void run() {
@@ -118,7 +120,7 @@ public class IfMetric {
     private void compute(String[] testClasses) {
         IfCollectorProcessor collectorProcessor = new IfCollectorProcessor();
         IfCountingInstrumentingProcessor instrumentingProcessor = new IfCountingInstrumentingProcessor(this);
-        SpoonedProject project = new SpoonedProject(new File[]{sourceFolder}, classpath, this.config);
+        SpoonedProject project = new SpoonedProject(new File[]{sourceFolder}, this.config);
         ClassLoader loader = project.processedAndDumpedToClassLoader(modifyClass, asList(collectorProcessor, instrumentingProcessor));
 
         writeOutPut("ClassName.TestCaseName\t\t\tNbInpurIf\tNbPurIf");

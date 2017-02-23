@@ -5,8 +5,8 @@ import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.localization.AbstractStatement;
 import fr.inria.lille.localization.GZoltarFaultLocalizer;
 import fr.inria.lille.localization.StatementExt;
-import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.TestClassesFinder;
+import fr.inria.lille.repair.common.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,27 +19,13 @@ import java.util.List;
 
 public class Ranking {
 
-	@Deprecated
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	@Deprecated
-	private final File sourceFile[];
-
 	private URL[] classpath;
 	private final GZoltarFaultLocalizer gZoltar;
 	private String[] testClasses;
 
-	public Ranking(File[] sourceFile, URL[] classpath, String[] tests) {
-		this(new ProjectReference(sourceFile, classpath, tests));
-	}
-
-	public Ranking(final File[] sourceFile, final URL[] classpath) {
-		this(new ProjectReference(sourceFile, classpath, null));
-	}
-
-	public Ranking(ProjectReference project) {
-		this.classpath = project.classpath();
-		this.sourceFile = project.sourceFiles();
-		this.testClasses = project.testClasses();
+	public Ranking(Config config) {
+		this.classpath = config.getProjectClasspath();
+		this.testClasses = config.getProjectTests();
 
 		// get all test classes of the current project
 		if (this.testClasses.length == 0) {
@@ -47,7 +33,7 @@ public class Ranking {
 		}
 		// init gzoltar
 		try {
-			gZoltar = new GZoltarFaultLocalizer(classpath, testClasses);
+			gZoltar = new GZoltarFaultLocalizer(config);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -96,7 +82,7 @@ public class Ranking {
 	@Deprecated
 	public Collection<Statement> getSuspisiousStatements() {
 		// get suspicious statement of the current project
-//        return gZoltar.sortBySuspiciousness(testClasses);
+//        return gZoltar.sortBySuspiciousness(getTestClasses);
 		return Collections.EMPTY_LIST;
 	}
 

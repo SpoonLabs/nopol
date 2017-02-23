@@ -40,45 +40,44 @@ import java.util.concurrent.*;
 import static java.lang.String.format;
 
 public class Main {
-	private static JSAP jsap = new JSAP();
+	private JSAP jsap;
+	private Config config;
+
+	public Main() {
+		this.jsap = new JSAP();
+	}
+
+	public Config getConfig() {
+		return config;
+	}
 
 	public static void main(String[] args) {
 		int returnCode = -1;
+		Main main = new Main();
 		try {
-			final Config config = new Config();
-			initJSAP();
-			if (!parseArguments(args, config)) {
+			main.initJSAP();
+			if (!main.parseArguments(args)) {
 				return;
 			}
 
-			//For using Dynamoth, you must add tools.jar in the classpath
+			final Config config = main.getConfig();
+
+			//For using Dynamoth, you must add tools.jar in the getClasspath
 			if (config.getSynthesis() == Config.NopolSynthesis.DYNAMOTH) {
 				URLClassLoader loader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 				try {
 					loader.loadClass("com.sun.jdi.Value");
 				} catch (ClassNotFoundException e) {
-					System.err.println("For using Dynamoth, you must add tools.jar in your classpath from your installed jdk");
+					System.err.println("For using Dynamoth, you must add tools.jar in your getClasspath from your installed jdk");
 					System.exit(-1);
 				}
 			}
 
-			final File[] sourceFiles = new File[config.getProjectSourcePath().length];
-			for (int i = 0; i < config.getProjectSourcePath().length; i++) {
-				String path = config.getProjectSourcePath()[i];
-				File sourceFile = FileLibrary.openFrom(path);
-				sourceFiles[i] = sourceFile;
-			}
-
-			final URL[] classpath = JavaLibrary.classpathFrom(config.getProjectClasspath());
-
-
 			switch (config.getMode()) {
 				case REPAIR:
-					final ProjectReference project = new ProjectReference(sourceFiles, classpath, config.getProjectTests());
-
 					switch (config.getType()) {
 						case LOOP:
-							Infinitel infinitel = new Infinitel(project, config);
+							Infinitel infinitel = new Infinitel(config);
 							infinitel.repair();
 							break;
 						default:
@@ -87,7 +86,7 @@ public class Main {
 									new Callable() {
 										@Override
 										public Object call() throws Exception {
-											NoPol nopol = new NoPol(project, config);
+											NoPol nopol = new NoPol(config);
 											return nopol.build().isEmpty() ? -1 : 0;
 										}
 									});
@@ -101,18 +100,18 @@ public class Main {
 					}
 					break;
 				case RANKING:
-					Ranking ranking = new Ranking(sourceFiles, classpath, config.getProjectTests());
+					Ranking ranking = new Ranking(config);
 					System.out.println(ranking.summary());
 					break;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			showUsage();
+			main.showUsage();
 		}
 		System.exit(returnCode);
 	}
 
-	private static void showUsage() {
+	private void showUsage() {
 		System.err.println();
 		System.err.println("Usage: java -jar nopol.jar");
 		System.err.println("                          " + jsap.getUsage());
@@ -121,7 +120,7 @@ public class Main {
 	}
 
 
-	private static boolean parseArguments(String[] args, Config config) {
+	private boolean parseArguments(String[] args) {
 		JSAPResult jsapConfig = jsap.parse(args);
 		if (!jsapConfig.success()) {
 			System.err.println();
@@ -131,6 +130,17 @@ public class Main {
 			showUsage();
 			return false;
 		}
+		String[] sources = jsapConfig.getStringArray("source");
+		final File[] sourceFiles = new File[sources.length];
+		for (int i = 0; i < sources.length; i++) {
+			String path = sources[i];
+			File sourceFile = FileLibrary.openFrom(path);
+			sourceFiles[i] = sourceFile;
+		}
+
+		final URL[] classpath = JavaLibrary.classpathFrom(jsapConfig.getString("getClasspath"));
+
+		Config config = new Config(sourceFiles, classpath, jsapConfig.getStringArray("test"));
 
 		config.setType(strToStatementType(jsapConfig.getString("type")));
 		config.setMode(strToMode(jsapConfig.getString("mode")));
@@ -141,9 +151,6 @@ public class Main {
 			config.setSolverPath(jsapConfig.getString("solverPath"));
 			SolverFactory.setSolver(config.getSolver(), config.getSolverPath());
 		}
-		config.setProjectClasspath(jsapConfig.getString("classpath"));
-		config.setProjectSourcePath(jsapConfig.getStringArray("source"));
-		config.setProjectTests(jsapConfig.getStringArray("test"));
 		config.setComplianceLevel(jsapConfig.getInt("complianceLevel", 7));
 		config.setMaxTimeInMinutes(jsapConfig.getInt("maxTime", 10));
 		config.setMaxTimeEachTypeOfFixInMinutes(jsapConfig.getInt("maxTimeType", 5));
@@ -213,7 +220,7 @@ public class Main {
 			return Config.NopolLocalizer.OCHIAI;
 	}
 
-	private static void initJSAP() throws JSAPException {
+	private void initJSAP() throws JSAPException {
 		FlaggedOption modeOpt = new FlaggedOption("mode");
 		modeOpt.setRequired(false);
 		modeOpt.setAllowMultipleDeclarations(false);
@@ -288,13 +295,13 @@ public class Main {
 		sourceOpt.setHelp("Define the path to the source code of the project.");
 		jsap.registerParameter(sourceOpt);
 
-		FlaggedOption classpathOpt = new FlaggedOption("classpath");
+		FlaggedOption classpathOpt = new FlaggedOption("getClasspath");
 		classpathOpt.setRequired(true);
 		classpathOpt.setAllowMultipleDeclarations(false);
-		classpathOpt.setLongFlag("classpath");
+		classpathOpt.setLongFlag("getClasspath");
 		classpathOpt.setShortFlag('c');
 		classpathOpt.setStringParser(JSAP.STRING_PARSER);
-		classpathOpt.setHelp("Define the classpath of the project.");
+		classpathOpt.setHelp("Define the getClasspath of the project.");
 		jsap.registerParameter(classpathOpt);
 
 		FlaggedOption testOpt = new FlaggedOption("test");

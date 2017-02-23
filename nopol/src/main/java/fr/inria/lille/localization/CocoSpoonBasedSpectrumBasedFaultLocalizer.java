@@ -9,8 +9,6 @@ import instrumenting._Instrumenting;
 import xxl.java.junit.TestCasesListener;
 import xxl.java.junit.TestSuiteExecution;
 
-import java.io.File;
-import java.net.URL;
 import java.util.*;
 
 /**
@@ -24,8 +22,8 @@ public class CocoSpoonBasedSpectrumBasedFaultLocalizer extends DumbFaultLocalize
 
 	private List<StatementSourceLocation> statements;
 
-	public CocoSpoonBasedSpectrumBasedFaultLocalizer(File[] sourcesClasses, URL[] classpath, String[] testClasses, Config config, Metric metric) {
-		super(sourcesClasses, classpath, testClasses, config);
+	public CocoSpoonBasedSpectrumBasedFaultLocalizer(Config config, Metric metric) {
+		super(config);
 		this.metric = metric;
 		this.statements = new ArrayList<>();
 	}

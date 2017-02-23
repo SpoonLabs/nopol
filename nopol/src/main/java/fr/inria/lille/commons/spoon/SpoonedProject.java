@@ -6,7 +6,6 @@ import spoon.reflect.declaration.CtType;
 import xxl.java.container.classic.MetaList;
 
 import java.io.File;
-import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
@@ -14,8 +13,8 @@ import static java.util.Arrays.asList;
 
 public class SpoonedProject extends SpoonedFile {
 
-    public SpoonedProject(File[] sourceFile, URL[] classpath, Config config) {
-        super(sourceFile, classpath, config);
+    public SpoonedProject(File[] sourceFiles, Config config) {
+        super(sourceFiles, config);
     }
 
     @Override
@@ -48,16 +47,8 @@ public class SpoonedProject extends SpoonedFile {
         return new SpoonedClass(this, modelledClass, config);
     }
 
-    public ClassLoader processedAndDumpedToClassLoader(String qualifiedName, Processor<?> processor) {
-        return processedAndDumpedToClassLoader(asList(qualifiedName), processor);
-    }
-
     public ClassLoader processedAndDumpedToClassLoader(Collection<String> qualifiedNames, Processor<?> processor) {
         return processedAndDumpedToClassLoader(qualifiedNames, asList(processor));
-    }
-
-    public ClassLoader processedAndDumpedToClassLoader(String qualifiedName, Collection<? extends Processor<?>> processors) {
-        return processedAndDumpedToClassLoader(asList(qualifiedName), processors);
     }
 
     public ClassLoader processedAndDumpedToClassLoader(Collection<String> qualifiedNames, Collection<? extends Processor<?>> processors) {
@@ -73,16 +64,8 @@ public class SpoonedProject extends SpoonedFile {
         processClasses(qualifiedNames, asList(processor));
     }
 
-    public void processClass(String qualifiedName, Collection<? extends Processor<?>> processors) {
-        processClasses(asList(qualifiedName), processors);
-    }
-
     public void processClasses(Collection<String> qualifiedNames, Collection<? extends Processor<?>> processors) {
         super.processModelledClasses(modelledClasses(qualifiedNames), processors);
-    }
-
-    public String sourceForClass(String qualifiedName) {
-        return sourcesForClasses(asList(qualifiedName)).get(qualifiedName);
     }
 
     public Map<String, String> sourcesForClasses(Collection<String> qualifiedNames) {

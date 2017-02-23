@@ -4,6 +4,7 @@ import fr.inria.lille.localization.DumbFaultLocalizerImpl;
 import fr.inria.lille.localization.FaultLocalizer;
 import fr.inria.lille.localization.GZoltarFaultLocalizer;
 import fr.inria.lille.localization.OchiaiFaultLocalizer;
+import fr.inria.lille.repair.TestClassesFinder;
 import fr.inria.lille.repair.common.synth.StatementType;
 import xxl.java.library.FileLibrary;
 import xxl.java.library.JavaLibrary;
@@ -88,13 +89,27 @@ public class Config implements Serializable {
 	private NopolSolver solver = NopolSolver.Z3;
 	private NopolLocalizer localizer = NopolLocalizer.OCHIAI;
 	private String solverPath;
-	private String[] projectSourcePath;
-	private String projectClasspath;
+
+	private File[] projectSourcePath;
+	private URL[] projectClasspath;
 	private String[] projectTests;
 
 	private int complianceLevel;
 
-	public Config() {
+	public Config() {}
+
+	public Config(String sourceFile, URL[] classpath, String[] testClasses) {
+		this(new File[] { FileLibrary.openFrom(sourceFile) }, classpath, testClasses);
+	}
+
+	public Config(File[] sourceFile, URL[] classpath, String[] testClasses) {
+		this.projectSourcePath = sourceFile;
+		this.projectClasspath = classpath;
+		this.projectTests = testClasses;
+		if (this.projectTests == null && classpath != null) {
+			this.projectTests = new TestClassesFinder().findIn(classpath, false);
+		}
+
 		this.initFromFile();
 	}
 
@@ -378,28 +393,16 @@ public class Config implements Serializable {
 		this.solverPath = solverPath;
 	}
 
-	public String[] getProjectSourcePath() {
+	public File[] getProjectSourcePath() {
 		return projectSourcePath;
 	}
 
-	public void setProjectSourcePath(String[] projectSourcePath) {
-		this.projectSourcePath = projectSourcePath;
-	}
-
-	public String getProjectClasspath() {
+	public URL[] getProjectClasspath() {
 		return projectClasspath;
-	}
-
-	public void setProjectClasspath(String projectClasspath) {
-		this.projectClasspath = projectClasspath;
 	}
 
 	public String[] getProjectTests() {
 		return projectTests;
-	}
-
-	public void setProjectTests(String[] projectTests) {
-		this.projectTests = projectTests;
 	}
 
 	public int getComplianceLevel() {
