@@ -84,7 +84,7 @@ public class NoPol {
 		this.startTime = System.currentTimeMillis();
 		this.config = config;
 		this.classpath = config.getProjectClasspath();
-		this.sourceFiles = config.getProjectSourcePath();
+		this.sourceFiles = config.getProjectSources();
 
 		StatementType type = config.getType();
 		logger.info("Source files: " + Arrays.toString(sourceFiles));

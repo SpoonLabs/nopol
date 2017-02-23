@@ -10,10 +10,8 @@ import xxl.java.junit.TestCase;
 import xxl.java.junit.TestCasesListener;
 import xxl.java.junit.TestSuiteExecution;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +25,7 @@ public class DumbFaultLocalizerImpl implements FaultLocalizer {
 	protected Map<SourceLocation, List<TestResult>> countPerSourceLocation;
 
 	public DumbFaultLocalizerImpl(Config config) {
-		SpoonedProject spooner = new SpoonedProject(config.getProjectSourcePath(), config);
+		SpoonedProject spooner = new SpoonedProject(config.getProjectSources(), config);
 		WatcherProcessor processor = new WatcherProcessor();
 		runTests(config.getProjectTests(), config, spooner, processor);
 	}

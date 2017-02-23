@@ -112,7 +112,7 @@ public class PatchGenerator {
 	private String getClassPath(CtType type) {
 		String path = type.getPosition().getFile().getPath();
 		String intersection = null;
-		File[] inputSources = config.getProjectSourcePath();
+		File[] inputSources = config.getProjectSources();
 		for (int i = 0; i < inputSources.length; i++) {
 			File inputSource = inputSources[i];
 			if (intersection == null) {

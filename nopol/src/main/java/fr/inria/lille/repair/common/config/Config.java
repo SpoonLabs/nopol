@@ -1,13 +1,8 @@
 package fr.inria.lille.repair.common.config;
 
-import fr.inria.lille.localization.DumbFaultLocalizerImpl;
-import fr.inria.lille.localization.FaultLocalizer;
-import fr.inria.lille.localization.GZoltarFaultLocalizer;
-import fr.inria.lille.localization.OchiaiFaultLocalizer;
 import fr.inria.lille.repair.TestClassesFinder;
 import fr.inria.lille.repair.common.synth.StatementType;
 import xxl.java.library.FileLibrary;
-import xxl.java.library.JavaLibrary;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,7 +85,7 @@ public class Config implements Serializable {
 	private NopolLocalizer localizer = NopolLocalizer.OCHIAI;
 	private String solverPath;
 
-	private File[] projectSourcePath;
+	private File[] projectSources;
 	private URL[] projectClasspath;
 	private String[] projectTests;
 
@@ -105,7 +100,7 @@ public class Config implements Serializable {
 	}
 
 	public Config(File[] sourceFile, URL[] classpath, String[] testClasses) {
-		this.projectSourcePath = sourceFile;
+		this.projectSources = sourceFile;
 		this.projectClasspath = classpath;
 		this.projectTests = testClasses;
 		if (this.projectTests == null && classpath != null) {
@@ -395,8 +390,8 @@ public class Config implements Serializable {
 		this.solverPath = solverPath;
 	}
 
-	public File[] getProjectSourcePath() {
-		return projectSourcePath;
+	public File[] getProjectSources() {
+		return projectSources;
 	}
 
 	public URL[] getProjectClasspath() {
@@ -464,12 +459,12 @@ public class Config implements Serializable {
 		return json;
 	}
 
-	public void setProjectSourcePath(String projectSourcePath) {
-		this.setProjectSourcePath(new File[] { FileLibrary.openFrom(projectSourcePath) });
+	public void setProjectSources(String projectSources) {
+		this.setProjectSourcePath(new File[] { FileLibrary.openFrom(projectSources) });
 	}
 
 	public void setProjectSourcePath(File[] projectSourcePath) {
-		this.projectSourcePath = projectSourcePath;
+		this.projectSources = projectSourcePath;
 	}
 
 	public void setProjectClasspath(URL[] projectClasspath) {
@@ -511,7 +506,7 @@ public class Config implements Serializable {
 				", oracle=" + oracle +
 				", solver=" + solver +
 				", solverPath='" + solverPath + '\'' +
-				", projectSourcePath=" + Arrays.toString(projectSourcePath) +
+				", projectSources=" + Arrays.toString(projectSources) +
 				", projectClasspath='" + projectClasspath + '\'' +
 				", projectTests=" + Arrays.toString(projectTests) +
 				", complianceLevel=" + complianceLevel +

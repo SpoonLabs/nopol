@@ -47,7 +47,7 @@ public class IfMetric {
 
     public IfMetric(Config config) {
         this.config = config;
-        this.sourceFolder = config.getProjectSourcePath()[0];
+        this.sourceFolder = config.getProjectSources()[0];
         this.classpath = config.getProjectClasspath();
         output1 = new File(sourceFolder.getAbsolutePath() + File.separatorChar + ".." + File.separatorChar + "IfMetricPurAndImpur");
         output2 = new File(sourceFolder.getAbsolutePath() + File.separatorChar + ".." + File.separatorChar + "IfMetricExecutionDuringTest");

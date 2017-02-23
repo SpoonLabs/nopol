@@ -13,9 +13,7 @@ import xxl.java.junit.TestSuiteExecution;
 import xxl.java.library.FileLibrary;
 import xxl.java.library.JavaLibrary;
 
-import javax.swing.plaf.nimbus.State;
 import java.io.File;
-import java.io.IOException;
 import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.List;
@@ -68,8 +66,8 @@ public class TestUtility {
 		NoPol nopol = new NoPol(config);
 		patches = nopol.build();
 
-		for (int i = 0; i < config.getProjectSourcePath().length; i++) {
-			File file = config.getProjectSourcePath()[i];
+		for (int i = 0; i < config.getProjectSources().length; i++) {
+			File file = config.getProjectSources()[i];
 			clean(file.getParent());
 		}
 		return patches;
