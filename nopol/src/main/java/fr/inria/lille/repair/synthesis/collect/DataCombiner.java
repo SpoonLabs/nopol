@@ -1,6 +1,6 @@
 package fr.inria.lille.repair.synthesis.collect;
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.expression.Expression;
 import fr.inria.lille.repair.expression.combination.CombinationExpression;
@@ -33,11 +33,11 @@ public class DataCombiner {
     private long startTime;
     private long maxTime;
     private long executionTime;
-    private Config config;
+    private NopolContext nopolContext;
 
-    public Candidates combine(Candidates candidates, Object angelicValue, long maxTime, Config config) {
-        this.config = config;
-        maxDepth = config.getSynthesisDepth();
+    public Candidates combine(Candidates candidates, Object angelicValue, long maxTime, NopolContext nopolContext) {
+        this.nopolContext = nopolContext;
+        maxDepth = nopolContext.getSynthesisDepth();
         this.maxTime = maxTime;
         this.startTime = System.currentTimeMillis();
         executionTime = System.currentTimeMillis() - startTime;
@@ -123,7 +123,7 @@ public class DataCombiner {
                 }
             }
         }
-        if (config.isSortExpressions()) {
+        if (nopolContext.isSortExpressions()) {
             Collections.sort(toCombine, Collections.reverseOrder());
         }
 
@@ -135,20 +135,20 @@ public class DataCombiner {
             Combination combination = new Combination(toCombine, operator, nbExpression);
             while(!combination.isEnd()) {
                 List<Expression> expressions = combination.perform();
-                CombinationExpression binaryExpression = CombinationFactory.create(operator, expressions, config);
+                CombinationExpression binaryExpression = CombinationFactory.create(operator, expressions, nopolContext);
                 if (addExpressionIn(binaryExpression, result, false)) {
                     if (callListener(binaryExpression)) {
-                        if (config.isOnlyOneSynthesisResult()) {
+                        if (nopolContext.isOnlyOneSynthesisResult()) {
                             return result;
                         }
                     }
                 }
                 if (operator instanceof BinaryOperator) {
                     if (!((BinaryOperator) operator).isCommutative()) {
-                        binaryExpression = CombinationFactory.create(operator, Arrays.asList(expressions.get(1), expressions.get(0)), config);
+                        binaryExpression = CombinationFactory.create(operator, Arrays.asList(expressions.get(1), expressions.get(0)), nopolContext);
                         if (addExpressionIn(binaryExpression, result, false)) {
                             if (callListener(binaryExpression)) {
-                                if (config.isOnlyOneSynthesisResult()) {
+                                if (nopolContext.isOnlyOneSynthesisResult()) {
                                     return result;
                                 }
                             }
@@ -164,7 +164,7 @@ public class DataCombiner {
         logger.debug("[combine] primitive start on " + toCombine.size() + " elements");
         List<Expression> result = new ArrayList<>();
 
-        if (config.isSortExpressions()) {
+        if (nopolContext.isSortExpressions()) {
             Collections.sort(toCombine, Collections.reverseOrder());
         }
         executionTime = System.currentTimeMillis() - startTime;
@@ -187,10 +187,10 @@ public class DataCombiner {
                 if (!operator.getReturnType().isAssignableFrom(expression.getValue().getType())) {
                     continue;
                 }
-                UnaryExpression unaryExpression = CombinationFactory.create(operator, expression, config);
+                UnaryExpression unaryExpression = CombinationFactory.create(operator, expression, nopolContext);
                 if (addExpressionIn(unaryExpression, result, value != null)) {
                     //expression.getInExpressions().add(unaryExpression);
-                    if (callListener(unaryExpression) && config.isOnlyOneSynthesisResult()) {
+                    if (callListener(unaryExpression) && nopolContext.isOnlyOneSynthesisResult()) {
                         return result;
                     }
                 }
@@ -234,25 +234,25 @@ public class DataCombiner {
     }
 
     private List<Expression> combineExpressionOperator(Expression expression, Expression expression1, BinaryOperator operator, Object value, List<Expression> result) {
-        BinaryExpression binaryExpression = CombinationFactory.create(operator, expression, expression1, config);
+        BinaryExpression binaryExpression = CombinationFactory.create(operator, expression, expression1, nopolContext);
         if (addExpressionIn(binaryExpression, result, value != null)) {
             //expression.getInExpressions().add(binaryExpression);
             if (!expression.sameExpression(expression1)) {
                 //expression1.getInExpressions().add(binaryExpression);
-                if (callListener(binaryExpression) && config.isOnlyOneSynthesisResult()) {
+                if (callListener(binaryExpression) && nopolContext.isOnlyOneSynthesisResult()) {
                     return result;
                 }
             }
         }
 
         if (!operator.isCommutative()) {
-            binaryExpression = CombinationFactory.create(operator, expression1, expression, config);
+            binaryExpression = CombinationFactory.create(operator, expression1, expression, nopolContext);
 
             if (addExpressionIn(binaryExpression, result, value != null)) {
                 //expression.getInExpressions().add(binaryExpression);
                 if (!expression.sameExpression(expression1)) {
                     //expression1.getInExpressions().add(binaryExpression);
-                    if (callListener(binaryExpression) && config.isOnlyOneSynthesisResult()) {
+                    if (callListener(binaryExpression) && nopolContext.isOnlyOneSynthesisResult()) {
                         return result;
                     }
                 }
@@ -262,13 +262,13 @@ public class DataCombiner {
     }
 
     private List<Expression> combineComplex(List<Expression> toCombine, int previousSize, Object value) {
-        Expression nullExpression = AccessFactory.literal(null, config);
+        Expression nullExpression = AccessFactory.literal(null, nopolContext);
         logger.debug("[combine] complex start on " + toCombine.size() + " elements");
         List<Expression> result = new ArrayList<>();
         if (value != null && value.getClass() != Boolean.class) {
             return result;
         }
-        if (config.isSortExpressions()) {
+        if (nopolContext.isSortExpressions()) {
             Collections.sort(toCombine, Collections.reverseOrder());
         }
         executionTime = System.currentTimeMillis() - startTime;
@@ -282,7 +282,7 @@ public class DataCombiner {
                 continue;
             }
 
-            BinaryExpression binaryExpression = CombinationFactory.create(BinaryOperator.EQ, expression, nullExpression, config);
+            BinaryExpression binaryExpression = CombinationFactory.create(BinaryOperator.EQ, expression, nullExpression, nopolContext);
             if (addExpressionIn(binaryExpression, result, value != null)) {
                 //expression.getInExpressions().add(binaryExpression);
                 if (!expression.sameExpression(nullExpression)) {
@@ -293,7 +293,7 @@ public class DataCombiner {
                 }
             }
 
-            binaryExpression = CombinationFactory.create(BinaryOperator.NEQ, expression, nullExpression, config);
+            binaryExpression = CombinationFactory.create(BinaryOperator.NEQ, expression, nullExpression, nopolContext);
             if (addExpressionIn(binaryExpression, result, value != null)) {
                 //expression.getInExpressions().add(binaryExpression);
                 if (!expression.sameExpression(nullExpression)) {
@@ -326,7 +326,7 @@ public class DataCombiner {
     private boolean callListener(Expression expression) {
         for (CombineListener combineListener : listeners) {
             if (combineListener.check(expression)) {
-                if (config.isOnlyOneSynthesisResult()) {
+                if (nopolContext.isOnlyOneSynthesisResult()) {
                     stop = true;
                 }
                 return true;

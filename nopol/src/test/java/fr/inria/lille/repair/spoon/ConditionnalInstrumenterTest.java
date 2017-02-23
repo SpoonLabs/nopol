@@ -3,7 +3,7 @@ package fr.inria.lille.repair.spoon;
 import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.spoon.ConditionalLoggingInstrumenter;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessorBuilder;
@@ -37,10 +37,10 @@ public class ConditionnalInstrumenterTest {
 		File fileClassToSpoon = new File("src/test/resources/spoon/example/Thaliana.java");
 		File[] sourceFiles = {fileClassToSpoon};
 
-		Config config = new Config(sourceFiles, new URL[]{fileClassToSpoon.toURI().toURL()}, null);
-		config.setSynthesis(Config.NopolSynthesis.DYNAMOTH);
+		NopolContext nopolContext = new NopolContext(sourceFiles, new URL[]{fileClassToSpoon.toURI().toURL()}, null);
+		nopolContext.setSynthesis(NopolContext.NopolSynthesis.DYNAMOTH);
 
-		SpoonedProject spooner = new SpoonedProject(sourceFiles, config);
+		SpoonedProject spooner = new SpoonedProject(sourceFiles, nopolContext);
 
 		Launcher l = new Launcher();
 		l.addInputResource("src/test/resources/spoon/example/Thaliana.java");
@@ -54,12 +54,12 @@ public class ConditionnalInstrumenterTest {
 
 
 		SpoonedClass spoonCl = spooner.forked("spoon.example.Thaliana");
-		NopolProcessorBuilder builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config);
+		NopolProcessorBuilder builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), nopolContext);
 		spoonCl.process(builder);
 		List<NopolProcessor> nopolProcessors = builder.getNopolProcessors();
 		assertEquals(1, nopolProcessors.size());
 		NopolProcessor nopolProcessor = nopolProcessors.get(0);
-		Processor<CtStatement> processor = new ConditionalInstrumenter(nopolProcessor, config.getType().getType());
+		Processor<CtStatement> processor = new ConditionalInstrumenter(nopolProcessor, nopolContext.getType().getType());
 		spoonCl.process(processor);
 
 		CtType<Object> spoonThaliana = spoonCl.spoonFactory().Type().get("spoon.example.Thaliana");
@@ -86,12 +86,12 @@ public class ConditionnalInstrumenterTest {
 		}).get(0);
 
 		spoonCl = spooner.forked("spoon.example.Thaliana");
-		builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config);
+		builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), nopolContext);
 		spoonCl.process(builder);
 		nopolProcessors = builder.getNopolProcessors();
 		assertEquals(1, nopolProcessors.size());
 		nopolProcessor = nopolProcessors.get(0);
-		processor = new ConditionalInstrumenter(nopolProcessor, config.getType().getType());
+		processor = new ConditionalInstrumenter(nopolProcessor, nopolContext.getType().getType());
 
 		try {
 			spoonCl.process(processor);
@@ -106,10 +106,10 @@ public class ConditionnalInstrumenterTest {
 		File fileClassToSpoon = new File("src/test/resources/spoon/example/Thaliana.java");
 		File[] sourceFiles = {fileClassToSpoon};
 
-		Config config = new Config(sourceFiles, new URL[]{fileClassToSpoon.toURI().toURL()}, null);
-		config.setSynthesis(Config.NopolSynthesis.DYNAMOTH);
+		NopolContext nopolContext = new NopolContext(sourceFiles, new URL[]{fileClassToSpoon.toURI().toURL()}, null);
+		nopolContext.setSynthesis(NopolContext.NopolSynthesis.DYNAMOTH);
 
-		SpoonedProject spooner = new SpoonedProject(sourceFiles, config);
+		SpoonedProject spooner = new SpoonedProject(sourceFiles, nopolContext);
 
 		Launcher l = new Launcher();
 		l.addInputResource("src/test/resources/spoon/example/Thaliana.java");
@@ -122,7 +122,7 @@ public class ConditionnalInstrumenterTest {
 		}).get(0);
 
 		SpoonedClass spoonCl = spooner.forked("spoon.example.Thaliana");
-		NopolProcessorBuilder builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config);
+		NopolProcessorBuilder builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), nopolContext);
 		spoonCl.process(builder);
 		List<NopolProcessor> nopolProcessors = builder.getNopolProcessors();
 		assertEquals(1, nopolProcessors.size());
@@ -154,12 +154,12 @@ public class ConditionnalInstrumenterTest {
 		}).get(0);
 
 		spoonCl = spooner.forked("spoon.example.Thaliana");
-		builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), config);
+		builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), nopolContext);
 		spoonCl.process(builder);
 		nopolProcessors = builder.getNopolProcessors();
 		assertEquals(1, nopolProcessors.size());
 		nopolProcessor = nopolProcessors.get(0);
-		processor = new ConditionalInstrumenter(nopolProcessor, config.getType().getType());
+		processor = new ConditionalInstrumenter(nopolProcessor, nopolContext.getType().getType());
 		try {
 			spoonCl.process(processor);
 			fail();

@@ -1,6 +1,6 @@
 package fr.inria.lille.diff;
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.ExpressionPatch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.SourceLocation;
@@ -11,15 +11,13 @@ import org.junit.Test;
 import spoon.Launcher;
 import spoon.reflect.factory.Factory;
 
-import java.net.URL;
-
 public class PatchGeneratorTest {
 
 	private static final String projectSourcePath = "src/test/java/fr/inria/lille/diff/testclasses";
 
 	@Test
 	public void simpleConditionChangeTest() {
-		Config config = new Config(projectSourcePath, null, null);
+		NopolContext nopolContext = new NopolContext(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);
@@ -31,12 +29,12 @@ public class PatchGeneratorTest {
 		pathLocation.setSourceEnd(98);
 
 		ExpressionPatch patch = new ExpressionPatch(
-				new LiteralImpl(ValueFactory.create(false), config),
+				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
 				StatementType.CONDITIONAL);
 		PatchGenerator test = new PatchGenerator(
 				patch,
-				factory, config);
+				factory, nopolContext);
 
 		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
 				+ "+++ "+projectSourcePath+"/Bar.java\n"
@@ -51,7 +49,7 @@ public class PatchGeneratorTest {
 
 	@Test
 	public void conditionChangeElseIfTest() {
-		Config config = new Config(projectSourcePath, null, null);
+		NopolContext nopolContext = new NopolContext(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);
@@ -63,12 +61,12 @@ public class PatchGeneratorTest {
 		pathLocation.setSourceEnd(140);
 
 		ExpressionPatch patch = new ExpressionPatch(
-				new LiteralImpl(ValueFactory.create(false), config),
+				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
 				StatementType.CONDITIONAL);
 		PatchGenerator test = new PatchGenerator(
 				patch,
-				factory, config);
+				factory, nopolContext);
 
 		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
 				+ "+++ "+projectSourcePath+"/Bar.java\n"
@@ -84,7 +82,7 @@ public class PatchGeneratorTest {
 
 	@Test
 	public void simplePreconditionIfTest() {
-		Config config = new Config(projectSourcePath, null, null);
+		NopolContext nopolContext = new NopolContext(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);
@@ -96,12 +94,12 @@ public class PatchGeneratorTest {
 		pathLocation.setSourceEnd(98);
 
 		ExpressionPatch patch = new ExpressionPatch(
-				new LiteralImpl(ValueFactory.create(false), config),
+				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
 				StatementType.PRECONDITION);
 		PatchGenerator test = new PatchGenerator(
 				patch,
-				factory, config);
+				factory, nopolContext);
 
 		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
 				+ "+++ "+projectSourcePath+"/Bar.java\n"
@@ -118,7 +116,7 @@ public class PatchGeneratorTest {
 
 	@Test
 	public void preconditionElseIfTest() {
-		Config config = new Config(projectSourcePath, null, null);
+		NopolContext nopolContext = new NopolContext(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);
@@ -130,12 +128,12 @@ public class PatchGeneratorTest {
 		pathLocation.setSourceEnd(140);
 
 		ExpressionPatch patch = new ExpressionPatch(
-				new LiteralImpl(ValueFactory.create(false), config),
+				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
 				StatementType.PRECONDITION);
 		PatchGenerator test = new PatchGenerator(
 				patch,
-				factory, config);
+				factory, nopolContext);
 
 		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
 				+ "+++ "+projectSourcePath+"/Bar.java\n"
@@ -154,7 +152,7 @@ public class PatchGeneratorTest {
 
 	@Test
 	public void preconditionInvocationTest() {
-		Config config = new Config(projectSourcePath, null, null);
+		NopolContext nopolContext = new NopolContext(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);
@@ -166,12 +164,12 @@ public class PatchGeneratorTest {
 		pathLocation.setSourceEnd(171);
 
 		ExpressionPatch patch = new ExpressionPatch(
-				new LiteralImpl(ValueFactory.create(false), config),
+				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
 				StatementType.PRECONDITION);
 		PatchGenerator test = new PatchGenerator(
 				patch,
-				factory, config);
+				factory, nopolContext);
 
 		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
 				+ "+++ "+projectSourcePath+"/Bar.java\n"
@@ -187,7 +185,7 @@ public class PatchGeneratorTest {
 
 	@Test
 	public void preconditionMultiLineStatementTest() {
-		Config config = new Config(projectSourcePath, null, null);
+		NopolContext nopolContext = new NopolContext(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);
@@ -199,12 +197,12 @@ public class PatchGeneratorTest {
 		pathLocation.setSourceEnd(250);
 
 		ExpressionPatch patch = new ExpressionPatch(
-				new LiteralImpl(ValueFactory.create(false), config),
+				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
 				StatementType.PRECONDITION);
 		PatchGenerator test = new PatchGenerator(
 				patch,
-				factory, config);
+				factory, nopolContext);
 
 		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
 				+ "+++ "+projectSourcePath+"/Bar.java\n"
@@ -224,7 +222,7 @@ public class PatchGeneratorTest {
 
 	@Test
 	public void preconditionInvocationInConditionTest() {
-		Config config = new Config(projectSourcePath, null, null);
+		NopolContext nopolContext = new NopolContext(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);
@@ -236,12 +234,12 @@ public class PatchGeneratorTest {
 		pathLocation.setSourceEnd(318);
 
 		ExpressionPatch patch = new ExpressionPatch(
-				new LiteralImpl(ValueFactory.create(false), config),
+				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
 				StatementType.PRECONDITION);
 		PatchGenerator test = new PatchGenerator(
 				patch,
-				factory, config);
+				factory, nopolContext);
 
 		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
 				+ "+++ "+projectSourcePath+"/Bar.java\n"
@@ -256,7 +254,7 @@ public class PatchGeneratorTest {
 
 	@Test
 	public void preconditionInvocationInElseTest() {
-		Config config = new Config(projectSourcePath, null, null);
+		NopolContext nopolContext = new NopolContext(projectSourcePath, null, null);
 
 		Launcher spoon = new Launcher();
 		spoon.addInputResource(projectSourcePath);
@@ -268,12 +266,12 @@ public class PatchGeneratorTest {
 		pathLocation.setSourceEnd(435);
 
 		ExpressionPatch patch = new ExpressionPatch(
-				new LiteralImpl(ValueFactory.create(false), config),
+				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
 				StatementType.PRECONDITION);
 		PatchGenerator test = new PatchGenerator(
 				patch,
-				factory, config);
+				factory, nopolContext);
 
 		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
 				+ "+++ "+projectSourcePath+"/Bar.java\n"

@@ -1,7 +1,7 @@
 package fr.inria.lille.evo;
 
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.NoPol;
@@ -245,11 +245,11 @@ public class Main {
         logger.debug("classpath = "+cp);
         logger.debug("testClasses = "+testClasses);
 
-        Config config = new Config(sourceFiles, classPath, testClasses);
-        config.setMaxTimeInMinutes(maxTime);
-        config.setType(nopolType);
+        NopolContext nopolContext = new NopolContext(sourceFiles, classPath, testClasses);
+        nopolContext.setMaxTimeInMinutes(maxTime);
+        nopolContext.setType(nopolType);
 
-        NoPol nopol = new NoPol(config);
+        NoPol nopol = new NoPol(nopolContext);
         List<Patch> currentPatches;
         currentPatches = nopol.build();
         

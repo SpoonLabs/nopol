@@ -1,6 +1,5 @@
 package xxl.java.compiler;
 
-import fr.inria.lille.repair.common.config.Config;
 import xxl.java.container.classic.MetaMap;
 
 import java.net.URL;

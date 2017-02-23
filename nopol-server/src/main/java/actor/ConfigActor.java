@@ -1,7 +1,7 @@
 package actor;
 
 import akka.actor.ActorRef;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 
 import java.io.Serializable;
 
@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 public interface ConfigActor extends Serializable {
 
-    Config getConfig();
+    NopolContext getNopolContext();
     byte[] getContent();
     ActorRef getClient();
     void setClient(ActorRef client);

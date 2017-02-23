@@ -1,7 +1,6 @@
 package fr.inria.lille.evo;
 
 import fr.inria.lille.repair.TestUtility;
-import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;

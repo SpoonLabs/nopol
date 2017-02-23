@@ -2,7 +2,7 @@ package fr.inria.lille.repair.nopol.ifmetric;
 
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.repair.TestClassesFinder;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import xxl.java.junit.TestSuiteExecution;
 
 import java.io.File;
@@ -32,7 +32,7 @@ public class IfMetric {
     private final File sourceFolder;
     private static File output1;
     private File output2;
-    private Config config;
+    private NopolContext nopolContext;
 
     private static FileWriter writer;
 
@@ -45,10 +45,10 @@ public class IfMetric {
     static final String COMPUTE_METRIC_CALL = IfMetric.class.getName()
             + ".computeIfMetric(";
 
-    public IfMetric(Config config) {
-        this.config = config;
-        this.sourceFolder = config.getProjectSources()[0];
-        this.classpath = config.getProjectClasspath();
+    public IfMetric(NopolContext nopolContext) {
+        this.nopolContext = nopolContext;
+        this.sourceFolder = nopolContext.getProjectSources()[0];
+        this.classpath = nopolContext.getProjectClasspath();
         output1 = new File(sourceFolder.getAbsolutePath() + File.separatorChar + ".." + File.separatorChar + "IfMetricPurAndImpur");
         output2 = new File(sourceFolder.getAbsolutePath() + File.separatorChar + ".." + File.separatorChar + "IfMetricExecutionDuringTest");
         FileWriter writer = null;
@@ -95,7 +95,7 @@ public class IfMetric {
 
         URL[] classpath = IfMetric.createUrls(paths);
 
-        new IfMetric(new Config(new File[]{ sourceFolder }, classpath, null)).run();
+        new IfMetric(new NopolContext(new File[]{ sourceFolder }, classpath, null)).run();
     }
 
     private void run() {
@@ -120,12 +120,12 @@ public class IfMetric {
     private void compute(String[] testClasses) {
         IfCollectorProcessor collectorProcessor = new IfCollectorProcessor();
         IfCountingInstrumentingProcessor instrumentingProcessor = new IfCountingInstrumentingProcessor(this);
-        SpoonedProject project = new SpoonedProject(new File[]{sourceFolder}, this.config);
+        SpoonedProject project = new SpoonedProject(new File[]{sourceFolder}, this.nopolContext);
         ClassLoader loader = project.processedAndDumpedToClassLoader(modifyClass, asList(collectorProcessor, instrumentingProcessor));
 
         writeOutPut("ClassName.TestCaseName\t\t\tNbInpurIf\tNbPurIf");
 
-        TestSuiteExecution.runCasesIn(testClasses, loader, this.config);
+        TestSuiteExecution.runCasesIn(testClasses, loader, this.nopolContext);
 
         System.out.println("First metric has been compute in : " + output1.getAbsoluteFile());
 

@@ -6,11 +6,8 @@ import fr.inria.lille.localization.AbstractStatement;
 import fr.inria.lille.localization.GZoltarFaultLocalizer;
 import fr.inria.lille.localization.StatementExt;
 import fr.inria.lille.repair.TestClassesFinder;
-import fr.inria.lille.repair.common.config.Config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import fr.inria.lille.repair.common.config.NopolContext;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
@@ -23,9 +20,9 @@ public class Ranking {
 	private final GZoltarFaultLocalizer gZoltar;
 	private String[] testClasses;
 
-	public Ranking(Config config) {
-		this.classpath = config.getProjectClasspath();
-		this.testClasses = config.getProjectTests();
+	public Ranking(NopolContext nopolContext) {
+		this.classpath = nopolContext.getProjectClasspath();
+		this.testClasses = nopolContext.getProjectTests();
 
 		// get all test classes of the current project
 		if (this.testClasses.length == 0) {
@@ -33,7 +30,7 @@ public class Ranking {
 		}
 		// init gzoltar
 		try {
-			gZoltar = new GZoltarFaultLocalizer(config);
+			gZoltar = new GZoltarFaultLocalizer(nopolContext);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

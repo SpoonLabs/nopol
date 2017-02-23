@@ -1,7 +1,7 @@
 package actor;
 
 import akka.actor.ActorRef;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 
 import java.io.Serializable;
 
@@ -10,13 +10,17 @@ import java.io.Serializable;
  */
 public class ConfigActorImpl implements ConfigActor, Serializable {
 
-    public ConfigActorImpl(Config config, byte[] content) {
-        this.config = config;
+    private final NopolContext nopolContext;
+    private final byte[] content;
+    private ActorRef client;
+
+    public ConfigActorImpl(NopolContext nopolContext, byte[] content) {
+        this.nopolContext = nopolContext;
         this.content = content;
     }
 
-    public Config getConfig() {
-        return config;
+    public NopolContext getNopolContext() {
+        return nopolContext;
     }
 
     public byte[] getContent() {
@@ -30,10 +34,6 @@ public class ConfigActorImpl implements ConfigActor, Serializable {
     public  void setClient(ActorRef client) {
         this.client = client;
     }
-
-    private final Config config;
-    private final byte[] content;
-    private ActorRef client;
 
     private static final long serialVersionUID = -8141656618548268847L;
 

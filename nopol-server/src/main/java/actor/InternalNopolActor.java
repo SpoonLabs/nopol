@@ -3,7 +3,7 @@ package actor;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import com.google.common.io.Files;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.NoFailingTestCaseException;
 import fr.inria.lille.repair.nopol.NoPol;
@@ -27,13 +27,13 @@ public class InternalNopolActor extends UntypedActor {
 
 			ConfigActor configActor = (ConfigActor) message;
 
-			Config config = configActor.getConfig();
+			NopolContext nopolContext = configActor.getNopolContext();
 			File tempDirectory = Files.createTempDir();
 			UnZiper.unZipIt(configActor.getContent(), tempDirectory.getAbsolutePath());
 			ActorRef client = configActor.getClient();
 
-			if (config.getSynthesis() == Config.NopolSynthesis.SMT) {
-				config.setSolverPath(pathToSolver);
+			if (nopolContext.getSynthesis() == NopolContext.NopolSynthesis.SMT) {
+				nopolContext.setSolverPath(pathToSolver);
 			}
 
 			String sourceFile = tempDirectory.toString() + "/src/";
@@ -42,12 +42,12 @@ public class InternalNopolActor extends UntypedActor {
 			System.out.println(tempDirectory);
 
 			List<Patch> patches = Collections.EMPTY_LIST;
-			config.setProjectSourcePath(sourceFile);
-			config.setProjectClasspath(JavaLibrary.classpathFrom(classPath));
-			config.setComplianceLevel(8);
+			nopolContext.setProjectSources(sourceFile);
+			nopolContext.setProjectClasspath(JavaLibrary.classpathFrom(classPath));
+			nopolContext.setComplianceLevel(8);
 
 			try {
-				NoPol noPol = new NoPol(config);
+				NoPol noPol = new NoPol(nopolContext);
 				patches = noPol.build();
 			} catch (NoSuspiciousStatementException | NoFailingTestCaseException noFix) {
 				client.tell(noFix, ActorRef.noSender());

@@ -22,7 +22,7 @@ import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.QualifiedSwitch;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.infinitel.Infinitel;
 import fr.inria.lille.repair.nopol.NoPol;
@@ -41,14 +41,14 @@ import static java.lang.String.format;
 
 public class Main {
 	private JSAP jsap;
-	private Config config;
+	private NopolContext nopolContext;
 
 	public Main() {
 		this.jsap = new JSAP();
 	}
 
-	public Config getConfig() {
-		return config;
+	public NopolContext getNopolContext() {
+		return nopolContext;
 	}
 
 	public static void main(String[] args) {
@@ -60,10 +60,10 @@ public class Main {
 				return;
 			}
 
-			final Config config = main.getConfig();
+			final NopolContext nopolContext = main.getNopolContext();
 
 			//For using Dynamoth, you must add tools.jar in the classpath
-			if (config.getSynthesis() == Config.NopolSynthesis.DYNAMOTH) {
+			if (nopolContext.getSynthesis() == NopolContext.NopolSynthesis.DYNAMOTH) {
 				URLClassLoader loader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 				try {
 					loader.loadClass("com.sun.jdi.Value");
@@ -73,11 +73,11 @@ public class Main {
 				}
 			}
 
-			switch (config.getMode()) {
+			switch (nopolContext.getMode()) {
 				case REPAIR:
-					switch (config.getType()) {
+					switch (nopolContext.getType()) {
 						case LOOP:
-							Infinitel infinitel = new Infinitel(config);
+							Infinitel infinitel = new Infinitel(nopolContext);
 							infinitel.repair();
 							break;
 						default:
@@ -86,21 +86,21 @@ public class Main {
 									new Callable() {
 										@Override
 										public Object call() throws Exception {
-											NoPol nopol = new NoPol(config);
+											NoPol nopol = new NoPol(nopolContext);
 											return nopol.build().isEmpty() ? -1 : 0;
 										}
 									});
 							try {
 								executor.shutdown();
-								returnCode = (int) nopolExecution.get(config.getMaxTimeInMinutes(), TimeUnit.MINUTES);
+								returnCode = (int) nopolExecution.get(nopolContext.getMaxTimeInMinutes(), TimeUnit.MINUTES);
 							} catch (TimeoutException exception) {
-								LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + config.getMaxTimeInMinutes() + " " + TimeUnit.MINUTES, exception);
+								LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + nopolContext.getMaxTimeInMinutes() + " " + TimeUnit.MINUTES, exception);
 							}
 							break;
 					}
 					break;
 				case RANKING:
-					Ranking ranking = new Ranking(config);
+					Ranking ranking = new Ranking(nopolContext);
 					System.out.println(ranking.summary());
 					break;
 			}
@@ -140,58 +140,58 @@ public class Main {
 
 		final URL[] classpath = JavaLibrary.classpathFrom(jsapConfig.getString("classpath"));
 
-		Config config = new Config(sourceFiles, classpath, jsapConfig.getStringArray("test"));
+		NopolContext nopolContext = new NopolContext(sourceFiles, classpath, jsapConfig.getStringArray("test"));
 
-		config.setType(strToStatementType(jsapConfig.getString("type")));
-		config.setMode(strToMode(jsapConfig.getString("mode")));
-		config.setSynthesis(strToSynthesis(jsapConfig.getString("synthesis")));
-		config.setOracle(strToOracle(jsapConfig.getString("oracle")));
-		config.setSolver(strToSolver(jsapConfig.getString("solver")));
+		nopolContext.setType(strToStatementType(jsapConfig.getString("type")));
+		nopolContext.setMode(strToMode(jsapConfig.getString("mode")));
+		nopolContext.setSynthesis(strToSynthesis(jsapConfig.getString("synthesis")));
+		nopolContext.setOracle(strToOracle(jsapConfig.getString("oracle")));
+		nopolContext.setSolver(strToSolver(jsapConfig.getString("solver")));
 		if (jsapConfig.getString("solverPath") != null) {
-			config.setSolverPath(jsapConfig.getString("solverPath"));
-			SolverFactory.setSolver(config.getSolver(), config.getSolverPath());
+			nopolContext.setSolverPath(jsapConfig.getString("solverPath"));
+			SolverFactory.setSolver(nopolContext.getSolver(), nopolContext.getSolverPath());
 		}
-		config.setComplianceLevel(jsapConfig.getInt("complianceLevel", 7));
-		config.setMaxTimeInMinutes(jsapConfig.getInt("maxTime", 10));
-		config.setMaxTimeEachTypeOfFixInMinutes(jsapConfig.getInt("maxTimeType", 5));
-		config.setLocalizer(strToLocalizer(jsapConfig.getString("faultLocalization")));
-		config.setOutputFolder(jsapConfig.getString("outputFolder"));
-		config.setJson(jsapConfig.getBoolean("outputJson", false));
+		nopolContext.setComplianceLevel(jsapConfig.getInt("complianceLevel", 7));
+		nopolContext.setMaxTimeInMinutes(jsapConfig.getInt("maxTime", 10));
+		nopolContext.setMaxTimeEachTypeOfFixInMinutes(jsapConfig.getInt("maxTimeType", 5));
+		nopolContext.setLocalizer(strToLocalizer(jsapConfig.getString("faultLocalization")));
+		nopolContext.setOutputFolder(jsapConfig.getString("outputFolder"));
+		nopolContext.setJson(jsapConfig.getBoolean("outputJson", false));
 		return true;
 	}
 
-	private static Config.NopolSynthesis strToSynthesis(String str) {
+	private static NopolContext.NopolSynthesis strToSynthesis(String str) {
 		if (str.equals("smt")) {
-			return Config.NopolSynthesis.SMT;
+			return NopolContext.NopolSynthesis.SMT;
 		} else if (str.equals("dynamoth")) {
-			return Config.NopolSynthesis.DYNAMOTH;
+			return NopolContext.NopolSynthesis.DYNAMOTH;
 		}
 		throw new RuntimeException("Unknow Nopol oracle " + str);
 	}
 
-	private static Config.NopolOracle strToOracle(String str) {
+	private static NopolContext.NopolOracle strToOracle(String str) {
 		if (str.equals("angelic")) {
-			return Config.NopolOracle.ANGELIC;
+			return NopolContext.NopolOracle.ANGELIC;
 		} else if (str.equals("symbolic")) {
-			return Config.NopolOracle.SYMBOLIC;
+			return NopolContext.NopolOracle.SYMBOLIC;
 		}
 		throw new RuntimeException("Unknow Nopol oracle " + str);
 	}
 
-	private static Config.NopolSolver strToSolver(String str) {
+	private static NopolContext.NopolSolver strToSolver(String str) {
 		if (str.equals("z3")) {
-			return Config.NopolSolver.Z3;
+			return NopolContext.NopolSolver.Z3;
 		} else if (str.equals("cvc4")) {
-			return Config.NopolSolver.CVC4;
+			return NopolContext.NopolSolver.CVC4;
 		}
 		throw new RuntimeException("Unknow Nopol solver " + str);
 	}
 
-	private static Config.NopolMode strToMode(String str) {
+	private static NopolContext.NopolMode strToMode(String str) {
 		if (str.equals("repair")) {
-			return Config.NopolMode.REPAIR;
+			return NopolContext.NopolMode.REPAIR;
 		} else if (str.equals("ranking")) {
-			return Config.NopolMode.RANKING;
+			return NopolContext.NopolMode.RANKING;
 		}
 		throw new RuntimeException("Unknow Nopol mode " + str);
 	}
@@ -211,13 +211,13 @@ public class Main {
 		return StatementType.NONE;
 	}
 
-	private static Config.NopolLocalizer strToLocalizer(String str) {
+	private static NopolContext.NopolLocalizer strToLocalizer(String str) {
 		if (str.equals("gzoltar")) {
-			return Config.NopolLocalizer.GZOLTAR;
+			return NopolContext.NopolLocalizer.GZOLTAR;
 		} else if (str.equals("dumb")) {
-			return Config.NopolLocalizer.DUMB;
+			return NopolContext.NopolLocalizer.DUMB;
 		} else
-			return Config.NopolLocalizer.OCHIAI;
+			return NopolContext.NopolLocalizer.OCHIAI;
 	}
 
 	private void initJSAP() throws JSAPException {

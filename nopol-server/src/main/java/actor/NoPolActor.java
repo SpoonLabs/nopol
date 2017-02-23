@@ -3,7 +3,6 @@ package actor;
 
 import akka.actor.*;
 import com.typesafe.config.ConfigFactory;
-import fr.inria.lille.repair.common.config.Config;
 
 import java.util.HashMap;
 import java.util.Map;

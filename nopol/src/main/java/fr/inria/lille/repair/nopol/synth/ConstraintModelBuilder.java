@@ -22,7 +22,7 @@ import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.commons.trace.SpecificationTestCasesListener;
 import fr.inria.lille.localization.TestResult;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
@@ -48,11 +48,11 @@ public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
     private final ClassLoader classLoader;
     private RuntimeValues<Boolean> runtimeValues;
     private SourceLocation sourceLocation;
-    private Config config;
+    private NopolContext nopolContext;
 
-    public ConstraintModelBuilder(RuntimeValues<Boolean> runtimeValues, SourceLocation sourceLocation, Processor<?> processor, SpoonedProject spooner, Config config) {
+    public ConstraintModelBuilder(RuntimeValues<Boolean> runtimeValues, SourceLocation sourceLocation, Processor<?> processor, SpoonedProject spooner, NopolContext nopolContext) {
         this.sourceLocation = sourceLocation;
-        this.config = config;
+        this.nopolContext = nopolContext;
         String qualifiedName = sourceLocation.getRootClassName();
         SpoonedClass fork = spooner.forked(qualifiedName);
         try {
@@ -75,13 +75,13 @@ public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
     public Collection<Specification<Boolean>> collectSpecifications(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
         SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<>(runtimeValues);
         AngelicExecution.enable();
-        CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, listener, config);
+        CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, listener, nopolContext);
         AngelicExecution.flip();
-        CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, listener, config);
+        CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, listener, nopolContext);
         AngelicExecution.disable();
         if (determineViability(firstResult, secondResult)) {
             /* to collect information for passing tests */
-            TestSuiteExecution.runTestResult(testClasses, classLoader, listener, config);
+            TestSuiteExecution.runTestResult(testClasses, classLoader, listener, nopolContext);
         }
         return listener.specifications();
     }

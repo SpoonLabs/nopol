@@ -14,7 +14,7 @@ import java.util.Properties;
 /**
  * Created by Thomas Durieux on 23/03/15.
  */
-public class Config implements Serializable {
+public class NopolContext implements Serializable {
 
 	private static final long serialVersionUID = -2542128741040978263L;
 	private boolean json;
@@ -91,15 +91,15 @@ public class Config implements Serializable {
 
 	private int complianceLevel;
 
-	public Config() {
+	public NopolContext() {
 		this.initFromFile();
 	}
 
-	public Config(String sourceFile, URL[] classpath, String[] testClasses) {
+	public NopolContext(String sourceFile, URL[] classpath, String[] testClasses) {
 		this(new File[] { FileLibrary.openFrom(sourceFile) }, classpath, testClasses);
 	}
 
-	public Config(File[] sourceFile, URL[] classpath, String[] testClasses) {
+	public NopolContext(File[] sourceFile, URL[] classpath, String[] testClasses) {
 		this.projectSources = sourceFile;
 		this.projectClasspath = classpath;
 		this.projectTests = testClasses;

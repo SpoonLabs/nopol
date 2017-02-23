@@ -18,7 +18,7 @@ package fr.inria.lille.repair.nopol.patch;
 import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.localization.TestResult;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import org.junit.runner.Result;
@@ -35,15 +35,15 @@ import java.util.List;
 public final class TestPatch {
 
     private static final String SPOON_DIRECTORY = File.separator + ".." + File.separator + "spooned";
-    private final Config config;
+    private final NopolContext nopolContext;
 
     private SpoonedProject spoonedProject;
     private final File sourceFolder;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
-    public TestPatch(final File sourceFolder, SpoonedProject spoonedProject, Config config) {
-        this.config = config;
+    public TestPatch(final File sourceFolder, SpoonedProject spoonedProject, NopolContext nopolContext) {
+        this.nopolContext = nopolContext;
         this.sourceFolder = sourceFolder;
         this.spoonedProject = spoonedProject;
     }
@@ -59,7 +59,7 @@ public final class TestPatch {
         processor.setValue(patch.asString());
         ClassLoader loader = spoonedClass.processedAndDumpedToClassLoader(processor);
         logger.info("Running test suite to check the patch \"{}\" is working", patch.asString());
-        Result result = TestSuiteExecution.runTestResult(testClasses, loader, config);
+        Result result = TestSuiteExecution.runTestResult(testClasses, loader, nopolContext);
         if (result.wasSuccessful()) {
             //spoonedClass.generateOutputFile(destinationFolder());
             return true;

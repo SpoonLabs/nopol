@@ -1,6 +1,6 @@
 package fr.inria.lille.repair.infinitel;
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.infinitel.loop.examination.LoopTestResult;
 import fr.inria.lille.repair.infinitel.loop.implant.MonitoringTestExecutor;
 import fr.inria.lille.repair.infinitel.loop.implant.ProjectMonitorImplanter;
@@ -19,10 +19,10 @@ import static xxl.java.library.LoggerLibrary.loggerFor;
 
 public class Infinitel {
 
-    private final Config config;
+    private final NopolContext nopolContext;
 
     public static void run(File[] sourceFile, URL[] classpath) {
-        Infinitel infiniteLoopFixer = new Infinitel(new Config(sourceFile, classpath, null));
+        Infinitel infiniteLoopFixer = new Infinitel(new NopolContext(sourceFile, classpath, null));
         try {
             infiniteLoopFixer.repair();
         } catch (Exception e) {
@@ -31,12 +31,12 @@ public class Infinitel {
         }
     }
 
-    public Infinitel(Config config) {
-        this.config = config;
+    public Infinitel(NopolContext nopolContext) {
+        this.nopolContext = nopolContext;
     }
 
     public String[] projectTestClasses() {
-        return config.getProjectTests();
+        return nopolContext.getProjectTests();
     }
 
     public void repair() {
@@ -46,7 +46,7 @@ public class Infinitel {
     }
 
     protected MonitoringTestExecutor newTestExecutor() {
-        MonitoringTestExecutor executor = ProjectMonitorImplanter.implanted(configuration(), config);
+        MonitoringTestExecutor executor = ProjectMonitorImplanter.implanted(configuration(), nopolContext);
         return executor;
     }
 

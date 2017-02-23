@@ -6,7 +6,7 @@ import com.sun.jdi.request.BreakpointRequest;
 import com.sun.jdi.request.ClassPrepareRequest;
 import com.sun.jdi.request.EventRequestManager;
 import fr.inria.lille.commons.spoon.SpoonedProject;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.expression.Expression;
@@ -41,7 +41,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
     
     /** key: test name, value: list of runtime contexts (if a statement is executed several times in the same test */
     private final SortedMap<String, List<Candidates>> values;
-    private final Config config;
+    private final NopolContext nopolContext;
     private SpoonedProject spoon;
     private final Set<String> checkedExpression = new HashSet<>();
     private int nbExpressionEvaluated = 0;
@@ -74,8 +74,8 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
      * @param oracle the oracle of the project Map<testClass#testMethod, {value iteration 1, value iteration 2, ...}>
      * @param tests tests to execute
      */
-    public DynamothCodeGenesisImpl(SpoonedProject spoon, File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, Config config) {
-        this(projectRoots, location, classpath, oracle, tests,5*60 /* 5 minutes, default in repair mode */, config);
+    public DynamothCodeGenesisImpl(SpoonedProject spoon, File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, NopolContext nopolContext) {
+        this(projectRoots, location, classpath, oracle, tests,5*60 /* 5 minutes, default in repair mode */, nopolContext);
         this.spoon = spoon;
     }
 
@@ -87,14 +87,14 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
      * @param oracle the oracle of the project Map<testClass#testMethod, {value iteration 1, value iteration 2, ...}>
      * @param tests tests to execute
      */
-    public DynamothCodeGenesisImpl(File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, int dataCollectionTimeoutInSeconds, Config config) {
+    public DynamothCodeGenesisImpl(File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, int dataCollectionTimeoutInSeconds, NopolContext nopolContext) {
         this.projectRoots = projectRoots;
         this.location = location;
         this.dataCollectionTimeoutInSeconds=dataCollectionTimeoutInSeconds;
         this.oracle = oracle;
         this.tests = tests;
         this.values = new TreeMap<>();
-        this.config = config;
+        this.nopolContext = nopolContext;
 
         this.constants = new Candidates();
         this.classes = new HashSet<>();
@@ -143,7 +143,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
         }
         if (same) {
             Candidates candidates = new Candidates();
-            candidates.add(AccessFactory.literal(last, config));
+            candidates.add(AccessFactory.literal(last, nopolContext));
             return candidates;
         }
         try {
@@ -271,7 +271,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
             return;
         }
         if (values.containsKey(currentTestClass + "#" + currentTestMethod)) {
-            if (values.get(currentTestClass + "#" + currentTestMethod).size() > config.getMaxLineInvocationPerTest()) {
+            if (values.get(currentTestClass + "#" + currentTestMethod).size() > nopolContext.getMaxLineInvocationPerTest()) {
                 jumpEndTest(threadRef);
                 return;
             }
@@ -339,16 +339,16 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
         }
         if (spoon == null) {
             try {
-                spoon = new SpoonedProject(new File[]{classFile}, config);
+                spoon = new SpoonedProject(new File[]{classFile}, nopolContext);
             } catch (Exception e) {
                 logger.warn("Unable to spoon the project", e);
                 return;
             }
         }
-        if (config.isCollectLiterals()) {
+        if (nopolContext.isCollectLiterals()) {
             constants = collectLiterals();
         }
-        if (config.isCollectStaticMethods()) {
+        if (nopolContext.isCollectStaticMethods()) {
             classes = collectUsedClasses();
         }
 
@@ -356,13 +356,13 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
         this.calledMethods = collectMethod();
         this.variableType = variableType;
         try {
-            config.getComplianceLevel();
+            nopolContext.getComplianceLevel();
             StatCollector statCollector = new StatCollector(buggyMethod);
             spoon.processClass(location.getContainingClassName(), statCollector);
             this.statCollector = statCollector;
             VariablesInSuspiciousCollector variablesInSuspiciousCollector = new VariablesInSuspiciousCollector(location);
             spoon.processClass(location.getContainingClassName(), variablesInSuspiciousCollector);
-            spoonElementsCollector = new SpoonElementsCollector(variablesInSuspiciousCollector.getVariables(), config);
+            spoonElementsCollector = new SpoonElementsCollector(variablesInSuspiciousCollector.getVariables(), nopolContext);
         } catch (Exception e) {
             logger.warn("Unable to collect used classes", e);
         }
@@ -377,11 +377,11 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
 
     private Candidates collectRuntimeValues(ThreadReference threadRef) {
         if (values.containsKey(currentTestClass + "#" + currentTestMethod)) {
-            if (values.get(currentTestClass + "#" + currentTestMethod).size() > config.getMaxLineInvocationPerTest()) {
+            if (values.get(currentTestClass + "#" + currentTestMethod).size() > nopolContext.getMaxLineInvocationPerTest()) {
                 return new Candidates();
             }
         }
-        DataCollector dataCollect = new DataCollector(threadRef, constants, location, buggyMethod, classes, statCollector, this.variableType, this.calledMethods, config);
+        DataCollector dataCollect = new DataCollector(threadRef, constants, location, buggyMethod, classes, statCollector, this.variableType, this.calledMethods, nopolContext);
         Candidates eexps = dataCollect.collect(TimeUnit.MINUTES.toMillis(7));
         return eexps;
     }
@@ -389,7 +389,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
     private Candidates collectLiterals() {
         Candidates candidates = new Candidates();
         try {
-            spoon.processClass(location.getContainingClassName(), new DynamothConstantCollector(candidates, buggyMethod, config));
+            spoon.processClass(location.getContainingClassName(), new DynamothConstantCollector(candidates, buggyMethod, nopolContext));
         } catch (Exception e) {
             logger.warn("Unable to collect literals", e);
         }
@@ -493,7 +493,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
                     continue;
                 }
                 lastCollectedValues = eexps;
-                if (config.isSortExpressions()) {
+                if (nopolContext.isSortExpressions()) {
                     Collections.sort(eexps, Collections.reverseOrder());
                 }
                 final Object angelicValue;
@@ -511,7 +511,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
                     }
                     if (angelicValue.equals(expression.getValue().getRealValue()) && checkExpression(key, i, expression)) {
                         result.add(expression);
-                        if (config.isOnlyOneSynthesisResult()) {
+                        if (nopolContext.isOnlyOneSynthesisResult()) {
                             printSummary(result);
                             return result;
                         }
@@ -537,9 +537,9 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
                 currentTime = System.currentTimeMillis();
                 // combine eexps
                 long maxCombinerTime = remainingTime - (currentTime - startTime);
-                combiner.combine(eexps, angelicValue, maxCombinerTime, config);
+                combiner.combine(eexps, angelicValue, maxCombinerTime, nopolContext);
                 if (result.size() > 0) {
-                    if (config.isOnlyOneSynthesisResult()) {
+                    if (nopolContext.isOnlyOneSynthesisResult()) {
                         printSummary(result);
                         return result;
                     }

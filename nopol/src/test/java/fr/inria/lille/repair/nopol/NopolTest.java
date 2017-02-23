@@ -1,7 +1,6 @@
 package fr.inria.lille.repair.nopol;
 
 import fr.inria.lille.repair.TestUtility;
-import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import org.junit.Ignore;

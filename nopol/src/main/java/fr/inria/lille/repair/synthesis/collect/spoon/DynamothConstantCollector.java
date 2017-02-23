@@ -1,7 +1,7 @@
 package fr.inria.lille.repair.synthesis.collect.spoon;
 
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.expression.access.Literal;
 import fr.inria.lille.repair.expression.factory.AccessFactory;
@@ -17,10 +17,10 @@ public class DynamothConstantCollector extends AbstractProcessor<CtLiteral> {
 
     private final Candidates candidates;
     private final String buggyMethod;
-    private final Config config;
+    private final NopolContext nopolContext;
 
-    public DynamothConstantCollector(Candidates candidates, String buggyMethod, Config config) {
-        this.config = config;
+    public DynamothConstantCollector(Candidates candidates, String buggyMethod, NopolContext nopolContext) {
+        this.nopolContext = nopolContext;
         this.candidates = candidates;
         this.buggyMethod = buggyMethod;
     }
@@ -40,7 +40,7 @@ public class DynamothConstantCollector extends AbstractProcessor<CtLiteral> {
 
     @Override
     public void process(CtLiteral ctLiteral) {
-        Literal constant = AccessFactory.literal(ctLiteral.getValue(), config);
+        Literal constant = AccessFactory.literal(ctLiteral.getValue(), nopolContext);
         if (candidates.add(constant)) {
             logger.debug("[data] " + constant);
         }

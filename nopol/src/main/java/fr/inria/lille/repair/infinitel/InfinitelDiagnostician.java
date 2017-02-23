@@ -1,6 +1,6 @@
 package fr.inria.lille.repair.infinitel;
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.infinitel.loop.While;
 import fr.inria.lille.repair.infinitel.loop.examination.LoopTestResult;
 import fr.inria.lille.repair.infinitel.loop.implant.MonitoringTestExecutor;
@@ -46,12 +46,12 @@ public class InfinitelDiagnostician extends Infinitel {
     public static void main(String[] args) {
         File sourceFile = FileLibrary.openFrom(args[0]);
         URL[] classpath = JavaLibrary.classpathFrom(args[1]);
-        new InfinitelDiagnostician(new Config(new File[]{sourceFile}, classpath, null)).diagnose();
+        new InfinitelDiagnostician(new NopolContext(new File[]{sourceFile}, classpath, null)).diagnose();
         System.out.println("Diagnostics ended");
     }
 
-    public InfinitelDiagnostician(Config config) {
-        super(config);
+    public InfinitelDiagnostician(NopolContext nopolContext) {
+        super(nopolContext);
     }
 
     @Override

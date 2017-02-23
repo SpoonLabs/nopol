@@ -1,6 +1,6 @@
 package fr.inria.lille.commons.spoon;
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtType;
 import xxl.java.container.classic.MetaList;
@@ -13,8 +13,8 @@ import static java.util.Arrays.asList;
 
 public class SpoonedProject extends SpoonedFile {
 
-    public SpoonedProject(File[] sourceFiles, Config config) {
-        super(sourceFiles, config);
+    public SpoonedProject(File[] sourceFiles, NopolContext nopolContext) {
+        super(sourceFiles, nopolContext);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class SpoonedProject extends SpoonedFile {
         if (modelledClass == null) {
             return null;
         }
-        return new SpoonedClass(this, modelledClass, config);
+        return new SpoonedClass(this, modelledClass, nopolContext);
     }
 
     public ClassLoader processedAndDumpedToClassLoader(Collection<String> qualifiedNames, Processor<?> processor) {

@@ -1,6 +1,5 @@
 package xxl.java.compiler;
 
-import fr.inria.lille.repair.common.config.Config;
 import org.slf4j.Logger;
 import xxl.java.container.classic.MetaList;
 import xxl.java.container.classic.MetaMap;

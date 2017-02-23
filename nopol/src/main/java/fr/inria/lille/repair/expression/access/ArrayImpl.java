@@ -1,7 +1,7 @@
 package fr.inria.lille.repair.expression.access;
 
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.expression.Expression;
 import fr.inria.lille.repair.expression.ExpressionImpl;
 import fr.inria.lille.repair.expression.value.Value;
@@ -11,8 +11,8 @@ public class ArrayImpl extends ExpressionImpl implements Array {
     private Expression target;
     private Expression index;
 
-    public ArrayImpl(Expression target, Expression index, Value value, Config config) {
-        super(value, config);
+    public ArrayImpl(Expression target, Expression index, Value value, NopolContext nopolContext) {
+        super(value, nopolContext);
         this.target = target;
         this.index = index;
     }
@@ -39,7 +39,7 @@ public class ArrayImpl extends ExpressionImpl implements Array {
 
     @Override
     public double getWeight() {
-        return config.getVariableWeight() * getPriority();
+        return nopolContext.getVariableWeight() * getPriority();
     }
 
     @Override

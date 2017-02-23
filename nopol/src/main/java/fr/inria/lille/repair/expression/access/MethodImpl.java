@@ -1,7 +1,7 @@
 package fr.inria.lille.repair.expression.access;
 
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.expression.Expression;
 import fr.inria.lille.repair.expression.ExpressionImpl;
 import fr.inria.lille.repair.expression.value.Value;
@@ -16,8 +16,8 @@ public class MethodImpl extends ExpressionImpl implements Method {
     private final List<Expression> parameters;
     private String strExpression = null;
 
-    public MethodImpl(String method, List<String> argumentTypes, String declaringType, Expression target, List<Expression> parameters, Value value, Config config) {
-        super(value, config);
+    public MethodImpl(String method, List<String> argumentTypes, String declaringType, Expression target, List<Expression> parameters, Value value, NopolContext nopolContext) {
+        super(value, nopolContext);
         this.method = method;
         this.argumentTypes = argumentTypes;
         this.target = target;
@@ -39,7 +39,7 @@ public class MethodImpl extends ExpressionImpl implements Method {
 
     @Override
     public double getWeight() {
-        return config.getMethodCallWeight() * getPriority() * getTarget().getWeight() / (getParameters().size() == 0 ? 1 : getParameters().size());
+        return nopolContext.getMethodCallWeight() * getPriority() * getTarget().getWeight() / (getParameters().size() == 0 ? 1 : getParameters().size());
     }
 
     @Override
