@@ -82,7 +82,7 @@ public class Ranking {
 	@Deprecated
 	public Collection<Statement> getSuspisiousStatements() {
 		// get suspicious statement of the current project
-//        return gZoltar.sortBySuspiciousness(getTestClasses);
+//        return gZoltar.sortBySuspiciousness(testClasses);
 		return Collections.EMPTY_LIST;
 	}
 

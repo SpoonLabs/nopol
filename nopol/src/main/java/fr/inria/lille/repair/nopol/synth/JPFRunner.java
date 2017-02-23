@@ -135,7 +135,7 @@ public final class JPFRunner<T> implements AngelicValue<T> {
 	private SpecificationTestCasesListener<T> run(final URL[] classpath, final Collection<TestCase> failures, ClassLoader unitTestClassLoader) {
 		final SpecificationTestCasesListener<T> listener = new SpecificationTestCasesListener<>(runtimeValues);
 
-		// create the getClasspath for JPF
+		// create the classpath for JPF
 		String stringClassPath = createClassPath(classpath);
 
 		String mainClass = "nopol.repair.NopolTestRunner";

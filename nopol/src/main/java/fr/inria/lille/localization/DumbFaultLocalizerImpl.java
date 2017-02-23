@@ -33,7 +33,7 @@ public class DumbFaultLocalizerImpl implements FaultLocalizer {
 	}
 
 	/**
-	 * run all getTestClasses to build the covered code
+	 * run all testClasses to build the covered code
 	 *
 	 * @param config
 	 * @param spooner

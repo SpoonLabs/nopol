@@ -69,7 +69,7 @@ public class Main {
         options.addOption("destSrcTestFolder", true, "java files where new tests will be added after validation. (ex: project/src/test) default: srcTestFolder");
         options.addOption("destCpTestFolder", true, "java files where new tests will be compiled after validation. (ex: project/target/test-classes) default: cpTestFolder");
         options.addOption("dependencies", true, "all other class or jar required for the news tests. cpClassFolde & cpTestFolder are not necessary. (ex: junit, hamcrest, evosuite)");
-        options.addOption("getTestClasses", true, "test classes used to generate patch (default : null = all classes)");
+        options.addOption("testClasses", true, "test classes used to generate patch (default : null = all classes)");
         options.addOption("patchSaveFolder",true,"location used to save the generated patches if any");
 
         options.addOption("solverPath", true, "path for the solver");
@@ -114,8 +114,8 @@ public class Main {
             dependencies = cmd.getOptionValue("dependencies");
         }
 
-        if (cmd.getOptionValue("getTestClasses") != null) {
-            testClasses = cmd.getOptionValue("getTestClasses");
+        if (cmd.getOptionValue("testClasses") != null) {
+            testClasses = cmd.getOptionValue("testClasses");
         }
         
         if (cmd.getOptionValue("patchSaveFolder") != null) {
@@ -242,8 +242,8 @@ public class Main {
 
         logger.debug("Launch nopol with:");
         logger.debug("sources = "+sources);
-        logger.debug("getClasspath = "+cp);
-        logger.debug("getTestClasses = "+testClasses);
+        logger.debug("classpath = "+cp);
+        logger.debug("testClasses = "+testClasses);
 
         Config config = new Config(sourceFiles, classPath, testClasses);
         config.setMaxTimeInMinutes(maxTime);
@@ -282,7 +282,7 @@ public class Main {
         String className = null;
         String[] testClasses = firstTestClasses;
 
-        //build getClasspath
+        //build classpath
         final String classPath = cpClassFolder+File.pathSeparatorChar+dependencies;
         
         SolverFactory.setSolver(solver, solverPath);

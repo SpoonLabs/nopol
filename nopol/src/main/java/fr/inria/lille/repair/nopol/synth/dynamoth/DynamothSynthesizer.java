@@ -64,7 +64,7 @@ public class DynamothSynthesizer<T> implements Synthesizer {
     @Override
     public List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
         long startTime = System.currentTimeMillis();
-        /*Collection<Specification<T>> collection = angelicValue.collectSpecifications(getClasspath, getTestClasses, failures);
+        /*Collection<Specification<T>> collection = angelicValue.collectSpecifications(classpath, testClasses, failures);
 
         for (Iterator<Specification<T>> iterator = collection.iterator(); iterator.hasNext(); ) {
             Specification<T> next = iterator.next();

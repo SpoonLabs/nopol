@@ -70,7 +70,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
      * @param spoon the spoon instance of the project
      * @param projectRoots the root folders of the project
      * @param location the location of the code to synthesizer
-     * @param classpath the getClasspath of the project
+     * @param classpath the classpath of the project
      * @param oracle the oracle of the project Map<testClass#testMethod, {value iteration 1, value iteration 2, ...}>
      * @param tests tests to execute
      */
@@ -83,7 +83,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
 	 * Create a new DynaMoth synthesizer
      * @param projectRoots the root folders of the project
      * @param location the location of the code to synthesiz
-     * @param classpath the getClasspath of the project
+     * @param classpath the classpath of the project
      * @param oracle the oracle of the project Map<testClass#testMethod, {value iteration 1, value iteration 2, ...}>
      * @param tests tests to execute
      */

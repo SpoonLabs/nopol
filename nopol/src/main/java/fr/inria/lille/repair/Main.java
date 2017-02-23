@@ -62,13 +62,13 @@ public class Main {
 
 			final Config config = main.getConfig();
 
-			//For using Dynamoth, you must add tools.jar in the getClasspath
+			//For using Dynamoth, you must add tools.jar in the classpath
 			if (config.getSynthesis() == Config.NopolSynthesis.DYNAMOTH) {
 				URLClassLoader loader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 				try {
 					loader.loadClass("com.sun.jdi.Value");
 				} catch (ClassNotFoundException e) {
-					System.err.println("For using Dynamoth, you must add tools.jar in your getClasspath from your installed jdk");
+					System.err.println("For using Dynamoth, you must add tools.jar in your classpath from your installed jdk");
 					System.exit(-1);
 				}
 			}
@@ -138,7 +138,7 @@ public class Main {
 			sourceFiles[i] = sourceFile;
 		}
 
-		final URL[] classpath = JavaLibrary.classpathFrom(jsapConfig.getString("getClasspath"));
+		final URL[] classpath = JavaLibrary.classpathFrom(jsapConfig.getString("classpath"));
 
 		Config config = new Config(sourceFiles, classpath, jsapConfig.getStringArray("test"));
 
@@ -295,13 +295,13 @@ public class Main {
 		sourceOpt.setHelp("Define the path to the source code of the project.");
 		jsap.registerParameter(sourceOpt);
 
-		FlaggedOption classpathOpt = new FlaggedOption("getClasspath");
+		FlaggedOption classpathOpt = new FlaggedOption("classpath");
 		classpathOpt.setRequired(true);
 		classpathOpt.setAllowMultipleDeclarations(false);
-		classpathOpt.setLongFlag("getClasspath");
+		classpathOpt.setLongFlag("classpath");
 		classpathOpt.setShortFlag('c');
 		classpathOpt.setStringParser(JSAP.STRING_PARSER);
-		classpathOpt.setHelp("Define the getClasspath of the project.");
+		classpathOpt.setHelp("Define the classpath of the project.");
 		jsap.registerParameter(classpathOpt);
 
 		FlaggedOption testOpt = new FlaggedOption("test");

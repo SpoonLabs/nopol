@@ -103,7 +103,7 @@ public class JavaLibrary {
                     ClassLibrary.invokeTrespassing(addURL, classLoader, classpath);
                 }
             } catch (Exception e) {
-                throw new RuntimeException("Failed to extend getClasspath on class loader with " + classpaths);
+                throw new RuntimeException("Failed to extend classpath on class loader with " + classpaths);
             }
         }
     }

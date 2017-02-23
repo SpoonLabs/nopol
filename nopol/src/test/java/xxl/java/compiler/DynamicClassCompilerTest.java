@@ -486,13 +486,13 @@ public class DynamicClassCompilerTest {
 		/**Class cannot be loaded because the system ClassLoader cannot find it*/
 		checkException(true, systemClassLoader, qualifiedName);
 		
-		/** Setting the getClasspath is not the solution */
+		/** Setting the classpath is not the solution */
 		String originalClasspath = JavaLibrary.systemClasspath();
 		JavaLibrary.extendSystemClasspathWith(newClasspath);
 		checkException(true, systemClassLoader, qualifiedName);
 		JavaLibrary.setClasspath(originalClasspath);
 		
-		/** Changing the getClasspath of the system ClassLoader is the solution */
+		/** Changing the classpath of the system ClassLoader is the solution */
 		JavaLibrary.extendSystemClassLoaderClasspathWith(newClasspath);
 		Class<?> loaded = checkException(false, systemClassLoader, qualifiedName);
 		jarFile.delete();

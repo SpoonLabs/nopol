@@ -106,7 +106,7 @@ public class JPFUtil {
         conf.setProperty("search.heuristic.branch.no_branch_return", "-1");
 
         conf.setProperty("sourcepath", sourcePath);
-        conf.setProperty("getClasspath", classpath);
+        conf.setProperty("classpath", classpath);
         conf.setProperty("target", qualifiedNameClass);
 
         return conf;
