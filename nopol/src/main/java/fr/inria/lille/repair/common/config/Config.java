@@ -96,7 +96,9 @@ public class Config implements Serializable {
 
 	private int complianceLevel;
 
-	public Config() {}
+	public Config() {
+		this.initFromFile();
+	}
 
 	public Config(String sourceFile, URL[] classpath, String[] testClasses) {
 		this(new File[] { FileLibrary.openFrom(sourceFile) }, classpath, testClasses);
@@ -462,6 +464,21 @@ public class Config implements Serializable {
 		return json;
 	}
 
+	public void setProjectSourcePath(String projectSourcePath) {
+		this.setProjectSourcePath(new File[] { FileLibrary.openFrom(projectSourcePath) });
+	}
+
+	public void setProjectSourcePath(File[] projectSourcePath) {
+		this.projectSourcePath = projectSourcePath;
+	}
+
+	public void setProjectClasspath(URL[] projectClasspath) {
+		this.projectClasspath = projectClasspath;
+	}
+
+	public void setProjectTests(String[] projectTests) {
+		this.projectTests = projectTests;
+	}
 
 	@Override
 	public String toString() {

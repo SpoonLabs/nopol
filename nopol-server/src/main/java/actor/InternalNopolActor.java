@@ -3,12 +3,12 @@ package actor;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import com.google.common.io.Files;
-import fr.inria.lille.repair.ProjectReference;
 import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.NoFailingTestCaseException;
 import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.repair.nopol.NoSuspiciousStatementException;
+import xxl.java.library.JavaLibrary;
 
 import java.io.File;
 import java.util.Collections;
@@ -37,15 +37,17 @@ public class InternalNopolActor extends UntypedActor {
 			}
 
 			String sourceFile = tempDirectory.toString() + "/src/";
-			String classPath = getClasspathFromTargetFolder(new File(tempDirectory.getCanonicalPath() + "/target"));
+			String classPath = getClasspathFromTargetFolder(new File(tempDirectory.getCanonicalPath() + "/target/"));
 
 			System.out.println(tempDirectory);
 
 			List<Patch> patches = Collections.EMPTY_LIST;
-			ProjectReference projectReference = new ProjectReference(sourceFile, classPath, config.getProjectTests());
-			config.setProjectSourcePath(new String[]{sourceFile});
+			config.setProjectSourcePath(sourceFile);
+			config.setProjectClasspath(JavaLibrary.classpathFrom(classPath));
+			config.setComplianceLevel(8);
+
 			try {
-				NoPol noPol = new NoPol(projectReference, config);
+				NoPol noPol = new NoPol(config);
 				patches = noPol.build();
 			} catch (NoSuspiciousStatementException | NoFailingTestCaseException noFix) {
 				client.tell(noFix, ActorRef.noSender());
