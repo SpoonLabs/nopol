@@ -25,7 +25,18 @@ then
 else
     echo "Running nopol server"
     cd nopol-server
-    mvn clean package
+    mvn clean install
+    if [[ $? != 0 ]]
+    then
+        exit 1
+    fi
+
+    cd ..
+
+    echo "Running nopol-ui-intellij"
+    cd nopol-ui-intellij
+
+    ./gradlew buildPlugin
     if [[ $? != 0 ]]
     then
         exit 1
