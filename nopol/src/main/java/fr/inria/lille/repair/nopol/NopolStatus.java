@@ -1,7 +1,6 @@
 package fr.inria.lille.repair.nopol;
 
-import fr.inria.lille.repair.ProjectReference;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 
 import java.util.ArrayList;
@@ -13,25 +12,19 @@ import java.util.List;
 public class NopolStatus {
 
     private List<Patch> patches;
-    private ProjectReference projectReference;
-    private Config config;
+    private NopolContext nopolContext;
     private long durationInMilliseconds;
     private int nbStatements;
     private int nbAngelicValues;
     private int nbTests;
 
-    public NopolStatus(ProjectReference projectReference, Config config) {
-        this.projectReference = projectReference;
-        this.config = config;
+    public NopolStatus(NopolContext nopolContext) {
+        this.nopolContext = nopolContext;
         this.patches = new ArrayList<Patch>();
     }
 
-    public ProjectReference getProjectReference() {
-        return projectReference;
-    }
-
-    public Config getConfig() {
-        return config;
+    public NopolContext getNopolContext() {
+        return nopolContext;
     }
 
     public List<Patch> getPatches() {

@@ -1,8 +1,7 @@
 package fr.inria.lille.evo;
 
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
-import fr.inria.lille.repair.ProjectReference;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.NoPol;
@@ -140,8 +139,10 @@ public class Main {
             System.exit(0);
         }
 
+
         String[] testsClassesArray = (testClasses == null) ? null : testClasses.split(File.pathSeparator);
-        tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, true, testsClassesArray, whetherSavePatch, patchSaveFolder, new Config());
+
+        tryAllTests(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, newTestFolder, dependencies, true, testsClassesArray, whetherSavePatch, patchSaveFolder);
 
     }
 
@@ -222,7 +223,7 @@ public class Main {
      */
     public static List<Patch> NopolPatchGeneration(String cpClassFolder,String  cpTestFolder, 
             String srcClassFolder, String srcTestFolder, String destSrcTestFolder, 
-            String destCpTestFolder, String dependencies, String[] testClasses, Config config) {
+            String destCpTestFolder, String dependencies, String[] testClasses) {
 
         //sources contain main java and test java.
         String sources = srcClassFolder+File.pathSeparatorChar+srcTestFolder+File.pathSeparatorChar+destSrcTestFolder;
@@ -236,7 +237,7 @@ public class Main {
         }
 
 
-        //create classpath
+        //create getClasspath
         //URL[] classPath = FileUtils.getURLs(sources.split(File.pathSeparator));
         URL[] classPath = JavaLibrary.classpathFrom(cp);
 
@@ -245,15 +246,13 @@ public class Main {
         logger.debug("classpath = "+cp);
         logger.debug("testClasses = "+testClasses);
 
+        NopolContext nopolContext = new NopolContext(sourceFiles, classPath, testClasses);
+        nopolContext.setMaxTimeInMinutes(maxTime);
+        nopolContext.setType(nopolType);
 
-        config.setMaxTimeInMinutes(maxTime);
-        config.setType(nopolType);
-        config.setProjectSourcePath(new String[] {srcClassFolder, srcTestFolder, destSrcTestFolder});
-
-        ProjectReference projectReference = new ProjectReference(sourceFiles, classPath, testClasses);
-        NoPol nopol = new NoPol(projectReference, config);
+        NoPol nopol = new NoPol(nopolContext);
         NopolStatus status = nopol.build();
-        
+
         return status.getPatches();
     }
 
@@ -273,7 +272,7 @@ public class Main {
      */
     public static void tryAllTests(String cpClassFolder, String cpTestFolder, 
             String srcClassFolder, String srcTestFolder, String destSrcTestFolder, 
-            String destCpTestFolder, final String newTestFolder, String dependencies, boolean generateTest, String[] firstTestClasses, boolean whetherSavePatch, String patchSaveFolder, Config config){
+            String destCpTestFolder, final String newTestFolder, String dependencies, boolean generateTest, String[] firstTestClasses, boolean whetherSavePatch, String patchSaveFolder){
 
         //create dest folders if not exist
         new File(destSrcTestFolder).mkdirs();
@@ -291,7 +290,7 @@ public class Main {
         logger.debug("--------------------------------------------------");
         logger.debug(" ##### launch nopol without new tests ##### ");
 
-        currentPatches = NopolPatchGeneration(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, dependencies, testClasses, config);
+        currentPatches = NopolPatchGeneration(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, dependencies, testClasses);
         patches.put("basic", currentPatches);
         if(currentPatches.isEmpty()){
             logger.debug("### ----- NO PATCH FOUND -----");
@@ -341,7 +340,7 @@ public class Main {
 
 
             logger.debug("### Launch Nopol");
-            currentPatches = NopolPatchGeneration(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, dependencies, testClasses, config);
+            currentPatches = NopolPatchGeneration(cpClassFolder, cpTestFolder, srcClassFolder, srcTestFolder, destSrcTestFolder, destCpTestFolder, dependencies, testClasses);
             if(!currentPatches.isEmpty()){
                 logger.debug("### ----- PATCH FOUND -----");
                 for (Patch patch : currentPatches) {

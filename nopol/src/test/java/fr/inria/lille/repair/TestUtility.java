@@ -2,7 +2,7 @@ package fr.inria.lille.repair;
 
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.commons.synthesis.smt.solver.Z3SolverFactory;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.NoPol;
@@ -12,9 +12,9 @@ import xxl.java.junit.TestCase;
 import xxl.java.junit.TestCasesListener;
 import xxl.java.junit.TestSuiteExecution;
 import xxl.java.library.FileLibrary;
+import xxl.java.library.JavaLibrary;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.List;
@@ -41,54 +41,46 @@ public class TestUtility {
 		}
 	}
 
-	public static ProjectReference projectForExample(String executionType, int nopolExampleNumber) {
+	public static NopolContext configForExample(String executionType, int nopolExampleNumber) {
 		String sourceFile = "../test-projects/src/";
 		String classpath = "../test-projects/target/test-classes" + File.pathSeparatorChar + "../test-projects/target/classes" + File.pathSeparatorChar + "lib/junit-4.11.jar";
 		String[] testClasses = new String[]{executionType + "_examples." + executionType + "_example_"
 				+ nopolExampleNumber + ".NopolExampleTest"};
-		return new ProjectReference(sourceFile, classpath, testClasses);
+		return new NopolContext(sourceFile, JavaLibrary.classpathFrom(classpath), testClasses);
 	}
 
-	public static List<Patch> patchFor(String executionType, ProjectReference project, Config config) {
-		config.setLocalizer(Config.NopolLocalizer.GZOLTAR);
-		String[] sourceFiles = new String[project.sourceFiles().length];
-		for (int i = 0; i < project.sourceFiles().length; i++) {
-			File file = project.sourceFiles()[i];
-			clean(file.getParent());
-			try {
-				sourceFiles[i] = file.getCanonicalPath();
-			} catch (IOException ignore) {
-			}
-		}
-		config.setProjectSourcePath(sourceFiles);
+	public static List<Patch> patchFor(String executionType, NopolContext nopolContext) {
+		nopolContext.setLocalizer(NopolContext.NopolLocalizer.GZOLTAR);
+
 		List<Patch> patches;
 		switch (executionType) {
 			case "symbolic":
-				config.setOracle(Config.NopolOracle.SYMBOLIC);
+				nopolContext.setOracle(NopolContext.NopolOracle.SYMBOLIC);
 				break;
 			case "nopol":
-				config.setOracle(Config.NopolOracle.ANGELIC);
+				nopolContext.setOracle(NopolContext.NopolOracle.ANGELIC);
 				break;
 			default:
 				throw new RuntimeException("Execution type not found");
 		}
 
-		NoPol nopol = new NoPol(project, config);
-		NopolStatus status = nopol.build(project.testClasses());
+		NoPol nopol = new NoPol(nopolContext);
+		NopolStatus status = nopol.build();
 
-		for (int i = 0; i < project.sourceFiles().length; i++) {
-			File file = project.sourceFiles()[i];
+		for (int i = 0; i < nopolContext.getProjectSources().length; i++) {
+			File file = nopolContext.getProjectSources()[i];
 			clean(file.getParent());
 		}
 		return status.getPatches();
 	}
 
-	public static List<Patch> setupAndRun(String executionType, int projectNumber, Config config, TestCasesListener listener) {
-		ProjectReference project = projectForExample(executionType, projectNumber);
+	public static List<Patch> setupAndRun(String executionType, int projectNumber, TestCasesListener listener, StatementType type) {
+		NopolContext nopolContext = configForExample(executionType, projectNumber);
+		nopolContext.setType(type);
 		SolverFactory.setSolver(SOLVER, solverPath);
-		URLClassLoader classLoader = new URLClassLoader(project.classpath());
-		TestSuiteExecution.runCasesIn(project.testClasses(), classLoader, listener, config);
-		return patchFor(executionType, project, config);
+		URLClassLoader classLoader = new URLClassLoader(nopolContext.getProjectClasspath());
+		TestSuiteExecution.runCasesIn(nopolContext.getProjectTests(), classLoader, listener, nopolContext);
+		return patchFor(executionType, nopolContext);
 	}
 
 	public static void assertPatches(int linePosition, Collection<String> expectedFailedTests, StatementType expectedType, TestCasesListener listener, List<Patch> patches) {

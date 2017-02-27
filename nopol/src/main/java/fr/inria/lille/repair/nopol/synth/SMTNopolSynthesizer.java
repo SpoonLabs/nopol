@@ -20,7 +20,7 @@ import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.localization.TestResult;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.patch.StringPatch;
 import fr.inria.lille.repair.common.synth.StatementType;
@@ -46,11 +46,11 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 	private static int nbVariables;
 	private final SpoonedProject spoonedProject;
 	private NopolProcessor conditionalProcessor;
-	private Config config;//TODO remove this unused field
+	private NopolContext nopolContext;//TODO remove this unused field
 
-	public SMTNopolSynthesizer(SpoonedProject spoonedProject, AngelicValue angelicValue, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, Config config) {
+	public SMTNopolSynthesizer(SpoonedProject spoonedProject, AngelicValue angelicValue, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, NopolContext nopolContext) {
 		this.angelicValue = angelicValue;
-		this.config = config;
+		this.nopolContext = nopolContext;
 		this.sourceLocation = sourceLocation;
 		this.type = type;
 		this.spoonedProject = spoonedProject;

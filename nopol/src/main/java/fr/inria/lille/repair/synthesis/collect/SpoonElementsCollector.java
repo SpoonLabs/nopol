@@ -1,7 +1,7 @@
 package fr.inria.lille.repair.synthesis.collect;
 
 import com.sun.jdi.*;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.expression.Expression;
 import fr.inria.lille.repair.expression.factory.AccessFactory;
@@ -25,11 +25,11 @@ public class SpoonElementsCollector {
 
     private final Set<CtTypedElement> elements;
 
-    private final Config config;
+    private final NopolContext nopolContext;
 
-    public SpoonElementsCollector(Set<CtTypedElement> elements, Config config) {
+    public SpoonElementsCollector(Set<CtTypedElement> elements, NopolContext nopolContext) {
         this.elements = elements;
-        this.config = config;
+        this.nopolContext = nopolContext;
     }
 
     public Candidates collect(ThreadReference threadRef) {
@@ -48,7 +48,7 @@ public class SpoonElementsCollector {
                     } else {
                         continue;
                     }
-                    Expression expression = AccessFactory.literal(value, config);
+                    Expression expression = AccessFactory.literal(value, nopolContext);
                     logger.debug("[data] " + expression + "=" + expression.getValue());
                     candidates.add(expression);
                 } else if (ctElement instanceof CtVariableAccess) {
@@ -58,7 +58,7 @@ public class SpoonElementsCollector {
                         continue;
                     }
                     Value value = stackFrame.getValue(localVariable);
-                    Expression expression = AccessFactory.variable(localVariable.name(), value, config);
+                    Expression expression = AccessFactory.variable(localVariable.name(), value, nopolContext);
                     logger.debug("[data] " + expression + "=" + expression.getValue());
                     candidates.add(expression);
                 }

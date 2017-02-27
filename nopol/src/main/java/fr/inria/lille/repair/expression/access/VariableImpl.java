@@ -1,7 +1,7 @@
 package fr.inria.lille.repair.expression.access;
 
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.expression.Expression;
 import fr.inria.lille.repair.expression.ExpressionImpl;
 import fr.inria.lille.repair.expression.value.Value;
@@ -17,8 +17,8 @@ public class VariableImpl extends ExpressionImpl implements Variable {
     /**
      *
      */
-    public VariableImpl(String variableName, Expression target, Value value, Config config) {
-        super(value, config);
+    public VariableImpl(String variableName, Expression target, Value value, NopolContext nopolContext) {
+        super(value, nopolContext);
         this.variableName = variableName;
         this.target = target;
     }
@@ -36,9 +36,9 @@ public class VariableImpl extends ExpressionImpl implements Variable {
     @Override
     public double getWeight() {
         if (getValue().isConstant()) {
-            return config.getConstantWeight() * getPriority();
+            return nopolContext.getConstantWeight() * getPriority();
         }
-        return config.getVariableWeight() * getPriority();
+        return nopolContext.getVariableWeight() * getPriority();
     }
 
     @Override

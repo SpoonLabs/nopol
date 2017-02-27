@@ -5,6 +5,7 @@ import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.repair.Main;
 import fr.inria.lille.repair.ProjectReference;
+import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.infinitel.loop.While;
 import fr.inria.lille.repair.infinitel.loop.examination.LoopTestResult;
 import fr.inria.lille.repair.infinitel.loop.implant.MonitoringTestExecutor;
@@ -256,7 +257,7 @@ public class InfinitelTest {
 		String classPath = "../test-projects/target/classes/:../test-projects/target/test-classes/";
 		String testClass = format("infinitel_examples.infinitel_example_%d.InfinitelExampleTest", exampleNumber);
 		ProjectReference project = new ProjectReference(sourcePath, classPath, new String[] { testClass });
-		return new Infinitel(project);
+		return new Infinitel(project, new Config());
 	}
 	
 	private InfiniteLoopFixer infiniteLoopFixerForExample(int exampleNumber) {

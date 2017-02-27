@@ -1,6 +1,6 @@
 package fr.inria.lille.repair.expression;
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.expression.access.Array;
 import fr.inria.lille.repair.expression.combination.binary.BinaryExpression;
 import fr.inria.lille.repair.expression.combination.binary.BinaryOperator;
@@ -16,8 +16,8 @@ public class ExpressionTest {
 
     @Test
     public void primitiveBinaryFactoryTest() {
-        Config config = new Config();
-        BinaryExpression binaryExpression = CombinationFactory.create(BinaryOperator.ADD, AccessFactory.variable("a", 3.1, config), AccessFactory.literal(1, config), config);
+        NopolContext nopolContext = new NopolContext();
+        BinaryExpression binaryExpression = CombinationFactory.create(BinaryOperator.ADD, AccessFactory.variable("a", 3.1, nopolContext), AccessFactory.literal(1, nopolContext), nopolContext);
         Object realValue = binaryExpression.getValue().getRealValue();
         assertEquals("a + 1", binaryExpression.toString());
         assertEquals(4.1, realValue);
@@ -25,9 +25,9 @@ public class ExpressionTest {
 
     @Test
     public void arrayFactoryTest() {
-        Config config = new Config();
+        NopolContext nopolContext = new NopolContext();
         Value value = ValueFactory.create(new int[]{1, 2, 3});
-        Array test = AccessFactory.array(AccessFactory.variable("test", value, config), AccessFactory.literal(0, config), config);
+        Array test = AccessFactory.array(AccessFactory.variable("test", value, nopolContext), AccessFactory.literal(0, nopolContext), nopolContext);
         assertEquals("test[0]", test.toString());
         assertEquals(1, test.getValue().getRealValue());
     }

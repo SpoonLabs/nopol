@@ -1,6 +1,6 @@
 package fr.inria.lille.localization;
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import org.junit.Test;
 
@@ -28,7 +28,7 @@ public class OchiailocalizerTest {
                 new File("../test-projects/target/test-classes").toURI().toURL()
         };
         String[] testClasses = new String[]{"nopol_examples.nopol_example_1.NopolExampleTest"};
-        OchiaiFaultLocalizer localizer = new OchiaiFaultLocalizer(sources, classpath, testClasses, new Config());
+        OchiaiFaultLocalizer localizer = new OchiaiFaultLocalizer(new NopolContext(sources, classpath, testClasses));
         Map<SourceLocation, List<TestResult>> executedSourceLocationPerTest = localizer.getTestListPerStatement();
         assertEquals(8, executedSourceLocationPerTest.keySet().size());
 

@@ -22,7 +22,7 @@ import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.commons.trace.Specification;
 import fr.inria.lille.commons.trace.SpecificationTestCasesListener;
 import fr.inria.lille.localization.TestResult;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.nopol.jpf.JPFUtil;
 import fr.inria.lille.repair.nopol.spoon.LoggingInstrumenter;
@@ -64,12 +64,12 @@ public final class JPFRunner<T> implements AngelicValue<T> {
 	private final File outputCompiledFile = new File("target-gen");
 	private final SpoonedProject cleanSpoon;
 	private boolean find = false;
-	private Config config;
+	private NopolContext nopolContext;
 
 	public JPFRunner(RuntimeValues<T> runtimeValues,
 					 SourceLocation sourceLocation, NopolProcessor processor,
-					 SpoonedFile spooner, final SpoonedProject cleanSpoon, Config config) {
-		this.config = config;
+					 SpoonedFile spooner, final SpoonedProject cleanSpoon, NopolContext nopolContext) {
+		this.nopolContext = nopolContext;
 		this.sourceLocation = sourceLocation;
 		this.runtimeValues = runtimeValues;
 		this.spoon = spooner;
@@ -86,7 +86,7 @@ public final class JPFRunner<T> implements AngelicValue<T> {
 
 		if (this.find) {
 			logging.disable();
-			TestSuiteExecution.runTestResult(testClasses, unitTestClassLoader, listener, config);
+			TestSuiteExecution.runTestResult(testClasses, unitTestClassLoader, listener, nopolContext);
 		}
 		return listener.specifications();
 	}
@@ -101,7 +101,7 @@ public final class JPFRunner<T> implements AngelicValue<T> {
 
 		if (this.find) {
 			logging.disable();
-			TestSuiteExecution.runCasesIn(testClasses, unitTestClassLoader, listener, config);
+			TestSuiteExecution.runCasesIn(testClasses, unitTestClassLoader, listener, nopolContext);
 		}
 		return listener.specifications();
 	}
@@ -189,7 +189,7 @@ public final class JPFRunner<T> implements AngelicValue<T> {
 			boolean passed = executeTestAndCollectRuntimeValues(result, testCase, unitTestClassLoader, listener);
 			if (passed) {
 				this.find = true;
-				TestSuiteExecution.runTestCases(failures, unitTestClassLoader, listener, config);
+				TestSuiteExecution.runTestCases(failures, unitTestClassLoader, listener, nopolContext);
 				if (!passedTest.contains(testCase)) {
 					passedTest.add(testCase);
 				}
@@ -208,7 +208,7 @@ public final class JPFRunner<T> implements AngelicValue<T> {
 
 		LoggingInstrumenter.setValue(result);
 		Result testResult = TestSuiteExecution.runTestCase(currentTest,
-				unitTestClassLoader, listener, config);
+				unitTestClassLoader, listener, nopolContext);
 		if (testResult.getFailureCount() == 0) {
 			return true;
 		}

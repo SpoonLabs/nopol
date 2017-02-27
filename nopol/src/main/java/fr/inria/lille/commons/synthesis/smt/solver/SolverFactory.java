@@ -1,6 +1,6 @@
 package fr.inria.lille.commons.synthesis.smt.solver;
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import org.smtlib.IExpr.ISymbol;
 import org.smtlib.ISolver;
 import org.smtlib.SMT;
@@ -33,7 +33,7 @@ public abstract class SolverFactory {
         }
     }
 
-    public static void setSolver(Config.NopolSolver solver, String pathToSolver) {
+    public static void setSolver(NopolContext.NopolSolver solver, String pathToSolver) {
         switch (solver) {
             case Z3:
                 solverFactory = new Z3SolverFactory(pathToSolver);

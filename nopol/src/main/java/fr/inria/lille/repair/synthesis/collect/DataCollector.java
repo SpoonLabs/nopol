@@ -2,7 +2,7 @@ package fr.inria.lille.repair.synthesis.collect;
 
 import com.sun.jdi.*;
 import com.sun.jdi.request.BreakpointRequest;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.expression.Expression;
@@ -37,7 +37,7 @@ public class DataCollector {
     private final StatCollector statCollector;
     private final Map<String, String> variableType;
     private final Set<String> calledMethods;
-    private final Config config;
+    private final NopolContext nopolContext;
     private long executionTime;
     private long startTime;
     private long maxTime;
@@ -51,9 +51,9 @@ public class DataCollector {
                          StatCollector statCollector,
                          Map<String, String> variableType,
                          Set<String> calledMethods,
-                         Config config) {
+                         NopolContext nopolContext) {
         this.threadRef = threadRef;
-        this.config = config;
+        this.nopolContext = nopolContext;
 
         this.constants = constants;
         this.importedClasses = classes;
@@ -78,18 +78,18 @@ public class DataCollector {
             logger.debug("Collect Level 1");
             // collect this
             if (stackFrame.thisObject() != null) {
-                Variable variableThis = AccessFactory.variable("this", stackFrame.thisObject(), config);
+                Variable variableThis = AccessFactory.variable("this", stackFrame.thisObject(), nopolContext);
                 candidates.add(variableThis);
                 logger.debug("[data] " + variableThis + "=" + variableThis.getValue());
             }
             executionTime = System.currentTimeMillis() - startTime;
             // collect static fields
-            if (this.config.isCollectStaticFields()) {
+            if (this.nopolContext.isCollectStaticFields()) {
                 List<Field> fields = stackFrame.location().declaringType().visibleFields();
                 for (Field field : fields) {
                     Value value = stackFrame.location().declaringType().getValue(field);
-                    Variable complexConstant = AccessFactory.variable(stackFrame.location().declaringType().name(), stackFrame.location().declaringType(), config);
-                    Variable expression = AccessFactory.variable(complexConstant, field.name(), value, config);
+                    Variable complexConstant = AccessFactory.variable(stackFrame.location().declaringType().name(), stackFrame.location().declaringType(), nopolContext);
+                    Variable expression = AccessFactory.variable(complexConstant, field.name(), value, nopolContext);
                     logger.debug("[data] " + expression);
                     candidates.add(expression);
                 }
@@ -101,20 +101,20 @@ public class DataCollector {
             candidates.addAll(collectVariables(stackFrame));
 
             // special values;
-            Literal literal0 = AccessFactory.literal(0, config);
+            Literal literal0 = AccessFactory.literal(0, nopolContext);
             literal0.getValue().setJDIValue(threadRef.virtualMachine().mirrorOf(0));
-            Literal literal1 = AccessFactory.literal(1, config);
+            Literal literal1 = AccessFactory.literal(1, nopolContext);
             literal1.getValue().setJDIValue(threadRef.virtualMachine().mirrorOf(1));
             candidates.add(literal0);
             candidates.add(literal1);
-            candidates.add(AccessFactory.literal(null, config));
+            candidates.add(AccessFactory.literal(null, nopolContext));
 
             // collect literals
-            if (this.config.isCollectLiterals()) {
+            if (this.nopolContext.isCollectLiterals()) {
                 candidates.addAll(constants);
             }
             // collect static methods
-            if (this.config.isCollectStaticMethods()) {
+            if (this.nopolContext.isCollectStaticMethods()) {
                 candidates.addAll(collectStaticMethods(statCollector.getStatMethod().keySet(), threadRef, candidates));
             }
 
@@ -129,7 +129,7 @@ public class DataCollector {
 
 
     private void recurse() {
-        for (int depth = 1; depth < this.config.getSynthesisDepth() - 1 && executionTime <= maxTime; depth++) {
+        for (int depth = 1; depth < this.nopolContext.getSynthesisDepth() - 1 && executionTime <= maxTime; depth++) {
             Candidates copy = new Candidates(); // to avoid java.util.ConcurrentModificationException
             copy.addAll(candidates);
             executionTime = System.currentTimeMillis() - startTime;
@@ -155,9 +155,9 @@ public class DataCollector {
 
         if (exp.getValue() instanceof ArrayValue) {
             int length = ((ArrayValue) exp.getValue()).length();
-            results.add(AccessFactory.variable(exp, "length", length, config));
+            results.add(AccessFactory.variable(exp, "length", length, nopolContext));
             if (length > 0) {
-                results.add(AccessFactory.array(exp, AccessFactory.literal(0, config), config));
+                results.add(AccessFactory.array(exp, AccessFactory.literal(0, nopolContext), nopolContext));
             }
         }
         return results;
@@ -171,7 +171,7 @@ public class DataCollector {
             for (int i = 0; i < variables.size() && executionTime < maxTime; i++) {
                 LocalVariable localVariable = variables.get(i);
                 Value value = stackFrame.getValue(localVariable);
-                Expression expression = AccessFactory.variable(localVariable.name(), value, config);
+                Expression expression = AccessFactory.variable(localVariable.name(), value, nopolContext);
                 logger.debug("[data] " + expression);
                 results.add(expression);
                 executionTime = System.currentTimeMillis() - startTime;
@@ -216,7 +216,7 @@ public class DataCollector {
             }
 
             Value value = fieldValues.get(field);
-            Expression expression = AccessFactory.variable(exp, field.name(), value, config);
+            Expression expression = AccessFactory.variable(exp, field.name(), value, nopolContext);
             if (expression == null) {
                 continue;
             }
@@ -299,7 +299,7 @@ public class DataCollector {
             }
 
             ReferenceType ref = refs.get(0);
-            Expression exp = AccessFactory.variable(next.getDeclaringType().getQualifiedName(), ref, config);
+            Expression exp = AccessFactory.variable(next.getDeclaringType().getQualifiedName(), ref, nopolContext);
             List<Method> methods = getMethods(exp, ref, true, threadRef, next.getSimpleName());
             results.addAll(callMethods(exp, threadRef, methods, argsCandidates));
         }
@@ -357,7 +357,7 @@ public class DataCollector {
         if (method.isObsolete()) {
             return false;
         }
-        if(this.config.isCollectOnlyUsedMethod()) {
+        if(this.nopolContext.isCollectOnlyUsedMethod()) {
             // ignore all methods not previously used
             String className = method.declaringType().name();
             String qualifiedMethodName =  className.substring(0, className.lastIndexOf(".")) + "." + method.name();
@@ -449,7 +449,7 @@ public class DataCollector {
             Future<Value> future = executor.submit(task);
             try {
                 executor.shutdown();
-                Value result = future.get(this.config.getTimeoutMethodInvocation(), TimeUnit.SECONDS);
+                Value result = future.get(this.nopolContext.getTimeoutMethodInvocation(), TimeUnit.SECONDS);
                 if (result != null) {
                     List<String> argumentTypes = new ArrayList<String>();
                     try {
@@ -460,7 +460,7 @@ public class DataCollector {
                     } catch (ClassNotLoadedException e) {
                         e.printStackTrace();
                     }
-                    expression = AccessFactory.method(method.name(), argumentTypes, method.declaringType().name(), exp, expressions, result, config);
+                    expression = AccessFactory.method(method.name(), argumentTypes, method.declaringType().name(), exp, expressions, result, nopolContext);
                     logger.debug("[data] " + expression);
                 }
             } catch (Exception ex) {

@@ -1,6 +1,6 @@
 package fr.inria.lille.diff;
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import org.apache.commons.io.FileUtils;
@@ -25,13 +25,13 @@ public class PatchGenerator {
 	private final Patch patch;
 	private final CtElement target;
 	private Factory factory;
-	private Config config;
+	private NopolContext nopolContext;
 	private String classContent;
 
-	public PatchGenerator(Patch patch, Factory factory, Config config) {
+	public PatchGenerator(Patch patch, Factory factory, NopolContext nopolContext) {
 		this.patch = patch;
 		this.factory = factory;
-		this.config = config;
+		this.nopolContext = nopolContext;
 		this.target = getTarget();
 	}
 
@@ -92,11 +92,16 @@ public class PatchGenerator {
 		String diff = null;
 		try {
 			String path = getClassPath(target.getParent(CtType.class));
-			diff = com.cloudbees.diff.Diff.diff(r1, r2, false)
-					.toUnifiedDiff(path,
-							path,
-							new StringReader(classContent),
-							new StringReader(patchedClass), 1);
+			if (path != null) {
+				diff = com.cloudbees.diff.Diff.diff(r1, r2, false)
+						.toUnifiedDiff(path,
+								path,
+								new StringReader(classContent),
+								new StringReader(patchedClass), 1);
+			} else {
+				return "";
+			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -107,16 +112,22 @@ public class PatchGenerator {
 	private String getClassPath(CtType type) {
 		String path = type.getPosition().getFile().getPath();
 		String intersection = null;
-		String[] inputSources = config.getProjectSourcePath();
+		File[] inputSources = nopolContext.getProjectSources();
 		for (int i = 0; i < inputSources.length; i++) {
-			String inputSource = inputSources[i];
+			File inputSource = inputSources[i];
 			if (intersection == null) {
-				intersection = inputSource;
+				intersection = inputSource.getPath();
 			} else {
-				intersection = intersection(intersection, inputSource);
+				intersection = intersection(intersection, inputSource.getPath());
 			}
 		}
-		return path.substring(path.indexOf(intersection));
+		int indexOfIntersection = path.indexOf(intersection);
+
+		if (indexOfIntersection != -1) {
+			return path.substring(indexOfIntersection);
+		} else {
+			return null;
+		}
 	}
 
 	/**
