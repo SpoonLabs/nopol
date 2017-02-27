@@ -75,7 +75,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
      * @param tests tests to execute
      */
     public DynamothCodeGenesisImpl(SpoonedProject spoon, File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, Config config) {
-        this(projectRoots, location, classpath, oracle, tests,5*60 /* 5 minutes, default in repair mode */, config);
+        this(projectRoots, location, classpath, oracle, tests, config);
         this.spoon = spoon;
     }
 
@@ -87,10 +87,10 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
      * @param oracle the oracle of the project Map<testClass#testMethod, {value iteration 1, value iteration 2, ...}>
      * @param tests tests to execute
      */
-    public DynamothCodeGenesisImpl(File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, int dataCollectionTimeoutInSeconds, Config config) {
+    public DynamothCodeGenesisImpl(File[] projectRoots, SourceLocation location, URL[] classpath, Map<String, Object[]> oracle, String[] tests, Config config) {
         this.projectRoots = projectRoots;
         this.location = location;
-        this.dataCollectionTimeoutInSeconds=dataCollectionTimeoutInSeconds;
+        this.dataCollectionTimeoutInSeconds=config.getDataCollectionTimeoutInSecondForSynthesis();
         this.oracle = oracle;
         this.tests = tests;
         this.values = new TreeMap<>();

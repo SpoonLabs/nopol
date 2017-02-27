@@ -61,6 +61,7 @@ public class Config implements Serializable {
 	private int maxLineInvocationPerTest;
 	private int timeoutMethodInvocation;
 	private int maxTimeInMinutes = 10;
+	private int dataCollectionTimeoutInSecondForSynthesis = 15*60;
 	private String outputFolder;
 
 	private double addWeight;
@@ -113,6 +114,7 @@ public class Config implements Serializable {
 			sortExpressions = Boolean.parseBoolean(p.getProperty("sortExpression", "true"));
 			maxLineInvocationPerTest = Integer.parseInt(p.getProperty("maxLineInvocationPerTest", "150"));
 			timeoutMethodInvocation = Integer.parseInt(p.getProperty("timeoutMethodInvocation", "2000"));
+			dataCollectionTimeoutInSecondForSynthesis = Integer.parseInt(p.getProperty("dataCollectionTimeoutInSecondForSynthesis", "900"));
 			outputFolder = p.getProperty("outputFolder", null);
 
 			addWeight = Double.parseDouble(p.getProperty("addOp", "0"));
@@ -459,6 +461,13 @@ public class Config implements Serializable {
 		return json;
 	}
 
+	public int getDataCollectionTimeoutInSecondForSynthesis() {
+		return dataCollectionTimeoutInSecondForSynthesis;
+	}
+
+	public void setDataCollectionTimeoutInSecondForSynthesis(int dataCollectionTimeoutInSecondForSynthesis) {
+		this.dataCollectionTimeoutInSecondForSynthesis = dataCollectionTimeoutInSecondForSynthesis;
+	}
 
 	@Override
 	public String toString() {
@@ -471,6 +480,7 @@ public class Config implements Serializable {
 				", sortExpressions=" + sortExpressions +
 				", maxLineInvocationPerTest=" + maxLineInvocationPerTest +
 				", timeoutMethodInvocation=" + timeoutMethodInvocation +
+				", dataCollectionTimeoutInSecondForSynthesis=" + dataCollectionTimeoutInSecondForSynthesis +
 				", addWeight=" + addWeight +
 				", subWeight=" + subWeight +
 				", mulWeight=" + mulWeight +
