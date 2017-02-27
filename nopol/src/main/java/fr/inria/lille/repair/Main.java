@@ -140,7 +140,7 @@ public class Main {
 
 		final URL[] classpath = JavaLibrary.classpathFrom(jsapConfig.getString("classpath"));
 
-		NopolContext nopolContext = new NopolContext(sourceFiles, classpath, jsapConfig.getStringArray("test"));
+		this.nopolContext = new NopolContext(sourceFiles, classpath, jsapConfig.getStringArray("test"));
 
 		nopolContext.setType(strToStatementType(jsapConfig.getString("type")));
 		nopolContext.setMode(strToMode(jsapConfig.getString("mode")));
