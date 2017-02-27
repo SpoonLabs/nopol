@@ -9,6 +9,7 @@ import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.NoFailingTestCaseException;
 import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.repair.nopol.NoSuspiciousStatementException;
+import fr.inria.lille.repair.nopol.NopolStatus;
 
 import java.io.File;
 import java.util.Collections;
@@ -46,7 +47,8 @@ public class InternalNopolActor extends UntypedActor {
 			config.setProjectSourcePath(new String[]{sourceFile});
 			try {
 				NoPol noPol = new NoPol(projectReference, config);
-				patches = noPol.build();
+				NopolStatus status = noPol.build();
+				patches = status.getPatches();
 			} catch (NoSuspiciousStatementException | NoFailingTestCaseException noFix) {
 				client.tell(noFix, ActorRef.noSender());
 			} catch (Exception e) {

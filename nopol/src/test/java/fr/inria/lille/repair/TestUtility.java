@@ -6,6 +6,7 @@ import fr.inria.lille.repair.common.config.Config;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.NoPol;
+import fr.inria.lille.repair.nopol.NopolStatus;
 import xxl.java.container.classic.MetaSet;
 import xxl.java.junit.TestCase;
 import xxl.java.junit.TestCasesListener;
@@ -73,13 +74,13 @@ public class TestUtility {
 		}
 
 		NoPol nopol = new NoPol(project, config);
-		patches = nopol.build(project.testClasses());
+		NopolStatus status = nopol.build(project.testClasses());
 
 		for (int i = 0; i < project.sourceFiles().length; i++) {
 			File file = project.sourceFiles()[i];
 			clean(file.getParent());
 		}
-		return patches;
+		return status.getPatches();
 	}
 
 	public static List<Patch> setupAndRun(String executionType, int projectNumber, Config config, TestCasesListener listener) {
