@@ -211,10 +211,14 @@ public class DynamothCodeGenesisTest {
             tests.add(testName + "#" + next);
         }
 
+        nopolContext.setDataCollectionTimeoutInSecondForSynthesis(5);
+
         String classpath = "../test-projects/target/test-classes"+File.pathSeparatorChar+"../test-projects/target/classes/"+File.pathSeparatorChar+"lib/junit-4.11.jar";
         SourceLocation location = new SourceLocation(className, line);
         File[] files = new File []{new File("../test-projects/src/main/java/"), new File("../test-projects/src/test/java/")};
-        DynamothCodeGenesis dynamothCodeGenesis = new DynamothCodeGenesisImpl(files, location, JavaLibrary.classpathFrom(classpath), oracle, tests.toArray(new String[0]),5 /* seconds, a goood value for tests */, nopolContext);
+
+        DynamothCodeGenesis dynamothCodeGenesis = new DynamothCodeGenesisImpl(files, location, JavaLibrary.classpathFrom(classpath), oracle, tests.toArray(new String[0]),nopolContext);
+
         dynamothCodeGenesis.run(TimeUnit.MINUTES.toMillis(15));
         return dynamothCodeGenesis;
     }

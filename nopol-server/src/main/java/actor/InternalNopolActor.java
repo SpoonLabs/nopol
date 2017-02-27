@@ -5,9 +5,7 @@ import akka.actor.UntypedActor;
 import com.google.common.io.Files;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
-import fr.inria.lille.repair.nopol.NoFailingTestCaseException;
 import fr.inria.lille.repair.nopol.NoPol;
-import fr.inria.lille.repair.nopol.NoSuspiciousStatementException;
 import xxl.java.library.JavaLibrary;
 
 import java.io.File;
@@ -49,8 +47,6 @@ public class InternalNopolActor extends UntypedActor {
 			try {
 				NoPol noPol = new NoPol(nopolContext);
 				patches = noPol.build();
-			} catch (NoSuspiciousStatementException | NoFailingTestCaseException noFix) {
-				client.tell(noFix, ActorRef.noSender());
 			} catch (Exception e) {
 				throw new RuntimeException("Error launch NoPol", e);
 			} finally {

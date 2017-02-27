@@ -57,6 +57,7 @@ public class NopolContext implements Serializable {
 	private int maxLineInvocationPerTest;
 	private int timeoutMethodInvocation;
 	private int maxTimeInMinutes = 10;
+	private int dataCollectionTimeoutInSecondForSynthesis = 15*60;
 	private String outputFolder;
 
 	private double addWeight;
@@ -78,7 +79,7 @@ public class NopolContext implements Serializable {
 	private long maxTimeEachTypeOfFixInMinutes;
 
 	private NopolMode mode = NopolMode.REPAIR;
-	private StatementType type = StatementType.CONDITIONAL;
+	private StatementType type = StatementType.COND_THEN_PRE;
 	private NopolSynthesis synthesis = NopolSynthesis.SMT;
 	private NopolOracle oracle = NopolOracle.ANGELIC;
 	private NopolSolver solver = NopolSolver.Z3;
@@ -125,6 +126,7 @@ public class NopolContext implements Serializable {
 			sortExpressions = Boolean.parseBoolean(p.getProperty("sortExpression", "true"));
 			maxLineInvocationPerTest = Integer.parseInt(p.getProperty("maxLineInvocationPerTest", "150"));
 			timeoutMethodInvocation = Integer.parseInt(p.getProperty("timeoutMethodInvocation", "2000"));
+			dataCollectionTimeoutInSecondForSynthesis = Integer.parseInt(p.getProperty("dataCollectionTimeoutInSecondForSynthesis", "900"));
 			outputFolder = p.getProperty("outputFolder", null);
 
 			addWeight = Double.parseDouble(p.getProperty("addOp", "0"));
@@ -475,6 +477,14 @@ public class NopolContext implements Serializable {
 		this.projectTests = projectTests;
 	}
 
+	public int getDataCollectionTimeoutInSecondForSynthesis() {
+		return dataCollectionTimeoutInSecondForSynthesis;
+	}
+
+	public void setDataCollectionTimeoutInSecondForSynthesis(int dataCollectionTimeoutInSecondForSynthesis) {
+		this.dataCollectionTimeoutInSecondForSynthesis = dataCollectionTimeoutInSecondForSynthesis;
+	}
+
 	@Override
 	public String toString() {
 		return "Config{" +
@@ -486,6 +496,7 @@ public class NopolContext implements Serializable {
 				", sortExpressions=" + sortExpressions +
 				", maxLineInvocationPerTest=" + maxLineInvocationPerTest +
 				", timeoutMethodInvocation=" + timeoutMethodInvocation +
+				", dataCollectionTimeoutInSecondForSynthesis=" + dataCollectionTimeoutInSecondForSynthesis +
 				", addWeight=" + addWeight +
 				", subWeight=" + subWeight +
 				", mulWeight=" + mulWeight +

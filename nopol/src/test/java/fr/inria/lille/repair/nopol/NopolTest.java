@@ -154,6 +154,42 @@ public class NopolTest {
 	}
 
 	@Test
+	public void conditionalThenPreconditionnal() {
+
+		/* Test the COND_THEN_PRE mode.
+			For the example 1, Nopol find a patch in CONDITIONAL mode but not in PRECONDITION mode.
+		*/
+
+		Collection<String> expectedFailedTests = asList("test5", "test6");
+
+		StatementType expectedStatementType = StatementType.CONDITIONAL;
+		final TestCasesListener listener = new TestCasesListener();
+
+		List<Patch> patches = TestUtility.setupAndRun(executionType, 1, listener, StatementType.COND_THEN_PRE);
+
+		TestUtility.assertPatches(12, expectedFailedTests, expectedStatementType, listener, patches);
+		TestUtility.assertAgainstKnownPatches(patches.get(0),  "index <= 0", "index < 1", "index <= -1", "index <= 0");
+	}
+
+	@Test
+	public void conditionalThenPreconditionalUsePrecond() {
+
+		/* Test the PRE_THEN_COND mode.
+			For the example 5, Nopol find a patch in PRECONDITION mode but not in CONDITIONAL mode.
+		 */
+
+		Collection<String> expectedFailedTests = asList("test4", "test5");
+
+		StatementType expectedStatementType = StatementType.PRECONDITION;
+		final TestCasesListener listener = new TestCasesListener();
+
+		List<Patch> patches = TestUtility.setupAndRun(executionType, 5, listener, StatementType.COND_THEN_PRE);
+
+		TestUtility.assertPatches(20, expectedFailedTests, expectedStatementType, listener, patches);
+		TestUtility.assertAgainstKnownPatches(patches.get(0),  "-1 <= a", "1 <= a", "(r)<=(a)", "(-1)<(a)", "(0)<=(a)", "0 <= a", "-1 < a");
+	}
+
+	@Test
 	public void preconditionThenConditionalPrecondition() {
 
 		/* Test the PRE_THEN_COND mode.
