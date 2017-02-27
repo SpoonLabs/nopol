@@ -2,12 +2,12 @@ package plugin.gui;
 
 import plugin.action.ActionGenerator;
 import com.intellij.openapi.project.Project;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static plugin.Plugin.config;
+import static plugin.Plugin.nopolContext;
 
 /**
  * Created by bdanglot on 9/16/16.
@@ -31,14 +31,14 @@ public class ConfigPanel extends JPanel {
 	private void buildGroupSynthesis() {
 
 		JRadioButton dynamothSynthesis = new JRadioButton();
-		dynamothSynthesis.setSelected(config.getSynthesis() == Config.NopolSynthesis.DYNAMOTH);
-		dynamothSynthesis.setActionCommand(String.valueOf(Config.NopolSynthesis.DYNAMOTH));
-		dynamothSynthesis.addActionListener(event -> config.setSynthesis(Config.NopolSynthesis.DYNAMOTH));
+		dynamothSynthesis.setSelected(nopolContext.getSynthesis() == NopolContext.NopolSynthesis.DYNAMOTH);
+		dynamothSynthesis.setActionCommand(String.valueOf(NopolContext.NopolSynthesis.DYNAMOTH));
+		dynamothSynthesis.addActionListener(event -> nopolContext.setSynthesis(NopolContext.NopolSynthesis.DYNAMOTH));
 
 		JRadioButton smtSynthesis = new JRadioButton();
-		smtSynthesis.setSelected(config.getSynthesis() == Config.NopolSynthesis.SMT);
-		smtSynthesis.setActionCommand(String.valueOf(Config.NopolSynthesis.SMT));
-		smtSynthesis.addActionListener(event -> config.setSynthesis(Config.NopolSynthesis.SMT));
+		smtSynthesis.setSelected(nopolContext.getSynthesis() == NopolContext.NopolSynthesis.SMT);
+		smtSynthesis.setActionCommand(String.valueOf(NopolContext.NopolSynthesis.SMT));
+		smtSynthesis.addActionListener(event -> nopolContext.setSynthesis(NopolContext.NopolSynthesis.SMT));
 
 		ButtonGroup groupSynthesis = new ButtonGroup();
 		groupSynthesis.add(smtSynthesis);

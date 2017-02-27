@@ -3,11 +3,11 @@ package plugin;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerAdapter;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.synth.StatementType;
 import plugin.actors.ActorManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import fr.inria.lille.repair.common.config.Config;
 import plugin.wrapper.LauncherWrapper;
 
 import java.io.File;
@@ -25,7 +25,7 @@ public class Plugin extends AnAction {
 
     public static boolean enableFancyRobot = true;
 
-    public static final Config config = new Config();
+    public static final NopolContext nopolContext = new NopolContext();
 
     public Plugin() {
         super("NoPol");
@@ -51,10 +51,10 @@ public class Plugin extends AnAction {
     }
 
     private static void initConfig() {
-        config.setSynthesis(Config.NopolSynthesis.DYNAMOTH);
-        config.setType(StatementType.PRE_THEN_COND);
+        nopolContext.setSynthesis(NopolContext.NopolSynthesis.DYNAMOTH);
+        nopolContext.setType(StatementType.PRE_THEN_COND);
 //        config.setLocalizer(Config.NopolLocalizer.OCHIAI); //CoCospoon take too much time
-        config.setLocalizer(Config.NopolLocalizer.GZOLTAR);
+        nopolContext.setLocalizer(NopolContext.NopolLocalizer.GZOLTAR);
     }
 
     @Override

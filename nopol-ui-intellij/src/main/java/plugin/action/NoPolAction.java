@@ -22,7 +22,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 
-import static plugin.Plugin.config;
+import static plugin.Plugin.nopolContext;
 
 /**
  * Created by bdanglot on 9/21/16.
@@ -86,9 +86,9 @@ public class NoPolAction extends AbstractAction {
 		String fullQualifiedNameOfCurrentFile = ((PsiJavaFile) currentFile).getPackageName() + "." + currentFile.getName();
 		fullQualifiedNameOfCurrentFile = fullQualifiedNameOfCurrentFile.substring(0, fullQualifiedNameOfCurrentFile.length() - JavaFileType.DEFAULT_EXTENSION.length() - 1);
 		if (ProjectRootManager.getInstance(project).getFileIndex().isInTestSourceContent(file)) {
-			config.setProjectTests(fullQualifiedNameOfCurrentFile.split(" "));
+			nopolContext.setProjectTests(fullQualifiedNameOfCurrentFile.split(" "));
 		} else {
-			config.setProjectTests(new String[0]);// we will hit all the test case in the project
+			nopolContext.setProjectTests(new String[0]);// we will hit all the test case in the project
 		}
 		return file;
 	}
