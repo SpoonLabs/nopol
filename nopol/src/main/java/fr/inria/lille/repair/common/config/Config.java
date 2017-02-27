@@ -83,7 +83,7 @@ public class Config implements Serializable {
 	private long maxTimeEachTypeOfFixInMinutes;
 
 	private NopolMode mode = NopolMode.REPAIR;
-	private StatementType type = StatementType.CONDITIONAL;
+	private StatementType type = StatementType.COND_THEN_PRE;
 	private NopolSynthesis synthesis = NopolSynthesis.SMT;
 	private NopolOracle oracle = NopolOracle.ANGELIC;
 	private NopolSolver solver = NopolSolver.Z3;
