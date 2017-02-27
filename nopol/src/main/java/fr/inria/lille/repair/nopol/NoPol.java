@@ -78,7 +78,7 @@ public class NoPol {
 	private String[] testClasses;
 	public long startTime;
 	private NopolContext nopolContext;
-	private NopolStatus nopolStatus;
+	private NopolResult nopolResult;
 
 
 
@@ -87,7 +87,7 @@ public class NoPol {
 		this.nopolContext = nopolContext;
 		this.classpath = nopolContext.getProjectClasspath();
 		this.sourceFiles = nopolContext.getProjectSources();
-		this.nopolStatus = new NopolStatus(nopolContext);
+		this.nopolResult = new NopolResult(nopolContext);
 
 		StatementType type = nopolContext.getType();
 		logger.info("Source files: " + Arrays.toString(sourceFiles));
@@ -103,14 +103,14 @@ public class NoPol {
 	}
 
 
-	public NopolStatus build() {
+	public NopolResult build() {
 		if (this.testClasses == null) {
 			this.testClasses = new TestClassesFinder().findIn(classpath, false);
 		}
 
 		this.localizer = this.createLocalizer();
 
-		nopolStatus.setNbTests(this.testClasses.length);
+		nopolResult.setNbTests(this.testClasses.length);
 		if (nopolContext.getOracle() == NopolContext.NopolOracle.SYMBOLIC) {
 			try {
 				SpoonedProject jpfSpoon = new SpoonedProject(this.sourceFiles, nopolContext);
@@ -129,13 +129,13 @@ public class NoPol {
 		}
 		Map<SourceLocation, List<TestResult>> testListPerStatement = this.localizer.getTestListPerStatement();
 
-		this.nopolStatus.setNbStatements(testListPerStatement.keySet().size());
+		this.nopolResult.setNbStatements(testListPerStatement.keySet().size());
 		solveWithMultipleBuild(testListPerStatement);
 
-		this.logResultInfo(this.nopolStatus.getPatches());
+		this.logResultInfo(this.nopolResult.getPatches());
 
-		this.nopolStatus.setDurationInMilliseconds(System.currentTimeMillis()-this.startTime);
-		return this.nopolStatus;
+		this.nopolResult.setDurationInMilliseconds(System.currentTimeMillis()-this.startTime);
+		return this.nopolResult;
 	}
 
 	private FaultLocalizer createLocalizer() {
@@ -164,7 +164,7 @@ public class NoPol {
 	private void solveWithMultipleBuild(Map<SourceLocation, List<TestResult>> testListPerStatement) {
 		for (SourceLocation sourceLocation : testListPerStatement.keySet()) {
 			runOnStatement(sourceLocation, testListPerStatement.get(sourceLocation));
-			if (nopolContext.isOnlyOneSynthesisResult() && !this.nopolStatus.getPatches().isEmpty()) {
+			if (nopolContext.isOnlyOneSynthesisResult() && !this.nopolResult.getPatches().isEmpty()) {
 				return;
 			}
 		}
@@ -191,7 +191,7 @@ public class NoPol {
 			sourceLocation.setSourceEnd(position.getSourceEnd());
 
 			List<Patch> patches = executeNopolProcessor(tests, sourceLocation, spoonCl, nopolProcessor);
-			this.nopolStatus.addPatches(patches);
+			this.nopolResult.addPatches(patches);
 
 			if (nopolContext.isOnlyOneSynthesisResult() && !patches.isEmpty()) {
 				return;
@@ -230,7 +230,7 @@ public class NoPol {
 		}
 
 		if (angelicValue != null) {
-			this.nopolStatus.incrementNbAngelicValues();
+			this.nopolResult.incrementNbAngelicValues();
 		}
 
 		Synthesizer synth = SynthesizerFactory.build(sourceFiles, spooner, nopolContext, sourceLocation, nopolProcessor, angelicValue, spoonCl);

@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by urli on 24/02/2017.
  */
-public class NopolStatus {
+public class NopolResult {
 
     private List<Patch> patches;
     private NopolContext nopolContext;
@@ -18,7 +18,7 @@ public class NopolStatus {
     private int nbAngelicValues;
     private int nbTests;
 
-    public NopolStatus(NopolContext nopolContext) {
+    public NopolResult(NopolContext nopolContext) {
         this.nopolContext = nopolContext;
         this.patches = new ArrayList<Patch>();
     }

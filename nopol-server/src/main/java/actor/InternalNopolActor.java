@@ -6,7 +6,7 @@ import com.google.common.io.Files;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.NoPol;
-import fr.inria.lille.repair.nopol.NopolStatus;
+import fr.inria.lille.repair.nopol.NopolResult;
 import xxl.java.library.JavaLibrary;
 
 import java.io.File;
@@ -47,7 +47,7 @@ public class InternalNopolActor extends UntypedActor {
 
 			try {
 				NoPol noPol = new NoPol(nopolContext);
-				NopolStatus status = noPol.build();
+				NopolResult status = noPol.build();
 				patches = status.getPatches();
 			} catch (Exception e) {
 				throw new RuntimeException("Error launch NoPol", e);
