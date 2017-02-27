@@ -12,8 +12,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 
 import fr.inria.lille.repair.common.patch.Patch;
-import fr.inria.lille.repair.nopol.NoFailingTestCaseException;
-import fr.inria.lille.repair.nopol.NoSuspiciousStatementException;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static plugin.Plugin.config;
+import static plugin.Plugin.nopolContext;
 
 /**
  * Created by bdanglot on 9/21/16.
@@ -76,7 +74,7 @@ public class NoPolTask extends Task.Backgroundable {
 		Timeout timeout = new Timeout(200000);
 		EventSender.send(EventSender.Event.REPAIR_ATTEMPT);
 		try {
-			ConfigActor configActor = new ConfigActorImpl(config, Files.readAllBytes(Paths.get(outputZip)));
+			ConfigActor configActor = new ConfigActorImpl(nopolContext, Files.readAllBytes(Paths.get(outputZip)));
 			this.future = Patterns.ask(ActorManager.remoteActor, configActor, timeout);
 			if (Plugin.enableFancyRobot) {
 				ApplicationManager.getApplication().invokeLater(runnerFancyRobot);
@@ -99,11 +97,7 @@ public class NoPolTask extends Task.Backgroundable {
 		super.onSuccess();
 		if (Plugin.enableFancyRobot)
 			this.frame.dispose();
-		if (this.response instanceof NoSuspiciousStatementException) {
-			Messages.showMessageDialog(getProject(), this.response.toString(), ((NoSuspiciousStatementException) this.response).header, Messages.getWarningIcon());
-		} else if (this.response instanceof NoFailingTestCaseException) {
-			Messages.showMessageDialog(getProject(), this.response.toString(), ((NoFailingTestCaseException) this.response).header, Messages.getWarningIcon());
-		} else if (this.response instanceof List) {
+		if (this.response instanceof List) {
 			List<Patch> patches = (List<Patch>) this.response;
 			if (patches.isEmpty())
 				Messages.showMessageDialog(getProject(), "NoPol could not found any fix", "Fail", Messages.getErrorIcon());

@@ -10,6 +10,7 @@ plugins {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven {
         url "http://repo.akka.io/snapshots/"
@@ -18,8 +19,8 @@ repositories {
 
 dependencies {
     compile "com.typesafe.akka:akka-actor_2.11:2.3-SNAPSHOT"
-    compile files ("lib/nopol-0.2-SNAPSHOT.jar")
-    compile files ("lib/nopol-server-0.2-SNAPSHOT.jar")
+    compile "fr.inria.lille.adam:nopol:0.2-SNAPSHOT"
+    compile "fr.inria.lille.adam:nopol-server:0.2-SNAPSHOT"
     compile "com.typesafe.akka:akka-remote_2.11:2.3-SNAPSHOT"
 }
 
