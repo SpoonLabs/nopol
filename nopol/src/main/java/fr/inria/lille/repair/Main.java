@@ -26,6 +26,7 @@ import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.infinitel.Infinitel;
 import fr.inria.lille.repair.nopol.NoPol;
+import fr.inria.lille.repair.nopol.NopolResult;
 import fr.inria.lille.repair.ranking.Ranking;
 import org.slf4j.LoggerFactory;
 import xxl.java.library.FileLibrary;
@@ -87,7 +88,9 @@ public class Main {
 										@Override
 										public Object call() throws Exception {
 											NoPol nopol = new NoPol(nopolContext);
-											return nopol.build().isEmpty() ? -1 : 0;
+											NopolResult status = nopol.build();
+
+											return (status.getPatches().isEmpty()) ? -1 : 0;
 										}
 									});
 							try {

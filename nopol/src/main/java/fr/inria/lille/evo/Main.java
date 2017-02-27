@@ -7,6 +7,7 @@ import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.evo.processors.RemoveEvosuiteEffectsProcessor;
 import fr.inria.lille.evo.processors.TestSelectionProcessor;
+import fr.inria.lille.repair.nopol.NopolResult;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -250,10 +251,9 @@ public class Main {
         nopolContext.setType(nopolType);
 
         NoPol nopol = new NoPol(nopolContext);
-        List<Patch> currentPatches;
-        currentPatches = nopol.build();
-        
-        return currentPatches;
+        NopolResult status = nopol.build();
+
+        return status.getPatches();
     }
 
 

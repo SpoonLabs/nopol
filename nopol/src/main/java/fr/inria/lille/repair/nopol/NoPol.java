@@ -28,6 +28,7 @@ import fr.inria.lille.localization.GZoltarFaultLocalizer;
 import fr.inria.lille.localization.OchiaiFaultLocalizer;
 import fr.inria.lille.localization.TestResult;
 import fr.inria.lille.repair.Main;
+import fr.inria.lille.repair.TestClassesFinder;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
@@ -61,7 +62,6 @@ import java.net.URLClassLoader;
 import java.util.*;
 import java.util.concurrent.*;
 
-
 /**
  * @author Favio D. DeMarco
  */
@@ -78,6 +78,8 @@ public class NoPol {
 	private String[] testClasses;
 	public long startTime;
 	private NopolContext nopolContext;
+	private NopolResult nopolResult;
+
 
 
 	public NoPol(NopolContext nopolContext) {
@@ -85,6 +87,7 @@ public class NoPol {
 		this.nopolContext = nopolContext;
 		this.classpath = nopolContext.getProjectClasspath();
 		this.sourceFiles = nopolContext.getProjectSources();
+		this.nopolResult = new NopolResult(nopolContext);
 
 		StatementType type = nopolContext.getType();
 		logger.info("Source files: " + Arrays.toString(sourceFiles));
@@ -99,9 +102,15 @@ public class NoPol {
 		this.testPatch = new TestPatch(this.sourceFiles[0], this.spooner, nopolContext);
 	}
 
-	public List<Patch> build() {
+
+	public NopolResult build() {
+		if (this.testClasses == null) {
+			this.testClasses = new TestClassesFinder().findIn(classpath, false);
+		}
+
 		this.localizer = this.createLocalizer();
 
+		nopolResult.setNbTests(this.testClasses.length);
 		if (nopolContext.getOracle() == NopolContext.NopolOracle.SYMBOLIC) {
 			try {
 				SpoonedProject jpfSpoon = new SpoonedProject(this.sourceFiles, nopolContext);
@@ -119,9 +128,14 @@ public class NoPol {
 			}
 		}
 		Map<SourceLocation, List<TestResult>> testListPerStatement = this.localizer.getTestListPerStatement();
-		List<Patch> patches = solveWithMultipleBuild(testListPerStatement);
-		this.logResultInfo(patches);
-		return patches;
+
+		this.nopolResult.setNbStatements(testListPerStatement.keySet().size());
+		solveWithMultipleBuild(testListPerStatement);
+
+		this.logResultInfo(this.nopolResult.getPatches());
+
+		this.nopolResult.setDurationInMilliseconds(System.currentTimeMillis()-this.startTime);
+		return this.nopolResult;
 	}
 
 	private FaultLocalizer createLocalizer() {
@@ -147,43 +161,42 @@ public class NoPol {
 	 * build
 	 * try to find patch
 	 */
-	private List<Patch> solveWithMultipleBuild(Map<SourceLocation, List<TestResult>> testListPerStatement) {
-		List<Patch> patches = new ArrayList<>();
+	private void solveWithMultipleBuild(Map<SourceLocation, List<TestResult>> testListPerStatement) {
 		for (SourceLocation sourceLocation : testListPerStatement.keySet()) {
-			patches.addAll(runOnStatement(sourceLocation, testListPerStatement.get(sourceLocation)));
-			if (nopolContext.isOnlyOneSynthesisResult() && !patches.isEmpty()) {
-				return patches;
+			runOnStatement(sourceLocation, testListPerStatement.get(sourceLocation));
+			if (nopolContext.isOnlyOneSynthesisResult() && !this.nopolResult.getPatches().isEmpty()) {
+				return;
 			}
 		}
-		return patches;
 	}
 
-	private List<Patch> runOnStatement(SourceLocation sourceLocation, List<TestResult> tests) {
-		List<Patch> patches = new ArrayList<>();
+	private void runOnStatement(SourceLocation sourceLocation, List<TestResult> tests) {
 		logger.debug("Analysing {} which is executed by {} tests", sourceLocation, tests.size());
 		SpoonedClass spoonCl = spooner.forked(sourceLocation.getRootClassName());
 		if (spoonCl == null || spoonCl.getSimpleType() == null) {
-			return patches;
+			return;
 		}
 		NopolProcessorBuilder builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), sourceLocation.getLineNumber(), nopolContext);
 		try {
 			spoonCl.process(builder);
 		} catch (DynamicCompilationException ignored) {
 			logger.debug("Aborting: dynamic compilation failed");
-			return patches;
+			return;
 		}
+
 		final List<NopolProcessor> nopolProcessors = builder.getNopolProcessors();
 		for (NopolProcessor nopolProcessor : nopolProcessors) {
 			SourcePosition position = nopolProcessor.getTarget().getPosition();
 			sourceLocation.setSourceStart(position.getSourceStart());
 			sourceLocation.setSourceEnd(position.getSourceEnd());
 
-			patches.addAll(executeNopolProcessor(tests, sourceLocation, spoonCl, nopolProcessor));
+			List<Patch> patches = executeNopolProcessor(tests, sourceLocation, spoonCl, nopolProcessor);
+			this.nopolResult.addPatches(patches);
+
 			if (nopolContext.isOnlyOneSynthesisResult() && !patches.isEmpty()) {
-				return patches;
+				return;
 			}
 		}
-		return patches;
 	}
 
 	/**
@@ -215,6 +228,11 @@ public class NoPol {
 		} catch (UnsupportedOperationException | DynamicCompilationException ignored) {
 			return patches;
 		}
+
+		if (angelicValue != null) {
+			this.nopolResult.incrementNbAngelicValues();
+		}
+
 		Synthesizer synth = SynthesizerFactory.build(sourceFiles, spooner, nopolContext, sourceLocation, nopolProcessor, angelicValue, spoonCl);
 		if (synth == Synthesizer.NO_OP_SYNTHESIZER) {
 			return patches;
