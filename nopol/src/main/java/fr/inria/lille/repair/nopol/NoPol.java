@@ -63,11 +63,6 @@ import java.net.URLClassLoader;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static fr.inria.lille.repair.common.config.Config.NopolLocalizer.DUMB;
-import static fr.inria.lille.repair.common.config.Config.NopolLocalizer.GZOLTAR;
-import static fr.inria.lille.repair.common.config.Config.NopolLocalizer.OCHIAI;
-
-
 /**
  * @author Favio D. DeMarco
  */
