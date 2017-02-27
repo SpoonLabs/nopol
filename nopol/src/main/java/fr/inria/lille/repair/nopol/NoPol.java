@@ -79,6 +79,7 @@ public class NoPol {
 	private String[] testClasses;
 	public long startTime;
 	private Config config;
+	private NopolStatus nopolStatus;
 
 
 	public NoPol(ProjectReference project, Config config) {
@@ -86,6 +87,7 @@ public class NoPol {
 		this.config = config;
 		this.classpath = project.classpath();
 		this.sourceFiles = project.sourceFiles();
+		this.nopolStatus = new NopolStatus(project, config);
 
 		StatementType type = config.getType();
 		String[] args = config.getProjectTests();
@@ -104,15 +106,17 @@ public class NoPol {
 		this.testPatch = new TestPatch(this.sourceFiles[0], this.spooner, config);
 	}
 
-	public List<Patch> build() {
+	public NopolStatus build() {
 		if (this.testClasses == null) {
 			this.testClasses = new TestClassesFinder().findIn(classpath, false);
 		}
 
+		nopolStatus.setNbTests(this.testClasses.length);
+
 		return build(this.testClasses);
 	}
 
-	public List<Patch> build(String[] testClasses) {
+	public NopolStatus build(String[] testClasses) {
 		this.localizer = this.getLocalizer(this.sourceFiles, this.classpath, testClasses);
 
 		if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
@@ -132,9 +136,14 @@ public class NoPol {
 			}
 		}
 		Map<SourceLocation, List<TestResult>> testListPerStatement = this.localizer.getTestListPerStatement();
-		List<Patch> patches = solveWithMultipleBuild(testListPerStatement);
-		this.logResultInfo(patches);
-		return patches;
+
+		this.nopolStatus.setNbStatements(testListPerStatement.keySet().size());
+		solveWithMultipleBuild(testListPerStatement);
+
+		this.logResultInfo(this.nopolStatus.getPatches());
+
+		this.nopolStatus.setDurationInMilliseconds(System.currentTimeMillis()-this.startTime);
+		return this.nopolStatus;
 	}
 
 	private FaultLocalizer getLocalizer(File[] sourceFiles, URL[] classpath, String[] testClasses) {
@@ -160,43 +169,43 @@ public class NoPol {
 	 * build
 	 * try to find patch
 	 */
-	private List<Patch> solveWithMultipleBuild(Map<SourceLocation, List<TestResult>> testListPerStatement) {
-		List<Patch> patches = new ArrayList<>();
+	private void solveWithMultipleBuild(Map<SourceLocation, List<TestResult>> testListPerStatement) {
 		for (SourceLocation sourceLocation : testListPerStatement.keySet()) {
-			patches.addAll(runOnStatement(sourceLocation, testListPerStatement.get(sourceLocation)));
-			if (config.isOnlyOneSynthesisResult() && !patches.isEmpty()) {
-				return patches;
+			runOnStatement(sourceLocation, testListPerStatement.get(sourceLocation));
+			if (config.isOnlyOneSynthesisResult() && !this.nopolStatus.getPatches().isEmpty()) {
+				return;
 			}
 		}
-		return patches;
 	}
 
-	private List<Patch> runOnStatement(SourceLocation sourceLocation, List<TestResult> tests) {
-		List<Patch> patches = new ArrayList<>();
+	private void runOnStatement(SourceLocation sourceLocation, List<TestResult> tests) {
 		logger.debug("Analysing {} which is executed by {} tests", sourceLocation, tests.size());
 		SpoonedClass spoonCl = spooner.forked(sourceLocation.getRootClassName());
 		if (spoonCl == null || spoonCl.getSimpleType() == null) {
-			return patches;
+			return;
 		}
+
 		NopolProcessorBuilder builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), sourceLocation.getLineNumber(), config);
 		try {
 			spoonCl.process(builder);
 		} catch (DynamicCompilationException ignored) {
 			logger.debug("Aborting: dynamic compilation failed");
-			return patches;
+			return;
 		}
+
 		final List<NopolProcessor> nopolProcessors = builder.getNopolProcessors();
 		for (NopolProcessor nopolProcessor : nopolProcessors) {
 			SourcePosition position = nopolProcessor.getTarget().getPosition();
 			sourceLocation.setSourceStart(position.getSourceStart());
 			sourceLocation.setSourceEnd(position.getSourceEnd());
 
-			patches.addAll(executeNopolProcessor(tests, sourceLocation, spoonCl, nopolProcessor));
+			List<Patch> patches = executeNopolProcessor(tests, sourceLocation, spoonCl, nopolProcessor);
+			this.nopolStatus.addPatches(patches);
+
 			if (config.isOnlyOneSynthesisResult() && !patches.isEmpty()) {
-				return patches;
+				return;
 			}
 		}
-		return patches;
 	}
 
 	/**
@@ -228,6 +237,10 @@ public class NoPol {
 		} catch (UnsupportedOperationException | DynamicCompilationException ignored) {
 			return patches;
 		}
+		if (angelicValue != null) {
+			this.nopolStatus.incrementNbAngelicValues();
+		}
+
 		Synthesizer synth = SynthesizerFactory.build(sourceFiles, spooner, config, sourceLocation, nopolProcessor, angelicValue, spoonCl);
 		if (synth == Synthesizer.NO_OP_SYNTHESIZER) {
 			return patches;
