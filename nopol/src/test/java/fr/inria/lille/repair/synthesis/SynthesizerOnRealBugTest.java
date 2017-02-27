@@ -1,12 +1,11 @@
-package fr.inria.lille.spirals.repair.synthesis;
+package fr.inria.lille.repair.synthesis;
 
 import fr.inria.lille.repair.common.Candidates;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.expression.Expression;
-import fr.inria.lille.repair.synthesis.DynamothCodeGenesis;
-import fr.inria.lille.repair.synthesis.DynamothCodeGenesisImpl;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import xxl.java.library.JavaLibrary;
 
@@ -19,7 +18,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Created by spirals on 06/03/15.
+ * Start by cloning data in nopol-dataset:
+ * git clone https://github.com/SpoonLabs/nopol-experiments
  */
+@Ignore
 public class SynthesizerOnRealBugTest {
 
     @Test
@@ -36,7 +38,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "n <= pos",
                 "n == pos");
     }
@@ -60,7 +62,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "n < 0", "n < 0.0");
     }
 
@@ -83,7 +85,7 @@ public class SynthesizerOnRealBugTest {
                 location,
                 new String[] {"commons-discovery-SNAPSHOT.jar",
                         "commons-logging-1.0.3.jar"},
-                new Config(),
+                new NopolContext(),
                 "n < 0", "n < 0.0");
     }
 
@@ -101,7 +103,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "(0 == u) || (0 == v)", "(u == 0) || (v == 0)",  "(v == 0) || (u == 0)", "(0 == v) || (0 == u)");
     }
 
@@ -119,7 +121,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "0.0 < (fa * fb)");
     }
 
@@ -140,7 +142,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "mean < 1", "mean <= 0", "mean <= 0.0", "mean == 0.0");
     }
 
@@ -150,7 +152,7 @@ public class SynthesizerOnRealBugTest {
         oracle.put("org.apache.commons.math3.fraction.FractionTest#testIntegerOverflow", new Object[]{true, true, true, true});
         oracle.put("org.apache.commons.math3.fraction.FractionTest#testConstructor", new Object[]{false,false,false,false,false,false,false,false});
 
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         config.setCollectStaticMethods(true);
 
         SourceLocation location = new SourceLocation("org.apache.commons.math3.fraction.Fraction", 210);
@@ -179,7 +181,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "y >= TWO_POWER_53 || y <= -TWO_POWER_53");
     }
 
@@ -201,7 +203,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "(nRows < 2) || (nCols < 1)", "matrix.isSquare()");
     }
 
@@ -226,7 +228,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "text == null || repl == null || with == null || repl.length() == 0", "(repl == null) || (0 == repl.length())",
                 "(null == repl) || (0 == repl.length())",
                 "(with == null) || (with.length() != 0)",
@@ -255,7 +257,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "lastIdx <= 0");
     }
 
@@ -284,7 +286,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "(len < 0) || (str.length() < pos)",
                 "(str.length() < pos) || (len < 0)",
                 "(len < 0) || (((java.lang.String)str).length() < pos)",
@@ -313,7 +315,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "str == null || startIndex >= size", "(startIndex == this.size) || (str == null)");
     }
 
@@ -337,7 +339,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "className == null || className.length() == 0");
     }
     @Test
@@ -363,7 +365,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "(cs == null) || (cs.length() == 0)",
                 "(cs == null) || (0 == cs.length())");
     }
@@ -394,7 +396,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "this.runningState == 1",
                 "this.runningState == STATE_RUNNING",
                 "this.stopTime <= 0");
@@ -413,7 +415,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "escapeSingleQuote",
                 "escapeForwardSlash");
     }
@@ -450,7 +452,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "str.length() < lower",
                 "((java.lang.String)str).length() < lower",
                 "str.length() <= lower");
@@ -470,7 +472,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "start == seqEnd",
                 "seqEnd == start");
     }
@@ -496,7 +498,7 @@ public class SynthesizerOnRealBugTest {
                 location,
                 new String[] {"commons-discovery-0.4.jar",
                         "commons-logging-1.1.1.jar"},
-                new Config(),
+                new NopolContext(),
                 "0 < getN()", "0 < this.getResult()", "0 <= this.getResult()",
                 "0 <= this.sumOfLogs.getResult()",
                 "0 < ((org.apache.commons.math.stat.descriptive.moment.GeometricMean)this).getResult()");
@@ -516,7 +518,7 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "specific != null",
                 "null != specific",
                 "0 != sb.length()");
@@ -535,11 +537,11 @@ public class SynthesizerOnRealBugTest {
                 oracle,
                 location,
                 new String[] {},
-                new Config(),
+                new NopolContext(),
                 "scalar");
     }
 
-    private void test(String projectName, boolean isMaven, String sourceFolder, Map<String, Object[]> oracle,SourceLocation location, String[] dependencies, Config config, String... patch) {
+    private void test(String projectName, boolean isMaven, String sourceFolder, Map<String, Object[]> oracle, SourceLocation location, String[] dependencies, NopolContext nopolContext, String... patch) {
         String realBugPath = "../../nopol-dataset/";
         String rootFolder = realBugPath + projectName + "/";
         String srcFolder = rootFolder + "src/";
@@ -559,7 +561,7 @@ public class SynthesizerOnRealBugTest {
         File[] sourceFiles = { new File(srcFolder + sourceFolder) };
         URL[] classpathURL = JavaLibrary.classpathFrom(classpath);
         String[] tests = oracle.keySet().toArray(new String[0]);
-        DynamothCodeGenesis synthesizer = new DynamothCodeGenesisImpl(sourceFiles,location, classpathURL, oracle, tests, 5*60 /* 5 minutes, default in repair mode */, config);
+        DynamothCodeGenesis synthesizer = new DynamothCodeGenesisImpl(sourceFiles,location, classpathURL, oracle, tests, nopolContext);
         Candidates expression = synthesizer.run(TimeUnit.MINUTES.toMillis(15));
         check(expression, patch);
     }
