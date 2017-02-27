@@ -1,6 +1,7 @@
 package fr.inria.lille.repair.synthesis;
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.TestUtility;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.expression.Expression;
@@ -29,9 +30,9 @@ public class DynamothCodeGenesisTest {
         oracle.put("test5", new Object[]{true});
         oracle.put("test9", new Object[]{false});
 
-		Config config = new Config();
+        NopolContext nopolContext = TestUtility.configForExample("nopol",1);
 
-		test(1, oracle, 12, new String[] {"index <= 0", "index < 1"}, config);
+		test(1, oracle, 12, new String[] {"index <= 0", "index < 1"}, nopolContext);
     }
 
     @Test
@@ -47,9 +48,9 @@ public class DynamothCodeGenesisTest {
         oracle.put("test8", new Object[]{false});
         oracle.put("test9", new Object[]{false});
 
-		Config config = new Config();
+        NopolContext nopolContext = TestUtility.configForExample("nopol",2);
 
-        test(2, oracle, 11, new String[] {"a < b"}, config);
+        test(2, oracle, 11, new String[] {"a < b"}, nopolContext);
     }
 
     @Test
@@ -65,9 +66,9 @@ public class DynamothCodeGenesisTest {
         oracle.put("test8", new Object[]{false});
         oracle.put("test9", new Object[]{false});
 
-		Config config = new Config();
+        NopolContext nopolContext = TestUtility.configForExample("nopol",3);
 
-		test(3, oracle, 11, new String[] {"tmp == 0", "0 == tmp"}, config);
+		test(3, oracle, 11, new String[] {"tmp == 0", "0 == tmp"}, nopolContext);
     }
 
     @Test
@@ -85,9 +86,9 @@ public class DynamothCodeGenesisTest {
         oracle.put("test10", new Object[]{false});
         oracle.put("test11", new Object[]{false});
 
-		Config config = new Config();
+        NopolContext nopolContext = TestUtility.configForExample("nopol",4);
 
-        DynamothCodeGenesis dynamothCodeGenesis = createSynthesizer(4, oracle, 27, config);
+        DynamothCodeGenesis dynamothCodeGenesis = createSynthesizer(4, oracle, 27, nopolContext);
         System.out.println("basic: "+ dynamothCodeGenesis.getCollectedExpressions());
         check(dynamothCodeGenesis.getCollectedExpressions(), "initializedVariableShouldBeCollected");
         check(dynamothCodeGenesis.getCollectedExpressions(), "otherInitializedVariableShouldBeCollected");
@@ -104,9 +105,9 @@ public class DynamothCodeGenesisTest {
         oracle.put("test5", new Object[]{false});
         oracle.put("test6", new Object[]{true});
 
-		Config config = new Config();
+        NopolContext nopolContext = TestUtility.configForExample("nopol",5);
 
-		test(5, oracle, 20, new String[] {"0 <= a", "1 <= a", "r <= a"}, config);
+		test(5, oracle, 20, new String[] {"0 <= a", "1 <= a", "r <= a"}, nopolContext);
     }
 
     @Test
@@ -119,9 +120,9 @@ public class DynamothCodeGenesisTest {
         oracle.put("test5", new Object[]{false});
         oracle.put("test6", new Object[]{false});
 
-		Config config = new Config();
+        NopolContext nopolContext = TestUtility.configForExample("nopol",6);
 
-		test(6, oracle, 7, new String[] {"a < b"}, config);
+		test(6, oracle, 7, new String[] {"a < b"}, nopolContext);
     }
 
 
@@ -140,9 +141,9 @@ public class DynamothCodeGenesisTest {
         oracle.put("test_10", new Object[]{false});
         oracle.put("test_11", new Object[]{false});
 
-		Config config = new Config();
+        NopolContext nopolContext = TestUtility.configForExample("nopol",8);
 
-        test(8, oracle, 12, new String[] {"(b * a) <= 100", "(a * b) <= 100", "a <= (100 / b)", "b <= (100 / a)"}, config);
+        test(8, oracle, 12, new String[] {"(b * a) <= 100", "(a * b) <= 100", "a <= (100 / b)", "b <= (100 / a)"}, nopolContext);
     }
 
     @Test
@@ -153,11 +154,11 @@ public class DynamothCodeGenesisTest {
         oracle.put("test_3", new Object[]{true});
         oracle.put("test_4", new Object[]{false});
 
-		Config config = new Config();
+        NopolContext nopolContext = TestUtility.configForExample("nopol",12);
 
-        config.setOnlyOneSynthesisResult(false);
+        nopolContext.setOnlyOneSynthesisResult(false);
         
-        DynamothCodeGenesis dynamothCodeGenesis = createSynthesizer(12, oracle, 5, config);
+        DynamothCodeGenesis dynamothCodeGenesis = createSynthesizer(12, oracle, 5, nopolContext);
         System.out.println("basic: "+ dynamothCodeGenesis.getCollectedExpressions());
         assertEquals(13, dynamothCodeGenesis.getCollectedExpressions().size());
         
@@ -185,10 +186,10 @@ public class DynamothCodeGenesisTest {
         oracle.put("test_2", new Object[]{false});
         oracle.put("test_3", new Object[]{false});
 
-		Config config = new Config();
-        config.setOnlyOneSynthesisResult(false);
+		NopolContext nopolContext = TestUtility.configForExample("nopol",13);
+        nopolContext.setOnlyOneSynthesisResult(false);
 
-        DynamothCodeGenesis dynamothCodeGenesis = createSynthesizer(13, oracle, 4, config);
+        DynamothCodeGenesis dynamothCodeGenesis = createSynthesizer(13, oracle, 4, nopolContext);
         System.out.println("basic: "+ dynamothCodeGenesis.getCollectedExpressions());
         //assertEquals(12,dynamothCodeGenesis.getCollectedExpressions().size());
 
@@ -196,7 +197,7 @@ public class DynamothCodeGenesisTest {
         check(dynamothCodeGenesis.getValidExpressions(), "(list == null) || list.isEmpty()");
     }
 
-    private DynamothCodeGenesis createSynthesizer(int nopolExampleNumber, Map<String, Object[]> o, int line, Config config) {
+    private DynamothCodeGenesis createSynthesizer(int nopolExampleNumber, Map<String, Object[]> o, int line, NopolContext nopolContext) {
         String executionType = "nopol";
         String pack = executionType + "_examples." + executionType + "_example_" + nopolExampleNumber;
         String className = pack + ".NopolExample";
@@ -210,18 +211,20 @@ public class DynamothCodeGenesisTest {
             tests.add(testName + "#" + next);
         }
 
-        config.setDataCollectionTimeoutInSecondForSynthesis(5);
+        nopolContext.setDataCollectionTimeoutInSecondForSynthesis(5);
 
         String classpath = "../test-projects/target/test-classes"+File.pathSeparatorChar+"../test-projects/target/classes/"+File.pathSeparatorChar+"lib/junit-4.11.jar";
         SourceLocation location = new SourceLocation(className, line);
         File[] files = new File []{new File("../test-projects/src/main/java/"), new File("../test-projects/src/test/java/")};
-        DynamothCodeGenesis dynamothCodeGenesis = new DynamothCodeGenesisImpl(files, location, JavaLibrary.classpathFrom(classpath), oracle, tests.toArray(new String[0]), config);
+
+        DynamothCodeGenesis dynamothCodeGenesis = new DynamothCodeGenesisImpl(files, location, JavaLibrary.classpathFrom(classpath), oracle, tests.toArray(new String[0]),nopolContext);
+
         dynamothCodeGenesis.run(TimeUnit.MINUTES.toMillis(15));
         return dynamothCodeGenesis;
     }
     
-    private DynamothCodeGenesis test(int nopolExampleNumber, Map<String, Object[]> o, int line, String[] patch, Config config) {
-		DynamothCodeGenesis dynamothCodeGenesis = createSynthesizer(nopolExampleNumber, o, line, config);
+    private DynamothCodeGenesis test(int nopolExampleNumber, Map<String, Object[]> o, int line, String[] patch, NopolContext nopolContext) {
+		DynamothCodeGenesis dynamothCodeGenesis = createSynthesizer(nopolExampleNumber, o, line, nopolContext);
         Candidates expressions = dynamothCodeGenesis.getValidExpressions();
         check(expressions, patch);
         return dynamothCodeGenesis;

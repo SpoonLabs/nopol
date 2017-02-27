@@ -15,7 +15,7 @@
  */
 package fr.inria.lille.repair.common.patch;
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.diff.PatchGenerator;
@@ -87,8 +87,8 @@ public class StringPatch implements Patch {
     }
 
     @Override
-    public String toDiff(Factory spoon, Config config) {
-        return new PatchGenerator(this, spoon, config).getPatch();
+    public String toDiff(Factory spoon, NopolContext nopolContext) {
+        return new PatchGenerator(this, spoon, nopolContext).getPatch();
     }
 
     /**

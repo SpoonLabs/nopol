@@ -1,12 +1,8 @@
 package fr.inria.lille.repair.common.config;
 
-import fr.inria.lille.localization.DumbFaultLocalizerImpl;
-import fr.inria.lille.localization.FaultLocalizer;
-import fr.inria.lille.localization.GZoltarFaultLocalizer;
-import fr.inria.lille.localization.OchiaiFaultLocalizer;
+import fr.inria.lille.repair.TestClassesFinder;
 import fr.inria.lille.repair.common.synth.StatementType;
 import xxl.java.library.FileLibrary;
-import xxl.java.library.JavaLibrary;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +14,7 @@ import java.util.Properties;
 /**
  * Created by Thomas Durieux on 23/03/15.
  */
-public class Config implements Serializable {
+public class NopolContext implements Serializable {
 
 	private static final long serialVersionUID = -2542128741040978263L;
 	private boolean json;
@@ -89,13 +85,29 @@ public class Config implements Serializable {
 	private NopolSolver solver = NopolSolver.Z3;
 	private NopolLocalizer localizer = NopolLocalizer.OCHIAI;
 	private String solverPath;
-	private String[] projectSourcePath;
-	private String projectClasspath;
+
+	private File[] projectSources;
+	private URL[] projectClasspath;
 	private String[] projectTests;
 
 	private int complianceLevel;
 
-	public Config() {
+	public NopolContext() {
+		this.initFromFile();
+	}
+
+	public NopolContext(String sourceFile, URL[] classpath, String[] testClasses) {
+		this(new File[] { FileLibrary.openFrom(sourceFile) }, classpath, testClasses);
+	}
+
+	public NopolContext(File[] sourceFile, URL[] classpath, String[] testClasses) {
+		this.projectSources = sourceFile;
+		this.projectClasspath = classpath;
+		this.projectTests = testClasses;
+		if (this.projectTests == null && classpath != null) {
+			this.projectTests = new TestClassesFinder().findIn(classpath, false);
+		}
+
 		this.initFromFile();
 	}
 
@@ -380,28 +392,16 @@ public class Config implements Serializable {
 		this.solverPath = solverPath;
 	}
 
-	public String[] getProjectSourcePath() {
-		return projectSourcePath;
+	public File[] getProjectSources() {
+		return projectSources;
 	}
 
-	public void setProjectSourcePath(String[] projectSourcePath) {
-		this.projectSourcePath = projectSourcePath;
-	}
-
-	public String getProjectClasspath() {
+	public URL[] getProjectClasspath() {
 		return projectClasspath;
-	}
-
-	public void setProjectClasspath(String projectClasspath) {
-		this.projectClasspath = projectClasspath;
 	}
 
 	public String[] getProjectTests() {
 		return projectTests;
-	}
-
-	public void setProjectTests(String[] projectTests) {
-		this.projectTests = projectTests;
 	}
 
 	public int getComplianceLevel() {
@@ -461,6 +461,22 @@ public class Config implements Serializable {
 		return json;
 	}
 
+	public void setProjectSources(String projectSources) {
+		this.setProjectSourcePath(new File[] { FileLibrary.openFrom(projectSources) });
+	}
+
+	public void setProjectSourcePath(File[] projectSourcePath) {
+		this.projectSources = projectSourcePath;
+	}
+
+	public void setProjectClasspath(URL[] projectClasspath) {
+		this.projectClasspath = projectClasspath;
+	}
+
+	public void setProjectTests(String[] projectTests) {
+		this.projectTests = projectTests;
+	}
+
 	public int getDataCollectionTimeoutInSecondForSynthesis() {
 		return dataCollectionTimeoutInSecondForSynthesis;
 	}
@@ -501,7 +517,7 @@ public class Config implements Serializable {
 				", oracle=" + oracle +
 				", solver=" + solver +
 				", solverPath='" + solverPath + '\'' +
-				", projectSourcePath=" + Arrays.toString(projectSourcePath) +
+				", projectSources=" + Arrays.toString(projectSources) +
 				", projectClasspath='" + projectClasspath + '\'' +
 				", projectTests=" + Arrays.toString(projectTests) +
 				", complianceLevel=" + complianceLevel +

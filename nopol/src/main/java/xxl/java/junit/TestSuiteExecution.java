@@ -1,8 +1,7 @@
 package xxl.java.junit;
 
-import com.sun.jdi.Value;
 import fr.inria.lille.localization.TestResult;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
@@ -20,83 +19,83 @@ import static xxl.java.library.LoggerLibrary.loggerFor;
 
 public class TestSuiteExecution {
 
-    public static Result runCasesIn(String[] testClasses, ClassLoader classLoaderForTestThread, Config config) {
-        return runCasesIn(testClasses, classLoaderForTestThread, nullRunListener(), config);
+    public static Result runCasesIn(String[] testClasses, ClassLoader classLoaderForTestThread, NopolContext nopolContext) {
+        return runCasesIn(testClasses, classLoaderForTestThread, nullRunListener(), nopolContext);
     }
 
-    public static Result runCasesIn(String[] testClasses, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
-        return executionResult(new JUnitRunner(testClasses, listener), classLoaderForTestThread, config);
+    public static Result runCasesIn(String[] testClasses, ClassLoader classLoaderForTestThread, RunListener listener, NopolContext nopolContext) {
+        return executionResult(new JUnitRunner(testClasses, listener), classLoaderForTestThread, nopolContext);
     }
 
-    public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread, Config config) {
-        return runTestCase(testCase, classLoaderForTestThread, nullRunListener(), config);
+    public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread, NopolContext nopolContext) {
+        return runTestCase(testCase, classLoaderForTestThread, nullRunListener(), nopolContext);
     }
 
-    public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
-        return executionResult(new JUnitSingleTestRunner(testCase, listener), classLoaderForTestThread, config);
+    public static Result runTestCase(TestCase testCase, ClassLoader classLoaderForTestThread, RunListener listener, NopolContext nopolContext) {
+        return executionResult(new JUnitSingleTestRunner(testCase, listener), classLoaderForTestThread, nopolContext);
     }
 
-    public static Result runTest(String test, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
-        return executionResult(new JUnitSingleTestResultRunner(test, listener), classLoaderForTestThread, config);
+    public static Result runTest(String test, ClassLoader classLoaderForTestThread, RunListener listener, NopolContext nopolContext) {
+        return executionResult(new JUnitSingleTestResultRunner(test, listener), classLoaderForTestThread, nopolContext);
     }
 
-    public static Result runTestCase(TestResult testCase, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
-        return executionResult(new JUnitSingleTestResultRunner(testCase.getTestCase().toString(), listener), classLoaderForTestThread, config);
+    public static Result runTestCase(TestResult testCase, ClassLoader classLoaderForTestThread, RunListener listener, NopolContext nopolContext) {
+        return executionResult(new JUnitSingleTestResultRunner(testCase.getTestCase().toString(), listener), classLoaderForTestThread, nopolContext);
     }
 
-    public static CompoundResult runTestCases(Collection<TestCase> testCases, ClassLoader classLoaderForTestThread, Config config) {
-        return runTestCases(testCases, classLoaderForTestThread, nullRunListener(), config);
+    public static CompoundResult runTestCases(Collection<TestCase> testCases, ClassLoader classLoaderForTestThread, NopolContext nopolContext) {
+        return runTestCases(testCases, classLoaderForTestThread, nullRunListener(), nopolContext);
     }
 
-    public static CompoundResult runTestResult(Collection<TestResult> testCases, ClassLoader classLoaderForTestThread, Config config) {
-        return runTestResult(testCases, classLoaderForTestThread, nullRunListener(), config);
+    public static CompoundResult runTestResult(Collection<TestResult> testCases, ClassLoader classLoaderForTestThread, NopolContext nopolContext) {
+        return runTestResult(testCases, classLoaderForTestThread, nullRunListener(), nopolContext);
     }
 
-    public static Result runTest(String[] testClasses, ClassLoader loader, Config config) {
-        return runTest(testClasses, loader, nullRunListener(), config);
+    public static Result runTest(String[] testClasses, ClassLoader loader, NopolContext nopolContext) {
+        return runTest(testClasses, loader, nullRunListener(), nopolContext);
     }
 
-    public static Result runTest(String[] testClasses, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
+    public static Result runTest(String[] testClasses, ClassLoader classLoaderForTestThread, RunListener listener, NopolContext nopolContext) {
         List<Result> results = MetaList.newArrayList(testClasses.length);
         for (String testCase : testClasses) {
-            results.add(runTest(testCase, classLoaderForTestThread, listener, config));
+            results.add(runTest(testCase, classLoaderForTestThread, listener, nopolContext));
         }
         return new CompoundResult(results);
     }
 
-    public static CompoundResult runTestResult(Collection<TestResult> testCases, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
+    public static CompoundResult runTestResult(Collection<TestResult> testCases, ClassLoader classLoaderForTestThread, RunListener listener, NopolContext nopolContext) {
         List<Result> results = MetaList.newArrayList(testCases.size());
         for (TestResult testCase : testCases) {
             if (testCase.getTestCase().className().startsWith("junit.")) {
                 continue;
             }
-            results.add(runTestCase(testCase, classLoaderForTestThread, listener, config));
+            results.add(runTestCase(testCase, classLoaderForTestThread, listener, nopolContext));
         }
         return new CompoundResult(results);
     }
 
-    public static CompoundResult runTestCases(Collection<TestCase> testCases, ClassLoader classLoaderForTestThread, RunListener listener, Config config) {
+    public static CompoundResult runTestCases(Collection<TestCase> testCases, ClassLoader classLoaderForTestThread, RunListener listener, NopolContext nopolContext) {
         List<Result> results = MetaList.newArrayList(testCases.size());
         for (TestCase testCase : testCases) {
-            results.add(runTestCase(testCase, classLoaderForTestThread, listener, config));
+            results.add(runTestCase(testCase, classLoaderForTestThread, listener, nopolContext));
         }
         return new CompoundResult(results);
     }
 
-    private static Result executionResult(Callable<Result> callable, ClassLoader classLoaderForTestThread, Config config) {
+    private static Result executionResult(Callable<Result> callable, ClassLoader classLoaderForTestThread, NopolContext nopolContext) {
         ExecutorService executor = Executors.newSingleThreadExecutor(new CustomClassLoaderThreadFactory(classLoaderForTestThread));
         Result result = null;
 
         Future<Result> future = executor.submit(callable);
         try {
             executor.shutdown();
-            result = future.get(config.getTimeoutTestExecution(), TimeUnit.SECONDS);
+            result = future.get(nopolContext.getTimeoutTestExecution(), TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
-            logDebug(logger(), String.format("Timeout after %d seconds. Infinite loop?", config.getTimeoutTestExecution()));
+            logDebug(logger(), String.format("Timeout after %d seconds. Infinite loop?", nopolContext.getTimeoutTestExecution()));
             throw new RuntimeException(e);
         } finally {
             executor.shutdownNow();

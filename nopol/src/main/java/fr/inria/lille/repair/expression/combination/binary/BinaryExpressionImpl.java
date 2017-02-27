@@ -1,7 +1,7 @@
 package fr.inria.lille.repair.expression.combination.binary;
 
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.expression.Expression;
 import fr.inria.lille.repair.expression.ExpressionImpl;
@@ -23,8 +23,8 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
     /**
      *
      */
-    public BinaryExpressionImpl(BinaryOperator operator, Expression first, Expression second, Config config) {
-        super(null, config);
+    public BinaryExpressionImpl(BinaryOperator operator, Expression first, Expression second, NopolContext nopolContext) {
+        super(null, nopolContext);
         this.operator = operator;
         this.first = first;
         this.second = second;
@@ -184,7 +184,7 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
     }
 
     private boolean isValue(Value v1, Number v2) {
-        Value eval = new BinaryExpressionEvaluator(CombinationFactory.create(BinaryOperator.EQ, AccessFactory.literal(v1.getRealValue(), config), AccessFactory.literal(v2, config), config)).eval();
+        Value eval = new BinaryExpressionEvaluator(CombinationFactory.create(BinaryOperator.EQ, AccessFactory.literal(v1.getRealValue(), nopolContext), AccessFactory.literal(v2, nopolContext), nopolContext)).eval();
         if (eval == null) {
             return false;
         }
@@ -224,34 +224,34 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
         double weight = 0;
         switch (getOperator()) {
             case AND:
-                weight = this.config.getAndWeight();
+                weight = this.nopolContext.getAndWeight();
                 break;
             case OR:
-                weight = this.config.getOrWeight();
+                weight = this.nopolContext.getOrWeight();
                 break;
             case EQ:
-                weight = this.config.getEqWeight();
+                weight = this.nopolContext.getEqWeight();
                 break;
             case NEQ:
-                weight = this.config.getnEqWeight();
+                weight = this.nopolContext.getnEqWeight();
                 break;
             case LESS:
-                weight = this.config.getLessWeight();
+                weight = this.nopolContext.getLessWeight();
                 break;
             case LESSEQ:
-                weight = this.config.getLessEqWeight();
+                weight = this.nopolContext.getLessEqWeight();
                 break;
             case ADD:
-                weight = this.config.getAddWeight();
+                weight = this.nopolContext.getAddWeight();
                 break;
             case SUB:
-                weight = this.config.getSubWeight();
+                weight = this.nopolContext.getSubWeight();
                 break;
             case MULT:
-                weight = this.config.getMulWeight();
+                weight = this.nopolContext.getMulWeight();
                 break;
             case DIV:
-                weight = this.config.getDivWeight();
+                weight = this.nopolContext.getDivWeight();
                 break;
         }
         return weight * getPriority() * getFirstExpression().getWeight() * getSecondExpression().getWeight();

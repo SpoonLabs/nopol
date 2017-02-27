@@ -2,7 +2,7 @@ package fr.inria.lille.localization;
 
 import fil.iagl.opl.cocospoon.processors.WatcherProcessor;
 import fr.inria.lille.commons.spoon.SpoonedProject;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import instrumenting._Instrumenting;
 import org.junit.Test;
@@ -10,10 +10,8 @@ import xxl.java.junit.TestCase;
 import xxl.java.junit.TestCasesListener;
 import xxl.java.junit.TestSuiteExecution;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,21 +24,20 @@ public class DumbFaultLocalizerImpl implements FaultLocalizer {
 
 	protected Map<SourceLocation, List<TestResult>> countPerSourceLocation;
 
-	public DumbFaultLocalizerImpl(File[] sourcesClasses, URL[] classpath, String[] testClasses, Config config) {
-		SpoonedProject spooner = new SpoonedProject(sourcesClasses, classpath, config);
+	public DumbFaultLocalizerImpl(NopolContext nopolContext) {
+		SpoonedProject spooner = new SpoonedProject(nopolContext.getProjectSources(), nopolContext);
 		WatcherProcessor processor = new WatcherProcessor();
-		runTests(testClasses, config, spooner, processor);
+		runTests(nopolContext.getProjectTests(), nopolContext, spooner, processor);
 	}
 
 	/**
 	 * run all testClasses to build the covered code
 	 *
-	 * @param testClasses
-	 * @param config
+	 * @param nopolContext
 	 * @param spooner
 	 * @param processor
 	 */
-	protected void runTests(String[] testClasses, Config config, SpoonedProject spooner, WatcherProcessor processor) {
+	protected void runTests(String[] testClasses, NopolContext nopolContext, SpoonedProject spooner, WatcherProcessor processor) {
 		ClassLoader cl = spooner.processedAndDumpedToClassLoader(processor);
 		TestCasesListener listener = new TestCasesListener();
 		Map<String, Boolean> resultsPerNameOfTest = new HashMap<>();
@@ -49,7 +46,7 @@ public class DumbFaultLocalizerImpl implements FaultLocalizer {
 			try {
 				for (String methodName : this.getTestMethods(cl.loadClass(testClasses[i]))) {
 					String testMethod = testClasses[i] + "#" + methodName;
-					TestSuiteExecution.runTest(testMethod, cl, listener, config);
+					TestSuiteExecution.runTest(testMethod, cl, listener, nopolContext);
 					linesExecutedPerTestNames.put(testMethod, copyExecutedLinesAndReinit(_Instrumenting.lines));
 					resultsPerNameOfTest.put(testMethod, listener.numberOfFailedTests() == 0);
 				}

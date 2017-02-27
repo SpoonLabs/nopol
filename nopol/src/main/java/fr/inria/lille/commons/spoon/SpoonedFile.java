@@ -1,7 +1,7 @@
 package fr.inria.lille.commons.spoon;
 
 import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import org.apache.log4j.Level;
 import org.slf4j.Logger;
 import spoon.compiler.Environment;
@@ -46,21 +46,21 @@ public abstract class SpoonedFile {
     private Map<String, byte[]> compiledClasses;
     private DefaultJavaPrettyPrinter prettyPrinter;
 
-    protected final Config config;
+    protected final NopolContext nopolContext;
 
-    public SpoonedFile(File[] sourceFiles, URL[] projectClasspath, Config config) {
-        this.config = config;
+    public SpoonedFile(File[] sourceFiles, NopolContext nopolContext) {
+        this.nopolContext = nopolContext;
         this.sourceFiles = sourceFiles;
-        this.projectClasspath = projectClasspath;
+        this.projectClasspath = nopolContext.getProjectClasspath();
 
         factory = SpoonModelLibrary.newFactory();
-        factory.getEnvironment().setComplianceLevel(config.getComplianceLevel());
+        factory.getEnvironment().setComplianceLevel(nopolContext.getComplianceLevel());
         factory.getEnvironment().setCommentEnabled(false);
         factory.getEnvironment().setLevel(Level.OFF.toString());
 
         factory = SpoonModelLibrary.modelFor(factory, sourceFiles, projectClasspath());
 
-        compiler = new DynamicClassCompiler(compilationClasspath(), config);
+        compiler = new DynamicClassCompiler(compilationClasspath());
         manager = new RuntimeProcessingManager(factory);
         compiledClasses = MetaMap.newHashMap();
         prettyPrinter = new DefaultJavaPrettyPrinter(spoonEnvironment());

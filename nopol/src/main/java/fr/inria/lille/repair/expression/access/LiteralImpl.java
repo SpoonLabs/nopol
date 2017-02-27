@@ -1,14 +1,14 @@
 package fr.inria.lille.repair.expression.access;
 
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.expression.ExpressionImpl;
 import fr.inria.lille.repair.expression.value.Value;
 
 public class LiteralImpl extends ExpressionImpl implements Literal {
 
-    public LiteralImpl(Value value, Config config) {
-        super(value, config);
+    public LiteralImpl(Value value, NopolContext nopolContext) {
+        super(value, nopolContext);
         value.setConstant(true);
     }
 
@@ -24,7 +24,7 @@ public class LiteralImpl extends ExpressionImpl implements Literal {
 
     @Override
     public double getWeight() {
-        return config.getConstantWeight() * getPriority();
+        return nopolContext.getConstantWeight() * getPriority();
     }
 
     @Override

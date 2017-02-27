@@ -3,10 +3,10 @@ package actor;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import com.google.common.io.Files;
-import fr.inria.lille.repair.ProjectReference;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.NoPol;
+import xxl.java.library.JavaLibrary;
 
 import java.io.File;
 import java.util.Collections;
@@ -25,25 +25,27 @@ public class InternalNopolActor extends UntypedActor {
 
 			ConfigActor configActor = (ConfigActor) message;
 
-			Config config = configActor.getConfig();
+			NopolContext nopolContext = configActor.getNopolContext();
 			File tempDirectory = Files.createTempDir();
 			UnZiper.unZipIt(configActor.getContent(), tempDirectory.getAbsolutePath());
 			ActorRef client = configActor.getClient();
 
-			if (config.getSynthesis() == Config.NopolSynthesis.SMT) {
-				config.setSolverPath(pathToSolver);
+			if (nopolContext.getSynthesis() == NopolContext.NopolSynthesis.SMT) {
+				nopolContext.setSolverPath(pathToSolver);
 			}
 
 			String sourceFile = tempDirectory.toString() + "/src/";
-			String classPath = getClasspathFromTargetFolder(new File(tempDirectory.getCanonicalPath() + "/target"));
+			String classPath = getClasspathFromTargetFolder(new File(tempDirectory.getCanonicalPath() + "/target/"));
 
 			System.out.println(tempDirectory);
 
 			List<Patch> patches = Collections.EMPTY_LIST;
-			ProjectReference projectReference = new ProjectReference(sourceFile, classPath, config.getProjectTests());
-			config.setProjectSourcePath(new String[]{sourceFile});
+			nopolContext.setProjectSources(sourceFile);
+			nopolContext.setProjectClasspath(JavaLibrary.classpathFrom(classPath));
+			nopolContext.setComplianceLevel(8);
+
 			try {
-				NoPol noPol = new NoPol(projectReference, config);
+				NoPol noPol = new NoPol(nopolContext);
 				patches = noPol.build();
 			} catch (Exception e) {
 				throw new RuntimeException("Error launch NoPol", e);

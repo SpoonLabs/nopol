@@ -1,7 +1,7 @@
 package fr.inria.lille.repair.expression;
 
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.expression.value.Value;
 
@@ -13,11 +13,11 @@ public abstract class ExpressionImpl implements Expression {
     private double priority;
 
     private Value value;
-    protected Config config;
+    protected NopolContext nopolContext;
 
-    public ExpressionImpl(Value value, Config config) {
+    public ExpressionImpl(Value value, NopolContext nopolContext) {
         setValue(value);
-        this.config = config;
+        this.nopolContext = nopolContext;
         this.priority = 1;
     }
 

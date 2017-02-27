@@ -3,14 +3,12 @@ package fr.inria.lille.localization;
 import fil.iagl.opl.cocospoon.processors.WatcherProcessor;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.localization.metric.Metric;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import instrumenting._Instrumenting;
 import xxl.java.junit.TestCasesListener;
 import xxl.java.junit.TestSuiteExecution;
 
-import java.io.File;
-import java.net.URL;
 import java.util.*;
 
 /**
@@ -24,14 +22,14 @@ public class CocoSpoonBasedSpectrumBasedFaultLocalizer extends DumbFaultLocalize
 
 	private List<StatementSourceLocation> statements;
 
-	public CocoSpoonBasedSpectrumBasedFaultLocalizer(File[] sourcesClasses, URL[] classpath, String[] testClasses, Config config, Metric metric) {
-		super(sourcesClasses, classpath, testClasses, config);
+	public CocoSpoonBasedSpectrumBasedFaultLocalizer(NopolContext nopolContext, Metric metric) {
+		super(nopolContext);
 		this.metric = metric;
 		this.statements = new ArrayList<>();
 	}
 
 	@Override
-	protected void runTests(String[] testClasses, Config config, SpoonedProject spooner, WatcherProcessor processor) {
+	protected void runTests(String[] testClasses, NopolContext nopolContext, SpoonedProject spooner, WatcherProcessor processor) {
 		ClassLoader cl = spooner.processedAndDumpedToClassLoader(processor);
 		TestCasesListener listener = new TestCasesListener();
 		Map<String, Boolean> resultsPerNameOfTest = new HashMap<>();
@@ -42,7 +40,7 @@ public class CocoSpoonBasedSpectrumBasedFaultLocalizer extends DumbFaultLocalize
 			try {
 				for (String methodName : super.getTestMethods(cl.loadClass(testClasses[i]))) {
 					String testMethod = testClasses[i] + "#" + methodName;
-					TestSuiteExecution.runTest(testMethod, cl, listener, config);
+					TestSuiteExecution.runTest(testMethod, cl, listener, nopolContext);
 					//Since we executed one test at the time, the listener contains one and only one TestCase
 					boolean testSucceed = listener.numberOfFailedTests() == 0;
 					resultsPerNameOfTest.put(testMethod, testSucceed);

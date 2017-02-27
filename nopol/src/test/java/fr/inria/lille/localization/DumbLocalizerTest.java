@@ -1,6 +1,6 @@
 package fr.inria.lille.localization;
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import org.junit.Test;
 
@@ -28,8 +28,8 @@ public class DumbLocalizerTest {
 				new File("../test-projects/target/test-classes").toURI().toURL()
 		};
 		String [] testClasses = new String[] {"nopol_examples.nopol_example_1.NopolExampleTest"};
-		Config config = new Config();
-		DumbFaultLocalizerImpl localizer = new DumbFaultLocalizerImpl(sources, classpath, testClasses, config);
+		NopolContext nopolContext = new NopolContext(sources, classpath, testClasses);
+		DumbFaultLocalizerImpl localizer = new DumbFaultLocalizerImpl(nopolContext);
 
 		Map<SourceLocation, List<TestResult>> executedSourceLocationPerTest = localizer.getTestListPerStatement();
 		assertEquals(8, executedSourceLocationPerTest.keySet().size());

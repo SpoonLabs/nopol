@@ -1,6 +1,6 @@
 package fr.inria.lille.repair.nopol.spoon;
 
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.spoon.smt.ConditionalAdder;
 import fr.inria.lille.repair.nopol.spoon.smt.ConditionalReplacer;
@@ -24,16 +24,16 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
 
     private final File file;
     private final int line;
-    private final Config config;
+    private final NopolContext nopolContext;
 
     private List<NopolProcessor> nopolProcessors;
 
     public NopolProcessorBuilder(final File file, final int line,
-                                 final Config config) {
+                                 final NopolContext nopolContext) {
         checkArgument(line > 0, "Line should be greater than 0: %s", line);
         this.file = checkNotNull(file);
         this.line = line;
-        this.config = config;
+        this.nopolContext = nopolContext;
         this.nopolProcessors = new ArrayList<>();
     }
 
@@ -54,9 +54,9 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
 
     private void conditionalReplacer(CtStatement statement) {
         if (SpoonPredicate.canBeRepairedByChangingCondition(statement)) {
-            if (config.getOracle() == Config.NopolOracle.ANGELIC) {
+            if (nopolContext.getOracle() == NopolContext.NopolOracle.ANGELIC) {
                 nopolProcessors.add(new ConditionalReplacer(statement));
-            } else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
+            } else if (nopolContext.getOracle() == NopolContext.NopolOracle.SYMBOLIC) {
                 nopolProcessors.add(new SymbolicConditionalReplacer(statement));
             }
         }
@@ -64,24 +64,24 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
 
     private void preconditionalReplacer(CtStatement statement) {
         if (SpoonPredicate.canBeRepairedByAddingPrecondition(statement)) {
-            if (config.getOracle() == Config.NopolOracle.ANGELIC) {
+            if (nopolContext.getOracle() == NopolContext.NopolOracle.ANGELIC) {
                 nopolProcessors.add(new ConditionalAdder(statement));
-            } else if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
+            } else if (nopolContext.getOracle() == NopolContext.NopolOracle.SYMBOLIC) {
                 nopolProcessors.add(new SymbolicConditionalAdder(statement));
             }
         }
     }
 
     private void symbolicReplacer(CtStatement statement) {
-        StatementType typeToAnalyse = config.getType();
-        if (config.getOracle() == Config.NopolOracle.SYMBOLIC) {
+        StatementType typeToAnalyse = nopolContext.getType();
+        if (nopolContext.getOracle() == NopolContext.NopolOracle.SYMBOLIC) {
             nopolProcessors.add(new LiteralReplacer(typeToAnalyse.getType(), statement, typeToAnalyse));
         }
     }
 
     @Override
     public void process(CtStatement statement) {
-        StatementType typeToAnalyse = config.getType();
+        StatementType typeToAnalyse = nopolContext.getType();
 
         switch (typeToAnalyse) {
             case PRE_THEN_COND:
