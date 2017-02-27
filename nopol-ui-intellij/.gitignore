@@ -1,0 +1,7 @@
+.idea/
+target
+nopol-plugin.iml
+nopol-plugin.ipr
+nopol-plugin.iws
+.gradle
+build

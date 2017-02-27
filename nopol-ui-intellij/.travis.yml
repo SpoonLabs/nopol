@@ -1,0 +1,19 @@
+language: java
+jdk: oraclejdk8
+cache:
+  directories:
+  - ".autoconf"
+  - "$HOME/.m2"
+install:
+  - chmod +x .travis_install.sh
+  - ./.travis_install.sh
+script:
+  - chmod +x .travis_build.sh
+  - ./.travis_build.sh
+after_succes:
+  - chmod +x .travis_publish.sh
+  - ./.travis_publish.sh
+env:
+  global:
+  - secure: kkRm5wilpaeAdZAWqEdvgXPBtauLnl0cO8rnT6NLp6KGoKxNxSDzHKd5a6aujc6i/XhTu8M4N1J11dJIAECMb418h7m7D10yMiMiQJKi8M4YHcq/eoTr0SZlnvsevmMB4EQ071oTBIcOKe8CuXa78qCFW5okKIyZoLToOaQHhnBGoNPKjXcGPErv7e+5rZ80TOgHWWFLhN0AigTzCdIL1ueIkiqPTc1Yn3N89ASKa2ghJEHxogv0xXd69B/c6mJaRahl/nx0p6OBc8+oEPfHsDWeHtVuSmP01RtHjpQpUoB/w0Gb2h7N7jieoZsJoinzVStBqmTiXpq6UNPhvVRBWx7Thyy+9KWVi4tBHttxOIaXI3LWOJUKZM/mhMMfCSvn6cBS9KJ4r++ulQ7cqqh40LJ7K5ct3+9Y+slU5saR+5oL2lQaWHQ5uRz0LOXUi2P/B8dNy5geyJT2OsCuDYxtMk+ETpUdN/Ldu3j2LdVYat8yXgvkNPSqXY6BvVA+mfNQ7FEFV8Ohd8Au4OtioZwoU33FTWHYE872bG2MHcQm3JeazQHdUvw5Ufec5ZcnsEIBLcEGP5MsP3FB9A+CKsO2VrFgcNqogSh0vj5oztGiHF1O18P0kocmQ/cObdbzltu6qQUx+t3tkQpmdi6IOHcDtt1m+cq3fA/3W3ee7AJwDJg=
+  - secure: nUxn3lIy7z3losged57i/C/WNICL963SbulfWWjPKsrUjsckpjo9sHdNLpdDdERzwyfNi0qKyGlpkmuhupyuKF4MrR24sBS/U6IE6vc7icIDEUgvYAlfi3z8Tq5MFXRpnD4g6iA6Pd5X+2Kasxbet/QbrumAdXdmxD+0zPpsGVWAQVF+Rd/HWsaw+FxIiGwLewpi8618PJ5xgJBtr0TNa8c2h2x0K7Rj/qGNkyHEsRcWPWPJsS3KmcTPme8Ix7Od9ff4g3MJu970zLLDHt7LtqQG0hn/OSyUelOThIYjCf1mlMnAuMHOYEsPXVqoD5WY03FzALxntIXXbuQm6FHttluLRpd5c5sEHKr47roLhL+3Cg8yf7m9ZFodBFWChB2tlERhAGopXBEKExKKrL4UbyoDtAu85OYVP2it2f3w7uTZUT0tgtmcfZs2rXDfF4G0YMMhbxC5qPSZPR0BI/nJZERLgy8rW2XMpYOQJUq6MpCgvQkaFXdrW4WcZR5/XPNWYfJDP2VIW3CSBJItmH0r+AKBT+oHtmx1dAgbbCIkjGYD8xOGK2aapl4cH/C7N5CvsXhLYO6kQUlyOALfu+Ml1pNS4CnJHbHYwWkxJgGY9ndAgfN/OshIqnyRm5c8cIbdA/5xY6QxCVTOoRVvY9sH2FgGPk6MV2x5UI7YDnrAY/Y=
