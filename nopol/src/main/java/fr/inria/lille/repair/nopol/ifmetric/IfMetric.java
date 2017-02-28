@@ -1,7 +1,7 @@
 package fr.inria.lille.repair.nopol.ifmetric;
 
 import fr.inria.lille.commons.spoon.SpoonedProject;
-import fr.inria.lille.repair.TestClassesFinder;
+import fr.inria.lille.repair.common.finder.TestClassesFinder;
 import fr.inria.lille.repair.common.config.NopolContext;
 import xxl.java.junit.TestSuiteExecution;
 

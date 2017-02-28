@@ -5,7 +5,7 @@ import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.localization.AbstractStatement;
 import fr.inria.lille.localization.GZoltarFaultLocalizer;
 import fr.inria.lille.localization.StatementExt;
-import fr.inria.lille.repair.TestClassesFinder;
+import fr.inria.lille.repair.common.finder.TestClassesFinder;
 import fr.inria.lille.repair.common.config.NopolContext;
 
 import java.io.IOException;
