@@ -8,7 +8,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -96,24 +98,30 @@ public class NopolContext implements Serializable {
 	private File[] projectSources;
 	private URL[] projectClasspath;
 	private String[] projectTests;
+	private List<String> testMethodsToIgnore; // tst methods
 
 
 	public NopolContext() {
+		this.testMethodsToIgnore = new ArrayList<String>();
 		this.initFromFile();
 	}
 
 	public NopolContext(String sourceFile, URL[] classpath, String[] testClasses) {
-		this(new File[] { FileLibrary.openFrom(sourceFile) }, classpath, testClasses);
+		this(new File[] { FileLibrary.openFrom(sourceFile) }, classpath, testClasses, new ArrayList<String>());
 	}
 
 	public NopolContext(File[] sourceFile, URL[] classpath, String[] testClasses) {
+		this(sourceFile, classpath, testClasses, new ArrayList<String>());
+	}
+
+	public NopolContext(File[] sourceFile, URL[] classpath, String[] testClasses, List<String> testMethodsToIgnore) {
 		this.projectSources = sourceFile;
 		this.projectClasspath = classpath;
 		this.projectTests = testClasses;
 		if (this.projectTests == null && classpath != null) {
 			this.projectTests = new TestClassesFinder().findIn(classpath, false);
 		}
-
+		this.testMethodsToIgnore = testMethodsToIgnore;
 		this.initFromFile();
 	}
 
@@ -497,6 +505,14 @@ public class NopolContext implements Serializable {
 
 	public void setSkipRegressionStep(boolean skipRegressionStep) {
 		this.skipRegressionStep = skipRegressionStep;
+	}
+
+	public List<String> getTestMethodsToIgnore() {
+		return testMethodsToIgnore;
+	}
+
+	public void setTestMethodsToIgnore(List<String> testMethodsToIgnore) {
+		this.testMethodsToIgnore = testMethodsToIgnore;
 	}
 
 	@Override

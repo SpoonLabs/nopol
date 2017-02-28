@@ -69,7 +69,10 @@ public class TestSuiteExecution {
             if (testCase.getTestCase().className().startsWith("junit.")) {
                 continue;
             }
-            results.add(runTestCase(testCase, classLoaderForTestThread, listener, nopolContext));
+            String completeTestName = testCase.getTestCase().className()+"#"+testCase.getTestCase().testName();
+            if (!nopolContext.getTestMethodsToIgnore().contains(completeTestName)) {
+                results.add(runTestCase(testCase, classLoaderForTestThread, listener, nopolContext));
+            }
         }
         return new CompoundResult(results);
     }
@@ -77,7 +80,11 @@ public class TestSuiteExecution {
     public static CompoundResult runTestCases(Collection<TestCase> testCases, ClassLoader classLoaderForTestThread, RunListener listener, NopolContext nopolContext) {
         List<Result> results = MetaList.newArrayList(testCases.size());
         for (TestCase testCase : testCases) {
-            results.add(runTestCase(testCase, classLoaderForTestThread, listener, nopolContext));
+            String completeTestName = testCase.className()+"#"+testCase.testName();
+            if (!nopolContext.getTestMethodsToIgnore().contains(completeTestName)) {
+                results.add(runTestCase(testCase, classLoaderForTestThread, listener, nopolContext));
+            }
+
         }
         return new CompoundResult(results);
     }

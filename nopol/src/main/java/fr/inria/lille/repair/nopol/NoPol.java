@@ -27,7 +27,6 @@ import fr.inria.lille.localization.FaultLocalizer;
 import fr.inria.lille.localization.GZoltarFaultLocalizer;
 import fr.inria.lille.localization.OchiaiFaultLocalizer;
 import fr.inria.lille.localization.TestResult;
-import fr.inria.lille.repair.Main;
 import fr.inria.lille.repair.TestClassesFinder;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
@@ -215,7 +214,7 @@ public class NoPol {
 			executor.shutdown();
 			return (List) nopolExecution.get(nopolContext.getMaxTimeEachTypeOfFixInMinutes(), TimeUnit.MINUTES);
 		} catch (ExecutionException | InterruptedException | TimeoutException exception) {
-			LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + nopolContext.getMaxTimeEachTypeOfFixInMinutes() + " " + TimeUnit.MINUTES, exception);
+			LoggerFactory.getLogger(this.getClass()).error("Timeout: execution time > " + nopolContext.getMaxTimeEachTypeOfFixInMinutes() + " " + TimeUnit.MINUTES, exception);
 			return Collections.emptyList();
 		}
 	}
