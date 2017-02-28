@@ -67,7 +67,6 @@ public class InfinitelTest {
 		assertTrue(implanter.isUnbreakable(loops.get("otherUnfixableInfiniteLoop")));
 	}
 
-	@Ignore
 	@Test
 	public void nestedLoopIsNotInfiniteInExample3() {
 		Infinitel infinitel = infinitel(3);
@@ -80,7 +79,6 @@ public class InfinitelTest {
 		assertEquals(7, loop.position().getLine());
 	}
 
-	@Ignore
 	@Test
 	public void numberOfReturnsInExample1() {
 		Infinitel infinitel = infinitel(1);
@@ -188,6 +186,7 @@ public class InfinitelTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void infinitelExample1() {
 		/** This test is very slow with some versions of CVC4 */
@@ -209,7 +208,8 @@ public class InfinitelTest {
 		CodeGenesis fix = checkInfinitel(2, 7, 1, 1, expected);
 		checkFix(fix, asList("(a == 0)"));
 	}
-	
+
+	@Ignore
 	@Test
 	public void infinitelExample3() {
 		Map<String, Integer> expected = expectedIterationsMap(3, asList("doesNotReachZeroReturnCopy"), asList(0));
