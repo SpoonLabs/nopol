@@ -1,7 +1,7 @@
 package fr.inria.lille.repair;
 
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
-import fr.inria.lille.repair.common.config.Config;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.NoPol;
@@ -11,7 +11,6 @@ import xxl.java.library.FileLibrary;
 import xxl.java.library.JavaLibrary;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import static fr.inria.lille.commons.synthesis.smt.solver.Z3SolverFactory.isMac;
@@ -29,7 +28,7 @@ public abstract class AbstractRealBugsEvaluation {
 
     @Test
     public void CM1() {
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         StatementType statementType = StatementType.CONDITIONAL;
         String projectName = "cm1";
         List<Patch> patches = setupAndRun(
@@ -62,7 +61,7 @@ public abstract class AbstractRealBugsEvaluation {
     public void CM2() {
         StatementType statementType = StatementType.PRECONDITION;
         String projectName = "cm2";
-        Config config = new Config();
+        NopolContext config = new NopolContext();
 
         List<Patch> patches = setupAndRun(
                 projectName,
@@ -97,7 +96,7 @@ public abstract class AbstractRealBugsEvaluation {
     public void CM3() {
         String projectName = "cm3";
         StatementType statementType = StatementType.PRECONDITION;
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
                 statementType,
@@ -127,7 +126,7 @@ public abstract class AbstractRealBugsEvaluation {
     public void CM4() {
         String projectName = "cm4";
         StatementType statementType = StatementType.CONDITIONAL;
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
                 statementType,
@@ -156,7 +155,7 @@ public abstract class AbstractRealBugsEvaluation {
     public void CM5() {
         String projectName = "cm5";
         StatementType statementType = StatementType.CONDITIONAL;
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
                 statementType,
@@ -190,7 +189,7 @@ public abstract class AbstractRealBugsEvaluation {
 
     @Test
     public void CM6() {
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         config.setComplianceLevel(5);
         String projectName = "cm6";
         StatementType statementType = StatementType.PRECONDITION;
@@ -221,7 +220,7 @@ public abstract class AbstractRealBugsEvaluation {
     public void CM7() {
         String projectName = "cm7";
         StatementType statementType = StatementType.CONDITIONAL;
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
                 statementType,
@@ -246,7 +245,7 @@ public abstract class AbstractRealBugsEvaluation {
     @Test
     @Ignore
     public void CM8() {
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         StatementType statementType = StatementType.CONDITIONAL;
         String projectName = "cm8";
         List<Patch> patches = setupAndRun(
@@ -275,7 +274,7 @@ public abstract class AbstractRealBugsEvaluation {
     public void CM9() {
         String projectName = "cm9";
         StatementType statementType = StatementType.CONDITIONAL;
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
                 statementType,
@@ -302,7 +301,7 @@ public abstract class AbstractRealBugsEvaluation {
     public void CM10() {
         String projectName = "cm10";
         StatementType statementType = StatementType.PRECONDITION;
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
                 statementType,
@@ -326,11 +325,11 @@ public abstract class AbstractRealBugsEvaluation {
 
     @Test
     public void CL1() {
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         config.setComplianceLevel(4);
         String projectName = "cl1";
         StatementType statementType = StatementType.CONDITIONAL;
-        config.setSolver(Config.NopolSolver.Z3);
+        config.setSolver(NopolContext.NopolSolver.Z3);
         config.setSolverPath("lib/z3/z3_for_linux");
 
         List<Patch> patches = setupAndRun(
@@ -359,7 +358,7 @@ public abstract class AbstractRealBugsEvaluation {
 
     @Test
     public void CL2() {
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         config.setComplianceLevel(4);
         String projectName = "cl2";
         StatementType statementType = StatementType.CONDITIONAL;
@@ -391,7 +390,7 @@ public abstract class AbstractRealBugsEvaluation {
 
     @Test
     public void CL3() {
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         config.setComplianceLevel(4);
         String projectName = "cl3";
         StatementType statementType = StatementType.CONDITIONAL;
@@ -421,7 +420,7 @@ public abstract class AbstractRealBugsEvaluation {
 
     @Test
     public void CL4() {
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         config.setComplianceLevel(4);
         String projectName = "cl4";
         StatementType statementType = StatementType.CONDITIONAL;
@@ -451,7 +450,7 @@ public abstract class AbstractRealBugsEvaluation {
 
     @Test
     public void CL5() {
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         config.setComplianceLevel(6);
         String projectName = "cl5";
         StatementType statementType = StatementType.CONDITIONAL;
@@ -482,7 +481,7 @@ public abstract class AbstractRealBugsEvaluation {
     public void CL6() {
         String projectName = "cl6";
         StatementType statementType = StatementType.CONDITIONAL;
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
                 statementType,
@@ -509,7 +508,7 @@ public abstract class AbstractRealBugsEvaluation {
     public void PM1() {
         String projectName = "pm1";
         StatementType statementType = StatementType.PRECONDITION;
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
                 statementType,
@@ -539,7 +538,7 @@ public abstract class AbstractRealBugsEvaluation {
     public void PM2() {
         String projectName = "pm2";
         StatementType statementType = StatementType.PRECONDITION;
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
                 statementType,
@@ -562,7 +561,7 @@ public abstract class AbstractRealBugsEvaluation {
     }
     @Test
     public void PL1() {
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         config.setComplianceLevel(4);
         String projectName = "pl1";
         StatementType statementType = StatementType.PRECONDITION;
@@ -596,7 +595,7 @@ public abstract class AbstractRealBugsEvaluation {
 
     @Test
     public void PL2() {
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         config.setComplianceLevel(4);
         String projectName = "pl2";
         StatementType statementType = StatementType.PRECONDITION;
@@ -623,7 +622,7 @@ public abstract class AbstractRealBugsEvaluation {
     @Test
     @Ignore
     public void PL3() {
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         config.setComplianceLevel(4);
         String projectName = "pl3";
         StatementType statementType = StatementType.PRECONDITION;
@@ -651,7 +650,7 @@ public abstract class AbstractRealBugsEvaluation {
     public void PL4() {
         String projectName = "pl4";
         StatementType statementType = StatementType.PRECONDITION;
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
                 statementType,
@@ -682,8 +681,8 @@ public abstract class AbstractRealBugsEvaluation {
     public void AM1() {
         String projectName = "am1";
         StatementType statementType = StatementType.DOUBLE_LITERAL;
-        Config config = new Config();
-        config.setSolver(Config.NopolSolver.Z3);
+        NopolContext config = new NopolContext();
+        config.setSolver(NopolContext.NopolSolver.Z3);
         config.setSolverPath("lib/z3/z3_for_linux");
 
         List<Patch> patches = setupAndRun(
@@ -709,7 +708,7 @@ public abstract class AbstractRealBugsEvaluation {
     public void AM2() {
         String projectName = "am2";
         StatementType statementType = StatementType.DOUBLE_LITERAL;
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
                 statementType,
@@ -733,7 +732,7 @@ public abstract class AbstractRealBugsEvaluation {
     public void AM3() {
         String projectName = "am3";
         StatementType statementType = StatementType.DOUBLE_LITERAL;
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
                 statementType,
@@ -757,7 +756,7 @@ public abstract class AbstractRealBugsEvaluation {
     public void AM4() {
         String projectName = "am4";
         StatementType statementType = StatementType.DOUBLE_LITERAL;
-        Config config = new Config();
+        NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
                 statementType,
@@ -776,7 +775,7 @@ public abstract class AbstractRealBugsEvaluation {
         clean(srcFolder); // TODO
     }
 
-    private List<Patch> setupAndRun(String projectName, StatementType statementType, String[] tests, Config config, String... dependencies) {
+    private List<Patch> setupAndRun(String projectName, StatementType statementType, String[] tests, NopolContext nopolContext, String... dependencies) {
         String rootFolder = realBugPath + projectName + "/";
         String srcFolder = rootFolder + "src";
         String binFolder = rootFolder + "target/classes/" + File.pathSeparatorChar + rootFolder + "target/test-classes/";
@@ -788,35 +787,27 @@ public abstract class AbstractRealBugsEvaluation {
                 classpath += File.pathSeparatorChar;
             }
         }
-        try {
-            config.setProjectSourcePath(new String[]{new File(srcFolder).getCanonicalPath()});
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        config.setSolverPath("lib/z3/z3_for_" + (isMac() ? "mac" : "linux"));
-        config.setSolver(Config.NopolSolver.Z3);
-        config.setLocalizer(Config.NopolLocalizer.GZOLTAR);
-        config.setProjectTests(tests);
-        config.setType(statementType);
-        SolverFactory.setSolver(config.getSolver(), config.getSolverPath());
+        nopolContext.setProjectSourcePath(new File[]{new File(srcFolder)});
+
+        nopolContext.setSolverPath("lib/z3/z3_for_" + (isMac() ? "mac" : "linux"));
+        nopolContext.setSolver(NopolContext.NopolSolver.Z3);
+        nopolContext.setLocalizer(NopolContext.NopolLocalizer.GZOLTAR);
+        nopolContext.setProjectTests(tests);
+        nopolContext.setType(statementType);
+        nopolContext.setProjectClasspath(JavaLibrary.classpathFrom(classpath));
+        SolverFactory.setSolver(nopolContext.getSolver(), nopolContext.getSolverPath());
         switch (this.executionType) {
             case "symbolic":
-                config.setOracle(Config.NopolOracle.SYMBOLIC);
+                nopolContext.setOracle(NopolContext.NopolOracle.SYMBOLIC);
                 break;
             case "nopol":
-                config.setOracle(Config.NopolOracle.ANGELIC);
+                nopolContext.setOracle(NopolContext.NopolOracle.ANGELIC);
                 break;
             default:
                 throw new RuntimeException("Execution type not found");
         }
 
-        ProjectReference project = new ProjectReference(
-                srcFolder,
-                JavaLibrary.classpathFrom(classpath),
-                null
-        );
-
-        return new NoPol(project, config).build();
+        return new NoPol(nopolContext).build().getPatches();
     }
 
 

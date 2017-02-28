@@ -39,6 +39,10 @@ public class Infinitel {
         return nopolContext.getProjectTests();
     }
 
+    public NopolContext getNopolContext() {
+        return nopolContext;
+    }
+
     public void repair() {
         MonitoringTestExecutor testExecutor = newTestExecutor();
         LoopTestResult testResult = newTestResult(testExecutor);
