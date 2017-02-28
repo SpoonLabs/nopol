@@ -17,7 +17,6 @@ import java.util.Properties;
 public class NopolContext implements Serializable {
 
 	private static final long serialVersionUID = -2542128741040978263L;
-	private boolean json;
 
 	public enum NopolMode {
 		REPAIR,
@@ -47,18 +46,25 @@ public class NopolContext implements Serializable {
 
 	private final String filename = "config.ini";
 
-	private int synthesisDepth;
+
 	private boolean collectStaticMethods;
 	private boolean collectStaticFields;
 	private boolean collectLiterals;
 	private boolean collectOnlyUsedMethod;
 	private boolean onlyOneSynthesisResult;
 	private boolean sortExpressions;
+	private boolean skipRegressionStep; // this option allow to skip regression step: it could create a patch which broke another test.
+	private boolean json;
+
 	private int maxLineInvocationPerTest;
 	private int timeoutMethodInvocation;
+	private int synthesisDepth;
+	private int complianceLevel;
 	private int maxTimeInMinutes = 10;
 	private int dataCollectionTimeoutInSecondForSynthesis = 15*60;
+
 	private String outputFolder;
+	private String solverPath;
 
 	private double addWeight;
 	private double subWeight;
@@ -74,6 +80,7 @@ public class NopolContext implements Serializable {
 	private double fieldAccessWeight;
 	private double constantWeight;
 	private double variableWeight;
+
 	private long timeoutTestExecution;
 	private long maxTimeBuildPatch;
 	private long maxTimeEachTypeOfFixInMinutes;
@@ -84,13 +91,12 @@ public class NopolContext implements Serializable {
 	private NopolOracle oracle = NopolOracle.ANGELIC;
 	private NopolSolver solver = NopolSolver.Z3;
 	private NopolLocalizer localizer = NopolLocalizer.OCHIAI;
-	private String solverPath;
+
 
 	private File[] projectSources;
 	private URL[] projectClasspath;
 	private String[] projectTests;
 
-	private int complianceLevel;
 
 	public NopolContext() {
 		this.initFromFile();
@@ -483,6 +489,14 @@ public class NopolContext implements Serializable {
 
 	public void setDataCollectionTimeoutInSecondForSynthesis(int dataCollectionTimeoutInSecondForSynthesis) {
 		this.dataCollectionTimeoutInSecondForSynthesis = dataCollectionTimeoutInSecondForSynthesis;
+	}
+
+	public boolean isSkipRegressionStep() {
+		return skipRegressionStep;
+	}
+
+	public void setSkipRegressionStep(boolean skipRegressionStep) {
+		this.skipRegressionStep = skipRegressionStep;
 	}
 
 	@Override

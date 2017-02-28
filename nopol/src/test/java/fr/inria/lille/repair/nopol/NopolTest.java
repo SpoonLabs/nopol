@@ -1,16 +1,21 @@
 package fr.inria.lille.repair.nopol;
 
+import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.TestUtility;
+import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import org.junit.Ignore;
 import org.junit.Test;
 import xxl.java.junit.TestCasesListener;
+import xxl.java.junit.TestSuiteExecution;
 
+import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertTrue;
 
 public class NopolTest {
 
@@ -205,5 +210,17 @@ public class NopolTest {
 
 		TestUtility.assertPatches(20, expectedFailedTests, expectedStatementType, listener, patches);
 		TestUtility.assertAgainstKnownPatches(patches.get(0),  "-1 <= a", "1 <= a", "(r)<=(a)", "(-1)<(a)", "(0)<=(a)", "0 <= a", "-1 < a");
+	}
+
+	@Test
+	public void testSkippingRegressionStepLeadToAPatch() {
+		NopolContext nopolContext = TestUtility.configForExample(executionType, 1);
+		nopolContext.setType(StatementType.CONDITIONAL);
+		nopolContext.setSkipRegressionStep(true);
+		SolverFactory.setSolver("z3", TestUtility.solverPath);
+		URLClassLoader classLoader = new URLClassLoader(nopolContext.getProjectClasspath());
+		TestSuiteExecution.runCasesIn(nopolContext.getProjectTests(), classLoader, new TestCasesListener(), nopolContext);
+		List<Patch> patches = TestUtility.patchFor(executionType, nopolContext);
+		assertTrue(patches.size() > 0);
 	}
 }

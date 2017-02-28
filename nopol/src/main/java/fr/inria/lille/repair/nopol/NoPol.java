@@ -244,7 +244,7 @@ public class NoPol {
 		List<Patch> tmpPatches = synth.buildPatch(classpath, tests, failingTest, nopolContext.getMaxTimeBuildPatch());
 		for (int i = 0; i < tmpPatches.size(); i++) {
 			Patch patch = tmpPatches.get(i);
-			if (isOk(patch, tests, synth.getProcessor())) {
+			if (nopolContext.isSkipRegressionStep() || isOk(patch, tests, synth.getProcessor())) {
 				patches.add(patch);
 				if (nopolContext.isOnlyOneSynthesisResult()) {
 					return patches;
