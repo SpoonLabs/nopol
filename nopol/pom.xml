@@ -5,7 +5,7 @@
     <groupId>fr.inria.lille.adam</groupId>
     <artifactId>nopol</artifactId>
     <version>0.2-SNAPSHOT</version>
-    <name>No-Pol</name>
+    <name>Nopol</name>
     <description>Java Program Repair via Conditional Expression Replacement</description>
     <inceptionYear>2013</inceptionYear>
 
