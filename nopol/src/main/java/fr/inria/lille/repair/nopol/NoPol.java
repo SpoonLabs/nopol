@@ -27,7 +27,6 @@ import fr.inria.lille.localization.FaultLocalizer;
 import fr.inria.lille.localization.GZoltarFaultLocalizer;
 import fr.inria.lille.localization.OchiaiFaultLocalizer;
 import fr.inria.lille.localization.TestResult;
-import fr.inria.lille.repair.TestClassesFinder;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
@@ -103,10 +102,6 @@ public class NoPol {
 
 
 	public NopolResult build() {
-		if (this.testClasses == null) {
-			this.testClasses = new TestClassesFinder().findIn(classpath, false);
-		}
-
 		this.localizer = this.createLocalizer();
 
 		nopolResult.setNbTests(this.testClasses.length);
