@@ -140,9 +140,9 @@ public class ValuesCollectorTest {
 		RuntimeValues<Boolean> runtimeValues = RuntimeValues.newInstance();
 
 		Collection<Specification<Boolean>> specifications;
-		Collection<Map<String, Object>> inconsistencies;
+		Map<Map<String, Object>, Boolean> inconsistencies;
 		Map<String, Object> values1 = (Map) MetaMap.newHashMap(asList("a", "b"), asList(1, 2));
-		Map<String, Object> values2 = (Map) MetaMap.newHashMap(asList("c"), asList(3));
+		Map<String, Object> values2 = (Map) MetaMap.newHashMap(asList("a"), asList(3));
 		Map<String, Object> values3 = (Map) MetaMap.newHashMap(asList("a", "b"), asList(23, 32));
 		Specification<Boolean> spec1 = new Specification<Boolean>(values1, true); // first specs
 		Specification<Boolean> spec2 = new Specification<Boolean>(values2, true); // different input set
@@ -172,17 +172,17 @@ public class ValuesCollectorTest {
 		 /* 2 input sets with different keys input: only keep the first input set: 1 spec and 1 inconsistency */
 
 		listener.processTestStarted(testB);
-		runtimeValues.collectInput("c", values2.get("c"));
+		runtimeValues.collectInput("a", values2.get("a"));
 		runtimeValues.collectOutput(true);
 		runtimeValues.collectionEnds();
 		assertFalse(runtimeValues.isEmpty());
 		listener.processSuccessfulRun(testB);
 		specifications = listener.specifications();
-		assertEquals(1, specifications.size());
-		assertTrue(specifications.contains(spec1));
+		assertEquals(2, specifications.size());
+		assertTrue(specifications.contains(spec2));
 		inconsistencies = listener.inconsistentInputs();
 		assertEquals(1, inconsistencies.size());
-		assertTrue(inconsistencies.containsAll(asList(spec2.inputs())));
+		assertTrue(inconsistencies.keySet().containsAll(asList(spec2.inputs())));
 
 		/* 2 different sets of input: keep both specifications: 2 spec and 1 inconsistency */
 
@@ -195,12 +195,11 @@ public class ValuesCollectorTest {
 		listener.processSuccessfulRun(testC);
 		listener.processAfterRun();
 		specifications = listener.specifications();
-		assertEquals(2, specifications.size());
-		assertTrue(specifications.contains(spec1));
-		assertTrue(specifications.contains(spec3));
+		assertEquals(3, specifications.size());
+		assertTrue(specifications.contains(spec2));
 		inconsistencies = listener.inconsistentInputs();
 		assertEquals(1, inconsistencies.size());
-		assertTrue(inconsistencies.containsAll(asList(spec2.inputs())));
+		assertTrue(inconsistencies.keySet().containsAll(asList(spec2.inputs())));
 
 		/* Same input set, different outcome: discard the newest: 2 specs and 2 inconsistency */
 
@@ -213,13 +212,11 @@ public class ValuesCollectorTest {
 		listener.processSuccessfulRun(testC);
 		listener.processAfterRun();
 		specifications = listener.specifications();
-		assertEquals(2, specifications.size());
-		assertTrue(specifications.contains(spec1));
-		assertTrue(specifications.contains(spec3));
+		assertEquals(3, specifications.size());
+		assertTrue(specifications.contains(spec2));
 		inconsistencies = listener.inconsistentInputs();
-		assertEquals(2, inconsistencies.size());
-		assertTrue(inconsistencies.containsAll(asList(spec2.inputs())));
-		assertTrue(inconsistencies.containsAll(asList(spec4.inputs())));
+		assertEquals(1, inconsistencies.size());
+		assertTrue(inconsistencies.keySet().containsAll(asList(spec2.inputs())));
 	}
 
 	@Test
