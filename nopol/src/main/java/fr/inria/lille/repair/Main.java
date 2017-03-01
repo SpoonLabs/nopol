@@ -331,7 +331,6 @@ public class Main {
 		maxTime.setAllowMultipleDeclarations(false);
 		maxTime.setLongFlag("maxTime");
 		maxTime.setStringParser(JSAP.INTEGER_PARSER);
-		maxTime.setDefault("10");
 		maxTime.setHelp("The maximum time execution in minute for the whole execution of Nopol.(default: 10)");
 		jsap.registerParameter(maxTime);
 
@@ -340,7 +339,6 @@ public class Main {
 		maxTimeByTypeInMinutes.setAllowMultipleDeclarations(false);
 		maxTimeByTypeInMinutes.setLongFlag("maxTimeType");
 		maxTimeByTypeInMinutes.setStringParser(JSAP.INTEGER_PARSER);
-		maxTimeByTypeInMinutes.setDefault("5");
 		maxTimeByTypeInMinutes.setHelp("The maximum time execution in minute for one type of patch. (default: 5)");
 		jsap.registerParameter(maxTimeByTypeInMinutes);
 
