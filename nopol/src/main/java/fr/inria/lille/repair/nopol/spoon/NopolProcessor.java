@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtStatement;
-import xxl.java.library.FileLibrary;
 
 public abstract class NopolProcessor extends AbstractProcessor<CtStatement> {
 
@@ -16,16 +15,7 @@ public abstract class NopolProcessor extends AbstractProcessor<CtStatement> {
 
     @Override
     public boolean isToBeProcessed(CtStatement statement) {
-        if (statement.getPosition() != null) {
-
-            return (statement.getPosition().getLine() == this.target
-                    .getPosition().getLine())
-                    && (statement.getPosition().getColumn() == this.target
-                    .getPosition().getColumn())
-                    && (FileLibrary.isSameFile(this.target.getPosition()
-                    .getFile(), statement.getPosition().getFile()));
-        }
-        return false;
+        return statement.equals(target);
     }
 
     public String getValue() {
