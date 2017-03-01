@@ -8,6 +8,7 @@ import fr.inria.lille.repair.nopol.spoon.symbolic.*;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.visitor.filter.LineFilter;
 import xxl.java.library.FileLibrary;
 
 import java.io.File;
@@ -45,6 +46,9 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
     public boolean isToBeProcessed(CtStatement candidate) {
         SourcePosition position = candidate.getPosition();
         if (position == null || position == SourcePosition.NOPOSITION) {
+            return false;
+        }
+        if (!new LineFilter().matches(candidate)) {
             return false;
         }
         boolean isSameFile = FileLibrary.isSameFile(file, position.getFile());
@@ -114,5 +118,6 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
                 }
                 break;
         }
+        super.interrupt();
     }
 }
