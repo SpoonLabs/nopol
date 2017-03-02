@@ -17,6 +17,7 @@ public class NopolResult {
     private int nbStatements;
     private int nbAngelicValues;
     private int nbTests;
+    private NopolStatus nopolStatus;
 
     public NopolResult(NopolContext nopolContext) {
         this.nopolContext = nopolContext;
@@ -65,5 +66,13 @@ public class NopolResult {
 
     public void setNbTests(int nbTests) {
         this.nbTests = nbTests;
+    }
+
+    public NopolStatus getNopolStatus() {
+        return nopolStatus;
+    }
+
+    public void setNopolStatus(NopolStatus nopolStatus) {
+        this.nopolStatus = nopolStatus;
     }
 }

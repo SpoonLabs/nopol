@@ -169,6 +169,7 @@ public class NoPol {
 		logger.debug("Analysing {} which is executed by {} tests", sourceLocation, tests.size());
 		SpoonedClass spoonCl = spooner.forked(sourceLocation.getRootClassName());
 		if (spoonCl == null || spoonCl.getSimpleType() == null) {
+			this.nopolResult.setNopolStatus(NopolStatus.EXCEPTION);
 			return;
 		}
 		NopolProcessorBuilder builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), sourceLocation.getLineNumber(), nopolContext);
@@ -176,6 +177,7 @@ public class NoPol {
 			spoonCl.process(builder);
 		} catch (DynamicCompilationException ignored) {
 			logger.debug("Aborting: dynamic compilation failed");
+			this.nopolResult.setNopolStatus(NopolStatus.EXCEPTION);
 			return;
 		}
 
@@ -211,6 +213,7 @@ public class NoPol {
 			return (List) nopolExecution.get(nopolContext.getMaxTimeEachTypeOfFixInMinutes(), TimeUnit.MINUTES);
 		} catch (ExecutionException | InterruptedException | TimeoutException exception) {
 			LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + nopolContext.getMaxTimeEachTypeOfFixInMinutes() + " " + TimeUnit.MINUTES, exception);
+			this.nopolResult.setNopolStatus(NopolStatus.TIMEOUT);
 			return Collections.emptyList();
 		}
 	}
@@ -221,33 +224,50 @@ public class NoPol {
 		try {
 			angelicValue = buildConstraintsModelBuilder(nopolProcessor, sourceLocation, spooner);
 		} catch (UnsupportedOperationException | DynamicCompilationException ignored) {
+			this.nopolResult.setNopolStatus(NopolStatus.EXCEPTION);
 			return patches;
 		}
 
 		if (angelicValue != null) {
 			this.nopolResult.incrementNbAngelicValues();
+		} else {
+			this.nopolResult.setNopolStatus(NopolStatus.NO_ANGELIC_VALUE);
 		}
 
 		Synthesizer synth = SynthesizerFactory.build(sourceFiles, spooner, nopolContext, sourceLocation, nopolProcessor, angelicValue, spoonCl);
 		if (synth == Synthesizer.NO_OP_SYNTHESIZER) {
+			this.nopolResult.setNopolStatus(NopolStatus.SYNTHESIS_FAIL);
 			return patches;
 		}
 		Collection<TestCase> failingTest = reRunFailingTestCases(getFailingTestCase(tests), new URLClassLoader(classpath));
 		if (failingTest.isEmpty()) {
+			this.nopolResult.setNopolStatus(NopolStatus.SYNTHESIS_FAIL);
 			return patches;
 		}
 		List<Patch> tmpPatches = synth.buildPatch(classpath, tests, failingTest, nopolContext.getMaxTimeBuildPatch());
-		for (int i = 0; i < tmpPatches.size(); i++) {
-			Patch patch = tmpPatches.get(i);
-			if (nopolContext.isSkipRegressionStep() || isOk(patch, tests, synth.getProcessor())) {
-				patches.add(patch);
-				if (nopolContext.isOnlyOneSynthesisResult()) {
-					return patches;
+
+		if (tmpPatches.size() > 0) {
+			for (int i = 0; i < tmpPatches.size(); i++) {
+				Patch patch = tmpPatches.get(i);
+				if (nopolContext.isSkipRegressionStep() || isOk(patch, tests, synth.getProcessor())) {
+					patches.add(patch);
+					if (nopolContext.isOnlyOneSynthesisResult()) {
+						this.nopolResult.setNopolStatus(NopolStatus.PATCH);
+						return patches;
+					}
+				} else {
+					logger.debug("Could not find a patch in {}", sourceLocation);
 				}
-			} else {
-				logger.debug("Could not find a patch in {}", sourceLocation);
 			}
+			if (patches.size() > 0) {
+				this.nopolResult.setNopolStatus(NopolStatus.PATCH);
+			} else {
+				this.nopolResult.setNopolStatus(NopolStatus.INVALID_PATCH);
+			}
+		} else {
+			this.nopolResult.setNopolStatus(NopolStatus.SYNTHESIS_FAIL);
 		}
+
 		return patches;
 	}
 
