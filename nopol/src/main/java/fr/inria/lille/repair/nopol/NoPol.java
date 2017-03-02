@@ -28,7 +28,7 @@ import fr.inria.lille.localization.GZoltarFaultLocalizer;
 import fr.inria.lille.localization.OchiaiFaultLocalizer;
 import fr.inria.lille.localization.TestResult;
 import fr.inria.lille.repair.Main;
-import fr.inria.lille.repair.TestClassesFinder;
+import fr.inria.lille.repair.common.finder.TestClassesFinder;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;

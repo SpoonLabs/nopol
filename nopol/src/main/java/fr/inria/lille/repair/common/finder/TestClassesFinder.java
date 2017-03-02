@@ -13,14 +13,8 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.repair;
+package fr.inria.lille.repair.common.finder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sacha.finder.classes.impl.ClassloaderFinder;
-import sacha.finder.filters.impl.TestFilter;
-import sacha.finder.processor.Processor;
-import xxl.java.container.classic.MetaList;
 import xxl.java.junit.CustomClassLoaderThreadFactory;
 
 import java.net.URL;
@@ -28,26 +22,16 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * @author Favio D. DeMarco
  */
-public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    public Collection<Class<?>> call() throws Exception {
-
-        Class<?>[] classes = new Processor(
-                new ClassloaderFinder((URLClassLoader) Thread.currentThread()
-                        .getContextClassLoader()), new TestFilter()).process();
-
-        return MetaList.newArrayList(classes);
-    }
+public final class TestClassesFinder {
 
     protected String[] namesFrom(Collection<Class<?>> classes) {
         String[] names = new String[classes.size()];
@@ -59,21 +43,25 @@ public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
         return names;
     }
 
-    public String[] findIn(ClassLoader dumpedToClassLoader,
-                           boolean acceptTestSuite) {
-        ExecutorService executor = Executors
-                .newSingleThreadExecutor(new CustomClassLoaderThreadFactory(
-                        dumpedToClassLoader));
+    public String[] findIn(ClassLoader dumpedToClassLoader, boolean acceptTestSuite) {
+
+        ThreadFactory threadFactory = new CustomClassLoaderThreadFactory(dumpedToClassLoader);
+        ExecutorService executor = Executors.newSingleThreadExecutor(threadFactory);
+        TestClassFinderRunner testClassFinderRunner = new TestClassFinderRunner();
+        Future<Collection<Class<?>>> future = executor.submit(testClassFinderRunner);
         String[] testClasses;
+
         try {
-            testClasses = namesFrom(executor.submit(new TestClassesFinder())
-                    .get());
+            executor.shutdown();
+
+            Collection<Class<?>> findingClasses = future.get();
+            testClasses = namesFrom(findingClasses);
         } catch (InterruptedException ie) {
             throw new RuntimeException(ie);
-        } catch (ExecutionException ee) {
-            throw new RuntimeException(ee);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
         } finally {
-            executor.shutdown();
+            executor.shutdownNow();
         }
 
         if (!acceptTestSuite) {
