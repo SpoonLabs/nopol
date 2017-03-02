@@ -1,6 +1,6 @@
 package fr.inria.lille.repair.common.config;
 
-import fr.inria.lille.repair.common.finder.TestClassesFinder;
+import fr.inria.lille.repair.TestClassesFinder;
 import fr.inria.lille.repair.common.synth.StatementType;
 import xxl.java.library.FileLibrary;
 
