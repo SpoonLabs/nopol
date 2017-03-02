@@ -81,7 +81,7 @@ public class NopolTest {
 		List<Patch> patches = TestUtility.setupAndRun(executionType, 5, listener, StatementType.PRECONDITION);
 
 		TestUtility.assertPatches(20, expectedFailedTests, expectedStatementType, listener, patches);
-		TestUtility.assertAgainstKnownPatches(patches.get(0), "-1 <= a", "-1 < a", "1 <= a", "r <= a", "(-1)<(a)", "(0)<=(a)", "0 <= a");
+		TestUtility.assertAgainstKnownPatches(patches.get(0), "-1 <= a", "-1 < a", "1 <= a", "r <= a", "(-1)<(a)", "(0)<=(a)", "0 <= a", "0 < a");
 	}
 
 	@Test
@@ -126,7 +126,8 @@ public class NopolTest {
 				"(1 < a + -1) && ((a + -1 <= -1) || (intermediaire == 0))",
 				"(2 < a) && (intermediaire == 0)",
 				"(!(a == 2)) && (intermediaire == 0)",
-				"(intermediaire == 0) && (2 < a)");
+				"(intermediaire == 0) && (2 < a)",
+				"(intermediaire == 0) && ((a) != (2))");
 	}
 
 	@Test
@@ -193,7 +194,7 @@ public class NopolTest {
 		List<Patch> patches = TestUtility.setupAndRun(executionType, 5, listener, StatementType.COND_THEN_PRE);
 
 		TestUtility.assertPatches(20, expectedFailedTests, expectedStatementType, listener, patches);
-		TestUtility.assertAgainstKnownPatches(patches.get(0),  "-1 <= a", "1 <= a", "r <= a", "(-1)<(a)", "(0)<=(a)", "0 <= a", "-1 < a");
+		TestUtility.assertAgainstKnownPatches(patches.get(0),  "-1 <= a", "1 <= a", "r <= a", "(-1)<(a)", "(0)<=(a)", "0 <= a", "-1 < a", "0 < a");
 	}
 
 	@Test
@@ -211,7 +212,7 @@ public class NopolTest {
 		List<Patch> patches = TestUtility.setupAndRun(executionType, 5, listener, StatementType.PRE_THEN_COND);
 
 		TestUtility.assertPatches(20, expectedFailedTests, expectedStatementType, listener, patches);
-		TestUtility.assertAgainstKnownPatches(patches.get(0),  "-1 <= a", "1 <= a", "r <= a", "(-1)<(a)", "(0)<=(a)", "0 <= a", "-1 < a");
+		TestUtility.assertAgainstKnownPatches(patches.get(0),  "-1 <= a", "1 <= a", "r <= a", "(-1)<(a)", "(0)<=(a)", "0 <= a", "-1 < a", "0 < a");
 	}
 
 	@Test
