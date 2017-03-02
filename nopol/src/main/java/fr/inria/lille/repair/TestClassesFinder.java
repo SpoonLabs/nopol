@@ -13,23 +13,42 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
-package fr.inria.lille.repair.common.finder;
+package fr.inria.lille.repair;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sacha.finder.classes.impl.ClassloaderFinder;
 import sacha.finder.filters.impl.TestFilter;
 import sacha.finder.processor.Processor;
 import xxl.java.container.classic.MetaList;
+import xxl.java.junit.CustomClassLoaderThreadFactory;
 
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author Favio D. DeMarco
  */
-public class TestClassesFinder {
+public final class TestClassesFinder implements Callable<Collection<Class<?>>> {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    public Collection<Class<?>> call() throws Exception {
+
+        Class<?>[] classes = new Processor(
+                new ClassloaderFinder((URLClassLoader) Thread.currentThread()
+                        .getContextClassLoader()), new TestFilter()).process();
+
+        return MetaList.newArrayList(classes);
+    }
+
     protected String[] namesFrom(Collection<Class<?>> classes) {
         String[] names = new String[classes.size()];
         int index = 0;
@@ -40,22 +59,32 @@ public class TestClassesFinder {
         return names;
     }
 
-    public String[] findIn(final URL[] classpath, boolean acceptTestSuite) {
-        URLClassLoader classLoader = new URLClassLoader(classpath);
-        ClassloaderFinder finder = new ClassloaderFinder(classLoader);
-        TestFilter testFilter = new TestFilter();
-        Processor processor = new Processor(finder, testFilter);
-        Class<?>[] classes = processor.process();
-
-        Collection<Class<?>> allTestClasses = MetaList.newArrayList(classes);
-
-        String[] testClasses = namesFrom(allTestClasses);
+    public String[] findIn(ClassLoader dumpedToClassLoader,
+                           boolean acceptTestSuite) {
+        ExecutorService executor = Executors
+                .newSingleThreadExecutor(new CustomClassLoaderThreadFactory(
+                        dumpedToClassLoader));
+        String[] testClasses;
+        try {
+            testClasses = namesFrom(executor.submit(new TestClassesFinder())
+                    .get());
+        } catch (InterruptedException ie) {
+            throw new RuntimeException(ie);
+        } catch (ExecutionException ee) {
+            throw new RuntimeException(ee);
+        } finally {
+            executor.shutdown();
+        }
 
         if (!acceptTestSuite) {
-            return removeTestSuite(testClasses);
+            testClasses = removeTestSuite(testClasses);
         }
 
         return testClasses;
+    }
+
+    public String[] findIn(final URL[] classpath, boolean acceptTestSuite) {
+        return findIn(new URLClassLoader(classpath), acceptTestSuite);
     }
 
     public String[] removeTestSuite(String[] totalTest) {
