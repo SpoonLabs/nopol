@@ -110,7 +110,7 @@ public class NopolContext implements Serializable {
 		this.projectSources = sourceFile;
 		this.projectClasspath = classpath;
 		this.projectTests = testClasses;
-		if (this.projectTests == null && classpath != null) {
+		if ((this.projectTests == null || this.projectTests.length == 0) && classpath != null) {
 			this.projectTests = new TestClassesFinder().findIn(classpath, false);
 		}
 
