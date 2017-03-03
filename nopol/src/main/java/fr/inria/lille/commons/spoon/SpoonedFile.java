@@ -5,6 +5,7 @@ import fr.inria.lille.repair.common.config.NopolContext;
 import org.apache.log4j.Level;
 import org.slf4j.Logger;
 import spoon.compiler.Environment;
+import spoon.processing.ProcessInterruption;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Processor;
 import spoon.reflect.declaration.CtPackage;
@@ -147,7 +148,11 @@ public abstract class SpoonedFile {
         for (CtType<?> modelledClass : modelledClasses) {
             String qualifiedName = modelledClass.getQualifiedName();
             //logDebug(logger(), format("[Spoon processing of %s]", qualifiedName));
-            processingManager().process(modelledClass);
+            try {
+                processingManager().process(modelledClass);
+            } catch (ProcessInterruption e) {
+                continue;
+            }
         }
         compileModelledClasses(modelledClasses);
     }

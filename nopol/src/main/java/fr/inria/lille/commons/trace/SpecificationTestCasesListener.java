@@ -4,11 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xxl.java.container.classic.MetaList;
 import xxl.java.container.classic.MetaMap;
-import xxl.java.container.classic.MetaSet;
 import xxl.java.junit.TestCase;
 import xxl.java.junit.TestCasesListener;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,13 +18,13 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 
 	private RuntimeValues<T> runtimeValues;
 	private Map<Map<String, Object>, T> consistentInputs;
-	private Collection<Map<String, Object>> inconsistentInputs;
+	private Map<Map<String, Object>, T> inconsistentInputs;
 	private Set<String> keys;
 
 	public SpecificationTestCasesListener(RuntimeValues<T> runtimeValues) {
 		this.runtimeValues = runtimeValues;
 		this.consistentInputs = MetaMap.newHashMap();
-		this.inconsistentInputs = MetaSet.newHashSet();
+		this.inconsistentInputs = MetaMap.newHashMap();
 		this.keys = null;
 	}
 
@@ -77,10 +77,10 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 		// we discard it
 		if (!this.keys.equals(inputs.keySet())) {
 			this.logger.debug("Ill-formed problem: not the input variables in input={} reference={}", inputs, this.keys);// case 2
-			this.inconsistentInputs.add(inputs);
+			this.inconsistentInputs.put(inputs, output);
 		} else {
 			this.logger.debug("Same input with different outcome, logical contradiction, discarding the second one discarded={}, current output={}, reference output={}", inputs, output, consistentInputs.get(inputs));// case 1
-			this.inconsistentInputs.add(inputs);
+			// ignore invalid outcome
 		}
 	}
 
@@ -90,9 +90,39 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 	}
 
 	public Collection<Specification<T>> specifications() {
+		int minInputSize = Integer.MAX_VALUE;
+		Set<String> minKeys = this.keys;
+		if (!consistentInputs().isEmpty()) {
+			minInputSize = consistentInputs().keySet().iterator().next().size();
+		}
+		for (Map<String, Object> input : inconsistentInputs().keySet()) {
+			if (input.size() < minInputSize) {
+				minInputSize = input.size();
+				minKeys = input.keySet();
+			}
+		}
 		Collection<Specification<T>> specifications = MetaList.newLinkedList();
-		for (Map<String, Object> input : consistentInputs().keySet()) {
-			specifications.add(new Specification<T>(input, consistentInputs().get(input)));
+		loopinputs: for (Map<String, Object> input : consistentInputs().keySet()) {
+			Map<String, Object> tmp = MetaMap.newHashMap();
+			for (Iterator<String> iterator = minKeys.iterator(); iterator.hasNext(); ) {
+				String next = iterator.next();
+				if (!input.containsKey(next)) {
+					continue loopinputs;
+				}
+				tmp.put(next, input.get(next));
+			}
+			specifications.add(new Specification<T>(tmp, consistentInputs().get(input)));
+		}
+		loopinputs: for (Map<String, Object> input : inconsistentInputs().keySet()) {
+			Map<String, Object> tmp = MetaMap.newHashMap();
+			for (Iterator<String> iterator = minKeys.iterator(); iterator.hasNext(); ) {
+				String next = iterator.next();
+				if (!input.containsKey(next)) {
+					continue loopinputs;
+				}
+				tmp.put(next, input.get(next));
+			}
+			specifications.add(new Specification<T>(tmp, inconsistentInputs().get(input)));
 		}
 		return specifications;
 	}
@@ -105,7 +135,7 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 		return consistentInputs;
 	}
 
-	protected Collection<Map<String, Object>> inconsistentInputs() {
+	protected Map<Map<String, Object>, T> inconsistentInputs() {
 		return inconsistentInputs;
 	}
 

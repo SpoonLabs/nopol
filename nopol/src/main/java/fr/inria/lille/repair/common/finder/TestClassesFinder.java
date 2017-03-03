@@ -15,21 +15,24 @@
  */
 package fr.inria.lille.repair.common.finder;
 
-import sacha.finder.classes.impl.ClassloaderFinder;
-import sacha.finder.filters.impl.TestFilter;
-import sacha.finder.processor.Processor;
-import xxl.java.container.classic.MetaList;
+import xxl.java.junit.CustomClassLoaderThreadFactory;
 
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * @author Favio D. DeMarco
  */
-public class TestClassesFinder {
+public final class TestClassesFinder {
+
     protected String[] namesFrom(Collection<Class<?>> classes) {
         String[] names = new String[classes.size()];
         int index = 0;
@@ -40,22 +43,36 @@ public class TestClassesFinder {
         return names;
     }
 
-    public String[] findIn(final URL[] classpath, boolean acceptTestSuite) {
-        URLClassLoader classLoader = new URLClassLoader(classpath);
-        ClassloaderFinder finder = new ClassloaderFinder(classLoader);
-        TestFilter testFilter = new TestFilter();
-        Processor processor = new Processor(finder, testFilter);
-        Class<?>[] classes = processor.process();
+    public String[] findIn(ClassLoader dumpedToClassLoader, boolean acceptTestSuite) {
 
-        Collection<Class<?>> allTestClasses = MetaList.newArrayList(classes);
+        ThreadFactory threadFactory = new CustomClassLoaderThreadFactory(dumpedToClassLoader);
+        ExecutorService executor = Executors.newSingleThreadExecutor(threadFactory);
+        TestClassFinderRunner testClassFinderRunner = new TestClassFinderRunner();
+        Future<Collection<Class<?>>> future = executor.submit(testClassFinderRunner);
+        String[] testClasses;
 
-        String[] testClasses = namesFrom(allTestClasses);
+        try {
+            executor.shutdown();
+
+            Collection<Class<?>> findingClasses = future.get();
+            testClasses = namesFrom(findingClasses);
+        } catch (InterruptedException ie) {
+            throw new RuntimeException(ie);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } finally {
+            executor.shutdownNow();
+        }
 
         if (!acceptTestSuite) {
-            return removeTestSuite(testClasses);
+            testClasses = removeTestSuite(testClasses);
         }
 
         return testClasses;
+    }
+
+    public String[] findIn(final URL[] classpath, boolean acceptTestSuite) {
+        return findIn(new URLClassLoader(classpath), acceptTestSuite);
     }
 
     public String[] removeTestSuite(String[] totalTest) {

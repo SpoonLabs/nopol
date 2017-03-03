@@ -15,7 +15,6 @@
  */
 package fr.inria.lille.repair.nopol.synth;
 
-
 import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
@@ -32,10 +31,13 @@ import spoon.processing.Processor;
 import xxl.java.compiler.DynamicCompilationException;
 import xxl.java.junit.CompoundResult;
 import xxl.java.junit.TestCase;
+import xxl.java.junit.TestCasesListener;
 import xxl.java.junit.TestSuiteExecution;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -81,7 +83,33 @@ public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
         AngelicExecution.disable();
         if (determineViability(firstResult, secondResult)) {
             /* to collect information for passing tests */
-            TestSuiteExecution.runTestResult(testClasses, classLoader, listener, nopolContext);
+            class PassingListener extends TestCasesListener {
+                @Override
+                public void testRunStarted(Description description)
+                        throws Exception {
+                }
+            }
+            PassingListener passingListener = new PassingListener();
+            AngelicExecution.enable();
+            TestSuiteExecution.runTestResult(testClasses, classLoader, passingListener, nopolContext);
+            Collection<TestCase> testCases = passingListener.successfulTests();
+            AngelicExecution.flip();
+            passingListener = new PassingListener();
+            TestSuiteExecution.runTestResult(testClasses, classLoader, passingListener, nopolContext);
+            testCases.removeAll(passingListener.failedTests());
+            AngelicExecution.disable();
+            ArrayList<TestResult> tmp = new ArrayList<>(testClasses);
+            // removes all tests that are not dependent of the condition
+            for (int i = 0; i < testClasses.size(); i++) {
+                TestResult testResult = testClasses.get(i);
+                for (Iterator<TestCase> iterator = testCases.iterator(); iterator.hasNext(); ) {
+                    TestCase next = iterator.next();
+                    if (next.equals(testResult.getTestCase())) {
+                        tmp.remove(testResult);
+                    }
+                }
+            }
+            TestSuiteExecution.runTestResult(tmp, classLoader, listener, nopolContext);
         }
         return listener.specifications();
     }
