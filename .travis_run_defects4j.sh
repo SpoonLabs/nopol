@@ -26,7 +26,7 @@ then
     exit 1
 fi
 # A patch has been found, compare to it the known patch.
-cat out.txt | grep -A1 "PATCH FOUND" | grep "!(org.jfree.data.xy.XYSeries.this.allowDuplicateXValues)"
+cat out.txt | grep -A1 "PATCH FOUND" | grep -e "!(org.jfree.data.xy.XYSeries.this.allowDuplicateXValues)" -e "overwritten!=null"
 if [[ $? != 0 ]]
 then
     exit 1
