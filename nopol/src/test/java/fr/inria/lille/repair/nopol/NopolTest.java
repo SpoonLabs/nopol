@@ -257,6 +257,6 @@ public class NopolTest {
 		NopolResult result2 = nopol.build();
 
 		assertEquals(1, result2.getPatches().size());
-		TestUtility.assertAgainstKnownPatches(result2.getPatches().get(0),  "a == 2");
+		TestUtility.assertAgainstKnownPatches(result2.getPatches().get(0),  "a == 2", "2 == (b - a)");
 	}
 }
