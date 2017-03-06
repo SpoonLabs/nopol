@@ -101,6 +101,13 @@ public class NoPol {
 		this.testPatch = new TestPatch(this.sourceFiles[0], this.spooner, nopolContext);
 	}
 
+	/**
+	 * This getter should only be used after an error on build() method (e.g. after a timeout), to get a partial result informations.
+	 * @return
+	 */
+	public NopolResult getNopolResult() {
+		return nopolResult;
+	}
 
 	public NopolResult build() {
 		this.localizer = this.createLocalizer();
@@ -130,6 +137,20 @@ public class NoPol {
 		this.logResultInfo(this.nopolResult.getPatches());
 
 		this.nopolResult.setDurationInMilliseconds(System.currentTimeMillis()-this.startTime);
+
+		NopolStatus status;
+		if (nopolResult.getPatches().size() > 0) {
+			status = NopolStatus.PATCH;
+		} else {
+			if (nopolResult.getNbAngelicValues() == 0) {
+				status = NopolStatus.NO_ANGELIC_VALUE;
+			} else {
+				status = NopolStatus.NO_SYNTHESIS;
+			}
+		}
+
+		nopolResult.setNopolStatus(status);
+
 		return this.nopolResult;
 	}
 
@@ -169,7 +190,6 @@ public class NoPol {
 		logger.debug("Analysing {} which is executed by {} tests", sourceLocation, tests.size());
 		SpoonedClass spoonCl = spooner.forked(sourceLocation.getRootClassName());
 		if (spoonCl == null || spoonCl.getSimpleType() == null) {
-			this.nopolResult.setNopolStatus(NopolStatus.EXCEPTION);
 			return;
 		}
 		NopolProcessorBuilder builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), sourceLocation.getLineNumber(), nopolContext);
@@ -177,7 +197,6 @@ public class NoPol {
 			spoonCl.process(builder);
 		} catch (DynamicCompilationException ignored) {
 			logger.debug("Aborting: dynamic compilation failed");
-			this.nopolResult.setNopolStatus(NopolStatus.EXCEPTION);
 			return;
 		}
 
@@ -224,7 +243,6 @@ public class NoPol {
 		try {
 			angelicValue = buildConstraintsModelBuilder(nopolProcessor, sourceLocation, spooner);
 		} catch (UnsupportedOperationException | DynamicCompilationException ignored) {
-			this.nopolResult.setNopolStatus(NopolStatus.EXCEPTION);
 			return patches;
 		}
 
@@ -236,12 +254,10 @@ public class NoPol {
 
 		Synthesizer synth = SynthesizerFactory.build(sourceFiles, spooner, nopolContext, sourceLocation, nopolProcessor, angelicValue, spoonCl);
 		if (synth == Synthesizer.NO_OP_SYNTHESIZER) {
-			this.nopolResult.setNopolStatus(NopolStatus.SYNTHESIS_FAIL);
 			return patches;
 		}
 		Collection<TestCase> failingTest = reRunFailingTestCases(getFailingTestCase(tests), new URLClassLoader(classpath));
 		if (failingTest.isEmpty()) {
-			this.nopolResult.setNopolStatus(NopolStatus.SYNTHESIS_FAIL);
 			return patches;
 		}
 		List<Patch> tmpPatches = synth.buildPatch(classpath, tests, failingTest, nopolContext.getMaxTimeBuildPatch());
@@ -259,13 +275,6 @@ public class NoPol {
 					logger.debug("Could not find a patch in {}", sourceLocation);
 				}
 			}
-			if (patches.size() > 0) {
-				this.nopolResult.setNopolStatus(NopolStatus.PATCH);
-			} else {
-				this.nopolResult.setNopolStatus(NopolStatus.INVALID_PATCH);
-			}
-		} else {
-			this.nopolResult.setNopolStatus(NopolStatus.SYNTHESIS_FAIL);
 		}
 
 		return patches;

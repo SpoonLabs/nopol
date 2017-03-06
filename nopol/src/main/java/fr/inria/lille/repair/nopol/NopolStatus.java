@@ -5,9 +5,7 @@ package fr.inria.lille.repair.nopol;
  */
 public enum NopolStatus {
     PATCH,
-    EXCEPTION,
     NO_ANGELIC_VALUE,
-    SYNTHESIS_FAIL,
-    TIMEOUT,
-    INVALID_PATCH
+    NO_SYNTHESIS,
+    TIMEOUT
 }

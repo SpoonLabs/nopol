@@ -27,6 +27,7 @@ import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.infinitel.Infinitel;
 import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.repair.nopol.NopolResult;
+import fr.inria.lille.repair.nopol.NopolStatus;
 import fr.inria.lille.repair.ranking.Ranking;
 import org.slf4j.LoggerFactory;
 import xxl.java.library.FileLibrary;
@@ -55,6 +56,7 @@ public class Main {
 	public static void main(String[] args) {
 		int returnCode = -1;
 		Main main = new Main();
+		NopolResult result = null;
 		try {
 			main.initJSAP();
 			if (!main.parseArguments(args)) {
@@ -82,21 +84,22 @@ public class Main {
 							infinitel.repair();
 							break;
 						default:
+							final NoPol nopol = new NoPol(nopolContext);
 							final ExecutorService executor = Executors.newSingleThreadExecutor();
-							final Future nopolExecution = executor.submit(
+							final Future<NopolResult> nopolExecution = executor.submit(
 									new Callable() {
 										@Override
 										public Object call() throws Exception {
-											NoPol nopol = new NoPol(nopolContext);
-											NopolResult status = nopol.build();
-
-											return (status.getPatches().isEmpty()) ? -1 : 0;
+											return nopol.build();
 										}
 									});
 							try {
 								executor.shutdown();
-								returnCode = (int) nopolExecution.get(nopolContext.getMaxTimeInMinutes(), TimeUnit.MINUTES);
+								result = nopolExecution.get(nopolContext.getMaxTimeInMinutes(), TimeUnit.MINUTES);
 							} catch (TimeoutException exception) {
+
+								result = nopol.getNopolResult();
+								result.setNopolStatus(NopolStatus.TIMEOUT);
 								LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + nopolContext.getMaxTimeInMinutes() + " " + TimeUnit.MINUTES, exception);
 							}
 							break;
@@ -111,6 +114,12 @@ public class Main {
 			e.printStackTrace();
 			main.showUsage();
 		}
+		if (result != null) {
+			System.out.println(result.getNopolStatus());
+
+			returnCode = (result.getPatches().isEmpty()) ? 1 : 0;
+		}
+
 		System.exit(returnCode);
 	}
 
