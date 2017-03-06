@@ -247,7 +247,6 @@ public class NopolTest {
 		testsToIgnore.add("nopol_examples.nopol_example_2.NopolExampleTest#test2");
 		testsToIgnore.add("nopol_examples.nopol_example_2.NopolExampleTest#test4");
 		testsToIgnore.add("nopol_examples.nopol_example_2.NopolExampleTest#test5");
-		testsToIgnore.add("nopol_examples.nopol_example_2.NopolExampleTest#test6");
 		testsToIgnore.add("nopol_examples.nopol_example_2.NopolExampleTest#test7");
 		testsToIgnore.add("nopol_examples.nopol_example_2.NopolExampleTest#test9");
 
@@ -258,6 +257,6 @@ public class NopolTest {
 		NopolResult result2 = nopol.build();
 
 		assertEquals(1, result2.getPatches().size());
-		TestUtility.assertAgainstKnownPatches(result2.getPatches().get(0),  "(b - a) == a", "a == (b - a)");
+		TestUtility.assertAgainstKnownPatches(result2.getPatches().get(0),  "a == 2");
 	}
 }
