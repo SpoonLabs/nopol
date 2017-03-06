@@ -102,6 +102,13 @@ public class NoPol {
 		this.testPatch = new TestPatch(this.sourceFiles[0], this.spooner, nopolContext);
 	}
 
+	/**
+	 * This getter should only be used after an error on build() method (e.g. after a timeout), to get a partial result informations.
+	 * @return
+	 */
+	public NopolResult getNopolResult() {
+		return nopolResult;
+	}
 
 	public NopolResult build() {
 		if (this.testClasses == null) {
@@ -135,6 +142,20 @@ public class NoPol {
 		this.logResultInfo(this.nopolResult.getPatches());
 
 		this.nopolResult.setDurationInMilliseconds(System.currentTimeMillis()-this.startTime);
+
+		NopolStatus status;
+		if (nopolResult.getPatches().size() > 0) {
+			status = NopolStatus.PATCH;
+		} else {
+			if (nopolResult.getNbAngelicValues() == 0) {
+				status = NopolStatus.NO_ANGELIC_VALUE;
+			} else {
+				status = NopolStatus.NO_SYNTHESIS;
+			}
+		}
+
+		nopolResult.setNopolStatus(status);
+
 		return this.nopolResult;
 	}
 
@@ -242,17 +263,21 @@ public class NoPol {
 			return patches;
 		}
 		List<Patch> tmpPatches = synth.buildPatch(classpath, tests, failingTest, nopolContext.getMaxTimeBuildPatch());
-		for (int i = 0; i < tmpPatches.size(); i++) {
-			Patch patch = tmpPatches.get(i);
-			if (nopolContext.isSkipRegressionStep() || isOk(patch, tests, synth.getProcessor())) {
-				patches.add(patch);
-				if (nopolContext.isOnlyOneSynthesisResult()) {
-					return patches;
+
+		if (tmpPatches.size() > 0) {
+			for (int i = 0; i < tmpPatches.size(); i++) {
+				Patch patch = tmpPatches.get(i);
+				if (nopolContext.isSkipRegressionStep() || isOk(patch, tests, synth.getProcessor())) {
+					patches.add(patch);
+					if (nopolContext.isOnlyOneSynthesisResult()) {
+						return patches;
+					}
+				} else {
+					logger.debug("Could not find a patch in {}", sourceLocation);
 				}
-			} else {
-				logger.debug("Could not find a patch in {}", sourceLocation);
 			}
 		}
+
 		return patches;
 	}
 
