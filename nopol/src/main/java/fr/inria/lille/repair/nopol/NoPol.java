@@ -232,7 +232,6 @@ public class NoPol {
 			return (List) nopolExecution.get(nopolContext.getMaxTimeEachTypeOfFixInMinutes(), TimeUnit.MINUTES);
 		} catch (ExecutionException | InterruptedException | TimeoutException exception) {
 			LoggerFactory.getLogger(Main.class).error("Timeout: execution time > " + nopolContext.getMaxTimeEachTypeOfFixInMinutes() + " " + TimeUnit.MINUTES, exception);
-			this.nopolResult.setNopolStatus(NopolStatus.TIMEOUT);
 			return Collections.emptyList();
 		}
 	}
@@ -248,8 +247,6 @@ public class NoPol {
 
 		if (angelicValue != null) {
 			this.nopolResult.incrementNbAngelicValues();
-		} else {
-			this.nopolResult.setNopolStatus(NopolStatus.NO_ANGELIC_VALUE);
 		}
 
 		Synthesizer synth = SynthesizerFactory.build(sourceFiles, spooner, nopolContext, sourceLocation, nopolProcessor, angelicValue, spoonCl);
@@ -268,7 +265,6 @@ public class NoPol {
 				if (nopolContext.isSkipRegressionStep() || isOk(patch, tests, synth.getProcessor())) {
 					patches.add(patch);
 					if (nopolContext.isOnlyOneSynthesisResult()) {
-						this.nopolResult.setNopolStatus(NopolStatus.PATCH);
 						return patches;
 					}
 				} else {

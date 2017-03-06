@@ -117,7 +117,7 @@ public class Main {
 		if (result != null) {
 			System.out.println(result.getNopolStatus());
 
-			returnCode = (result.getPatches().isEmpty()) ? 1 : 0;
+			returnCode = (result.getPatches().isEmpty()) ? -1 : 0;
 		}
 
 		System.exit(returnCode);
