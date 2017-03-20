@@ -12,6 +12,7 @@ public final class CustomClassLoaderThreadFactory implements ThreadFactory {
     @Override
     public Thread newThread(Runnable r) {
         Thread newThread = Executors.defaultThreadFactory().newThread(r);
+        newThread.setDaemon(true); // use to avoid a main process to continue running waiting for this thread end at the end of execution
         newThread.setContextClassLoader(customClassLoader());
         return newThread;
     }
