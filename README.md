@@ -1,4 +1,5 @@
 # Nopol [![Build Status](https://travis-ci.org/SpoonLabs/nopol.svg?branch=master)](https://travis-ci.org/SpoonLabs/nopol) [![Coverage Status](https://coveralls.io/repos/github/SpoonLabs/nopol/badge.svg?branch=master)](https://coveralls.io/github/SpoonLabs/nopol?branch=master)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2FSpoonLabs%2Fnopol.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2FSpoonLabs%2Fnopol?ref=badge_shield)
 
 Nopol is an automatic software repair tool for Java. This code is research code, released under the GPL licence.
 
@@ -162,3 +163,7 @@ Usage: java -jar nopol.jar
 
 For questions and feedback , please contact martin.monperrus@univ-lille1.fr
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2FSpoonLabs%2Fnopol.svg?type=large)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2FSpoonLabs%2Fnopol?ref=badge_large)
