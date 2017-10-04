@@ -14,14 +14,16 @@ public class NopolResult {
     private List<Patch> patches;
     private NopolContext nopolContext;
     private long durationInMilliseconds;
+    private long startTime;
     private int nbStatements;
     private int nbAngelicValues;
     private int nbTests;
     private NopolStatus nopolStatus;
 
-    public NopolResult(NopolContext nopolContext) {
+    public NopolResult(NopolContext nopolContext, long startTime) {
         this.nopolContext = nopolContext;
         this.patches = new ArrayList<Patch>();
+        this.startTime = startTime;
     }
 
     public NopolContext getNopolContext() {
@@ -74,5 +76,9 @@ public class NopolResult {
 
     public void setNopolStatus(NopolStatus nopolStatus) {
         this.nopolStatus = nopolStatus;
+    }
+
+    public long getStartTime() {
+        return startTime;
     }
 }
