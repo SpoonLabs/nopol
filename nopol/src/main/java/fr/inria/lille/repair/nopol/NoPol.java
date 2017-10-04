@@ -86,7 +86,7 @@ public class NoPol {
 		this.nopolContext = nopolContext;
 		this.classpath = nopolContext.getProjectClasspath();
 		this.sourceFiles = nopolContext.getProjectSources();
-		this.nopolResult = new NopolResult(nopolContext);
+		this.nopolResult = new NopolResult(nopolContext, this.startTime);
 
 		StatementType type = nopolContext.getType();
 		logger.info("Source files: " + Arrays.toString(sourceFiles));
