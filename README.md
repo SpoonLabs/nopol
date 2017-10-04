@@ -25,17 +25,17 @@ Nopol requires Java and an SMT solver installed on the machine (e.g. Z3)
 1) CoCoSpoon:
 
 ```
-$ git clone https://github.com/SpoonLabs/CoCoSpoon.git
-$ cd CoCoSpoon
-$ mvn clean install
+git clone https://github.com/SpoonLabs/CoCoSpoon.git
+cd CoCoSpoon
+mvn clean install
 ```
 
 2) Compile NoPol:
 
 ```
-$ cd ../nopol/nopol
-$ export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-$ mvn package -DskipTests
+cd ../nopol/nopol
+export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+mvn package -DskipTests
 ```
 
 3) Locate the Nopol jar file produced at step 2)
@@ -61,8 +61,8 @@ $ mvn test -DskipTests
 (Long commands are broken in several lines, separated by a backslash, which means an escaped linebreak in Unix shells.)
 
 ```
-$ cd ../test-projects/
-$ java -jar nopol.jar \
+cd ../test-projects/
+java -jar nopol.jar \
 -s src/main/java/ \
 -c target/classes:target/test-classes:/home/<user>/.m2/repository/junit/junit/4.11/junit-4.11.jar:/home/<user>/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar \
 -t symbolic_examples.symbolic_example_1.NopolExampleTest \
