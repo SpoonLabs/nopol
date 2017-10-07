@@ -18,7 +18,7 @@ You can alternatively cite the previous paper ["Automatic Repair of Buggy If Con
 The dynamic synthesis part of Nopol is described in [DynaMoth: Dynamic Code Synthesis for Automatic Program Repair](https://hal.archives-ouvertes.fr/hal-01279233/document) (Thomas Durieux, Martin Monperrus), In Proceedings of the 11th International Workshop in Automation of Software Test, 2016. [(Bibtex)](http://www.monperrus.net/martin/bibtexbrowser.php?key=durieux%3Ahal-01279233&bib=monperrus.bib)
 
 
-## Getting started
+## Getting started
 
 Nopol requires Java and an SMT solver installed on the machine (e.g. Z3)
 
@@ -126,6 +126,8 @@ Usage: java -jar nopol.jar
 
 ## Advanced Usage
 
+See also notes below.
+
 ```
 Usage: java -jar nopol.jar
 
@@ -158,6 +160,10 @@ Usage: java -jar nopol.jar
 
 ```
 
+Notes: For using Dynamoth (`-y dynamoth`), you must add tools.jar in the classpath of Nopol, and use java with `-cp` (and not `-jar`):
+
+    java -cp $JAVA_HOME/lib/tools.jar:../nopol/target/nopol-SNAPSHOT-jar-with-dependencies.jar fr.inria.lille.repair.Main <nopol arguments>
+ 
 ## Contact
 
 For questions and feedback , please contact martin.monperrus@univ-lille1.fr
