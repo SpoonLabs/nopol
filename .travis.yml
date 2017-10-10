@@ -3,8 +3,9 @@ language: java
 matrix:
   include:
     - os: osx
+      osx_image: xcode9
     - os: linux
-      jdk: oraclejdk7
+      jdk: openjdk7
     - os: linux
       jdk: oraclejdk8
 

@@ -18,24 +18,24 @@ You can alternatively cite the previous paper ["Automatic Repair of Buggy If Con
 The dynamic synthesis part of Nopol is described in [DynaMoth: Dynamic Code Synthesis for Automatic Program Repair](https://hal.archives-ouvertes.fr/hal-01279233/document) (Thomas Durieux, Martin Monperrus), In Proceedings of the 11th International Workshop in Automation of Software Test, 2016. [(Bibtex)](http://www.monperrus.net/martin/bibtexbrowser.php?key=durieux%3Ahal-01279233&bib=monperrus.bib)
 
 
-## Getting started
+## Getting started
 
 Nopol requires Java and an SMT solver installed on the machine (e.g. Z3)
 
 1) CoCoSpoon:
 
 ```
-$ git clone https://github.com/SpoonLabs/CoCoSpoon.git
-$ cd CoCoSpoon
-$ mvn clean install
+git clone https://github.com/SpoonLabs/CoCoSpoon.git
+cd CoCoSpoon
+mvn clean install
 ```
 
 2) Compile NoPol:
 
 ```
-$ cd ../nopol/nopol
-$ export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-$ mvn package -DskipTests
+cd ../nopol/nopol
+export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+mvn package -DskipTests
 ```
 
 3) Locate the Nopol jar file produced at step 2)
@@ -61,8 +61,8 @@ $ mvn test -DskipTests
 (Long commands are broken in several lines, separated by a backslash, which means an escaped linebreak in Unix shells.)
 
 ```
-$ cd ../test-projects/
-$ java -jar nopol.jar \
+cd ../test-projects/
+java -jar nopol.jar \
 -s src/main/java/ \
 -c target/classes:target/test-classes:/home/<user>/.m2/repository/junit/junit/4.11/junit-4.11.jar:/home/<user>/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar \
 -t symbolic_examples.symbolic_example_1.NopolExampleTest \
@@ -126,6 +126,8 @@ Usage: java -jar nopol.jar
 
 ## Advanced Usage
 
+See also notes below.
+
 ```
 Usage: java -jar nopol.jar
 
@@ -158,6 +160,10 @@ Usage: java -jar nopol.jar
 
 ```
 
+Notes: For using Dynamoth (`-y dynamoth`), you must add tools.jar in the classpath of Nopol, and use java with `-cp` (and not `-jar`):
+
+    java -cp $JAVA_HOME/lib/tools.jar:../nopol/target/nopol-SNAPSHOT-jar-with-dependencies.jar fr.inria.lille.repair.Main <nopol arguments>
+ 
 ## Contact
 
 For questions and feedback , please contact martin.monperrus@univ-lille1.fr
