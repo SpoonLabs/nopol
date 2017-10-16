@@ -152,6 +152,12 @@ public abstract class AbstractValue implements Value {
         if (this.getRealValue() == null) {
             return "null";
         }
+        if (this.getRealValue() instanceof Character) {
+            return "'" + this.getRealValue() + "'";
+        }
+        if (this.getRealValue() instanceof String) {
+            return "\"" + this.getRealValue() + "\"";
+        }
         if (this.getRealValue().getClass().isPrimitive()) {
             return this.getRealValue() + "";
         }

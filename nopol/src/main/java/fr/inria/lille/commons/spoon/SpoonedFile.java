@@ -61,7 +61,7 @@ public abstract class SpoonedFile {
 
         factory = SpoonModelLibrary.modelFor(factory, sourceFiles, projectClasspath());
 
-        compiler = new DynamicClassCompiler(compilationClasspath());
+        compiler = new DynamicClassCompiler(compilationClasspath(), nopolContext.getComplianceLevel());
         manager = new RuntimeProcessingManager(factory);
         compiledClasses = MetaMap.newHashMap();
         prettyPrinter = new DefaultJavaPrettyPrinter(spoonEnvironment());
@@ -178,7 +178,10 @@ public abstract class SpoonedFile {
     protected synchronized String sourceForModelledClass(CtType<?> modelledClass) {
         //logDebug(logger(), format("[Scanning source code of %s]", modelledClass.getQualifiedName()));
         prettyPrinter().scan(modelledClass);
-        String packageDeclaration = "package " + modelledClass.getPackage().getQualifiedName() + ";";
+        String packageDeclaration = "";
+        if (!modelledClass.getPackage().isUnnamedPackage()) {
+            packageDeclaration = "package " + modelledClass.getPackage().getQualifiedName() + ";";
+        }
         String sourceCode = packageDeclaration + JavaLibrary.lineSeparator() + prettyPrinter().toString();
         prettyPrinter().reset();
         return sourceCode;

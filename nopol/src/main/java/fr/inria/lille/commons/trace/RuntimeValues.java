@@ -60,8 +60,64 @@ public class RuntimeValues<T> extends GlobalToggle {
         acquireToggle();
     }
 
+    public void collectInput(String variableName, byte value) {
+        ValueCollector.collectFrom(variableName, value, valueBuffer());
+    }
+
+    public void collectInput(String variableName, char value) {
+        ValueCollector.collectFrom(variableName, value, valueBuffer());
+    }
+
+    public void collectInput(String variableName, float value) {
+        ValueCollector.collectFrom(variableName, value, valueBuffer());
+    }
+
+    public void collectInput(String variableName, double value) {
+        ValueCollector.collectFrom(variableName, value, valueBuffer());
+    }
+
+    public void collectInput(String variableName, long value) {
+        ValueCollector.collectFrom(variableName, value, valueBuffer());
+    }
+
+    public void collectInput(String variableName, int value) {
+        ValueCollector.collectFrom(variableName, value, valueBuffer());
+    }
+
+    public void collectInput(String variableName, boolean value) {
+        ValueCollector.collectFrom(variableName, value, valueBuffer());
+    }
+
     public void collectInput(String variableName, Object value) {
         ValueCollector.collectFrom(variableName, value, valueBuffer());
+    }
+
+    public void collectOutput(char output) {
+        outputBuffer = output;
+    }
+
+    public void collectOutput(byte output) {
+        outputBuffer = output;
+    }
+
+    public void collectOutput(long output) {
+        outputBuffer = output;
+    }
+
+    public void collectOutput(float output) {
+        outputBuffer = output;
+    }
+
+    public void collectOutput(double output) {
+        outputBuffer = output;
+    }
+
+    public void collectOutput(int output) {
+        outputBuffer = output;
+    }
+
+    public void collectOutput(boolean output) {
+        outputBuffer = output;
     }
 
     public void collectOutput(Object output) {

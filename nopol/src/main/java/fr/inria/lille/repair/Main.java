@@ -37,9 +37,12 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Iterator;
-import java.util.concurrent.*;
-
-import static java.lang.String.format;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class Main {
 	private JSAP jsap;
@@ -163,9 +166,9 @@ public class Main {
 			nopolContext.setSolverPath(jsapConfig.getString("solverPath"));
 			SolverFactory.setSolver(nopolContext.getSolver(), nopolContext.getSolverPath());
 		}
-		nopolContext.setComplianceLevel(jsapConfig.getInt("complianceLevel", 7));
-		nopolContext.setMaxTimeInMinutes(jsapConfig.getInt("maxTime", 10));
-		nopolContext.setMaxTimeEachTypeOfFixInMinutes(jsapConfig.getInt("maxTimeType", 5));
+		nopolContext.setComplianceLevel(jsapConfig.getInt("complianceLevel", 7)); nopolContext.setMaxTimeInMinutes(jsapConfig.getInt("maxTime", nopolContext.getMaxTimeInMinutes()));
+		nopolContext.setMaxTimeEachTypeOfFixInMinutes(jsapConfig.getLong("maxTimeType", nopolContext.getMaxTimeEachTypeOfFixInMinutes()));
+
 		nopolContext.setLocalizer(strToLocalizer(jsapConfig.getString("faultLocalization")));
 		nopolContext.setOutputFolder(jsapConfig.getString("outputFolder"));
 		nopolContext.setJson(jsapConfig.getBoolean("outputJson", false));

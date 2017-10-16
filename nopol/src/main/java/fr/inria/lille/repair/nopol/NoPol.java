@@ -40,6 +40,7 @@ import fr.inria.lille.repair.nopol.spoon.symbolic.TestExecutorProcessor;
 import fr.inria.lille.repair.nopol.synth.*;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
+import org.junit.runner.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.processing.Processor;
@@ -315,9 +316,9 @@ public class NoPol {
 		return failingClassTest.toArray(new String[0]);
 	}
 
-	private Collection<TestCase> reRunFailingTestCases(String[] testClasses, ClassLoader testClassLoader) {
+	private Collection<TestCase> reRunFailingTestCases(String[] testClasses, URLClassLoader testClassLoader) {
 		TestCasesListener listener = new TestCasesListener();
-		TestSuiteExecution.runCasesIn(testClasses, testClassLoader, listener, this.nopolContext);
+		Result result = TestSuiteExecution.runCasesIn(testClasses, new URLClassLoader(testClassLoader.getURLs()), listener, this.nopolContext);
 		return listener.failedTests();
 	}
 

@@ -2,7 +2,6 @@ package fr.inria.lille.commons.spoon.util;
 
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
-import spoon.compiler.Environment;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtBlock;
@@ -17,8 +16,6 @@ import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtWhile;
 import spoon.reflect.declaration.CtElement;
-import spoon.reflect.factory.CodeFactory;
-import spoon.reflect.factory.CoreFactory;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
 import xxl.java.container.classic.MetaList;
@@ -107,7 +104,7 @@ public class SpoonModelLibrary {
 
     public static <T> CtLocalVariable<T> newLocalVariable(Factory factory, Class<T> aClass, String variableName) {
         CtLocalVariable<T> variable = factory.Core().createLocalVariable();
-        variable.setType(newTypeReference(factory, aClass));
+        variable.setType((CtTypeReference<T>) newTypeReference(factory, aClass).unbox());
         variable.setSimpleName(variableName);
         return variable;
     }

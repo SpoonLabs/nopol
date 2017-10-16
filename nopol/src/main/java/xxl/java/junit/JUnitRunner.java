@@ -8,6 +8,7 @@ import xxl.java.library.ClassLibrary;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.TimeZone;
 import java.util.concurrent.Callable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -21,6 +22,7 @@ public final class JUnitRunner implements Callable<Result> {
 
     @Override
     public Result call() throws Exception {
+        TimeZone.setDefault(TimeZone.getTimeZone("America/New_York"));
         JUnitCore runner = new JUnitCore();
         runner.addListener(listener);
         Class<?>[] testClasses = testClassesFromCustomClassLoader();

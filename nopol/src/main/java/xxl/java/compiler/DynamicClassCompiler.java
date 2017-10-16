@@ -20,13 +20,20 @@ import static xxl.java.library.LoggerLibrary.loggerFor;
 
 public class DynamicClassCompiler {
 
-    public DynamicClassCompiler(URL[] classpath) {
-        this();
+    public DynamicClassCompiler(URL[] classpath, int compliance) {
+        this(compliance);
         options = optionsWithClasspath(classpath);
+    }
+    public DynamicClassCompiler(URL[] classpath) {
+        this(classpath, 7);
     }
 
     public DynamicClassCompiler() {
-        options = asList("-nowarn");
+        this(7);
+    }
+
+    public DynamicClassCompiler(int compliance) {
+        options = asList("-nowarn", "-source", "1." + compliance, "-target", "1." + compliance);
         compiler = ToolProvider.getSystemJavaCompiler();
         diagnostics = new DiagnosticCollector<JavaFileObject>();
         StandardJavaFileManager standardFileManager = compiler().getStandardFileManager(diagnostics(), null, null);
