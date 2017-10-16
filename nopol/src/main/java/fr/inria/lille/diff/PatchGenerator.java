@@ -115,10 +115,14 @@ public class PatchGenerator {
 		File[] inputSources = nopolContext.getProjectSources();
 		for (int i = 0; i < inputSources.length; i++) {
 			File inputSource = inputSources[i];
+			String filePath = inputSource.getPath();
+			if (filePath.startsWith("./")) {
+				filePath = filePath.substring(2);
+			}
 			if (intersection == null) {
-				intersection = inputSource.getPath();
+				intersection = filePath;
 			} else {
-				intersection = intersection(intersection, inputSource.getPath());
+				intersection = intersection(intersection, filePath);
 			}
 		}
 		int indexOfIntersection = path.indexOf(intersection);
