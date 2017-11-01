@@ -22,7 +22,7 @@ The dynamic synthesis part of Nopol is described in [DynaMoth: Dynamic Code Synt
 
 Nopol requires Java and an SMT solver installed on the machine (e.g. Z3)
 
-1) CoCoSpoon:
+1) [CoCoSpoon](https://github.com/SpoonLabs/CoCoSpoon):
 
 ```
 git clone https://github.com/SpoonLabs/CoCoSpoon.git
