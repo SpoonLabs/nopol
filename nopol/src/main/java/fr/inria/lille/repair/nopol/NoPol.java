@@ -258,7 +258,7 @@ public class NoPol {
 		if (synth == Synthesizer.NO_OP_SYNTHESIZER) {
 			return patches;
 		}
-		Collection<TestCase> failingTest = reRunFailingTestCases(getFailingTestCase(tests), new URLClassLoader(classpath));
+		Collection<TestCase> failingTest = reRunFailingTestCases(getFailingTestCase(tests), new URLClassLoader(classpath, Thread.currentThread().getContextClassLoader()));
 		if (failingTest.isEmpty()) {
 			return patches;
 		}
@@ -318,7 +318,7 @@ public class NoPol {
 
 	private Collection<TestCase> reRunFailingTestCases(String[] testClasses, URLClassLoader testClassLoader) {
 		TestCasesListener listener = new TestCasesListener();
-		Result result = TestSuiteExecution.runCasesIn(testClasses, new URLClassLoader(testClassLoader.getURLs()), listener, this.nopolContext);
+		Result result = TestSuiteExecution.runCasesIn(testClasses, new URLClassLoader(testClassLoader.getURLs(), Thread.currentThread().getContextClassLoader()), listener, this.nopolContext);
 		return listener.failedTests();
 	}
 

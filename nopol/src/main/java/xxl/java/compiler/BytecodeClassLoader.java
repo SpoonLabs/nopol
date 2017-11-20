@@ -12,7 +12,7 @@ import java.util.Map;
 public class BytecodeClassLoader extends URLClassLoader {
 
     protected BytecodeClassLoader(URL[] classpath) {
-        super(classpath);
+        super(classpath, Thread.currentThread().getContextClassLoader());
     }
 
     protected BytecodeClassLoader(URL[] classpath, ClassLoader parentClassLoader) {

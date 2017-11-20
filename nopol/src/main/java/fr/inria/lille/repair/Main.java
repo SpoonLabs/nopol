@@ -30,6 +30,7 @@ import fr.inria.lille.repair.nopol.NopolResult;
 import fr.inria.lille.repair.nopol.NopolStatus;
 import fr.inria.lille.repair.ranking.Ranking;
 import org.slf4j.LoggerFactory;
+import xxl.java.junit.CustomClassLoaderThreadFactory;
 import xxl.java.library.FileLibrary;
 import xxl.java.library.JavaLibrary;
 
@@ -88,7 +89,7 @@ public class Main {
 							break;
 						default:
 							final NoPol nopol = new NoPol(nopolContext);
-							final ExecutorService executor = Executors.newSingleThreadExecutor();
+							final ExecutorService executor = Executors.newSingleThreadExecutor(new CustomClassLoaderThreadFactory(Thread.currentThread().getContextClassLoader()));
 							final Future<NopolResult> nopolExecution = executor.submit(
 									new Callable() {
 										@Override
