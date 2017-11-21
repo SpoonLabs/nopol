@@ -183,7 +183,7 @@ public abstract class SpoonedFile {
             packageDeclaration = "package " + modelledClass.getPackage().getQualifiedName() + ";";
         }
         String sourceCode = packageDeclaration + JavaLibrary.lineSeparator() + prettyPrinter().toString();
-        prettyPrinter().reset();
+        prettyPrinter = new DefaultJavaPrettyPrinter(spoonEnvironment());
         return sourceCode;
     }
 

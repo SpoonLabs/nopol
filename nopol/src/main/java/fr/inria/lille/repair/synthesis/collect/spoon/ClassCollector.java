@@ -59,7 +59,7 @@ public class ClassCollector extends AbstractProcessor<CtTypedElement<?>> {
             if (ctTypeReference.toString().equals("<nulltype>")) {
                 continue;
             }
-            if (exception.isAssignableFrom(ctTypeReference)) {
+            if (exception.isSubtypeOf(ctTypeReference)) {
                 continue;
             }
             if (classes.contains(ctTypeReference.getQualifiedName())) {

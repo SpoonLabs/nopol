@@ -106,7 +106,7 @@ public class SpoonReferenceLibrary {
     }
 
     public static boolean isSubclassOf(CtTypeReference<?> superType, CtTypeReference<?> type) {
-        return superType.isAssignableFrom(type);
+        return superType.isSubtypeOf(type);
     }
 
     public static boolean isNestedIn(CtTypeReference<?> nestingType, CtTypeReference<?> type) {
