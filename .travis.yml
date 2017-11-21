@@ -5,7 +5,7 @@ matrix:
     - os: osx
       osx_image: xcode9
     - os: linux
-      jdk: openjdk7
+      jdk: openjdk8
     - os: linux
       jdk: oraclejdk8
 
@@ -16,4 +16,4 @@ script: "./.travis_run_tests.sh"
 
 cache:
   directories:
-    - $HOME/.m2
+      - $HOME/.m2
