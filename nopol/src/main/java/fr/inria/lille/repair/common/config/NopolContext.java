@@ -46,7 +46,7 @@ public class NopolContext implements Serializable {
 		OCHIAI
 	}
 
-	private final String filename = "config.ini";
+	private final String filename = "default-nopol-config.ini";
 
 
 	private boolean collectStaticMethods;
