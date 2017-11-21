@@ -31,11 +31,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <default.encoding>UTF-8</default.encoding>
         <slf4j.version>1.7.5</slf4j.version>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
 
-        <java.src.version>1.7</java.src.version>
-        <java.test.version>1.7</java.test.version>
+        <java.src.version>1.8</java.src.version>
+        <java.test.version>1.8</java.test.version>
 
         <javacc-maven-plugin.version>2.6</javacc-maven-plugin.version>
         <maven-clean-plugin.version>2.5</maven-clean-plugin.version>

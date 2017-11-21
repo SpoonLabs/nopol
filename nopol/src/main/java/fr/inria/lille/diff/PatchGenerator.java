@@ -41,7 +41,7 @@ public class PatchGenerator {
 			@Override
 			protected void enter(CtElement e) {
 				if (e.getPosition().getSourceStart() == patch.getSourceLocation().getBeginSource()
-						&& e.getPosition().getSourceEnd() == patch.getSourceLocation().getEndSource()) {
+						&& e.getPosition().getSourceEnd() == patch.getSourceLocation().getEndSource() && e.isImplicit() == false) {
 					if (patch.getType() == StatementType.CONDITIONAL && e instanceof CtIf) {
 						setResult(((CtIf) e).getCondition());
 					} else {

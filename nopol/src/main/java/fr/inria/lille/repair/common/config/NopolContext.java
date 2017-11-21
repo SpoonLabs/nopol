@@ -141,7 +141,7 @@ public class NopolContext implements Serializable {
 			maxLineInvocationPerTest = Integer.parseInt(p.getProperty("maxLineInvocationPerTest", "150"));
 			timeoutMethodInvocation = Integer.parseInt(p.getProperty("timeoutMethodInvocation", "2000"));
 			dataCollectionTimeoutInSecondForSynthesis = Integer.parseInt(p.getProperty("dataCollectionTimeoutInSecondForSynthesis", "900"));
-			outputFolder = p.getProperty("outputFolder", null);
+			outputFolder = p.getProperty("outputFolder", "./");
 
 			addWeight = Double.parseDouble(p.getProperty("addOp", "0"));
 			subWeight = Double.parseDouble(p.getProperty("subOp", "0"));
