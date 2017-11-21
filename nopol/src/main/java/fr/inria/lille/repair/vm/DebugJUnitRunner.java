@@ -5,6 +5,7 @@ import com.sun.jdi.ObjectReference;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.VirtualMachine;
 import fr.inria.lille.repair.MethodTestRunner;
+import fr.inria.lille.repair.common.config.NopolContext;
 
 import java.io.*;
 import java.net.ConnectException;
@@ -57,7 +58,8 @@ public class DebugJUnitRunner {
         return result;
     }
 
-    public static VirtualMachine run(String[] testClasses, URL[] classpath) throws IOException {
+    public static VirtualMachine run(String[] testClasses, URL[] classpath,
+            NopolContext nopolContext) throws IOException {
         String strClasspath = "";
         for (int i = 0; i < classpath.length; i++) {
             URL url = classpath[i];
@@ -83,7 +85,7 @@ public class DebugJUnitRunner {
                 testList
         );
         System.out.println("java -cp " + strClasspath + " " + MethodTestRunner.class.getCanonicalName() + " " + testList);
-        File log = new File("log");
+        File log = new File(nopolContext.getOutputFolder() + "/debug-DynaMoth-log");
         log.delete();
         log.createNewFile();
         OutputStream out = new FileOutputStream(log);

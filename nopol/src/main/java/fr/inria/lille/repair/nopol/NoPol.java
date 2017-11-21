@@ -466,7 +466,7 @@ public class NoPol {
 				}
 			}
 
-			try (FileWriter writer = new FileWriter("output.json")) {
+			try (FileWriter writer = new FileWriter(nopolContext.getOutputFolder() + "/output.json")) {
 				output.write(writer);
 				writer.close();
 			} catch (IOException ignore) {

@@ -150,7 +150,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
             return candidates;
         }
         try {
-            vm = DebugJUnitRunner.run(tests, classpath);
+            vm = DebugJUnitRunner.run(tests, classpath, nopolContext);
             watchBuggyClass();
             vm.resume();
             processVMEvents();
