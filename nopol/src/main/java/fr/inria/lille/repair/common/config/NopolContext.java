@@ -214,6 +214,10 @@ public class NopolContext implements Serializable {
 		this.collectOnlyUsedMethod = collectOnlyUsedMethod;
 	}
 
+	/** Tells whether you want to generate several patches for the same location with angelic value.
+	 * This is only valid in Dynamoth mode which is able to enumerate patches in the synthesis space.
+	 * On the contrary, the SMT synthesis is not able to enumerate them.
+	 */
 	public boolean isOnlyOneSynthesisResult() {
 		return onlyOneSynthesisResult;
 	}
