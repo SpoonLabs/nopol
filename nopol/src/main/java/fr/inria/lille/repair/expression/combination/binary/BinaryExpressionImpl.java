@@ -109,7 +109,10 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
                 if (getFirstExpression().sameExpression(getSecondExpression())) {
                     return false;
                 }
-                if (!firstValue.isCompatibleWith(Boolean.class) && !firstValue.isCompatibleWith(Number.class)) {
+                if (!firstValue.isCompatibleWith(Boolean.class)
+                        && !firstValue.isCompatibleWith(Number.class)
+                        && firstValue.getRealValue() != null
+                        && secondValue.getRealValue() != null) {
                     return false;
                 }
                 if (!firstValue.isCompatibleWith(param2)) {
