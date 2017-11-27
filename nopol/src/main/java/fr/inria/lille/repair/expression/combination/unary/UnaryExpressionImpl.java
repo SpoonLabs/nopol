@@ -5,6 +5,7 @@ import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.expression.Expression;
 import fr.inria.lille.repair.expression.ExpressionImpl;
+import fr.inria.lille.repair.expression.access.Literal;
 import fr.inria.lille.repair.expression.access.Method;
 import fr.inria.lille.repair.expression.combination.binary.BinaryExpression;
 import fr.inria.lille.repair.expression.factory.ValueFactory;
@@ -73,7 +74,7 @@ public class UnaryExpressionImpl extends ExpressionImpl implements UnaryExpressi
         if (!getOperator().getReturnType().isAssignableFrom(value1.getType())) {
             return null;
         }
-        if(value1.isConstant()) {
+        if(getExpression() instanceof Literal) {
             return null;
         }
         if(getExpression() instanceof UnaryExpression) {

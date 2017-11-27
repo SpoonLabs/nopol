@@ -15,7 +15,7 @@ public abstract class NopolProcessor extends AbstractProcessor<CtStatement> {
 
     @Override
     public boolean isToBeProcessed(CtStatement statement) {
-        return statement.equals(target);
+        return target.getPosition().getSourceStart() == statement.getPosition().getSourceStart() && target.getPosition().getSourceEnd() == statement.getPosition().getSourceEnd() && statement.equals(target);
     }
 
     public String getValue() {

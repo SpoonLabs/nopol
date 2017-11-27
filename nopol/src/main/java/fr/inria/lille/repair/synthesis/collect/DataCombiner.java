@@ -62,8 +62,8 @@ public class DataCombiner {
             previousSize = candidates.size();
             executionTime = System.currentTimeMillis() - startTime;*/
         }
-        result.addAll(lastTurn);
-        logger.debug("[combine] end " + result.getCacheValues().keySet().size() + " evaluated elements");
+        //result.addAll(lastTurn);
+        logger.debug("[combine] end " + lastTurn.size() + " evaluated elements");
         return result;
     }
 
@@ -71,19 +71,40 @@ public class DataCombiner {
         final List<Expression> result = new ArrayList<>();
 
         class Combination {
-            private final List<Expression> toCombine;
+            private final List<List<Expression>> toCombine = new ArrayList<>();
             private final Operator operator;
             private final List<Integer> positions;
             private final int nbExpression;
             private boolean isEnd = false;
 
             Combination(List<Expression> toCombine, Operator operator, int nbExpression) {
-                this.toCombine = toCombine;
+                // select compatible element for each parameter
+                for (int i = 0; i < operator.getTypeParameters().size(); i++) {
+                    Class aClass = operator.getTypeParameters().get(i);
+                    for (int j = 0; j < toCombine.size(); j++) {
+                        Expression expression = toCombine.get(j);
+                        if (expression.getValue().isCompatibleWith(aClass)) {
+                            if (this.toCombine.size() < i + 1) {
+                                this.toCombine.add(new ArrayList<>());
+                            }
+                            this.toCombine.get(i).add(expression);
+                        }
+                    }
+                }
                 this.operator = operator;
                 this.nbExpression = nbExpression;
                 this.positions = new ArrayList<>(nbExpression);
                 for (int i = 0; i < nbExpression; i++) {
                     positions.add(0);
+                }
+                if (this.toCombine.isEmpty()) {
+                    isEnd = true;
+                }
+                for (List<Expression> expressions : this.toCombine) {
+                    if (expressions.isEmpty()) {
+                        isEnd = true;
+                        return;
+                    }
                 }
             }
 
@@ -93,7 +114,7 @@ public class DataCombiner {
                 }
                 List<Expression> current = new ArrayList<>();
                 for (int i = 0; i < nbExpression; i++) {
-                    current.add(toCombine.get(positions.get(i)));
+                    current.add(toCombine.get(i).get(positions.get(i)));
                 }
                 incrementPosition();
                 return current;
@@ -104,9 +125,9 @@ public class DataCombiner {
             }
 
             private synchronized void incrementPosition() {
-                int size = toCombine.size();
                 for (int i = positions.size() - 1; i >= 0; i-- ) {
                     Integer position = positions.get(i);
+                    int size = toCombine.get(i).size();
                     if (position < size - 1) {
                         position ++;
                         positions.set(i, position);
@@ -114,10 +135,11 @@ public class DataCombiner {
                     } else {
                         positions.set(i, 0);
                         if (i == positions.size() - 1 && positions.size() > 1) {
-                            positions.set(i, Math.min(positions.get(i - 1) + 2, size - 1));
+                            //  positions.set(i, Math.min(positions.get(i - 1) + 2, size - 1));
                         }
                         if (i == 0) {
                             isEnd = true;
+                            return;
                         }
                     }
                 }

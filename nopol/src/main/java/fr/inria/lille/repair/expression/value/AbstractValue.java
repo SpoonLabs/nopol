@@ -147,6 +147,44 @@ public abstract class AbstractValue implements Value {
         }
     }
 
+    private Class wrapClass(Class aClass) {
+        if (!aClass.isPrimitive()) {
+            return aClass;
+        }
+        if (aClass == int.class) {
+            return Integer.class;
+        }
+        if (aClass == long.class) {
+            return Long.class;
+        }
+        if (aClass == double.class) {
+            return Double.class;
+        }
+        if (aClass == float.class) {
+            return Float.class;
+        }
+        if (aClass == boolean.class) {
+            return Boolean.class;
+        }
+        if (aClass == byte.class) {
+            return Byte.class;
+        }
+        if (aClass == char.class) {
+            return Character.class;
+        }
+        return aClass;
+    }
+
+    @Override
+    public boolean isCompatibleWith(Class aClass) {
+        aClass = wrapClass(aClass);
+        Class type = getType();
+        if (aClass.isAssignableFrom(type)) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         if (this.getRealValue() == null) {

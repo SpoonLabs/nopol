@@ -87,11 +87,11 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
         Class param2 = getOperator().getParam2();
 
         // check the compatibility with the operator
-        if (!param1.isAssignableFrom(firstValue.getType())) {
+        if (!firstValue.isCompatibleWith(param1)) {
             return false;
         }
 
-        if (secondValue != Value.NOVALUE && !param2.isAssignableFrom(secondValue.getType())) {
+        if (secondValue != Value.NOVALUE && !secondValue.isCompatibleWith(param2)) {
             return false;
         }
         if (secondValue != Value.NOVALUE && firstValue.isConstant() && secondValue.isConstant()) {
@@ -109,22 +109,28 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
                 if (getFirstExpression().sameExpression(getSecondExpression())) {
                     return false;
                 }
+                if (!firstValue.isCompatibleWith(Boolean.class) && !firstValue.isCompatibleWith(Number.class)) {
+                    return false;
+                }
+                if (!firstValue.isCompatibleWith(param2)) {
+                    return false;
+                }
 
                 // comparison between null and a primitive
-                if (firstValue.getRealValue() instanceof Number) {
-                    if (!(secondValue.getRealValue() instanceof Number)) {
+                if (firstValue.isCompatibleWith(Number.class)) {
+                    if (!(secondValue.isCompatibleWith(Number.class))) {
                         return false;
                     }
-                } else if (secondValue.getRealValue() instanceof Number) {
-                    if (!(firstValue.getRealValue() instanceof Number)) {
+                } else if (secondValue.isCompatibleWith(Number.class)) {
+                    if (!(firstValue.isCompatibleWith(Number.class))) {
                         return false;
                     }
-                } else if (firstValue.getRealValue() instanceof Boolean) {
-                    if (!(secondValue.getRealValue() instanceof Boolean)) {
+                } else if (firstValue.isCompatibleWith(Boolean.class)) {
+                    if (!(secondValue.isCompatibleWith(Boolean.class))) {
                         return false;
                     }
-                } else if (secondValue.getRealValue() instanceof Boolean) {
-                    if (!(firstValue.getRealValue() instanceof Boolean)) {
+                } else if (secondValue.isCompatibleWith(Boolean.class)) {
+                    if (!(firstValue.isCompatibleWith(Boolean.class))) {
                         return false;
                     }
                 }
@@ -134,7 +140,7 @@ public class BinaryExpressionImpl extends ExpressionImpl implements BinaryExpres
                 if (getFirstExpression().sameExpression(getSecondExpression())) {
                     return false;
                 }
-                if (firstValue.isConstant() || (secondValue != Value.NOVALUE && secondValue.isConstant())) {
+                if (getFirstExpression() instanceof Literal || getSecondExpression() instanceof Literal) {
                     return false;
                 }
                 break;

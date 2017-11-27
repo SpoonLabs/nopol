@@ -158,8 +158,8 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
             if (values.size()==0) {
             	throw new RuntimeException("should not happen, no value collected");
             }
-            validExpressions = combineValues();
             DebugJUnitRunner.shutdown(vm);
+            validExpressions = combineValues();
             return validExpressions;
         } catch (IOException e) {
             throw new RuntimeException("Unable to communicate with the project", e);

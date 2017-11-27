@@ -26,6 +26,8 @@ public interface Value extends Serializable {
 
     boolean isAssignableTo(Type refAss);
 
+    boolean isCompatibleWith(Class aClass);
+
     void setConstant(boolean b);
 
     Value NOVALUE = new Value() {
@@ -71,6 +73,11 @@ public interface Value extends Serializable {
 
         @Override
         public boolean isAssignableTo(Type refAss) {
+            throw new NotImplementedException();
+        }
+
+        @Override
+        public boolean isCompatibleWith(Class aClass) {
             throw new NotImplementedException();
         }
 

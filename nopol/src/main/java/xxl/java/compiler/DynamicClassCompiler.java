@@ -6,8 +6,14 @@ import xxl.java.container.classic.MetaMap;
 import xxl.java.library.JavaLibrary;
 import xxl.java.library.StringLibrary;
 
-import javax.tools.*;
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.StandardLocation;
+import javax.tools.ToolProvider;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
-import static xxl.java.library.LoggerLibrary.logDebug;
+import static xxl.java.library.LoggerLibrary.logError;
 import static xxl.java.library.LoggerLibrary.loggerFor;
 
 public class DynamicClassCompiler {
@@ -89,7 +95,7 @@ public class DynamicClassCompiler {
             for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics().getDiagnostics()) {
                 errors.add(diagnostic.toString());
             }
-            logDebug(logger(), errors);
+            logError(logger(), errors);
             throw new DynamicCompilationException("Aborting: dynamic compilation failed");
         }
         return success;
