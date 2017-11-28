@@ -50,7 +50,7 @@ public class GzoltarLocalizerTest {
 		assertTrue(executedSourceLocationPerTest.keySet().contains(sourceLocation4));
 		assertTrue(executedSourceLocationPerTest.keySet().contains(sourceLocation5));
 
-		List<AbstractStatement> sortedStatements = localizer.getStatements();
+		List<? extends StatementSourceLocation> sortedStatements = localizer.getStatements();
 
 		assertEquals(0.534, sortedStatements.get(0).getSuspiciousness(), 10E-3);
 		assertEquals(0.5, sortedStatements.get(1).getSuspiciousness(), 10E-3);
@@ -59,6 +59,6 @@ public class GzoltarLocalizerTest {
 		assertEquals(0.0, sortedStatements.get(4).getSuspiciousness(), 10E-3);
 
 		//Rank 1
-		assertEquals(sourceLocation5, ((StatementSourceLocation)sortedStatements.get(0)).getLocation());
+		assertEquals(sourceLocation5, sortedStatements.get(0).getLocation());
 	}
 }

@@ -96,11 +96,7 @@ public class CocoSpoonBasedSpectrumBasedFaultLocalizer extends DumbFaultLocalize
 	}
 
 	@Override
-	public List<AbstractStatement> getStatements() {
-		List<AbstractStatement> abstractStatements = new ArrayList<>();
-		for (StatementSourceLocation statement : this.statements) {
-			abstractStatements.add(statement);
-		}
-		return abstractStatements;
+	public List<? extends StatementSourceLocation> getStatements() {
+		return this.statements;
 	}
 }

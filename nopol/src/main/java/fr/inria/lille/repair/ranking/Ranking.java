@@ -5,6 +5,7 @@ import com.gzoltar.core.instr.testing.TestResult;
 import fr.inria.lille.localization.AbstractStatement;
 import fr.inria.lille.localization.GZoltarFaultLocalizer;
 import fr.inria.lille.localization.StatementExt;
+import fr.inria.lille.localization.StatementSourceLocation;
 import fr.inria.lille.repair.common.finder.TestClassesFinder;
 import fr.inria.lille.repair.common.config.NopolContext;
 
@@ -41,7 +42,7 @@ public class Ranking {
 		int successfulTests = 0;
 		int nbTest = 0;
 
-		List<AbstractStatement> suspiciousStatements = gZoltar.getStatements();
+		List<? extends StatementSourceLocation> suspiciousStatements = gZoltar.getStatements();
 
 
 		String output = "";

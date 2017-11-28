@@ -27,6 +27,7 @@ import fr.inria.lille.localization.FaultLocalizer;
 import fr.inria.lille.localization.GZoltarFaultLocalizer;
 import fr.inria.lille.localization.OchiaiFaultLocalizer;
 import fr.inria.lille.localization.TestResult;
+import fr.inria.lille.repair.common.BottomTopURLClassLoader;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.finder.TestClassesFinder;
 import fr.inria.lille.repair.common.patch.Patch;
@@ -45,7 +46,6 @@ import fr.inria.lille.repair.nopol.synth.Synthesizer;
 import fr.inria.lille.repair.nopol.synth.SynthesizerFactory;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
-import org.junit.runner.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.processing.Processor;
@@ -63,7 +63,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -280,7 +279,7 @@ public class NoPol {
 		if (synth == Synthesizer.NO_OP_SYNTHESIZER) {
 			return patches;
 		}
-		Collection<TestCase> failingTest = reRunFailingTestCases(getFailingTestCase(tests), new URLClassLoader(classpath, Thread.currentThread().getContextClassLoader()));
+		Collection<TestCase> failingTest = reRunFailingTestCases(getFailingTestCase(tests), classpath);
 		if (failingTest.isEmpty()) {
 			return patches;
 		}
@@ -338,9 +337,9 @@ public class NoPol {
 		return failingClassTest.toArray(new String[0]);
 	}
 
-	private Collection<TestCase> reRunFailingTestCases(String[] testClasses, URLClassLoader testClassLoader) {
+	private Collection<TestCase> reRunFailingTestCases(String[] testClasses, URL[] deps) {
 		TestCasesListener listener = new TestCasesListener();
-		Result result = TestSuiteExecution.runCasesIn(testClasses, new URLClassLoader(testClassLoader.getURLs(), Thread.currentThread().getContextClassLoader()), listener, this.nopolContext);
+		TestSuiteExecution.runCasesIn(testClasses, new BottomTopURLClassLoader(deps, Thread.currentThread().getContextClassLoader()), listener, this.nopolContext);
 		return listener.failedTests();
 	}
 

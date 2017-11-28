@@ -51,7 +51,7 @@ public class OchiailocalizerTest {
         assertTrue(executedSourceLocationPerTest.keySet().contains(sourceLocation7));
         assertTrue(executedSourceLocationPerTest.keySet().contains(sourceLocation8));
 
-        List<AbstractStatement> sortedStatements = localizer.getStatements();
+        List<? extends StatementSourceLocation> sortedStatements = localizer.getStatements();
 
         assertEquals(0.534, sortedStatements.get(0).getSuspiciousness(), 10E-3);
         assertEquals(0.5, sortedStatements.get(1).getSuspiciousness(), 10E-3);
@@ -62,6 +62,6 @@ public class OchiailocalizerTest {
         assertEquals(0.0, sortedStatements.get(6).getSuspiciousness(), 10E-3);
         assertEquals(0.0, sortedStatements.get(7).getSuspiciousness(), 10E-3);
 
-        assertEquals(sourceLocation5, ((StatementSourceLocation) sortedStatements.get(0)).getLocation());
+        assertEquals(sourceLocation5, sortedStatements.get(0).getLocation());
     }
 }

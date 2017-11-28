@@ -26,8 +26,18 @@ import fr.inria.lille.repair.nopol.SourceLocation;
 import xxl.java.junit.TestCase;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -70,14 +80,12 @@ public final class GZoltarFaultLocalizer extends GZoltar implements FaultLocaliz
 		this.statements = run(test);
 	}
 
-	public List<AbstractStatement> getStatements() {
-		List<AbstractStatement> abstractStatements = new ArrayList<>();
-		for (StatementExt statement : this.statements) {
-			abstractStatements.add(statement);
-		}
-		return abstractStatements;
+	@Override
+	public List<? extends StatementSourceLocation> getStatements() {
+		return this.statements;
 	}
 
+	@Override
 	public List<com.gzoltar.core.instr.testing.TestResult> getTestResults() {
 		return super.getTestResults();
 	}
@@ -124,9 +132,37 @@ public final class GZoltarFaultLocalizer extends GZoltar implements FaultLocaliz
 			this.addClassNotToInstrument(className); // we don't want to include the test as root-cause
 			// candidate
 		}
-		this.run();
+		final String systemClasspath = System.getProperty("java.class.path");
+
+		// remove classpath noise
+		String[] deps = systemClasspath.split(":");
+		StringBuilder cl = new StringBuilder();
+		for (int i = 0; i < deps.length; i++) {
+			String dep = deps[i];
+			if (dep.contains("jre") || dep.contains("gzoltar")) {
+				cl.append(dep).append(":");
+			}
+		}
+		try {
+			System.setProperty("java.class.path", cl.toString());
+			setGzoltarDebug(false);
+			this.run();
+		} finally {
+			System.setProperty("java.class.path", systemClasspath);
+		}
 		return this.getSuspiciousStatements(this.metric);
 	}
+
+	protected void setGzoltarDebug(boolean debugValue) {
+		try {
+			Field debug = com.gzoltar.core.agent.Launcher.class.getDeclaredField("debug");
+			debug.setAccessible(true);
+			debug.setBoolean(null, debugValue);
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+
 
 	private List<StatementExt> getSuspiciousStatements(final Metric metric) {
 		List<Statement> suspiciousStatements = super.getSuspiciousStatements();

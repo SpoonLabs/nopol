@@ -123,7 +123,7 @@ public class DumbFaultLocalizerImpl implements FaultLocalizer {
 	}
 
 	@Override
-	public List<AbstractStatement> getStatements() {
+	public List<? extends StatementSourceLocation> getStatements() {
 		throw new UnsupportedOperationException();
 	}
 }
