@@ -1,10 +1,12 @@
 package xxl.java.compiler;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.Test;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Request;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
+import xxl.java.container.classic.MetaMap;
+import xxl.java.library.JavaLibrary;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -22,14 +24,11 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.junit.Test;
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Request;
-import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
-
-import xxl.java.container.classic.MetaMap;
-import xxl.java.library.JavaLibrary;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class DynamicClassCompilerTest {
 
@@ -215,7 +214,7 @@ public class DynamicClassCompilerTest {
 		Class<?> testClass = loader.loadClass(qualifiedTestName);
 		Class<?> theClass = loader.loadClass(qualifiedName);
 		assertFalse(parentLoader == loader);
-		assertTrue(parentLoader == theClass.getClassLoader());
+		assertTrue(loader == theClass.getClassLoader());
 		assertTrue(loader == testClass.getClassLoader());
 		JUnitCore junit = new JUnitCore();
 		Request request = Request.method(testClass, "toStringTest");
@@ -283,7 +282,7 @@ public class DynamicClassCompilerTest {
 		Class<?> testClass = loader.loadClass(qualifiedTestName);
 		Class<?> theClass = loader.loadClass(qualifiedName);
 		assertFalse(parentLoader == loader);
-		assertTrue(parentLoader == theClass.getClassLoader());
+		assertTrue(loader == theClass.getClassLoader());
 		assertTrue(loader == testClass.getClassLoader());
 		JUnitCore junit = new JUnitCore();
 		Request request = Request.method(testClass, "protectedMethodTest");
