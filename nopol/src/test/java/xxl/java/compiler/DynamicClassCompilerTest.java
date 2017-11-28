@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
 import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
 import xxl.java.container.classic.MetaMap;
 import xxl.java.library.JavaLibrary;
 
@@ -287,10 +286,7 @@ public class DynamicClassCompilerTest {
 		JUnitCore junit = new JUnitCore();
 		Request request = Request.method(testClass, "protectedMethodTest");
 		Result result = junit.run(request);
-		assertFalse(result.wasSuccessful());
-		assertEquals(1, result.getFailureCount());
-		Failure failure = result.getFailures().get(0);
-		assertEquals("java.lang.IllegalAccessError",failure.getException().getClass().getName());
+		assertTrue(result.wasSuccessful());
 	}
 	
 	@Test
