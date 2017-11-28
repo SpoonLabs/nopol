@@ -92,7 +92,7 @@ public class NopolContext implements Serializable {
 	private NopolSynthesis synthesis = NopolSynthesis.SMT;
 	private NopolOracle oracle = NopolOracle.ANGELIC;
 	private NopolSolver solver = NopolSolver.Z3;
-	private NopolLocalizer localizer = NopolLocalizer.OCHIAI;
+	private NopolLocalizer localizer = NopolLocalizer.GZOLTAR;
 
 
 	private File[] projectSources;

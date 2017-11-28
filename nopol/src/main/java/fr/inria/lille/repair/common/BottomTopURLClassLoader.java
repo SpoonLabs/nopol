@@ -23,7 +23,7 @@ public class BottomTopURLClassLoader extends URLClassLoader {
 
 	@Override
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
-		if (name.contains("junit") || name.contains("nopol")) {
+		if (name.contains("junit") || name.contains("fr.inria.lille")) {
 			try {
 				return parent.loadClass(name);
 			} catch (ClassNotFoundException ignore) {
