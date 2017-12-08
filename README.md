@@ -28,13 +28,17 @@ Nopol requires Java and an SMT solver installed on the machine (e.g. Z3)
 git clone https://github.com/SpoonLabs/CoCoSpoon.git
 cd CoCoSpoon
 mvn clean install
+cd ..
 ```
 
 2) Compile NoPol:
 
 ```
-cd ../nopol/nopol
+git clone https://github.com/SpoonLabs/nopol.git
+cd nopol/nopol
 export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+
+# -DskipTests is required, to run the tests one needs to compile ../test-projects/ (see below)
 mvn package -DskipTests
 ```
 
@@ -54,7 +58,12 @@ $ cd ../test-projects/
 # compiling app (in target/classes) and tests (in target/test-classes), but don't run the tests (they obviously fail, because the goal is to repair them)
 $ mvn test -DskipTests 
 ```
+4b) Optional: run the tests of Nopol to check your installation
 
+```
+$ cd ../nopol/
+$ mvn test
+```
 
 5) Execute Nopol (parameters explained below)
 
