@@ -19,8 +19,8 @@ repositories {
 
 dependencies {
     compile "com.typesafe.akka:akka-actor_2.11:2.3-SNAPSHOT"
-    compile "fr.inria.lille.adam:nopol:0.2-SNAPSHOT"
-    compile "fr.inria.lille.adam:nopol-server:0.2-SNAPSHOT"
+    compile "fr.inria.gforge.spirals:nopol:0.2-SNAPSHOT"
+    compile "fr.inria.gforge.spirals:nopol-server:0.2-SNAPSHOT"
     compile "com.typesafe.akka:akka-remote_2.11:2.3-SNAPSHOT"
 }
 

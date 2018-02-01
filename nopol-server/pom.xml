@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>fr.inria.lille.adam</groupId>
+    <groupId>fr.inria.gforge.spirals</groupId>
     <artifactId>nopol-server</artifactId>
     <version>0.2-SNAPSHOT</version>
     <name>No-Pol-server</name>
@@ -65,7 +65,7 @@
         </dependency>
 
         <dependency>
-            <groupId>fr.inria.lille.adam</groupId>
+            <groupId>fr.inria.gforge.spirals</groupId>
             <artifactId>nopol</artifactId>
             <version>0.2-SNAPSHOT</version>
         </dependency>
