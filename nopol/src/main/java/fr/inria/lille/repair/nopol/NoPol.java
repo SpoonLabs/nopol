@@ -190,7 +190,7 @@ public class NoPol {
 				}
 			case DUMB:
 				return new DumbFaultLocalizerImpl(this.nopolContext);
-			case OCHIAI:
+			case COCOSPOON: // default
 			default:
 				return new OchiaiFaultLocalizer(this.nopolContext);
 		}

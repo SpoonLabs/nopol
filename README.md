@@ -164,8 +164,11 @@ Usage: java -jar nopol.jar
   [--maxTimeType <maxTimeType>]
         The maximum time execution in minute for one type of patch per per suspicious statement (eg. 5 minutes max to find a precondition at line x). (default: 5)
 
-  [(-z|--flocal) < ochiai|dumb|gzoltar>]
-        Define the fault localizer to be used. (default: gzoltar based on ochiai metric). "Dumb" means random fault localization. Ochia means ochiai based on cocospoon.
+  [(-z|--flocal) < cocospoon|dumb|gzoltar>]
+        Define the fault localizer to be used. (default: cocospoon). 
+          "cocospoon" means source code instrumentation plus ochiai metric.
+          "dumb" means random fault localization. 
+          "gzoltar" means binary code instrumentation with external library plus ochiai metric.
 
 ```
 

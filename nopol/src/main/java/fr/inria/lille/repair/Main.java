@@ -233,7 +233,7 @@ public class Main {
 		} else if (str.equals("dumb")) {
 			return NopolContext.NopolLocalizer.DUMB;
 		} else
-			return NopolContext.NopolLocalizer.OCHIAI;
+			return NopolContext.NopolLocalizer.COCOSPOON;
 	}
 
 	private void initJSAP() throws JSAPException {
@@ -360,9 +360,9 @@ public class Main {
 		faultLocalization.setAllowMultipleDeclarations(false);
 		faultLocalization.setLongFlag("flocal");
 		faultLocalization.setShortFlag('z');
-		faultLocalization.setUsageName(" ochiai|dumb|gzoltar");//TODO ADD PARAMETIZED FAULT LOCALIZER
+		faultLocalization.setUsageName(" cocospoon|dumb|gzoltar");//TODO ADD PARAMETIZED FAULT LOCALIZER
 		faultLocalization.setStringParser(JSAP.STRING_PARSER);
-		faultLocalization.setDefault("ochiai");
+		faultLocalization.setDefault("cocospoon");
 		faultLocalization.setHelp("Define the fault localizer to be used.");
 		jsap.registerParameter(faultLocalization);
 

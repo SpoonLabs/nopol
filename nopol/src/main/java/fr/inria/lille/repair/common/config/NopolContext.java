@@ -43,7 +43,7 @@ public class NopolContext implements Serializable {
 	public enum NopolLocalizer {
 		DUMB,
 		GZOLTAR,
-		OCHIAI
+		COCOSPOON
 	}
 
 	private final String filename = "default-nopol-config.ini";

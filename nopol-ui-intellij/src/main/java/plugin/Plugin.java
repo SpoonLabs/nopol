@@ -53,7 +53,7 @@ public class Plugin extends AnAction {
     private static void initConfig() {
         nopolContext.setSynthesis(NopolContext.NopolSynthesis.DYNAMOTH);
         nopolContext.setType(StatementType.PRE_THEN_COND);
-//        config.setLocalizer(Config.NopolLocalizer.OCHIAI); //CoCospoon take too much time
+//        config.setLocalizer(Config.NopolLocalizer.COCOSPOON); //CoCospoon take too much time
         nopolContext.setLocalizer(NopolContext.NopolLocalizer.GZOLTAR);
     }
 
