@@ -62,7 +62,7 @@ public class NopolContext implements Serializable {
 	private int timeoutMethodInvocation;
 	private int synthesisDepth;
 	private int complianceLevel;
-	private int maxTimeInMinutes = 10;
+	private int maxTimeInMinutes;
 	private int dataCollectionTimeoutInSecondForSynthesis = 15*60;
 
 	private String outputFolder;
@@ -161,6 +161,7 @@ public class NopolContext implements Serializable {
 			maxTimeBuildPatch = Long.parseLong(p.getProperty("maxTimeBuildPatch", "15L"));
 			maxTimeEachTypeOfFixInMinutes = Long.parseLong(p.getProperty("maxTimeEachTypeOfFixInMinutes", "5"));
 			complianceLevel = Integer.parseInt(p.getProperty("complianceLevel", "7"));
+			maxTimeInMinutes = Integer.parseInt(p.getProperty("maxTimeInMinutes", "10"));
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to load config file", e);
 		}
