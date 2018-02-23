@@ -167,8 +167,9 @@ public class Main {
 			nopolContext.setSolverPath(jsapConfig.getString("solverPath"));
 			SolverFactory.setSolver(nopolContext.getSolver(), nopolContext.getSolverPath());
 		}
-		nopolContext.setComplianceLevel(jsapConfig.getInt("complianceLevel", 7)); nopolContext.setMaxTimeInMinutes(jsapConfig.getInt("maxTime", nopolContext.getMaxTimeInMinutes()));
-		nopolContext.setMaxTimeEachTypeOfFixInMinutes(jsapConfig.getInt("maxTimeType",5));
+		nopolContext.setComplianceLevel(jsapConfig.getInt("complianceLevel", nopolContext.getComplianceLevel())); 
+		nopolContext.setMaxTimeInMinutes(jsapConfig.getInt("maxTime", nopolContext.getMaxTimeInMinutes()));
+		nopolContext.setMaxTimeEachTypeOfFixInMinutes(jsapConfig.getLong("maxTimeType",nopolContext.getMaxTimeEachTypeOfFixInMinutes()));
 
 		nopolContext.setLocalizer(strToLocalizer(jsapConfig.getString("faultLocalization")));
 		nopolContext.setOutputFolder(jsapConfig.getString("outputFolder"));
