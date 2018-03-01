@@ -24,4 +24,9 @@ public class TestResultImpl implements TestResult {
 	public boolean isSuccessful() {
 		return this.successful;
 	}
+
+	@Override
+	public String toString() {
+		return testCase.toString()+ " " + (isSuccessful()?"PASS":"FAIL");
+	}
 }

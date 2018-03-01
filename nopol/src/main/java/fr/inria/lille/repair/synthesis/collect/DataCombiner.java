@@ -85,7 +85,7 @@ public class DataCombiner {
                         Expression expression = toCombine.get(j);
                         if (expression.getValue().isCompatibleWith(aClass)) {
                             if (this.toCombine.size() < i + 1) {
-                                this.toCombine.add(new ArrayList<>());
+                                this.toCombine.add(new ArrayList<Expression>());
                             }
                             this.toCombine.get(i).add(expression);
                         }
