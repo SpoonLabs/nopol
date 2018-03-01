@@ -42,10 +42,11 @@ public class TestUtility {
 	}
 
 	public static NopolContext configForExample(String executionType, int nopolExampleNumber) {
-		String sourceFile = "../test-projects/src/";
+		String packageName = executionType + "_examples." + executionType + "_example_"
+				+ nopolExampleNumber;
+		String sourceFile = "../test-projects/src/main/java/"+packageName.replace('.','/');
 		String classpath = "../test-projects/target/test-classes" + File.pathSeparatorChar + "../test-projects/target/classes" + File.pathSeparatorChar + "lib/junit-4.11.jar";
-		String[] testClasses = new String[]{executionType + "_examples." + executionType + "_example_"
-				+ nopolExampleNumber + ".NopolExampleTest"};
+		String[] testClasses = new String[]{packageName + ".NopolExampleTest"};
 		return new NopolContext(sourceFile, JavaLibrary.classpathFrom(classpath), testClasses);
 	}
 
