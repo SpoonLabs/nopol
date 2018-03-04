@@ -8,6 +8,7 @@ import xxl.java.library.ClassLibrary;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.Callable;
 
@@ -34,7 +35,8 @@ public final class JUnitRunner implements Callable<Result> {
     }
 
     private Class<?>[] testClassesFromCustomClassLoader() {
-        Collection<Class<?>> classes = MetaList.newLinkedList();
+        List<Class<?>> classes;
+        classes = MetaList.newLinkedList();
         for (String className : testClasses) {
             try {
                 Class<?> testClass = Thread.currentThread().getContextClassLoader().loadClass(className);

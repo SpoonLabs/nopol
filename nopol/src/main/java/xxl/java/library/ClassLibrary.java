@@ -55,10 +55,6 @@ public class ClassLibrary {
         return hasMethod;
     }
 
-    public static Method method(String methodName, Class<?> aClass, Collection<Class<?>> argumentClasses) {
-        return method(methodName, aClass, argumentClasses.toArray(new Class[argumentClasses.size()]));
-    }
-
     public static Method method(String methodName, Class<?> aClass, Class<?>... argumentClasses) {
         try {
             return aClass.getDeclaredMethod(methodName, argumentClasses);
@@ -67,13 +63,6 @@ public class ClassLibrary {
         }
     }
 
-    public static List<Class<?>> asClasses(Collection<? extends Object> objects) {
-        List<Class<?>> classes = MetaList.newArrayList(objects.size());
-        for (Object object : objects) {
-            classes.add(object.getClass());
-        }
-        return classes;
-    }
 
     public static boolean isInstanceOf(Class<?> aClass, Object object) {
         return aClass.isInstance(object);

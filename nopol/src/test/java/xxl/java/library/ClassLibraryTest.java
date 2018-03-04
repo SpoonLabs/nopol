@@ -13,13 +13,6 @@ import org.junit.Test;
 
 public class ClassLibraryTest {
 
-	@Test
-	public void classesOfObjects() {
-		List<? extends Class<?>> classes = asList(String.class, ClassLibraryTest.class, OtherClass.class);
-		List<? extends Object> objects = asList("p", new ClassLibraryTest(), new OtherClass());
-		assertEquals(classes, asClasses(objects));
-	}
-	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	public void hasMethodCheck() {

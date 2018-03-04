@@ -31,7 +31,6 @@ public class DataCollector {
 
     private final ThreadReference threadRef;
     private final Candidates constants;
-    private final Set<String> importedClasses;
     private final String buggyMethod;
     private final SourceLocation location;
     private final StatCollector statCollector;
@@ -47,7 +46,7 @@ public class DataCollector {
                          Candidates constants,
                          SourceLocation location,
                          String buggyMethod,
-                         Set<String> classes,
+                         List<String> classes,
                          StatCollector statCollector,
                          Map<String, String> variableType,
                          Set<String> calledMethods,
@@ -56,7 +55,6 @@ public class DataCollector {
         this.nopolContext = nopolContext;
 
         this.constants = constants;
-        this.importedClasses = classes;
         this.buggyMethod = buggyMethod;
         this.location = location;
         this.statCollector = statCollector;

@@ -17,7 +17,7 @@ import static java.util.Arrays.asList;
 public class JavaLibrary {
 
     public static String asClasspath(URL[] urls) {
-        Collection<String> paths = new LinkedList<String>();
+        List<String> paths = new LinkedList<String>();
         for (URL url : urls) {
             paths.add(url.getPath());
         }
@@ -109,22 +109,22 @@ public class JavaLibrary {
     }
 
     public static Class<?> classFromClasspath(URL classpath, String qualifiedName) {
-        Collection<Class<?>> classes = classesFromClasspath(new URL[]{classpath}, asList(qualifiedName));
+        List<Class<?>> classes = classesFromClasspath(new URL[]{classpath}, asList(qualifiedName));
         if (classes.isEmpty()) {
             return null;
         }
         return classes.iterator().next();
     }
 
-    public static Collection<Class<?>> classesFromClasspath(URL[] classpath, Collection<String> qualifiedNames) {
+    public static List<Class<?>> classesFromClasspath(URL[] classpath, Collection<String> qualifiedNames) {
         URLClassLoader loader = new URLClassLoader(classpath);
-        Collection<Class<?>> classes = loadedClassesFrom(loader, qualifiedNames);
+        List<Class<?>> classes = loadedClassesFrom(loader, qualifiedNames);
         close(loader);
         return classes;
     }
 
-    public static Collection<Class<?>> loadedClassesFrom(ClassLoader classLoader, Collection<String> qualifiedNames) {
-        Collection<Class<?>> classes = MetaList.newArrayList(qualifiedNames.size());
+    public static List<Class<?>> loadedClassesFrom(ClassLoader classLoader, Collection<String> qualifiedNames) {
+        List<Class<?>> classes = MetaList.newArrayList(qualifiedNames.size());
         try {
             for (String qualifiedName : qualifiedNames) {
                 classes.add(classLoader.loadClass(qualifiedName));

@@ -6,7 +6,9 @@ import sacha.finder.processor.Processor;
 import xxl.java.container.classic.MetaList;
 
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -14,8 +16,8 @@ import java.util.concurrent.Callable;
  * we use another tread to avoid ClassNotFoundError when loading the class
  * Created by urli on 02/03/2017.
  */
-public class TestClassFinderRunner implements Callable<Collection<Class<?>>> {
-    public Collection<Class<?>> call() throws Exception {
+public class TestClassFinderRunner implements Callable<List<Class<?>>> {
+    public List<Class<?>> call() throws Exception {
 
         URLClassLoader classLoader = (URLClassLoader)Thread.currentThread().getContextClassLoader();
         ClassloaderFinder classloaderFinder = new ClassloaderFinder(classLoader);
@@ -24,6 +26,6 @@ public class TestClassFinderRunner implements Callable<Collection<Class<?>>> {
         Processor processor = new Processor(classloaderFinder, testFilter);
         Class<?>[] classes = processor.process();
 
-        return MetaList.newArrayList(classes);
+        return Arrays.asList(classes);
     }
 }

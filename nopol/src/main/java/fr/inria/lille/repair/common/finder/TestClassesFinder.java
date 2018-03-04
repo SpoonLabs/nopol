@@ -33,7 +33,7 @@ import java.util.concurrent.ThreadFactory;
  */
 public final class TestClassesFinder {
 
-    protected String[] namesFrom(Collection<Class<?>> classes) {
+    protected String[] namesFrom(List<Class<?>> classes) {
         String[] names = new String[classes.size()];
         int index = 0;
         for (Class<?> aClass : classes) {
@@ -48,13 +48,13 @@ public final class TestClassesFinder {
         ThreadFactory threadFactory = new CustomClassLoaderThreadFactory(dumpedToClassLoader);
         ExecutorService executor = Executors.newSingleThreadExecutor(threadFactory);
         TestClassFinderRunner testClassFinderRunner = new TestClassFinderRunner();
-        Future<Collection<Class<?>>> future = executor.submit(testClassFinderRunner);
+        Future<List<Class<?>>> future = executor.submit(testClassFinderRunner);
         String[] testClasses;
 
         try {
             executor.shutdown();
 
-            Collection<Class<?>> findingClasses = future.get();
+            List<Class<?>> findingClasses = future.get();
             testClasses = namesFrom(findingClasses);
         } catch (InterruptedException ie) {
             throw new RuntimeException(ie);

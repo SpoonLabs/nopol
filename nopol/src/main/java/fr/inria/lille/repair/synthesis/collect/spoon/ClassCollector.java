@@ -22,12 +22,12 @@ public class ClassCollector extends AbstractProcessor<CtTypedElement<?>> {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final Set<String> classes;
+    private final List<String> classes;
     private final String buggyMethod;
 
     public ClassCollector(String buggyMethod) {
         super();
-        classes = new HashSet<>();
+        classes = new ArrayList<>();
         this.buggyMethod = buggyMethod;
     }
 
@@ -40,7 +40,7 @@ public class ClassCollector extends AbstractProcessor<CtTypedElement<?>> {
         return parent.getSimpleName().equals(buggyMethod);
     }
 
-    public Set<String> getClasses() {
+    public List<String> getClasses() {
         return classes;
     }
 

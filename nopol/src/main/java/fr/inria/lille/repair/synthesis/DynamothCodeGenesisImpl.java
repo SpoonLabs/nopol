@@ -51,7 +51,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
     private int currentIteration;
     private VirtualMachine vm;
     private Candidates constants;
-    private Set<String> classes;
+    private List<String> classes;
     private int nbBreakPointCalls = 0;
     private long startTime;
     private long initExecutionTime;
@@ -100,7 +100,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
         this.nopolContext = nopolContext;
 
         this.constants = new Candidates();
-        this.classes = new HashSet<>();
+        this.classes = new ArrayList<>();
         ClassLoader cl = ClassLoader.getSystemClassLoader();
 
         URL[] urls = ((URLClassLoader) cl).getURLs();
@@ -399,7 +399,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
         return candidates;
     }
 
-    private Set<String> collectUsedClasses() {
+    private List<String> collectUsedClasses() {
         try {
             ClassCollector classCollector = new ClassCollector(buggyMethod);
             spoon.processClass(location.getContainingClassName(), classCollector);
@@ -407,7 +407,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
         } catch (Exception e) {
             logger.warn("Unable to collect used classes", e);
         }
-        return new HashSet<>();
+        return new ArrayList<>();
     }
 
     private Set<String> collectMethod() {
