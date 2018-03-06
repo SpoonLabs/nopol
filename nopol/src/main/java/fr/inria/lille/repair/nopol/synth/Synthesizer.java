@@ -14,7 +14,7 @@ public interface Synthesizer {
 
     Synthesizer NO_OP_SYNTHESIZER = new Synthesizer() {
         @Override
-        public List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
+        public List<Patch> findAngelicValuesAndBuildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
             return Collections.EMPTY_LIST;
         }
 
@@ -24,7 +24,7 @@ public interface Synthesizer {
         }
     };
 
-    List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch);
+    List<Patch> findAngelicValuesAndBuildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch);
 
     NopolProcessor getProcessor();
 }

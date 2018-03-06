@@ -17,11 +17,9 @@ package fr.inria.lille.repair.nopol;
 
 import com.gzoltar.core.components.Statement;
 import fr.inria.lille.commons.spoon.SpoonedClass;
-import fr.inria.lille.commons.spoon.SpoonedFile;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.synthesis.operator.Operator;
-import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.localization.DumbFaultLocalizerImpl;
 import fr.inria.lille.localization.FaultLocalizer;
 import fr.inria.lille.localization.GZoltarFaultLocalizer;
@@ -33,14 +31,10 @@ import fr.inria.lille.repair.common.finder.TestClassesFinder;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
 import fr.inria.lille.repair.nopol.patch.TestPatch;
-import fr.inria.lille.repair.nopol.spoon.ConditionalLoggingInstrumenter;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessorBuilder;
 import fr.inria.lille.repair.nopol.spoon.symbolic.AssertReplacer;
 import fr.inria.lille.repair.nopol.spoon.symbolic.TestExecutorProcessor;
-import fr.inria.lille.repair.nopol.synth.AngelicValue;
-import fr.inria.lille.repair.nopol.synth.ConstraintModelBuilder;
-import fr.inria.lille.repair.nopol.synth.JPFRunner;
 import fr.inria.lille.repair.nopol.synth.SMTNopolSynthesizer;
 import fr.inria.lille.repair.nopol.synth.Synthesizer;
 import fr.inria.lille.repair.nopol.synth.SynthesizerFactory;
@@ -48,8 +42,6 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spoon.processing.Processor;
-import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
@@ -70,7 +62,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -263,58 +254,35 @@ public class NoPol {
 	}
 
 	private List<Patch> runNopolProcessor(List<TestResult> tests, SourceLocation sourceLocation, SpoonedClass spoonCl, NopolProcessor nopolProcessor) {
-		AngelicValue angelicValue;
-		List<Patch> patches = new ArrayList<>();
-		try {
-			angelicValue = buildConstraintsModelBuilder(nopolProcessor, sourceLocation, spooner);
-		} catch (UnsupportedOperationException | DynamicCompilationException ignored) {
-			return patches;
-		}
 
-		if (angelicValue != null) {
-			this.nopolResult.incrementNbAngelicValues();
-		}
-
-		Synthesizer synth = SynthesizerFactory.build(sourceFiles, spooner, nopolContext, sourceLocation, nopolProcessor, angelicValue, spoonCl);
-		if (synth == Synthesizer.NO_OP_SYNTHESIZER) {
-			return patches;
-		}
 		Collection<TestCase> failingTest = reRunFailingTestCases(getFailingTestCase(tests), classpath);
-		if (failingTest.isEmpty()) {
-			return patches;
-		}
-		List<Patch> tmpPatches = synth.buildPatch(classpath, tests, failingTest, nopolContext.getMaxTimeBuildPatch());
 
+		if (failingTest.isEmpty()) {
+			throw new RuntimeException("nothing to repair, no failing test cases");
+		}
+
+		// selecting the synthesizer, typically SMT or Dynamoth
+		Synthesizer synth = SynthesizerFactory.build(sourceFiles, spooner, nopolContext, sourceLocation, nopolProcessor, spoonCl);
+
+		// Collecting the patches
+		List<Patch> tmpPatches = synth.findAngelicValuesAndBuildPatch(classpath, tests, failingTest, nopolContext.getMaxTimeBuildPatch());
+
+		// Final check: we recompile the patch and run all tests again
+		List<Patch> finalPatches = new ArrayList<>();
 		if (tmpPatches.size() > 0) {
 			for (int i = 0; i < tmpPatches.size(); i++) {
 				Patch patch = tmpPatches.get(i);
 				if (nopolContext.isSkipRegressionStep() || isOk(patch, tests, synth.getProcessor())) {
-					patches.add(patch);
-					if (nopolContext.isOnlyOneSynthesisResult()) {
-						return patches;
-					}
+					finalPatches.add(patch);
 				} else {
-					logger.debug("Could not find a patch in {}", sourceLocation);
+					logger.debug("Could not find a valid patch in {}", sourceLocation);
 				}
 			}
 		}
 
-		return patches;
+		return finalPatches;
 	}
 
-	private AngelicValue buildConstraintsModelBuilder(NopolProcessor nopolProcessor, SourceLocation statement, SpoonedFile spoonCl) {
-		if (Boolean.class.equals(nopolContext.getType().getType())) {
-			RuntimeValues<Boolean> runtimeValuesInstance = RuntimeValues.newInstance();
-			switch (nopolContext.getOracle()) {
-				case ANGELIC:
-					Processor<CtStatement> processor = new ConditionalLoggingInstrumenter(runtimeValuesInstance, nopolProcessor);
-					return new ConstraintModelBuilder(runtimeValuesInstance, statement, processor, spooner, nopolContext);
-				case SYMBOLIC:
-					return new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, nopolContext);
-			}
-		}
-		throw new UnsupportedOperationException();
-	}
 
 	private boolean isOk(Patch newRepair, List<TestResult> testClasses, NopolProcessor processor) {
 		logger.trace("Suggested patch: {}", newRepair);
@@ -322,19 +290,28 @@ public class NoPol {
 			return testPatch.passesAllTests(newRepair, testClasses, processor);
 		} catch (DynamicCompilationException e) {
 			logger.error("Patch malformed " + newRepair.asString(), e);
-			return false;
+			throw new RuntimeException("invalid patch");
 		}
 	}
 
-	private String[] getFailingTestCase(List<TestResult> tests) {
-		Set<String> failingClassTest = new HashSet<>();
+	private List<TestCase> getFailingTestCasesAsList(List<TestResult> tests) {
+		List<TestCase> failingClassTest = new ArrayList<>();
 		for (int i = 0; i < tests.size(); i++) {
 			TestResult testResult = tests.get(i);
 			if (!testResult.isSuccessful()) {
-				failingClassTest.add(testResult.getTestCase().className());
+				failingClassTest.add(testResult.getTestCase());
 			}
 		}
-		return failingClassTest.toArray(new String[0]);
+		return failingClassTest;
+	}
+
+	private String[] getFailingTestCase(List<TestResult> tests) {
+		List<TestCase> failingTests = getFailingTestCasesAsList(tests);
+		String[] array = new String[failingTests.size()];
+		for (int i = 0; i < failingTests.size(); i++) {
+			array[i] = failingTests.get(i).className();
+		}
+		return array;
 	}
 
 	private Collection<TestCase> reRunFailingTestCases(String[] testClasses, URL[] deps) {

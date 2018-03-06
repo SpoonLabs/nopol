@@ -39,7 +39,7 @@ import java.util.*;
 public final class SMTNopolSynthesizer<T> implements Synthesizer {
 
 	private final SourceLocation sourceLocation;
-	private final AngelicValue angelicValue;
+	private final InstrumentedProgram instrumentedProgram;
 	private final StatementType type;
 	public static int nbStatementsWithAngelicValue = 0;
 	private static int dataSize = 0;
@@ -48,8 +48,8 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 	private NopolProcessor conditionalProcessor;
 	private NopolContext nopolContext;//TODO remove this unused field
 
-	public SMTNopolSynthesizer(SpoonedProject spoonedProject, AngelicValue angelicValue, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, NopolContext nopolContext) {
-		this.angelicValue = angelicValue;
+	public SMTNopolSynthesizer(SpoonedProject spoonedProject, InstrumentedProgram instrumentedProgram, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, NopolContext nopolContext) {
+		this.instrumentedProgram = instrumentedProgram;
 		this.nopolContext = nopolContext;
 		this.sourceLocation = sourceLocation;
 		this.type = type;
@@ -60,11 +60,12 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 	/**
 	 *
 	 *
-	 * @see Synthesizer#buildPatch(URL[], List, Collection, long)
+	 * @see Synthesizer#findAngelicValuesAndBuildPatch(URL[], List, Collection, long)
 	 */
 	@Override
-	public List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
-		final Collection<Specification<T>> data = angelicValue.collectSpecifications(classpath, testClasses, failures);
+	public List<Patch> findAngelicValuesAndBuildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
+
+		final Collection<Specification<T>> data = instrumentedProgram.collectSpecifications(classpath, testClasses, failures);
 
 		// XXX FIXME TODO move this
 		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
@@ -85,7 +86,7 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 		}
 
 		// and it should be a viable patch, ie. fix the bug
-		if (!angelicValue.isAViablePatch()) {
+		if (!instrumentedProgram.isAViablePatch()) {
 			LoggerFactory.getLogger(this.getClass()).info("Changing only this statement does not solve the bug. {}", sourceLocation);
 			return Collections.EMPTY_LIST;
 		}

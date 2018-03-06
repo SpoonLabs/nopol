@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * @author Favio D. DeMarco
  */
-public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
+public final class ConstraintModelBuilder implements InstrumentedProgram<Boolean> {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private boolean viablePatch;
@@ -68,7 +68,7 @@ public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
     }
 
     /**
-     * @see AngelicValue#collectSpecifications(URL[], List, Collection)
+     * @see InstrumentedProgram#collectSpecifications(URL[], List, Collection)
      */
     public Collection<Specification<Boolean>> collectSpecifications(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
         SpecificationTestCasesListener<Boolean> listenerFalse = new SpecificationTestCasesListener<>(runtimeValues);
@@ -139,6 +139,8 @@ public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
         return finalSpec;
     }
 
+
+
     private boolean determineViability(final Result firstResult, final Result secondResult) {
         Collection<Description> firstFailures = TestSuiteExecution.collectDescription(firstResult.getFailures());
         Collection<Description> secondFailures = TestSuiteExecution.collectDescription(secondResult.getFailures());
@@ -156,7 +158,7 @@ public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
     }
 
     /**
-     * @see AngelicValue#isAViablePatch()
+     * @see InstrumentedProgram#isAViablePatch()
      */
     public boolean isAViablePatch() {
         return viablePatch;

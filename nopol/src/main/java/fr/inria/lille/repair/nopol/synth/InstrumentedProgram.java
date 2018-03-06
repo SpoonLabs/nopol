@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by spirals on 19/05/15.
  */
-public interface AngelicValue<T> {
+public interface InstrumentedProgram<T> {
 
     /**
      * Collects the runtime value and the angelic value required to pass the test suite

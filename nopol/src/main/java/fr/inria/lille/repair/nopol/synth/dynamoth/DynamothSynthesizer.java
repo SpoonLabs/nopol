@@ -11,7 +11,7 @@ import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.spoon.dynamoth.ConditionalInstrumenter;
 import fr.inria.lille.repair.nopol.synth.AngelicExecution;
-import fr.inria.lille.repair.nopol.synth.AngelicValue;
+import fr.inria.lille.repair.nopol.synth.InstrumentedProgram;
 import fr.inria.lille.repair.nopol.synth.SMTNopolSynthesizer;
 import fr.inria.lille.repair.nopol.synth.Synthesizer;
 import fr.inria.lille.repair.common.Candidates;
@@ -48,28 +48,20 @@ public class DynamothSynthesizer<T> implements Synthesizer {
     private final SourceLocation sourceLocation;
     private final SpoonedProject spooner;
     private final File[] sourceFolders;
-    private final AngelicValue angelicValue;
     private final NopolContext nopolContext;
 
-    public DynamothSynthesizer(AngelicValue angelicValue, File[] sourceFolders, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, SpoonedProject spooner, NopolContext nopolContext) {
+    public DynamothSynthesizer(File[] sourceFolders, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, SpoonedProject spooner, NopolContext nopolContext) {
         this.sourceLocation = sourceLocation;
         this.nopolContext = nopolContext;
         this.type = type;
         this.nopolProcessor = processor;
         this.spooner = spooner;
         this.sourceFolders = sourceFolders;
-        this.angelicValue = angelicValue;
     }
 
     @Override
-    public List<Patch> buildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
+    public List<Patch> findAngelicValuesAndBuildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
         long startTime = System.currentTimeMillis();
-        /*Collection<Specification<T>> collection = angelicValue.collectSpecifications(classpath, testClasses, failures);
-
-        for (Iterator<Specification<T>> iterator = collection.iterator(); iterator.hasNext(); ) {
-            Specification<T> next = iterator.next();
-            next.inputs();
-        }*/
         Processor<CtStatement> processor = new ConditionalInstrumenter(nopolProcessor, type.getType());
         SpoonedClass fork = spooner.forked(sourceLocation.getContainingClassName());
         ClassLoader classLoader;

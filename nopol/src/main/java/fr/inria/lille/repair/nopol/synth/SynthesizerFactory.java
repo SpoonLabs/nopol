@@ -16,10 +16,12 @@
 package fr.inria.lille.repair.nopol.synth;
 
 import fr.inria.lille.commons.spoon.SpoonedClass;
+import fr.inria.lille.commons.spoon.SpoonedFile;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
+import fr.inria.lille.repair.nopol.spoon.ConditionalLoggingInstrumenter;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.synth.dynamoth.DynamothSynthesizer;
 
@@ -33,25 +35,16 @@ public final class SynthesizerFactory {
 	private static int nbStatementsAnalysed = 0;
 
 	public static Synthesizer build(final File[] sourceFolders, final SpoonedProject spooner,
-                                    NopolContext nopolContext, final SourceLocation statement,
-                                    NopolProcessor nopolProcessor, AngelicValue constraintModelBuilder, SpoonedClass spoonCl) {
+									NopolContext nopolContext, final SourceLocation statement,
+									NopolProcessor nopolProcessor, SpoonedClass spoonCl) {
 		nbStatementsAnalysed++;
 		Class<?> type = nopolContext.getType().getType();
-		if (Integer.class.equals(type)) {
-			RuntimeValues<Integer> runtimeValuesInstance = RuntimeValues.newInstance();
-			constraintModelBuilder = new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, nopolContext);
-			return new SMTNopolSynthesizer<>(spooner, constraintModelBuilder, statement, nopolContext.getType(), nopolProcessor, nopolContext);
-		}
-		if (Double.class.equals(type)) {
-			RuntimeValues<Double> runtimeValuesInstance = RuntimeValues.newInstance();
-			constraintModelBuilder = new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, nopolContext);
-			return new SMTNopolSynthesizer<>(spooner, constraintModelBuilder, statement, nopolContext.getType(), nopolProcessor, nopolContext);
-		}
 		switch (nopolContext.getSynthesis()) {
 			case SMT:
-				return new SMTNopolSynthesizer(spooner, constraintModelBuilder, statement, nopolProcessor.getStatementType(), nopolProcessor, nopolContext);
+				//InstrumentedProgram program = getInstrumentedProgramForThisLocation(nopolProcessor, sourceLocation, spooner);
+				return new SMTNopolSynthesizer(spooner, getInstrumentedProgramForThisLocation(spooner, nopolContext, nopolProcessor, statement, spoonCl), statement, nopolProcessor.getStatementType(), nopolProcessor, nopolContext);
 			case DYNAMOTH:
-				return new DynamothSynthesizer(constraintModelBuilder, sourceFolders, statement, nopolProcessor.getStatementType(), nopolProcessor, spooner, nopolContext);
+				return new DynamothSynthesizer(sourceFolders, statement, nopolProcessor.getStatementType(), nopolProcessor, spooner, nopolContext);
 		}
 		return Synthesizer.NO_OP_SYNTHESIZER;
 	}
@@ -59,4 +52,31 @@ public final class SynthesizerFactory {
 	public static int getNbStatementsAnalysed() {
 		return nbStatementsAnalysed;
 	}
+
+	private static InstrumentedProgram getInstrumentedProgramForThisLocation(SpoonedProject spooner, NopolContext nopolContext, NopolProcessor nopolProcessor, SourceLocation statement, SpoonedFile spoonCl) {
+		if (Boolean.class.equals(nopolContext.getType().getType())) {
+			RuntimeValues<Boolean> runtimeValuesInstance = RuntimeValues.newInstance();
+			switch (nopolContext.getOracle()) {
+				case ANGELIC:
+					return new ConstraintModelBuilder(runtimeValuesInstance, statement, new ConditionalLoggingInstrumenter(runtimeValuesInstance, nopolProcessor), spooner, nopolContext);
+				case SYMBOLIC:
+					return new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, nopolContext);
+			}
+		}
+		throw new UnsupportedOperationException();
+
+		// OLD CODE, TO BE RESTORED
+//		if (Integer.class.equals(type)) {
+//			RuntimeValues<Integer> runtimeValuesInstance = RuntimeValues.newInstance();
+//			constraintModelBuilder = new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, nopolContext);
+//			return new SMTNopolSynthesizer<>(spooner, constraintModelBuilder, statement, nopolContext.getType(), nopolProcessor, nopolContext);
+//		}
+//		if (Double.class.equals(type)) {
+//			RuntimeValues<Double> runtimeValuesInstance = RuntimeValues.newInstance();
+//			constraintModelBuilder = new JPFRunner<>(runtimeValuesInstance, statement, nopolProcessor, spoonCl, spooner, nopolContext);
+//			return new SMTNopolSynthesizer<>(spooner, constraintModelBuilder, statement, nopolContext.getType(), nopolProcessor, nopolContext);
+//		}
+
+	}
+
 }

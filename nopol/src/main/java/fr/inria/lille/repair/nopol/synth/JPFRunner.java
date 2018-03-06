@@ -52,7 +52,7 @@ import java.util.concurrent.*;
  *
  * @author Thomas Durieux
  */
-public final class JPFRunner<T> implements AngelicValue<T> {
+public final class JPFRunner<T> implements InstrumentedProgram<T> {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final RuntimeValues<T> runtimeValues;
