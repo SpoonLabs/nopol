@@ -12,7 +12,7 @@ import fr.inria.lille.repair.common.Candidates;
 import fr.inria.lille.repair.expression.Expression;
 import fr.inria.lille.repair.expression.access.*;
 import fr.inria.lille.repair.expression.factory.AccessFactory;
-import fr.inria.lille.repair.synthesis.collect.DataCollector;
+import fr.inria.lille.repair.synthesis.collect.DynamothDataCollector;
 import fr.inria.lille.repair.synthesis.collect.DataCombiner;
 import fr.inria.lille.repair.synthesis.collect.SpoonElementsCollector;
 import fr.inria.lille.repair.synthesis.collect.spoon.*;
@@ -384,7 +384,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
                 return new Candidates();
             }
         }
-        DataCollector dataCollect = new DataCollector(threadRef, constants, location, buggyMethod, classes, statCollector, this.variableType, this.calledMethods, nopolContext);
+        DynamothDataCollector dataCollect = new DynamothDataCollector(threadRef, constants, location, buggyMethod, classes, statCollector, this.variableType, this.calledMethods, nopolContext);
         Candidates eexps = dataCollect.collect(TimeUnit.MINUTES.toMillis(7));
         return eexps;
     }

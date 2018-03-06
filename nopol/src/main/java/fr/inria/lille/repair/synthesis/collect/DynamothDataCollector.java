@@ -25,7 +25,7 @@ import java.util.concurrent.*;
 /**
  * Created by Thomas Durieux on 06/03/15.
  */
-public class DataCollector {
+public class DynamothDataCollector {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -42,15 +42,15 @@ public class DataCollector {
     private long maxTime;
     public final Candidates candidates = new Candidates();
 
-    public DataCollector(ThreadReference threadRef,
-                         Candidates constants,
-                         SourceLocation location,
-                         String buggyMethod,
-                         List<String> classes,
-                         StatCollector statCollector,
-                         Map<String, String> variableType,
-                         Set<String> calledMethods,
-                         NopolContext nopolContext) {
+    public DynamothDataCollector(ThreadReference threadRef,
+                                 Candidates constants,
+                                 SourceLocation location,
+                                 String buggyMethod,
+                                 List<String> classes,
+                                 StatCollector statCollector,
+                                 Map<String, String> variableType,
+                                 Set<String> calledMethods,
+                                 NopolContext nopolContext) {
         this.threadRef = threadRef;
         this.nopolContext = nopolContext;
 
@@ -308,18 +308,23 @@ public class DataCollector {
         return getMethods(exp, ref, isStatic, threadRef, null);
     }
 
-    private List<Method> getMethods(Expression exp, ReferenceType ref, boolean isStatic, ThreadReference threadRef, String methodNameFilter) {
+    private List<Method> getMethods(Expression exp, final ReferenceType ref, boolean isStatic, ThreadReference threadRef, String methodNameFilter) {
         List<Method> methods = new ArrayList<>();
 
-        if (variableType.containsKey(exp.toString())) {
-            List<ReferenceType> referenceTypes = threadRef.virtualMachine().classesByName(String.valueOf(variableType.get(exp.toString())));
-            if (referenceTypes.size() > 0) {
-                ref = referenceTypes.get(0);
-            }
-        }
+        //// looking for the static type
+        // old code, that was a bad idea
+//                // but we are at runtime, we know the runtime type, which is the most precise one by definition
+//                // and we use it!!!!
+//        if (variableType.containsKey(exp.toString())) {
+//            List<ReferenceType> referenceTypes = threadRef.virtualMachine().classesByName(String.valueOf(variableType.get(exp.toString())));
+//            if (referenceTypes.size() > 0) {
+//                ref = referenceTypes.get(0);
+//            }
+//        }
 
         List<Method> visibleMethods = ref.visibleMethods();
         for (Method method : visibleMethods) {
+            //if (method.isAbstract()) continue;
             boolean toCall = isToCall(exp, ref, method, isStatic);
             if (!toCall)
                 continue;
@@ -366,7 +371,7 @@ public class DataCollector {
         return true;
     }
 
-    /** modifiy "candidates" in place */
+    /** modify "candidates" in place */
     private Candidates callMethods(Expression exp, ThreadReference threadRef, List<Method> methods, Candidates argsCandidates) {
     	Candidates results = new Candidates();
         executionTime = System.currentTimeMillis() - startTime;
