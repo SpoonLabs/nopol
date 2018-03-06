@@ -147,7 +147,6 @@ public class ValuesCollectorTest {
 		Specification<Boolean> spec1 = new Specification<Boolean>(values1, true); // first specs
 		Specification<Boolean> spec2 = new Specification<Boolean>(values2, true); // different input set
 		Specification<Boolean> spec3 = new Specification<Boolean>(values3, false); // new specs
-		Specification<Boolean> spec4 = new Specification<Boolean>(values3, true); // same input, different outcome
 
 		SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<Boolean>(runtimeValues);
 
@@ -178,8 +177,8 @@ public class ValuesCollectorTest {
 		assertFalse(runtimeValues.isEmpty());
 		listener.processSuccessfulRun(testB);
 		specifications = listener.specifications();
-		assertEquals(2, specifications.size());
-		assertTrue(specifications.contains(spec2));
+		assertEquals(1, specifications.size()); // as said above, "one spec"
+		assertTrue(specifications.contains(spec1));
 		inconsistencies = listener.inconsistentInputs();
 		assertEquals(1, inconsistencies.size());
 		assertTrue(inconsistencies.keySet().containsAll(asList(spec2.inputs())));
@@ -195,28 +194,13 @@ public class ValuesCollectorTest {
 		listener.processSuccessfulRun(testC);
 		listener.processAfterRun();
 		specifications = listener.specifications();
-		assertEquals(3, specifications.size());
-		assertTrue(specifications.contains(spec2));
+		assertEquals(2, specifications.size()); // as said above 2 spec
+		assertTrue(specifications.contains(spec1));
+		assertTrue(specifications.contains(spec3));
 		inconsistencies = listener.inconsistentInputs();
 		assertEquals(1, inconsistencies.size());
 		assertTrue(inconsistencies.keySet().containsAll(asList(spec2.inputs())));
 
-		/* Same input set, different outcome: discard the newest: 2 specs and 2 inconsistency */
-
-		listener.processTestStarted(testC);
-		runtimeValues.collectInput("a", values3.get("a"));
-		runtimeValues.collectInput("b", values3.get("b"));
-		runtimeValues.collectOutput(true);
-		runtimeValues.collectionEnds();
-		assertFalse(runtimeValues.isEmpty());
-		listener.processSuccessfulRun(testC);
-		listener.processAfterRun();
-		specifications = listener.specifications();
-		assertEquals(3, specifications.size());
-		assertTrue(specifications.contains(spec2));
-		inconsistencies = listener.inconsistentInputs();
-		assertEquals(1, inconsistencies.size());
-		assertTrue(inconsistencies.keySet().containsAll(asList(spec2.inputs())));
 	}
 
 	@Test

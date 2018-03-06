@@ -89,17 +89,12 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 		runtimeValues().disable();
 	}
 
+	/** Creates a collections of "Specification" from the the set of consistent inputs */
 	public Collection<Specification<T>> specifications() {
 		int minInputSize = Integer.MAX_VALUE;
 		Set<String> minKeys = this.keys;
 		if (!consistentInputs().isEmpty()) {
 			minInputSize = consistentInputs().keySet().iterator().next().size();
-		}
-		for (Map<String, Object> input : inconsistentInputs().keySet()) {
-			if (input.size() < minInputSize) {
-				minInputSize = input.size();
-				minKeys = input.keySet();
-			}
 		}
 		Collection<Specification<T>> specifications = MetaList.newLinkedList();
 		loopinputs: for (Map<String, Object> input : consistentInputs().keySet()) {
@@ -112,17 +107,6 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 				tmp.put(next, input.get(next));
 			}
 			specifications.add(new Specification<T>(tmp, consistentInputs().get(input)));
-		}
-		loopinputs: for (Map<String, Object> input : inconsistentInputs().keySet()) {
-			Map<String, Object> tmp = MetaMap.newHashMap();
-			for (Iterator<String> iterator = minKeys.iterator(); iterator.hasNext(); ) {
-				String next = iterator.next();
-				if (!input.containsKey(next)) {
-					continue loopinputs;
-				}
-				tmp.put(next, input.get(next));
-			}
-			specifications.add(new Specification<T>(tmp, inconsistentInputs().get(input)));
 		}
 		return specifications;
 	}
