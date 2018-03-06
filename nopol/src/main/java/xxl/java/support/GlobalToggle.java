@@ -10,7 +10,7 @@ import static xxl.java.library.StringLibrary.join;
 
 public abstract class GlobalToggle {
 
-    protected abstract void reset();
+    protected void reset() {};
 
     protected abstract String globallyAccessibleName();
 

@@ -37,6 +37,7 @@ import xxl.java.junit.TestSuiteExecution;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -66,52 +67,76 @@ public final class ConstraintModelBuilder implements AngelicValue<Boolean> {
         this.runtimeValues = runtimeValues;
     }
 
-    @Override
-    public Collection<Specification<Boolean>> collectSpecifications(URL[] classpath, String[] testClasses, Collection<TestCase> failures) {
-        return null;
-    }
-
     /**
      * @see AngelicValue#collectSpecifications(URL[], List, Collection)
      */
     public Collection<Specification<Boolean>> collectSpecifications(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures) {
-        SpecificationTestCasesListener<Boolean> listener = new SpecificationTestCasesListener<>(runtimeValues);
+        SpecificationTestCasesListener<Boolean> listenerFalse = new SpecificationTestCasesListener<>(runtimeValues);
         AngelicExecution.enable();
-        CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, listener, nopolContext);
-        AngelicExecution.flip();
-        CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, listener, nopolContext);
+
+        // the instrumented condition now evaluates to "true"!
+        AngelicExecution.setBooleanValue(false);
+        CompoundResult firstResult = TestSuiteExecution.runTestCases(failures, classLoader, listenerFalse, nopolContext);
+
+        // the instrumented condition now evaluates to "false"!
+        AngelicExecution.setBooleanValue(true);
+        SpecificationTestCasesListener<Boolean> listenerTrue = new SpecificationTestCasesListener<>(runtimeValues);
+        CompoundResult secondResult = TestSuiteExecution.runTestCases(failures, classLoader, listenerTrue, nopolContext);
+
+        // come back to default mode
         AngelicExecution.disable();
-        if (determineViability(firstResult, secondResult)) {
-            /* to collect information for passing tests */
-            class PassingListener extends TestCasesListener {
-                @Override
-                public void testRunStarted(Description description)
-                        throws Exception {
-                }
-            }
-            PassingListener passingListener = new PassingListener();
-            AngelicExecution.enable();
-            TestSuiteExecution.runTestResult(testClasses, classLoader, passingListener, nopolContext);
-            Collection<TestCase> testCases = passingListener.successfulTests();
-            AngelicExecution.flip();
-            passingListener = new PassingListener();
-            TestSuiteExecution.runTestResult(testClasses, classLoader, passingListener, nopolContext);
-            testCases.removeAll(passingListener.failedTests());
-            AngelicExecution.disable();
-            ArrayList<TestResult> tmp = new ArrayList<>(testClasses);
-            // removes all tests that are not dependent of the condition
-            for (int i = 0; i < testClasses.size(); i++) {
-                TestResult testResult = testClasses.get(i);
-                for (Iterator<TestCase> iterator = testCases.iterator(); iterator.hasNext(); ) {
-                    TestCase next = iterator.next();
-                    if (next.equals(testResult.getTestCase())) {
-                        tmp.remove(testResult);
-                    }
-                }
-            }
-            TestSuiteExecution.runTestResult(tmp, classLoader, listener, nopolContext);
+
+        if (!determineViability(firstResult, secondResult)) {
+            return Collections.emptyList();
         }
-        return listener.specifications();
+        /* to collect information for passing tests */
+        class PassingListener extends TestCasesListener {
+            @Override
+            public void testRunStarted(Description description)
+                    throws Exception {
+            }
+        }
+        // now we look for the tests that are oblivious to this condition
+        // this enables us to have less constraints, hence to relax the satisfaction problem
+        PassingListener passingListenerWithFalse = new PassingListener();
+        AngelicExecution.enable();
+        AngelicExecution.setBooleanValue(false);
+        TestSuiteExecution.runTestResult(testClasses, classLoader, passingListenerWithFalse, nopolContext);
+        Collection<TestCase> testCasesPassingWithFalse = passingListenerWithFalse.successfulTests();
+
+        AngelicExecution.setBooleanValue(true);
+        PassingListener passingListenerWithTrue  = new PassingListener();
+        TestSuiteExecution.runTestResult(testClasses, classLoader, passingListenerWithTrue, nopolContext);
+
+        AngelicExecution.disable();
+        ArrayList<TestResult> tmp = new ArrayList<>();
+        // removes all tests that are not dependent of the condition
+        for (int i = 0; i < testClasses.size(); i++) {
+            TestResult testResult = testClasses.get(i);
+            TestCase testCase = testResult.getTestCase();
+            boolean isOblivious = passingListenerWithTrue.successfulTests().contains(testCase) && passingListenerWithFalse.successfulTests().contains(testCase);
+            if (!isOblivious) {
+                tmp.add(testResult);
+            }
+        }
+
+        SpecificationTestCasesListener<Boolean> listenerPassing = new SpecificationTestCasesListener<>(runtimeValues);
+
+        TestSuiteExecution.runTestResult(tmp, classLoader, listenerPassing, nopolContext);
+
+
+        // constructing the final set of constraints
+        List<Specification<Boolean>> finalSpec = new ArrayList<>();
+
+        // we first add the specs for the failing tests that pass with "false"
+        finalSpec.addAll(listenerFalse.specificationsForAllTests());
+        // we then add the specs for the failing tests that pass with "true"
+        finalSpec.addAll(listenerTrue.specificationsForAllTests());
+
+        // and then we add the specs for the passing non-oblvivious test cases
+        finalSpec.addAll(listenerPassing.specificationsForAllTests());
+
+        return finalSpec;
     }
 
     private boolean determineViability(final Result firstResult, final Result secondResult) {

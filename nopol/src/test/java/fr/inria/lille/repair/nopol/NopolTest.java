@@ -129,7 +129,9 @@ public class NopolTest {
 				"(2 < a) && (intermediaire == 0)",
 				"(!(a == 2)) && (intermediaire == 0)",
 				"(intermediaire == 0) && (2 < a)",
-				"(intermediaire == 0) && ((a) != (2))");
+				"(intermediaire == 0) && ((a) != (2))",
+				"(intermediaire == 0) && (3 < a)"
+				);
 	}
 
 	@Test
@@ -239,7 +241,7 @@ public class NopolTest {
 		NopolResult result = nopol.build();
 
 		assertEquals(1, result.getPatches().size());
-		TestUtility.assertAgainstKnownPatches(result.getPatches().get(0),  "a < b", "-1 < (b - a)", "2 <= (b - a)");
+		TestUtility.assertAgainstKnownPatches(result.getPatches().get(0),  "a < b", "-1 < (b - a)", "2 <= (b - a)", "1 < (b - a)");
 
 		nopolContext = TestUtility.configForExample(executionType, 2);
 		nopolContext.setType(StatementType.CONDITIONAL);
@@ -257,6 +259,6 @@ public class NopolTest {
 		NopolResult result2 = nopol.build();
 
 		assertEquals(1, result2.getPatches().size());
-		TestUtility.assertAgainstKnownPatches(result2.getPatches().get(0),  "a == 2", "2 == (b - a)");
+		TestUtility.assertAgainstKnownPatches(result2.getPatches().get(0),  "a == 2", "(b - a) == 2",  "2 == (b - a)", "1 < (b - a)");
 	}
 }

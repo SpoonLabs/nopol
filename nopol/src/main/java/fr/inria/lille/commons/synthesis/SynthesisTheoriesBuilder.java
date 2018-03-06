@@ -28,7 +28,8 @@ public class SynthesisTheoriesBuilder {
         LinearTheory linear = new LinearTheory();
         IfThenElseTheory ifThenElse = new IfThenElseTheory();
         NonlinearTheory nonlinear = new NonlinearTheory();
-        theories.addAll(asList(empty, comparison, logic, linear, comparison, ifThenElse, nonlinear, logic, linear, ifThenElse, nonlinear));
+        theories.addAll(asList(empty, comparison, logic, comparison, logic, linear));
+        //theories.addAll(asList(empty, comparison, logic, linear, comparison, ifThenElse, nonlinear, logic, linear, ifThenElse, nonlinear));
         return theories;
     }
 

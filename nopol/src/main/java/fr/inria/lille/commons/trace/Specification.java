@@ -1,5 +1,7 @@
 package fr.inria.lille.commons.trace;
 
+import xxl.java.junit.TestCase;
+
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -52,9 +54,14 @@ public class Specification<T> {
 
     @Override
     public String toString() {
-        return format("collected data: %s. outcome: %s", inputs().toString(), output().toString());
+        return format("constraint: %s. outcome: %s (%s)", inputs().toString(), output().toString(), testCase!=null?testCase.testName():"<unknown>");
     }
 
     private T expectedOutput;
     private Map<String, Object> values;
+    private TestCase testCase;
+
+	public void setTestCase(TestCase testCase) {
+		this.testCase = testCase;
+	}
 }

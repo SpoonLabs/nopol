@@ -88,10 +88,9 @@ public final class JPFRunner<T> implements AngelicValue<T> {
 			logging.disable();
 			TestSuiteExecution.runTestResult(testClasses, unitTestClassLoader, listener, nopolContext);
 		}
-		return listener.specifications();
+		return listener.specificationsForAllTests();
 	}
 
-	@Override
 	public Collection<Specification<T>> collectSpecifications(final URL[] classpath, final String[] testClasses, final Collection<TestCase> failures) {
 		final LoggingInstrumenter<T> logging = createLoggingInstrumenter();
 		SpoonedClass fork = cleanSpoon.forked(sourceLocation.getContainingClassName());
@@ -103,7 +102,7 @@ public final class JPFRunner<T> implements AngelicValue<T> {
 			logging.disable();
 			TestSuiteExecution.runCasesIn(testClasses, unitTestClassLoader, listener, nopolContext);
 		}
-		return listener.specifications();
+		return listener.specificationsForAllTests();
 	}
 
 	private LoggingInstrumenter<T> createLoggingInstrumenter() {

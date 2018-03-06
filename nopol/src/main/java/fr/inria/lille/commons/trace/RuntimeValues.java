@@ -1,11 +1,11 @@
 package fr.inria.lille.commons.trace;
 
 import fr.inria.lille.commons.trace.collector.ValueCollector;
+import xxl.java.container.classic.MetaList;
 import xxl.java.container.classic.MetaMap;
-import xxl.java.container.classic.MetaSet;
 import xxl.java.support.GlobalToggle;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -23,11 +23,6 @@ public class RuntimeValues<T> extends GlobalToggle {
 
     public static RuntimeValues<?> instance(int instanceID) {
         return allInstances().get(instanceID);
-    }
-
-    @Override
-    protected void reset() {
-        specifications().clear();
     }
 
     @Override
@@ -58,6 +53,8 @@ public class RuntimeValues<T> extends GlobalToggle {
 
     public void collectionStarts() {
         acquireToggle();
+        outputBuffer = null;
+        valueBuffer = MetaMap.newHashMap();
     }
 
     public void collectInput(String variableName, byte value) {
@@ -126,23 +123,26 @@ public class RuntimeValues<T> extends GlobalToggle {
 
     @SuppressWarnings("unchecked")
     public void collectionEnds() {
-        specifications().add(new Specification<T>(valueBuffer(), (T) outputBuffer()));
-        flush();
+        specifications.add(new Specification<T>(valueBuffer(), (T) outputBuffer()));
         releaseToggle();
     }
 
     public boolean isEmpty() {
-        return specifications().isEmpty();
+        return specificationsForASingleTest().isEmpty();
     }
 
-    public Collection<Specification<T>> specifications() {
+    /** returns the specification for a single test.
+     * If the statement is executed only once, only contains one constraint
+     */
+    public List<Specification<T>> specificationsForASingleTest() {
         return specifications;
     }
 
     protected RuntimeValues(int instanceID) {
         this.instanceID = instanceID;
-        specifications = MetaSet.newHashSet();
-        flush();
+        outputBuffer = null;
+        valueBuffer = MetaMap.newHashMap();
+        specifications = MetaList.newLinkedList();
     }
 
     private Integer instanceID() {
@@ -161,11 +161,6 @@ public class RuntimeValues<T> extends GlobalToggle {
         return outputBuffer;
     }
 
-    protected void flush() {
-        outputBuffer = null;
-        valueBuffer = MetaMap.newHashMap();
-    }
-
     private static Map<Integer, RuntimeValues<?>> allInstances() {
         if (allInstances == null) {
             allInstances = MetaMap.newHashMap();
@@ -176,6 +171,6 @@ public class RuntimeValues<T> extends GlobalToggle {
     private int instanceID;
     private Object outputBuffer;
     private Map<String, Object> valueBuffer;
-    private Collection<Specification<T>> specifications;
+    private List<Specification<T>> specifications;
     private static Map<Integer, RuntimeValues<?>> allInstances;
 }

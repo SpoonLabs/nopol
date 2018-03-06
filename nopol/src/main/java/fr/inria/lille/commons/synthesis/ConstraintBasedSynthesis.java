@@ -163,7 +163,7 @@ public class ConstraintBasedSynthesis {
 
     protected Map<String, Integer> satisfyingSolution(LocationVariableContainer container, Collection<Map<String, Object>> synthesisInputs) {
         IScript smtScript = scriptBuilder().scriptFrom(logic(), container, synthesisInputs);
-        logCollection(logger(), "SMTLib Script:", smtScript.commands());
+        //logCollection(logger(), "SMTLib Script:", smtScript.commands());
         Map<String, String> satisfyingValues = scriptSolution(container, smtScript);
         Map<String, Integer> toInteger = MetaMap.valuesParsedAsInteger(satisfyingValues);
         return toInteger;

@@ -22,8 +22,5 @@ public interface AngelicValue<T> {
      */
     Collection<Specification<T>> collectSpecifications(final URL[] classpath, List<TestResult> testClasses, final Collection<TestCase> failures);
 
-    //TODO UNUSED
-    Collection<Specification<T>> collectSpecifications(final URL[] classpath, final String[] testClasses, final Collection<TestCase> failures);
-
     boolean isAViablePatch();
 }

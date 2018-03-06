@@ -44,13 +44,13 @@ public class MonitoringTestExecutor {
     public Collection<Specification<Boolean>> executeCollectingTraces(TestCase testCase, While loop) {
         SpecificationTestCasesListener<Boolean> listener = specificationListener(loop);
         execute(testCase, loop, listener);
-        return listener.specifications();
+        return listener.specificationsForAllTests();
     }
 
     public Collection<Specification<Boolean>> executeCollectingTraces(TestCase testCase, While loop, int threshold, int invocation) {
         SpecificationTestCasesListener<Boolean> listener = specificationListener(loop);
         execute(testCase, loop, threshold, invocation, listener);
-        return listener.specifications();
+        return listener.specificationsForAllTests();
     }
 
     public Result execute(TestCase testCase, While loop, int threshold, int invocation, RunListener listener) {
