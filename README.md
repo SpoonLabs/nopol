@@ -15,8 +15,8 @@ If you use this code for academic research, please cite:
 
 Others papers about Nopol:
 * ["Automatic Repair of Buggy If Conditions and Missing Preconditions with SMT"](http://hal.inria.fr/hal-00977798/PDF/NOPOL-Automatic-Repair-of-Buggy-If-Conditions-and-Missing-Preconditions-with-SMT.pdf) (Favio DeMarco, Jifeng Xuan, Daniel Le Berre, Martin Monperrus), In Proceedings of the 6th International Workshop on Constraints in Software Testing, Verification, and Analysis (CSTVA 2014) [(Bibtex)](http://www.monperrus.net/martin/bibtexbrowser.php?key=DeMarco2014&bib=monperrus.bib)
-* [DynaMoth: Dynamic Code Synthesis for Automatic Program Repair](https://hal.archives-ouvertes.fr/hal-01279233/document) (Thomas Durieux, Martin Monperrus), In Proceedings of the 11th International Workshop in Automation of Software Test, 2016. [(Bibtex)](http://www.monperrus.net/martin/bibtexbrowser.php?key=durieux%3Ahal-01279233&bib=monperrus.bib) describes the dynamic synthesis part of Nopol 
-* [Automatic Repair of Infinite Loops](https://arxiv.org/pdf/1504.05078.pdf) (Sebastian Lamelas-Marcote and Martin Monperrus), Technical report hal-01144026, University of Lille, 2015. [(Bibtex)](http://www.monperrus.net/martin/bibtexbrowser.php?key=Lamelas2015&bib=monperrus.bib) describes the Infinitel part. 
+* [DynaMoth: Dynamic Code Synthesis for Automatic Program Repair](https://hal.archives-ouvertes.fr/hal-01279233/document) (Thomas Durieux, Martin Monperrus), In Proceedings of the 11th International Workshop in Automation of Software Test, 2016, describes the dynamic synthesis part of Nopol [(Bibtex)](http://www.monperrus.net/martin/bibtexbrowser.php?key=durieux%3Ahal-01279233&bib=monperrus.bib)  
+* [Automatic Repair of Infinite Loops](https://arxiv.org/pdf/1504.05078.pdf) (Sebastian Lamelas-Marcote and Martin Monperrus), Technical report hal-01144026, University of Lille, 2015, describes the Infinitel part. [(Bibtex)](http://www.monperrus.net/martin/bibtexbrowser.php?key=Lamelas2015&bib=monperrus.bib) 
 
 ## Getting started
 
