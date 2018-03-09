@@ -5,6 +5,7 @@ id=5
 wd=${project}_${id}
 
 cd nopol
+mvn clean install -DskipTests
 
 git clone https://github.com/rjust/defects4j.git
 cd defects4j
@@ -13,9 +14,9 @@ cd ../
 defects4j/framework/bin/defects4j checkout -p ${project} -v ${id}b -w ${wd}
 cd ${wd}
 ../defects4j/framework/bin/defects4j compile
-../defects4j/framework/bin/defects4j test | tee > out.txt
+../defects4j/framework/bin/defects4j test | tee > out-defects4j-test.txt
 
-fullQualifiedNameFailingTestCase=$(cat out.txt | grep - | cut -d ":" -f1 | cut -d "-" -f2)
+fullQualifiedNameFailingTestCase=$(cat out-defects4j-test.txt | grep - | cut -d ":" -f1 | cut -d "-" -f2)
 echo ${fullQualifiedNameFailingTestCase}
 
 cd ../
