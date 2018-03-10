@@ -51,7 +51,7 @@ public class TestUtility {
 	}
 
 	public static List<Patch> patchFor(String executionType, NopolContext nopolContext) {
-		nopolContext.setLocalizer(NopolContext.NopolLocalizer.GZOLTAR);
+		nopolContext.setLocalizer(nopolContext.getLocalizer());
 
 		List<Patch> patches;
 		switch (executionType) {

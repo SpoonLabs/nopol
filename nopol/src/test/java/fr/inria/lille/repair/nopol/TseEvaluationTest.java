@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 
 public class TseEvaluationTest {
 
+	private final static int TIMEOUT=5*60*1000;// 5 minutes in millisecs
 	public boolean testShouldBeRun() {
 		if (System.getenv("NOPOL_EVAL_TSE")==null || !new File("../nopol-experiments").exists()) {
 			return false;
@@ -84,82 +85,82 @@ public class TseEvaluationTest {
 		assertEquals(1, result.getPatches().size());
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_cm1() throws Exception {
 		if (testShouldBeRun()) testTSEBug("cm1");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_cm2() throws Exception {
 		if (testShouldBeRun()) testTSEBug("cm2");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_cm3() throws Exception {
 		if (testShouldBeRun()) testTSEBug("cm3");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_cm4() throws Exception {
 		if (testShouldBeRun()) testTSEBug("cm4");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_cm5() throws Exception {
 		// ignored, there is a regression in Gzoltar which crashes with NPE
 		// if (testShouldBeRun())
 		// testTSEBug("cm5");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_cm6() throws Exception {
 		if (testShouldBeRun())
 			testTSEBug("cm6");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_cm7() throws Exception {
 		if (testShouldBeRun())
 			testTSEBug("cm7");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_cm10() throws Exception {
 		// note that this one has a "tests" configuration which limits the scope of the search
 		if (testShouldBeRun()) testTSEBug("cm10");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_cl1() throws Exception {
 		if (testShouldBeRun())
 			testTSEBug("cl1");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_cl2() throws Exception {
 		if (testShouldBeRun())
 			testTSEBug("cl2");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_cl3() throws Exception {
 		if (testShouldBeRun())
 			testTSEBug("cl3");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_cl4() throws Exception {
 		if (testShouldBeRun())
 			testTSEBug("cl4");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_cl5() throws Exception {
 		if (testShouldBeRun())
 		testTSEBug("cl5");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_cl6() throws Exception {
 		// CL6 is a bug that cannot be repaired in the TSE paper
 		// in the paper we say timeout
@@ -168,24 +169,24 @@ public class TseEvaluationTest {
 		//testTSEBug("cl6");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_pl1() throws Exception {
 		if (testShouldBeRun()) testTSEBug("pl1");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_pl2() throws Exception {
 		// REGRESSION: it seems nothing is instrumented
 		//if (testShouldBeRun())
 		//testTSEBug("pl2");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_pl3() throws Exception {
 		if (testShouldBeRun()) testTSEBug("pl3");
 	}
 
-	@Test
+	@Test(timeout = TIMEOUT)
 	public void test_pl4() throws Exception {
 		// there is only a Kali patch for PL4
 		// and Nopol does not return Kali patches anymore
