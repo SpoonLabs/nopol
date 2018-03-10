@@ -198,8 +198,17 @@ public class NoPol {
 		int n=1;
 		for (SourceLocation sourceLocation : testListPerStatement.keySet()) {
 			n++;
+			List<TestResult> tests = testListPerStatement.get(sourceLocation);
+
+			// no failing test case executes this location
+			// so there is nothing to repair here
+			if (getFailingTestCasesAsList(tests).size()==0) {
+				continue;
+			}
+
 			logger.debug("statement #"+n);
-			runOnStatement(sourceLocation, testListPerStatement.get(sourceLocation));
+
+			runOnStatement(sourceLocation, tests);
 			if (nopolContext.isOnlyOneSynthesisResult() && !this.nopolResult.getPatches().isEmpty()) {
 				return;
 			}
@@ -261,17 +270,22 @@ public class NoPol {
 
 	private List<Patch> runNopolProcessor(List<TestResult> tests, SourceLocation sourceLocation, SpoonedClass spoonCl, NopolProcessor nopolProcessor) {
 
-		Collection<TestCase> failingTest = reRunFailingTestCases(getFailingTestCase(tests), classpath);
+		String[] failingTestCase = getFailingTestCase(tests);
+		if (failingTestCase.length == 0) {
+			throw new RuntimeException("failingTestCase: nothing to repair, no failing test cases");
+		}
 
-		if (failingTest.isEmpty()) {
-			throw new RuntimeException("nothing to repair, no failing test cases");
+		Collection<TestCase> failingTestCasesValidated = reRunFailingTestCases(failingTestCase, classpath);
+
+		if (failingTestCasesValidated.isEmpty()) {
+			throw new RuntimeException("failingTestCasesValidated: nothing to repair, no failing test cases");
 		}
 
 		// selecting the synthesizer, typically SMT or Dynamoth
 		Synthesizer synth = SynthesizerFactory.build(sourceFiles, spooner, nopolContext, sourceLocation, nopolProcessor, spoonCl);
 
 		// Collecting the patches
-		List<Patch> tmpPatches = synth.findAngelicValuesAndBuildPatch(classpath, tests, failingTest, nopolContext.getMaxTimeBuildPatch());
+		List<Patch> tmpPatches = synth.findAngelicValuesAndBuildPatch(classpath, tests, failingTestCasesValidated, nopolContext.getMaxTimeBuildPatch());
 
 		// Final check: we recompile the patch and run all tests again
 		List<Patch> finalPatches = new ArrayList<>();
