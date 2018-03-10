@@ -363,7 +363,7 @@ public class Main {
 		faultLocalization.setShortFlag('z');
 		faultLocalization.setUsageName(" cocospoon|dumb|gzoltar");//TODO ADD PARAMETIZED FAULT LOCALIZER
 		faultLocalization.setStringParser(JSAP.STRING_PARSER);
-		faultLocalization.setDefault("cocospoon");
+		faultLocalization.setDefault(NopolContext.DEFAULT_FAULT_LOCALIZER.name().toLowerCase());
 		faultLocalization.setHelp("Define the fault localizer to be used.");
 		jsap.registerParameter(faultLocalization);
 

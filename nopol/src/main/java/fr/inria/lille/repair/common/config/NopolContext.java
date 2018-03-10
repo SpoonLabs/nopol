@@ -92,7 +92,8 @@ public class NopolContext implements Serializable {
 	private NopolSynthesis synthesis = NopolSynthesis.SMT;
 	private NopolOracle oracle = NopolOracle.ANGELIC;
 	private NopolSolver solver = NopolSolver.Z3;
-	private NopolLocalizer localizer = NopolLocalizer.GZOLTAR;
+	public final static NopolLocalizer DEFAULT_FAULT_LOCALIZER = NopolLocalizer.GZOLTAR;
+	private NopolLocalizer localizer = DEFAULT_FAULT_LOCALIZER;
 
 
 	private File[] projectSources;
@@ -490,6 +491,9 @@ public class NopolContext implements Serializable {
 
 	public void setProjectClasspath(URL[] projectClasspath) {
 		this.projectClasspath = projectClasspath;
+		if (projectTests == null || projectTests.length == 0) {
+			this.projectTests = new TestClassesFinder().findIn(this.projectClasspath, false);
+		}
 	}
 
 	public void setProjectTests(String[] projectTests) {

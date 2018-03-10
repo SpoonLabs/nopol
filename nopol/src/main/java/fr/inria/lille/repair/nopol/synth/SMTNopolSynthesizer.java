@@ -72,6 +72,7 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 		int dataSize = data.size();
 		if (dataSize < 2) {
 			LoggerFactory.getLogger(this.getClass()).info("Not enough specifications: {}. A trivial patch is \"true\" or \"false\", please write new tests specifying {}.", dataSize, sourceLocation);
+			// we return so that we can start working on the next statement in the suspicious list
 			return Collections.EMPTY_LIST;
 		}
 

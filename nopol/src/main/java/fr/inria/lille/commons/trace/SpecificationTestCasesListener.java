@@ -31,7 +31,14 @@ public class SpecificationTestCasesListener<T> extends TestCasesListener {
 	protected void processSuccessfulRun(TestCase testCase) {
 		for (Specification s :runtimeValues.specificationsForASingleTest()) {
 			s.setTestCase(testCase);
-			specifications.add(s);
+
+			// now if the if in a loop there are many times the same spec
+			// and this kills the performance of the solver (for instance TSE_CM7 cannot be solved anymore without it)
+			// so we don't duplicate them
+			// this optimization depends on the correctness of Specification#equals
+			if (!specifications.contains(s)) { 			// contains of ArrayList only use equals, not hashCode
+				specifications.add(s);
+			}
 		}
 	}
 

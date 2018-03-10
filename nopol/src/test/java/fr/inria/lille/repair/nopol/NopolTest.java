@@ -5,11 +5,16 @@ import fr.inria.lille.repair.TestUtility;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.synth.StatementType;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.junit.Ignore;
 import org.junit.Test;
 import xxl.java.junit.TestCasesListener;
 import xxl.java.junit.TestSuiteExecution;
 
+import java.io.File;
+import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -262,4 +267,5 @@ public class NopolTest {
 		assertEquals(1, result2.getPatches().size());
 		TestUtility.assertAgainstKnownPatches(result2.getPatches().get(0),  "a == 2", "(b - a) == 2",  "2 == (b - a)", "1 < (b - a)");
 	}
+
 }

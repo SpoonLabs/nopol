@@ -195,7 +195,10 @@ public class NoPol {
 	 * try to find patch
 	 */
 	private void solveWithMultipleBuild(Map<SourceLocation, List<TestResult>> testListPerStatement) {
+		int n=1;
 		for (SourceLocation sourceLocation : testListPerStatement.keySet()) {
+			n++;
+			logger.debug("statement #"+n);
 			runOnStatement(sourceLocation, testListPerStatement.get(sourceLocation));
 			if (nopolContext.isOnlyOneSynthesisResult() && !this.nopolResult.getPatches().isEmpty()) {
 				return;
@@ -207,6 +210,7 @@ public class NoPol {
 		logger.debug("Analysing {} which is executed by {} tests", sourceLocation, tests.size());
 		SpoonedClass spoonCl = spooner.forked(sourceLocation.getRootClassName());
 		if (spoonCl == null || spoonCl.getSimpleType() == null) {
+			logger.debug("cannot spoon "+sourceLocation.toString());
 			return;
 		}
 		NopolProcessorBuilder builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), sourceLocation.getLineNumber(), nopolContext);
@@ -219,6 +223,8 @@ public class NoPol {
 
 		final List<NopolProcessor> nopolProcessors = builder.getNopolProcessors();
 		for (NopolProcessor nopolProcessor : nopolProcessors) {
+			logger.debug("looking with "+nopolProcessor.getClass().toString());
+
 			SourcePosition position = nopolProcessor.getTarget().getPosition();
 			sourceLocation.setSourceStart(position.getSourceStart());
 			sourceLocation.setSourceEnd(position.getSourceEnd());

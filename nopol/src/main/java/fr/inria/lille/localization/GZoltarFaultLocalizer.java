@@ -71,8 +71,10 @@ public final class GZoltarFaultLocalizer extends GZoltar implements FaultLocaliz
 		this.setClassPaths(classpaths);
 		this.addPackageNotToInstrument("org.junit");
 		this.addPackageNotToInstrument("junit.framework");
+		this.addPackageNotToInstrument("org.easymock");
 		this.addTestPackageNotToExecute("junit.framework");
 		this.addTestPackageNotToExecute("org.junit");
+		this.addTestPackageNotToExecute("org.easymock");
 		for (String packageName : packageNames) {
 			this.addPackageToInstrument(packageName);
 		}
