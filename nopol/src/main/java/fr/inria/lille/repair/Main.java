@@ -250,14 +250,14 @@ public class Main {
 		jsap.registerParameter(modeOpt);
 
 		FlaggedOption typeOpt = new FlaggedOption("type");
-		typeOpt.setRequired(false);
+		typeOpt.setRequired(true);
 		typeOpt.setAllowMultipleDeclarations(false);
 		typeOpt.setLongFlag("type");
 		typeOpt.setShortFlag('e');
 		typeOpt.setUsageName("condition|precondition|pre_then_cond|loop|arithmetic");
 		typeOpt.setStringParser(JSAP.STRING_PARSER);
 		typeOpt.setDefault("condition");
-		typeOpt.setHelp("The repair type (example fixing only conditions, or adding precondition).");
+		typeOpt.setHelp("The repair type (example fixing only conditions, or adding precondition). REQUIRED OPTION");
 		jsap.registerParameter(typeOpt);
 
 		FlaggedOption oracleOpt = new FlaggedOption("oracle");
