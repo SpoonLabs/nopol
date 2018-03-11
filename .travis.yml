@@ -12,7 +12,7 @@ env:
     - SCRIPT="./.travis_server.sh"
     - SCRIPT="./.travis_intellij.sh"
     - SCRIPT="./.travis_tse.sh"
-    #- SCRIPT="./.travis_run_defects4j.sh"
+    - SCRIPT="./.travis_defects4j.sh"
 
 script: $SCRIPT
 
