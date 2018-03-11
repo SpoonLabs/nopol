@@ -35,7 +35,7 @@ public class TseEvaluationTest {
 
 	public void testTSEBug(String bug_id) throws Exception {
 		String folder = "unknown";
-		if (bug_id.startsWith("cm")) {
+		if (bug_id.startsWith("cm") || bug_id.startsWith("pm")) {
 			folder = "math";
 		}
 		if (bug_id.startsWith("cl") || bug_id.startsWith("pl")) {
@@ -182,6 +182,7 @@ public class TseEvaluationTest {
 
 	@Test(timeout = TIMEOUT)
 	public void test_pl3() throws Exception {
+		// PL3 now works!!! (it was reported as unfixed in TSE)
 		if (testShouldBeRun()) testTSEBug("pl3");
 	}
 
@@ -191,5 +192,19 @@ public class TseEvaluationTest {
 		// and Nopol does not return Kali patches anymore
 		//if (testShouldBeRun())
 		//	testTSEBug("pl4");
+	}
+
+	@Test(timeout = TIMEOUT)
+	public void test_pm1() throws Exception {
+		// pm1 cannot be fixed in TSE
+		//if (testShouldBeRun()) testTSEBug("pm1");
+	}
+
+	@Test(timeout = TIMEOUT)
+	public void test_pm2() throws Exception {
+		// PM2 in the longest in TSE, it takes more than one minutes
+		// TSE: 84 sec
+		// on Martin's machine 70sec
+		if (testShouldBeRun()) testTSEBug("pm2");
 	}
 }
