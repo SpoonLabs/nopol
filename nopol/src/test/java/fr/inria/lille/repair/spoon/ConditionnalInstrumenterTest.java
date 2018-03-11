@@ -4,7 +4,7 @@ import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.trace.RuntimeValues;
 import fr.inria.lille.repair.common.config.NopolContext;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import fr.inria.lille.repair.nopol.spoon.ConditionalLoggingInstrumenter;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessorBuilder;
@@ -19,7 +19,6 @@ import spoon.reflect.code.CtTry;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.filter.TypeFilter;
-import xxl.java.compiler.DynamicCompilationException;
 
 import java.io.File;
 import java.net.URL;
@@ -39,7 +38,7 @@ public class ConditionnalInstrumenterTest {
 
 		NopolContext nopolContext = new NopolContext(sourceFiles, new URL[]{fileClassToSpoon.toURI().toURL()}, null);
 		nopolContext.setSynthesis(NopolContext.NopolSynthesis.DYNAMOTH);
-		nopolContext.setType(StatementType.CONDITIONAL);
+		nopolContext.setType(RepairType.CONDITIONAL);
 
 		SpoonedProject spooner = new SpoonedProject(sourceFiles, nopolContext);
 
@@ -124,7 +123,7 @@ public class ConditionnalInstrumenterTest {
 
 		NopolContext nopolContext = new NopolContext(sourceFiles, new URL[]{fileClassToSpoon.toURI().toURL()}, null);
 		nopolContext.setSynthesis(NopolContext.NopolSynthesis.DYNAMOTH);
-		nopolContext.setType(StatementType.CONDITIONAL);
+		nopolContext.setType(RepairType.CONDITIONAL);
 
 		SpoonedProject spooner = new SpoonedProject(sourceFiles, nopolContext);
 

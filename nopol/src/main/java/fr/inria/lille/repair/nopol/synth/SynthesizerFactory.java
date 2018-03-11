@@ -42,9 +42,9 @@ public final class SynthesizerFactory {
 		switch (nopolContext.getSynthesis()) {
 			case SMT:
 				//InstrumentedProgram program = getInstrumentedProgramForThisLocation(nopolProcessor, sourceLocation, spooner);
-				return new SMTNopolSynthesizer(spooner, getInstrumentedProgramForThisLocation(spooner, nopolContext, nopolProcessor, statement, spoonCl), statement, nopolProcessor.getStatementType(), nopolProcessor, nopolContext);
+				return new SMTNopolSynthesizer(spooner, getInstrumentedProgramForThisLocation(spooner, nopolContext, nopolProcessor, statement, spoonCl), statement, nopolProcessor.getRepairType(), nopolProcessor, nopolContext);
 			case DYNAMOTH:
-				return new DynamothSynthesizer(sourceFolders, statement, nopolProcessor.getStatementType(), nopolProcessor, spooner, nopolContext);
+				return new DynamothSynthesizer(sourceFolders, statement, nopolProcessor.getRepairType(), nopolProcessor, spooner, nopolContext);
 		}
 		return Synthesizer.NO_OP_SYNTHESIZER;
 	}

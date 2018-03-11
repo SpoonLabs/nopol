@@ -6,12 +6,11 @@ import fr.inria.lille.localization.TestResult;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.ExpressionPatch;
 import fr.inria.lille.repair.common.patch.Patch;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.spoon.dynamoth.ConditionalInstrumenter;
 import fr.inria.lille.repair.nopol.synth.AngelicExecution;
-import fr.inria.lille.repair.nopol.synth.InstrumentedProgram;
 import fr.inria.lille.repair.nopol.synth.SMTNopolSynthesizer;
 import fr.inria.lille.repair.nopol.synth.Synthesizer;
 import fr.inria.lille.repair.common.Candidates;
@@ -44,13 +43,13 @@ public class DynamothSynthesizer<T> implements Synthesizer {
 
     private final Logger testsOutput = LoggerFactory.getLogger(getClass().getName());
     private final NopolProcessor nopolProcessor;
-    private final StatementType type;
+    private final RepairType type;
     private final SourceLocation sourceLocation;
     private final SpoonedProject spooner;
     private final File[] sourceFolders;
     private final NopolContext nopolContext;
 
-    public DynamothSynthesizer(File[] sourceFolders, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, SpoonedProject spooner, NopolContext nopolContext) {
+    public DynamothSynthesizer(File[] sourceFolders, SourceLocation sourceLocation, RepairType type, NopolProcessor processor, SpoonedProject spooner, NopolContext nopolContext) {
         this.sourceLocation = sourceLocation;
         this.nopolContext = nopolContext;
         this.type = type;

@@ -1,7 +1,7 @@
 package fr.inria.lille.repair.nopol.spoon;
 
 import fr.inria.lille.repair.common.config.NopolContext;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import fr.inria.lille.repair.nopol.spoon.smt.ConditionalAdder;
 import fr.inria.lille.repair.nopol.spoon.smt.ConditionalReplacer;
 import fr.inria.lille.repair.nopol.spoon.symbolic.*;
@@ -77,7 +77,7 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
     }
 
     private void symbolicReplacer(CtStatement statement) {
-        StatementType typeToAnalyse = nopolContext.getType();
+        RepairType typeToAnalyse = nopolContext.getType();
         if (nopolContext.getOracle() == NopolContext.NopolOracle.SYMBOLIC) {
             nopolProcessors.add(new LiteralReplacer(typeToAnalyse.getType(), statement, typeToAnalyse));
         }
@@ -85,7 +85,7 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
 
     @Override
     public void process(CtStatement statement) {
-        StatementType typeToAnalyse = nopolContext.getType();
+        RepairType typeToAnalyse = nopolContext.getType();
 
         switch (typeToAnalyse) {
             case PRE_THEN_COND:

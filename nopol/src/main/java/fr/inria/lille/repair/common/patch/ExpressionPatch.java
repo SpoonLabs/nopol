@@ -1,7 +1,7 @@
 package fr.inria.lille.repair.common.patch;
 
 import fr.inria.lille.repair.common.config.NopolContext;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.diff.PatchGenerator;
 import fr.inria.lille.repair.expression.Expression;
@@ -13,9 +13,9 @@ public class ExpressionPatch implements Patch {
     private static final long serialVersionUID = -157430722893779258L;
     private final Expression expression;
     private final SourceLocation location;
-    private final StatementType type;
+    private final RepairType type;
 
-    public ExpressionPatch(final Expression expression, final SourceLocation location, final StatementType type) {
+    public ExpressionPatch(final Expression expression, final SourceLocation location, final RepairType type) {
         this.expression = expression;
         this.location = location;
         this.type = type;
@@ -54,7 +54,7 @@ public class ExpressionPatch implements Patch {
     }
 
     @Override
-    public StatementType getType() {
+    public RepairType getType() {
         return type;
     }
 

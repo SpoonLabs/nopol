@@ -3,23 +3,14 @@ package fr.inria.lille.repair.nopol;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.TestUtility;
 import fr.inria.lille.repair.common.config.NopolContext;
-import fr.inria.lille.repair.common.patch.Patch;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.junit.Ignore;
 import org.junit.Test;
-import xxl.java.junit.TestCasesListener;
-import xxl.java.junit.TestSuiteExecution;
 
 import java.io.File;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -74,9 +65,9 @@ public class TseEvaluationTest {
 
 		nopolContext.setProjectClasspath(cp);
 		//nopolContext.setLocalizer(NopolContext.NopolLocalizer.COCOSPOON);
-		nopolContext.setType(StatementType.PRECONDITION);
+		nopolContext.setType(RepairType.PRECONDITION);
 		if ("condition".equals(root.getString("type"))) {
-				nopolContext.setType(StatementType.CONDITIONAL);
+				nopolContext.setType(RepairType.CONDITIONAL);
 		}
 		SolverFactory.setSolver("z3", TestUtility.solverPath);
 		NoPol nopol = new NoPol(nopolContext);

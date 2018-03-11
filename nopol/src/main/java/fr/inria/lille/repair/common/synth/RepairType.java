@@ -1,6 +1,6 @@
 package fr.inria.lille.repair.common.synth;
 
-public enum StatementType {
+public enum RepairType {
     PRE_THEN_COND(Boolean.class),//this mode runs PRECONDITION mode, then if no patch has been found runs CONDITIONAL mode
     COND_THEN_PRE(Boolean.class), // same as above but in the inverse order
     LOOP(Boolean.class),
@@ -13,7 +13,7 @@ public enum StatementType {
 
     private Class<?> type;
 
-    StatementType(Class<?> type) {
+    RepairType(Class<?> type) {
         this.type = type;
     }
 

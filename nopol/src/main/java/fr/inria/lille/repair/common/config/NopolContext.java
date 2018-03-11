@@ -1,7 +1,7 @@
 package fr.inria.lille.repair.common.config;
 
 import fr.inria.lille.repair.common.finder.TestClassesFinder;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import xxl.java.library.FileLibrary;
 
 import java.io.File;
@@ -88,7 +88,7 @@ public class NopolContext implements Serializable {
 	private long maxTimeEachTypeOfFixInMinutes;
 
 	private NopolMode mode = NopolMode.REPAIR;
-	private StatementType type = StatementType.COND_THEN_PRE;
+	private RepairType type = RepairType.COND_THEN_PRE;
 	private NopolSynthesis synthesis = NopolSynthesis.SMT;
 	private NopolOracle oracle = NopolOracle.ANGELIC;
 	private NopolSolver solver = NopolSolver.Z3;
@@ -372,11 +372,11 @@ public class NopolContext implements Serializable {
 		this.mode = mode;
 	}
 
-	public StatementType getType() {
+	public RepairType getType() {
 		return type;
 	}
 
-	public void setType(StatementType type) {
+	public void setType(RepairType type) {
 		this.type = type;
 	}
 

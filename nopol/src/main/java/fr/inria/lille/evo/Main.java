@@ -3,7 +3,7 @@ package fr.inria.lille.evo;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.evo.processors.RemoveEvosuiteEffectsProcessor;
 import fr.inria.lille.evo.processors.TestSelectionProcessor;
@@ -35,7 +35,7 @@ public class Main {
     public final static char fileSeparator = '/';
     public final static String outputsDir = "outputs";
     public final static String evoOutput = "generatedTests";
-    public final static StatementType nopolType = StatementType.CONDITIONAL;
+    public final static RepairType nopolType = RepairType.CONDITIONAL;
     public final static int maxTime = 10;
     public final static Logger logger = LoggerFactory.getLogger(Main.class);
 

@@ -29,7 +29,7 @@ import fr.inria.lille.repair.common.BottomTopURLClassLoader;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.finder.TestClassesFinder;
 import fr.inria.lille.repair.common.patch.Patch;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import fr.inria.lille.repair.nopol.patch.TestPatch;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessorBuilder;
@@ -101,7 +101,7 @@ public class NoPol {
 		this.sourceFiles = nopolContext.getProjectSources();
 		this.nopolResult = new NopolResult(nopolContext, this.startTime);
 
-		StatementType type = nopolContext.getType();
+		RepairType type = nopolContext.getType();
 		logger.info("Source files: " + Arrays.toString(sourceFiles));
 		logger.info("Classpath: " + Arrays.toString(classpath));
 		logger.info("Statement type: " + type);

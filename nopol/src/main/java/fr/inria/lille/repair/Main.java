@@ -23,7 +23,7 @@ import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.QualifiedSwitch;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.common.config.NopolContext;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import fr.inria.lille.repair.infinitel.Infinitel;
 import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.repair.nopol.NopolResult;
@@ -213,19 +213,19 @@ public class Main {
 		throw new RuntimeException("Unknow Nopol mode " + str);
 	}
 
-	private static StatementType strToStatementType(String str) {
+	private static RepairType strToStatementType(String str) {
 		if (str.equals("pre_then_cond")) {
-			return StatementType.PRE_THEN_COND;
+			return RepairType.PRE_THEN_COND;
 		} else if (str.equals("loop")) {
-			return StatementType.LOOP;
+			return RepairType.LOOP;
 		} else if (str.equals("condition")) {
-			return StatementType.CONDITIONAL;
+			return RepairType.CONDITIONAL;
 		} else if (str.equals("precondition")) {
-			return StatementType.PRECONDITION;
+			return RepairType.PRECONDITION;
 		} else if (str.equals("arithmetic")) {
-			return StatementType.INTEGER_LITERAL;
+			return RepairType.INTEGER_LITERAL;
 		}
-		return StatementType.NONE;
+		return RepairType.NONE;
 	}
 
 	private static NopolContext.NopolLocalizer strToLocalizer(String str) {
@@ -254,10 +254,10 @@ public class Main {
 		typeOpt.setAllowMultipleDeclarations(false);
 		typeOpt.setLongFlag("type");
 		typeOpt.setShortFlag('e');
-		typeOpt.setUsageName("pre_then_cond|loop|condition|precondition|arithmetic");
+		typeOpt.setUsageName("condition|precondition|pre_then_cond|loop|arithmetic");
 		typeOpt.setStringParser(JSAP.STRING_PARSER);
-		typeOpt.setDefault("pre_then_cond");
-		typeOpt.setHelp("The type of statement to analyze (only used with repair mode).");
+		typeOpt.setDefault("condition");
+		typeOpt.setHelp("The repair type (example fixing only conditions, or adding precondition).");
 		jsap.registerParameter(typeOpt);
 
 		FlaggedOption oracleOpt = new FlaggedOption("oracle");

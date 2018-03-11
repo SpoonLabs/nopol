@@ -23,7 +23,7 @@ import fr.inria.lille.localization.TestResult;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.patch.StringPatch;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.synthesis.collect.spoon.DefaultConstantCollector;
@@ -40,7 +40,7 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 
 	private final SourceLocation sourceLocation;
 	private final InstrumentedProgram instrumentedProgram;
-	private final StatementType type;
+	private final RepairType type;
 	public static int nbStatementsWithAngelicValue = 0;
 	private static int dataSize = 0;
 	private static int nbVariables;
@@ -48,7 +48,7 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 	private NopolProcessor conditionalProcessor;
 	private NopolContext nopolContext;//TODO remove this unused field
 
-	public SMTNopolSynthesizer(SpoonedProject spoonedProject, InstrumentedProgram instrumentedProgram, SourceLocation sourceLocation, StatementType type, NopolProcessor processor, NopolContext nopolContext) {
+	public SMTNopolSynthesizer(SpoonedProject spoonedProject, InstrumentedProgram instrumentedProgram, SourceLocation sourceLocation, RepairType type, NopolProcessor processor, NopolContext nopolContext) {
 		this.instrumentedProgram = instrumentedProgram;
 		this.nopolContext = nopolContext;
 		this.sourceLocation = sourceLocation;

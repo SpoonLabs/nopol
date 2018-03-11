@@ -3,7 +3,7 @@ package fr.inria.lille.repair;
 import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import fr.inria.lille.repair.nopol.NoPol;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -29,11 +29,11 @@ public abstract class AbstractRealBugsEvaluation {
     @Test
     public void CM1() {
         NopolContext config = new NopolContext();
-        StatementType statementType = StatementType.CONDITIONAL;
+        RepairType repairType = RepairType.CONDITIONAL;
         String projectName = "cm1";
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[] {},
                 config,
                 "commons-beanutils-1.7.0.jar",
@@ -45,7 +45,7 @@ public abstract class AbstractRealBugsEvaluation {
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -59,13 +59,13 @@ public abstract class AbstractRealBugsEvaluation {
 
     @Test
     public void CM2() {
-        StatementType statementType = StatementType.PRECONDITION;
+        RepairType repairType = RepairType.PRECONDITION;
         String projectName = "cm2";
         NopolContext config = new NopolContext();
 
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[] {"org.apache.commons.math.util.MathUtilsTest"},
                 config,
                 "commons-beanutils-1.6.1.jar",
@@ -77,7 +77,7 @@ public abstract class AbstractRealBugsEvaluation {
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -95,11 +95,11 @@ public abstract class AbstractRealBugsEvaluation {
     @Test
     public void CM3() {
         String projectName = "cm3";
-        StatementType statementType = StatementType.PRECONDITION;
+        RepairType repairType = RepairType.PRECONDITION;
         NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[] {},
                 config,
                 "commons-discovery-0.2.jar",
@@ -108,7 +108,7 @@ public abstract class AbstractRealBugsEvaluation {
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -125,11 +125,11 @@ public abstract class AbstractRealBugsEvaluation {
     @Test
     public void CM4() {
         String projectName = "cm4";
-        StatementType statementType = StatementType.CONDITIONAL;
+        RepairType repairType = RepairType.CONDITIONAL;
         NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[] {},
                 config,
                 "commons-discovery-0.4.jar",
@@ -138,7 +138,7 @@ public abstract class AbstractRealBugsEvaluation {
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -154,11 +154,11 @@ public abstract class AbstractRealBugsEvaluation {
     @Test
     public void CM5() {
         String projectName = "cm5";
-        StatementType statementType = StatementType.CONDITIONAL;
+        RepairType repairType = RepairType.CONDITIONAL;
         NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[] {"org.apache.commons.math.util.MathUtilsTest"},
                 config,
                 "commons-beanutils-1.7.0.jar",
@@ -170,7 +170,7 @@ public abstract class AbstractRealBugsEvaluation {
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -192,17 +192,17 @@ public abstract class AbstractRealBugsEvaluation {
         NopolContext config = new NopolContext();
         config.setComplianceLevel(5);
         String projectName = "cm6";
-        StatementType statementType = StatementType.PRECONDITION;
+        RepairType repairType = RepairType.PRECONDITION;
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[] {},
                 config,
                 "junit-4.10.jar");
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -219,18 +219,18 @@ public abstract class AbstractRealBugsEvaluation {
     @Test
     public void CM7() {
         String projectName = "cm7";
-        StatementType statementType = StatementType.CONDITIONAL;
+        RepairType repairType = RepairType.CONDITIONAL;
         NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[] {},
                 config,
                 "junit-4.10.jar");
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -246,18 +246,18 @@ public abstract class AbstractRealBugsEvaluation {
     @Ignore
     public void CM8() {
         NopolContext config = new NopolContext();
-        StatementType statementType = StatementType.CONDITIONAL;
+        RepairType repairType = RepairType.CONDITIONAL;
         String projectName = "cm8";
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[] {"org.apache.commons.math3.fraction.FractionTest"},
                 config,
                 "junit-4.10.jar");
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -273,11 +273,11 @@ public abstract class AbstractRealBugsEvaluation {
     @Ignore
     public void CM9() {
         String projectName = "cm9";
-        StatementType statementType = StatementType.CONDITIONAL;
+        RepairType repairType = RepairType.CONDITIONAL;
         NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{
                         //"org.apache.commons.math3.util.FastMathTest"
                 },
@@ -286,7 +286,7 @@ public abstract class AbstractRealBugsEvaluation {
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -300,18 +300,18 @@ public abstract class AbstractRealBugsEvaluation {
     @Test
     public void CM10() {
         String projectName = "cm10";
-        StatementType statementType = StatementType.PRECONDITION;
+        RepairType repairType = RepairType.PRECONDITION;
         NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{"org.apache.commons.math3.stat.correlation.CovarianceTest"},
                 config,
                 "junit-4.10.jar");
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -328,20 +328,20 @@ public abstract class AbstractRealBugsEvaluation {
         NopolContext config = new NopolContext();
         config.setComplianceLevel(4);
         String projectName = "cl1";
-        StatementType statementType = StatementType.CONDITIONAL;
+        RepairType repairType = RepairType.CONDITIONAL;
         config.setSolver(NopolContext.NopolSolver.Z3);
         config.setSolverPath("lib/z3/z3_for_linux");
 
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{"org.apache.commons.lang.StringUtilsTest" },
                 config,
                 "junit-3.8.jar");
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -361,17 +361,17 @@ public abstract class AbstractRealBugsEvaluation {
         NopolContext config = new NopolContext();
         config.setComplianceLevel(4);
         String projectName = "cl2";
-        StatementType statementType = StatementType.CONDITIONAL;
+        RepairType repairType = RepairType.CONDITIONAL;
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{"org.apache.commons.lang.StringUtilsTest" },
                 config,
                 "junit-3.8.jar");
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -393,17 +393,17 @@ public abstract class AbstractRealBugsEvaluation {
         NopolContext config = new NopolContext();
         config.setComplianceLevel(4);
         String projectName = "cl3";
-        StatementType statementType = StatementType.CONDITIONAL;
+        RepairType repairType = RepairType.CONDITIONAL;
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{"org.apache.commons.lang.StringUtilsSubstringTest" },
                 config,
                 "junit-3.8.jar");
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -423,17 +423,17 @@ public abstract class AbstractRealBugsEvaluation {
         NopolContext config = new NopolContext();
         config.setComplianceLevel(4);
         String projectName = "cl4";
-        StatementType statementType = StatementType.CONDITIONAL;
+        RepairType repairType = RepairType.CONDITIONAL;
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{"org.apache.commons.lang.text.StrBuilderTest" },
                 config,
                 "junit-3.8.jar");
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -453,17 +453,17 @@ public abstract class AbstractRealBugsEvaluation {
         NopolContext config = new NopolContext();
         config.setComplianceLevel(6);
         String projectName = "cl5";
-        StatementType statementType = StatementType.CONDITIONAL;
+        RepairType repairType = RepairType.CONDITIONAL;
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{},
                 config,
                 "junit-3.8.jar");
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -480,11 +480,11 @@ public abstract class AbstractRealBugsEvaluation {
     @Ignore
     public void CL6() {
         String projectName = "cl6";
-        StatementType statementType = StatementType.CONDITIONAL;
+        RepairType repairType = RepairType.CONDITIONAL;
         NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{},
                 config,
                 "easymock-2.5.2.jar",
@@ -492,7 +492,7 @@ public abstract class AbstractRealBugsEvaluation {
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -507,11 +507,11 @@ public abstract class AbstractRealBugsEvaluation {
     @Ignore
     public void PM1() {
         String projectName = "pm1";
-        StatementType statementType = StatementType.PRECONDITION;
+        RepairType repairType = RepairType.PRECONDITION;
         NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{},
                 config,
                 "commons-beanutils-1.6.1.jar",
@@ -523,7 +523,7 @@ public abstract class AbstractRealBugsEvaluation {
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -537,18 +537,18 @@ public abstract class AbstractRealBugsEvaluation {
     @Test
     public void PM2() {
         String projectName = "pm2";
-        StatementType statementType = StatementType.PRECONDITION;
+        RepairType repairType = RepairType.PRECONDITION;
         NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{"org.apache.commons.math.exception.util.MessageFactoryTest"},
                 config,
                 "junit-4.10.jar");
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -564,17 +564,17 @@ public abstract class AbstractRealBugsEvaluation {
         NopolContext config = new NopolContext();
         config.setComplianceLevel(4);
         String projectName = "pl1";
-        StatementType statementType = StatementType.PRECONDITION;
+        RepairType repairType = RepairType.PRECONDITION;
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{"org.apache.commons.lang.time.StopWatchTest"},
                 config,
                 "junit-3.8.jar");
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -598,17 +598,17 @@ public abstract class AbstractRealBugsEvaluation {
         NopolContext config = new NopolContext();
         config.setComplianceLevel(4);
         String projectName = "pl2";
-        StatementType statementType = StatementType.PRECONDITION;
+        RepairType repairType = RepairType.PRECONDITION;
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{"org.apache.commons.lang.StringEscapeUtilsTest"},
                 config,
                 "junit-3.8.jar");
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -625,17 +625,17 @@ public abstract class AbstractRealBugsEvaluation {
         NopolContext config = new NopolContext();
         config.setComplianceLevel(4);
         String projectName = "pl3";
-        StatementType statementType = StatementType.PRECONDITION;
+        RepairType repairType = RepairType.PRECONDITION;
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{"org.apache.commons.lang.WordUtilsTest"},
                 config,
                 "junit-3.8.jar");
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -649,11 +649,11 @@ public abstract class AbstractRealBugsEvaluation {
     @Test
     public void PL4() {
         String projectName = "pl4";
-        StatementType statementType = StatementType.PRECONDITION;
+        RepairType repairType = RepairType.PRECONDITION;
         NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{"org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest"},
                 config,
                 "junit-4.10.jar",
@@ -661,7 +661,7 @@ public abstract class AbstractRealBugsEvaluation {
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -680,19 +680,19 @@ public abstract class AbstractRealBugsEvaluation {
     @Test
     public void AM1() {
         String projectName = "am1";
-        StatementType statementType = StatementType.DOUBLE_LITERAL;
+        RepairType repairType = RepairType.DOUBLE_LITERAL;
         NopolContext config = new NopolContext();
         config.setSolver(NopolContext.NopolSolver.Z3);
         config.setSolverPath("lib/z3/z3_for_linux");
 
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{"org.apache.commons.math3.complex.QuaternionTest"}, config);
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -707,16 +707,16 @@ public abstract class AbstractRealBugsEvaluation {
     @Test
     public void AM2() {
         String projectName = "am2";
-        StatementType statementType = StatementType.DOUBLE_LITERAL;
+        RepairType repairType = RepairType.DOUBLE_LITERAL;
         NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{"org.apache.commons.math.optimization.direct.BOBYQAOptimizerTest"}, config);
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -731,16 +731,16 @@ public abstract class AbstractRealBugsEvaluation {
     @Test
     public void AM3() {
         String projectName = "am3";
-        StatementType statementType = StatementType.DOUBLE_LITERAL;
+        RepairType repairType = RepairType.DOUBLE_LITERAL;
         NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{"org.apache.commons.math.stat.descriptive.moment.FirstMomentTest"}, config);
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -755,16 +755,16 @@ public abstract class AbstractRealBugsEvaluation {
     @Test
     public void AM4() {
         String projectName = "am4";
-        StatementType statementType = StatementType.DOUBLE_LITERAL;
+        RepairType repairType = RepairType.DOUBLE_LITERAL;
         NopolContext config = new NopolContext();
         List<Patch> patches = setupAndRun(
                 projectName,
-                statementType,
+				repairType,
                 new String[]{}, config);
 
         assertEquals(patches.toString(), 1, patches.size());
         Patch patch = patches.get(0);
-        assertEquals(patch.getType(), statementType);
+        assertEquals(patch.getType(), repairType);
         System.out.println(String.format("Patch for real bug %s: %s",
                 projectName, patch.asString()));
 
@@ -775,7 +775,7 @@ public abstract class AbstractRealBugsEvaluation {
         clean(srcFolder); // TODO
     }
 
-    private List<Patch> setupAndRun(String projectName, StatementType statementType, String[] tests, NopolContext nopolContext, String... dependencies) {
+    private List<Patch> setupAndRun(String projectName, RepairType repairType, String[] tests, NopolContext nopolContext, String... dependencies) {
         String rootFolder = realBugPath + projectName + "/";
         String srcFolder = rootFolder + "src";
         String binFolder = rootFolder + "target/classes/" + File.pathSeparatorChar + rootFolder + "target/test-classes/";
@@ -793,7 +793,7 @@ public abstract class AbstractRealBugsEvaluation {
         nopolContext.setSolver(NopolContext.NopolSolver.Z3);
         nopolContext.setLocalizer(NopolContext.NopolLocalizer.GZOLTAR);
         nopolContext.setProjectTests(tests);
-        nopolContext.setType(statementType);
+        nopolContext.setType(repairType);
         nopolContext.setProjectClasspath(JavaLibrary.classpathFrom(classpath));
         SolverFactory.setSolver(nopolContext.getSolver(), nopolContext.getSolverPath());
         switch (this.executionType) {

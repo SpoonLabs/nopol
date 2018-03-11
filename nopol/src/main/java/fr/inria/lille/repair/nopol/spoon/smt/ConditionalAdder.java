@@ -1,6 +1,6 @@
 package fr.inria.lille.repair.nopol.spoon.smt;
 
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
@@ -10,7 +10,7 @@ import spoon.reflect.visitor.filter.LineFilter;
 public class ConditionalAdder extends ConditionalProcessor {
 
     public ConditionalAdder(CtStatement target) {
-        super(target, "true", StatementType.PRECONDITION);
+        super(target, "true", RepairType.PRECONDITION);
     }
 
     @Override

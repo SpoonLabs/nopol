@@ -7,7 +7,7 @@ import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 import fr.inria.lille.commons.spoon.util.SpoonStatementLibrary;
 import fr.inria.lille.commons.synthesis.CodeGenesis;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import fr.inria.lille.repair.infinitel.loop.implant.LoopStatisticsTest;
 import fr.inria.lille.repair.synthesis.collect.spoon.DefaultConstantCollector;
 import org.junit.Ignore;
@@ -348,7 +348,7 @@ public class ValuesCollectorTest {
 
 		//first we run code genesis without collecting constants: i.e. the map is empty
 		CodeGenesis genesis = synthesis.codesSynthesisedFrom(
-				(StatementType.PRECONDITION).getType(), specifications);
+				(RepairType.PRECONDITION).getType(), specifications);
 		//TODO actually, the patch provided is good too, constants are not necessary
 		assertFalse(knownPatches.contains(genesis.returnStatement()));
 
@@ -363,7 +363,7 @@ public class ValuesCollectorTest {
 		assertEquals(3 , constants.size());
 
 		genesis = synthesis.codesSynthesisedFrom(
-				(StatementType.PRECONDITION).getType(), specifications);
+				(RepairType.PRECONDITION).getType(), specifications);
 		//the return statement is a known patch
 		assertTrue(knownPatches.contains(genesis.returnStatement()));
 	}

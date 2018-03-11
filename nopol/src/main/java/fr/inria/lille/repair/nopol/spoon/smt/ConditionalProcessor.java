@@ -1,6 +1,6 @@
 package fr.inria.lille.repair.nopol.spoon.smt;
 
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import spoon.reflect.code.CtConditional;
 import spoon.reflect.code.CtExpression;
@@ -12,7 +12,7 @@ public abstract class ConditionalProcessor extends NopolProcessor {
 
     public abstract CtIf processCondition(CtStatement statement, String newCondition);
 
-    public ConditionalProcessor(CtStatement target, String defaultCondition, StatementType type) {
+    public ConditionalProcessor(CtStatement target, String defaultCondition, RepairType type) {
         super(target, type);
         setDefaultValue(defaultCondition);
     }

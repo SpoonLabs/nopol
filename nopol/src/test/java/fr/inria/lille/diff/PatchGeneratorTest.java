@@ -2,7 +2,7 @@ package fr.inria.lille.diff;
 
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.ExpressionPatch;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.expression.access.LiteralImpl;
 import fr.inria.lille.repair.expression.factory.ValueFactory;
@@ -31,7 +31,7 @@ public class PatchGeneratorTest {
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
-				StatementType.CONDITIONAL);
+				RepairType.CONDITIONAL);
 		PatchGenerator test = new PatchGenerator(
 				patch,
 				factory, nopolContext);
@@ -63,7 +63,7 @@ public class PatchGeneratorTest {
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
-				StatementType.CONDITIONAL);
+				RepairType.CONDITIONAL);
 		PatchGenerator test = new PatchGenerator(
 				patch,
 				factory, nopolContext);
@@ -96,7 +96,7 @@ public class PatchGeneratorTest {
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
-				StatementType.PRECONDITION);
+				RepairType.PRECONDITION);
 		PatchGenerator test = new PatchGenerator(
 				patch,
 				factory, nopolContext);
@@ -130,7 +130,7 @@ public class PatchGeneratorTest {
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
-				StatementType.PRECONDITION);
+				RepairType.PRECONDITION);
 		PatchGenerator test = new PatchGenerator(
 				patch,
 				factory, nopolContext);
@@ -166,7 +166,7 @@ public class PatchGeneratorTest {
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
-				StatementType.PRECONDITION);
+				RepairType.PRECONDITION);
 		PatchGenerator test = new PatchGenerator(
 				patch,
 				factory, nopolContext);
@@ -199,7 +199,7 @@ public class PatchGeneratorTest {
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
-				StatementType.PRECONDITION);
+				RepairType.PRECONDITION);
 		PatchGenerator test = new PatchGenerator(
 				patch,
 				factory, nopolContext);
@@ -236,7 +236,7 @@ public class PatchGeneratorTest {
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
-				StatementType.PRECONDITION);
+				RepairType.PRECONDITION);
 		PatchGenerator test = new PatchGenerator(
 				patch,
 				factory, nopolContext);
@@ -268,7 +268,7 @@ public class PatchGeneratorTest {
 		ExpressionPatch patch = new ExpressionPatch(
 				new LiteralImpl(ValueFactory.create(false), nopolContext),
 				pathLocation,
-				StatementType.PRECONDITION);
+				RepairType.PRECONDITION);
 		PatchGenerator test = new PatchGenerator(
 				patch,
 				factory, nopolContext);

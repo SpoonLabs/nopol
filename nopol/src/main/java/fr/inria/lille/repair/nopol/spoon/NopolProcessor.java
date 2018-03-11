@@ -1,6 +1,6 @@
 package fr.inria.lille.repair.nopol.spoon;
 
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.processing.AbstractProcessor;
@@ -8,9 +8,9 @@ import spoon.reflect.code.CtStatement;
 
 public abstract class NopolProcessor extends AbstractProcessor<CtStatement> {
 
-    public NopolProcessor(CtStatement target, StatementType type) {
+    public NopolProcessor(CtStatement target, RepairType type) {
         this.target = target;
-        this.statementType = type;
+        this.repairType = type;
     }
 
     @Override
@@ -46,11 +46,11 @@ public abstract class NopolProcessor extends AbstractProcessor<CtStatement> {
         return target;
     }
 
-    public StatementType getStatementType() {
-        return statementType;
+    public RepairType getRepairType() {
+        return repairType;
     }
 
-    private StatementType statementType;
+    private RepairType repairType;
 
     private Class<?> type;
     private String defaultValue;

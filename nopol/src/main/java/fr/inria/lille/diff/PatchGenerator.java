@@ -2,7 +2,7 @@ package fr.inria.lille.diff;
 
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import org.apache.commons.io.FileUtils;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtIf;
@@ -42,7 +42,7 @@ public class PatchGenerator {
 			protected void enter(CtElement e) {
 				if (e.getPosition().getSourceStart() == patch.getSourceLocation().getBeginSource()
 						&& e.getPosition().getSourceEnd() == patch.getSourceLocation().getEndSource() && e.isImplicit() == false) {
-					if (patch.getType() == StatementType.CONDITIONAL && e instanceof CtIf) {
+					if (patch.getType() == RepairType.CONDITIONAL && e instanceof CtIf) {
 						setResult(((CtIf) e).getCondition());
 					} else {
 						setResult(e);
@@ -182,12 +182,12 @@ public class PatchGenerator {
 		final String indentation = getIndentation();
 		Writer writer = new Writer(currentIndentation, indentation);
 
-		if (patch.getType() == StatementType.PRECONDITION) {
+		if (patch.getType() == RepairType.PRECONDITION) {
 			if (isElseIf(parentLine)) {
 				writer.write("} else {").tab();
 				line = getSubstring(classContent, parentLine);
 			}
-			if (parentLine instanceof CtLocalVariable && patch.getType() == StatementType.PRECONDITION) {
+			if (parentLine instanceof CtLocalVariable && patch.getType() == RepairType.PRECONDITION) {
 				int variableNamePosition = line.indexOf(((CtLocalVariable) parentLine).getSimpleName());
 				writer.write(line.substring(0, variableNamePosition));
 				writer.write(((CtLocalVariable) parentLine).getSimpleName());

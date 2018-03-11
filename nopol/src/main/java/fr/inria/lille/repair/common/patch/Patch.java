@@ -16,7 +16,7 @@
 package fr.inria.lille.repair.common.patch;
 
 import fr.inria.lille.repair.common.config.NopolContext;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import spoon.reflect.factory.Factory;
 
@@ -39,7 +39,7 @@ public interface Patch extends Serializable {
 
     int getLineNumber();
 
-    StatementType getType();
+    RepairType getType();
 
     SourceLocation getSourceLocation();
 

@@ -1,6 +1,6 @@
 package fr.inria.lille.repair.nopol.spoon.smt;
 
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import spoon.reflect.code.CtCodeSnippetExpression;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtIf;
@@ -9,7 +9,7 @@ import spoon.reflect.code.CtStatement;
 public class ConditionalReplacer extends ConditionalProcessor {
 
     public ConditionalReplacer(CtStatement target) {
-        super(target, ((CtIf) target).getCondition().toString(), StatementType.CONDITIONAL);
+        super(target, ((CtIf) target).getCondition().toString(), RepairType.CONDITIONAL);
     }
 
     @Override

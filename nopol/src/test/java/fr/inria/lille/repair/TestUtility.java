@@ -4,7 +4,7 @@ import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
 import fr.inria.lille.commons.synthesis.smt.solver.Z3SolverFactory;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import fr.inria.lille.repair.nopol.NoPol;
 import fr.inria.lille.repair.nopol.NopolResult;
 import xxl.java.container.classic.MetaSet;
@@ -75,7 +75,7 @@ public class TestUtility {
 		return status.getPatches();
 	}
 
-	public static List<Patch> setupAndRun(String executionType, int projectNumber, TestCasesListener listener, StatementType type) {
+	public static List<Patch> setupAndRun(String executionType, int projectNumber, TestCasesListener listener, RepairType type) {
 		NopolContext nopolContext = configForExample(executionType, projectNumber);
 		nopolContext.setType(type);
 		SolverFactory.setSolver(SOLVER, solverPath);
@@ -84,7 +84,7 @@ public class TestUtility {
 		return patchFor(executionType, nopolContext);
 	}
 
-	public static void assertPatches(int linePosition, Collection<String> expectedFailedTests, StatementType expectedType, TestCasesListener listener, List<Patch> patches) {
+	public static void assertPatches(int linePosition, Collection<String> expectedFailedTests, RepairType expectedType, TestCasesListener listener, List<Patch> patches) {
 		Collection<String> failedTests = TestCase.testNames(listener
 				.failedTests());
 		Patch patch = patches.get(0);
