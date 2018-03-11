@@ -76,15 +76,6 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 			return Collections.EMPTY_LIST;
 		}
 
-		// TODO this loop is useless (if with empty body)
-		// the synthesizer do an infinite loop when all data does not have the same input size
-		int firstDataSize = data.iterator().next().inputs().size();
-		for (Iterator<Specification<T>> iterator = data.iterator(); iterator.hasNext(); ) {
-			Specification<T> next = iterator.next();
-			if (next.inputs().size() != firstDataSize) {
-				//return Collections.EMPTY_LIST;
-			}
-		}
 
 		// and it should be a viable patch, ie. fix the bug
 		if (!instrumentedProgram.isAViablePatch()) {

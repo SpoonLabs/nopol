@@ -176,9 +176,8 @@ public class TseEvaluationTest {
 
 	@Test(timeout = TIMEOUT)
 	public void test_pl2() throws Exception {
-		// REGRESSION: it seems nothing is instrumented
-		//if (testShouldBeRun())
-		//testTSEBug("pl2");
+		if (testShouldBeRun())
+			testTSEBug("pl2");
 	}
 
 	@Test(timeout = TIMEOUT)

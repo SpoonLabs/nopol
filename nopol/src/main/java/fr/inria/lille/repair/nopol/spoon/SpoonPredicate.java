@@ -56,7 +56,7 @@ public class SpoonPredicate {
                 && isInsideIfLoopCaseBlock
                 // cannot insert if inside update statement in for loop declaration
                 && !isInsideForDeclaration
-                && isInBlock;
+                ;
         return result;
     }
 
