@@ -4,7 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerAdapter;
 import fr.inria.lille.repair.common.config.NopolContext;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import plugin.actors.ActorManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -52,7 +52,7 @@ public class Plugin extends AnAction {
 
     private static void initConfig() {
         nopolContext.setSynthesis(NopolContext.NopolSynthesis.DYNAMOTH);
-        nopolContext.setType(StatementType.PRE_THEN_COND);
+        nopolContext.setType(RepairType.PRE_THEN_COND);
 //        config.setLocalizer(Config.NopolLocalizer.COCOSPOON); //CoCospoon take too much time
         nopolContext.setLocalizer(NopolContext.NopolLocalizer.GZOLTAR);
     }

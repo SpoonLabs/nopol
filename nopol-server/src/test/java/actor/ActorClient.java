@@ -4,7 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -46,7 +46,7 @@ public class ActorClient extends UntypedActor {
 			byte [] content = Files.readAllBytes(Paths.get(outputZip.getAbsolutePath()));
 			NopolContext nopolContext = new NopolContext();
 			this.sender = getSender();//keeping the executed test in order to send it the result
-			nopolContext.setType(StatementType.CONDITIONAL);
+			nopolContext.setType(RepairType.CONDITIONAL);
 			nopolContext.setSynthesis(NopolContext.NopolSynthesis.DYNAMOTH);
 			nopolContext.setProjectTests(new String[]{fullQualifiedNameTest});
 			ConfigActor configActor = new ConfigActorImpl(nopolContext, content);

@@ -13,7 +13,7 @@ import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.search.EverythingGlobalScope;
 import fr.inria.lille.repair.common.patch.Patch;
-import fr.inria.lille.repair.common.synth.StatementType;
+import fr.inria.lille.repair.common.synth.RepairType;
 import plugin.wrapper.ApplyPatchWrapper;
 
 import javax.swing.*;
@@ -41,7 +41,7 @@ public class ApplyPatchAction extends AbstractAction {
 
 		final String patch;
 
-		if (selectedPatch.getType() == StatementType.CONDITIONAL) {
+		if (selectedPatch.getType() == RepairType.CONDITIONAL) {
 			buggyElement = ((PsiIfStatement) buggyElement).getCondition();
 			patch = selectedPatch.asString();
 		} else {
@@ -64,7 +64,7 @@ public class ApplyPatchAction extends AbstractAction {
 			editor.getCaretModel().moveToOffset(finalBuggyElement.getTextOffset());
 			//Select patch
 			editor.getSelectionModel().setSelection(finalBuggyElement.getTextOffset(), finalBuggyElement.getTextOffset() +
-					(selectedPatch.getType() == StatementType.CONDITIONAL ? finalBuggyElement.getTextLength() : patch.length()));
+					(selectedPatch.getType() == RepairType.CONDITIONAL ? finalBuggyElement.getTextLength() : patch.length()));
 			PsiDocumentManager.getInstance(project).commitDocument(modifiedDocument);
 			CodeStyleManager.getInstance(project).reformat(PsiDocumentManager.getInstance(project).getPsiFile(modifiedDocument), false);
 		}), "Apply Patch", DocCommandGroupId.noneGroupId(modifiedDocument));
