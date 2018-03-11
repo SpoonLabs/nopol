@@ -123,6 +123,8 @@ public abstract class SpoonedFile {
     }
 
     public ClassLoader dumpedToClassLoader() {
+        // compile and load in class loader
+        compileModelledClasses(modelledClasses());
         return newBytecodeClassloader(compiledClasses());
     }
 
@@ -132,7 +134,7 @@ public abstract class SpoonedFile {
 
     public ClassLoader processedAndDumpedToClassLoader(Collection<? extends Processor<?>> processors) {
         process(processors);
-        return newBytecodeClassloader(compiledClasses());
+        return dumpedToClassLoader();
     }
 
     public void process(Processor<?> processor) {
@@ -154,7 +156,6 @@ public abstract class SpoonedFile {
                 continue;
             }
         }
-        compileModelledClasses(modelledClasses);
     }
 
     private void setProcessors(Collection<? extends Processor<?>> processors) {

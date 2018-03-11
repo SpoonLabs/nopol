@@ -12,7 +12,6 @@ public class SpoonedClass extends SpoonedFile {
 
     public SpoonedClass(SpoonedProject parentProject, CtType<?> modelledClass, NopolContext nopolContext) {
         super(new File[] { modelledClass.getPosition().getFile() }, nopolContext);
-        this.simpleType = modelledClass;
         this.parentProject = parentProject;
         qualifiedClassName = modelledClass.getQualifiedName();
         compiledClasses().putAll(parentProject().compiledClasses());
@@ -32,7 +31,7 @@ public class SpoonedClass extends SpoonedFile {
     }
 
     public CtType<?> getSimpleType() {
-        return simpleType;
+        return modelledClass();
     }
 
     protected CtType<?> modelledClass() {
@@ -45,5 +44,4 @@ public class SpoonedClass extends SpoonedFile {
 
     private String qualifiedClassName;
     private SpoonedProject parentProject;
-    private CtType<?> simpleType;
 }

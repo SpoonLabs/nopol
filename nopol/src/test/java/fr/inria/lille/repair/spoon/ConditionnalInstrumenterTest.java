@@ -46,15 +46,16 @@ public class ConditionnalInstrumenterTest {
 		Launcher l = new Launcher();
 		l.addInputResource("src/test/resources/spoon/example/Thaliana.java");
 		l.buildModel();
+
+
+		// we instrument the first if statement
+		SpoonedClass spoonCl = spooner.forked("spoon.example.Thaliana");
 		CtIf ifStatement = l.getFactory().Class().get("spoon.example.Thaliana").getElements(new TypeFilter<CtIf>(CtIf.class) {
 			@Override
 			public boolean matches(CtIf element) {
 				return "method".equals(((CtMethod) element.getParent(CtMethod.class)).getSimpleName());
 			}
 		}).get(0);
-
-
-		SpoonedClass spoonCl = spooner.forked("spoon.example.Thaliana");
 		NopolProcessorBuilder builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), nopolContext);
 		spoonCl.process(builder);
 		List<NopolProcessor> nopolProcessors = builder.getNopolProcessors();
@@ -79,6 +80,11 @@ public class ConditionnalInstrumenterTest {
 			}
 		}).get(0).getParameter().getSimpleName());
 
+		spoonCl = spooner.forked("spoon.example.Thaliana");
+
+
+		// now we instrument the second if statement
+		spoonCl = spooner.forked("spoon.example.Thaliana");
 		ifStatement = l.getFactory().Class().get("spoon.example.Thaliana").getElements(new TypeFilter<CtIf>(CtIf.class) {
 			@Override
 			public boolean matches(CtIf element) {
@@ -86,7 +92,6 @@ public class ConditionnalInstrumenterTest {
 			}
 		}).get(0);
 
-		spoonCl = spooner.forked("spoon.example.Thaliana");
 		builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), nopolContext);
 		spoonCl.process(builder);
 		nopolProcessors = builder.getNopolProcessors();
@@ -94,12 +99,22 @@ public class ConditionnalInstrumenterTest {
 		nopolProcessor = nopolProcessors.get(0);
 		processor = new ConditionalInstrumenter(nopolProcessor, nopolContext.getType().getType());
 
-		try {
-			spoonCl.process(processor);
-			fail();
-		} catch (DynamicCompilationException exception) {
-			assertEquals("Aborting: dynamic compilation failed", exception.getMessage());
-		}
+		// it works, the code can be compiled
+		spoonCl.process(processor);
+		String after = spoonCl.getSimpleType().toString();
+		//assertEquals(before, after);
+		assertEquals("public void throwingExceptionDueToTheName() {\n" +
+				"    int __NopolProcessorException = 0;\n" +
+				"    boolean spoonDefaultValue = false;\n" +
+				"    try {\n" +
+				"        spoonDefaultValue = __NopolProcessorException > 7;\n" +
+				"    } catch (java.lang.Exception __NopolProcessorException) {\n" +
+				"    }\n" +
+				"    boolean runtimeAngelicValue = fr.inria.lille.repair.nopol.synth.AngelicExecution.angelicValue(spoonDefaultValue);\n" +
+				"    if (runtimeAngelicValue) {\n" +
+				"        java.lang.System.out.println(\"OK\");\n" +
+				"    }\n" +
+				"}", spoonCl.getSimpleType().getMethodsByName("throwingExceptionDueToTheName").get(0).toString());
 	}
 
 	@Test
@@ -154,20 +169,6 @@ public class ConditionnalInstrumenterTest {
 				return "throwingExceptionDueToTheName".equals(((CtMethod) element.getParent(CtMethod.class)).getSimpleName());
 			}
 		}).get(0);
-
-		spoonCl = spooner.forked("spoon.example.Thaliana");
-		builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), ifStatement.getPosition().getLine(), nopolContext);
-		spoonCl.process(builder);
-		nopolProcessors = builder.getNopolProcessors();
-		assertEquals(1, nopolProcessors.size());
-		nopolProcessor = nopolProcessors.get(0);
-		processor = new ConditionalInstrumenter(nopolProcessor, nopolContext.getType().getType());
-		try {
-			spoonCl.process(processor);
-			fail();
-		} catch (DynamicCompilationException exception) {
-			assertEquals("Aborting: dynamic compilation failed", exception.getMessage());
-		}
 
 	}
 }

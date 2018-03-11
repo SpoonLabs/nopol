@@ -222,13 +222,12 @@ public class NoPol {
 			logger.debug("cannot spoon "+sourceLocation.toString());
 			return;
 		}
+		System.out.println(spoonCl.getSimpleType().hashCode());
 		NopolProcessorBuilder builder = new NopolProcessorBuilder(spoonCl.getSimpleType().getPosition().getFile(), sourceLocation.getLineNumber(), nopolContext);
-		try {
-			spoonCl.process(builder);
-		} catch (DynamicCompilationException ignored) {
-			logger.debug("Aborting: dynamic compilation failed");
-			return;
-		}
+
+		// here, we only collect the processors to be applied later
+		// this does not change the class itself
+		spoonCl.process(builder);
 
 		final List<NopolProcessor> nopolProcessors = builder.getNopolProcessors();
 		for (NopolProcessor nopolProcessor : nopolProcessors) {
