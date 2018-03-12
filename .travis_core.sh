@@ -13,8 +13,8 @@ then
 fi
 cd ..
 
-# automatic deployment to tdurieux's repo
-if [[ $TRAVIS_BRANCH == "master" ]]; then
+# automatic deployment to tdurieux's repo if pushed on branch "release"
+if [[ $TRAVIS_BRANCH == "release" ]]; then
 	cd nopol;
         mvn versions:set -DnewVersion=`git rev-parse HEAD`
 	mvn deploy --settings ../.travis-settings.xml -DskipTests=true -B;
