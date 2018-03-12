@@ -6,6 +6,7 @@ import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.synth.RepairType;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -29,18 +30,19 @@ public class Defects4jEvaluationTest {
 	}
 
 	public NopolContext nopolConfigFor(String bug_id) throws Exception {
+		return nopolConfigFor(bug_id, "");
+	}
+	public NopolContext nopolConfigFor(String bug_id, String mvn_option) throws Exception {
 		String folder = "unknown";
 		if (!new File(bug_id).exists()) {
-			new File (bug_id).mkdir();
-			Runtime.getRuntime().exec("git init "+bug_id);
-			String command = "cd " + bug_id + "; git fetch https://github.com/Spirals-Team/defects4j-repair " + bug_id + ":" + bug_id + "; git checkout "+bug_id+";mvn -q test -DskipTests; mvn dependency:build-classpath -Dmdep.outputFile=cp.txt";
+			String command = "mkdir " + bug_id +";\n cd " + bug_id + ";\n git init;\n git fetch https://github.com/Spirals-Team/defects4j-repair " + bug_id + ":" + bug_id + ";\n git checkout "+bug_id+";\n mvn -q test -DskipTests "+mvn_option+";\n mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt";
 			System.out.println(command);
 			Process p = Runtime.getRuntime().exec(new String[]{"sh", "-c", command});
 			p.waitFor();
 			String output = IOUtils.toString(p.getInputStream());
 			String errorOutput = IOUtils.toString(p.getErrorStream());
 			System.out.println(output);
-			//System.err.println(errorOutput);
+			System.err.println(errorOutput);
 		}
 
 		Properties prop = new Properties();
@@ -95,15 +97,15 @@ public class Defects4jEvaluationTest {
 		assertEquals(1, result.getPatches().size());
 	}
 
-//	@Test(timeout = TIMEOUT)
-//	public void test_Lang58() throws Exception {
-//		//if (!testShouldBeRun()) { return; }
-//		NopolContext nopolContext = nopolConfigFor("Lang58");
-//		// problem: mvn test does not work, the pom.xml of Defects4j does not setup java version with 1.4 at the beginning
-//		nopolContext.setComplianceLevel(4);
-//		NopolResult result = new NoPol(nopolContext).build();
-//		assertEquals(1, result.getPatches().size());
-//	}
+	@Test(timeout = TIMEOUT)
+	public void test_Lang58() throws Exception {
+		if (!testShouldBeRun()) { return; }
+		// many resources on the internet say it's "maven.compiler.source", but it's actually maven.compile.source"
+		NopolContext nopolContext = nopolConfigFor("Lang58", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.4 -Dmaven.compile.testSource=1.4");
+		nopolContext.setComplianceLevel(4);
+		NopolResult result = new NoPol(nopolContext).build();
+		assertEquals(1, result.getPatches().size());
+	}
 
 }
 
