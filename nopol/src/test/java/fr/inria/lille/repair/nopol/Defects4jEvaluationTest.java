@@ -97,6 +97,16 @@ public class Defects4jEvaluationTest {
 		assertEquals(1, result.getPatches().size());
 	}
 
+
+	@Test(timeout = TIMEOUT)
+	@Ignore
+	public void test_Time11() throws Exception {
+		if (!testShouldBeRun()) { return; }
+		NopolContext nopolContext = nopolConfigFor("Time11");
+		NopolResult result = new NoPol(nopolContext).build();
+		assertEquals(1, result.getPatches().size());
+	}
+
 	@Test(timeout = TIMEOUT)
 	public void test_Lang58() throws Exception {
 		if (!testShouldBeRun()) { return; }
