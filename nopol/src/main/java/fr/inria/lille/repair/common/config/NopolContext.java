@@ -20,6 +20,15 @@ public class NopolContext implements Serializable {
 
 	private static final long serialVersionUID = -2542128741040978263L;
 
+	/* an identifier, used for having clear logs (typically a bug identifier such as as "Lang44") */
+	private String identifier = "";
+	public void setIdentifier(String _identifier) {
+		this.identifier = _identifier;
+	}
+	public String getIdentifier() {
+		return identifier;
+	}
+
 	public enum NopolMode {
 		REPAIR,
 		RANKING

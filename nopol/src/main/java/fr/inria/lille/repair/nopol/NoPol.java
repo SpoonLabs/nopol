@@ -437,6 +437,7 @@ public class NoPol {
 		//this.logger.info("Nb run passing test : " + nbPassedTestExecution);
 
 		this.logger.info("NoPol Execution time : " + durationTime + "ms");
+		this.logger.info("".equals(nopolContext.getIdentifier())?"":"  for " +nopolContext.getIdentifier());
 
 		if (patches != null && !patches.isEmpty()) {
 			this.logger.info("----PATCH FOUND----");
