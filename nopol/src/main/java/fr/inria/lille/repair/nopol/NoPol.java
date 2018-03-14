@@ -195,7 +195,10 @@ public class NoPol {
 	 * try to find patch
 	 */
 	private void solveWithMultipleBuild(Map<SourceLocation, List<TestResult>> testListPerStatement) {
-		int n=1;
+		int n=0;
+		if (testListPerStatement.size() == 0) {
+			logger.debug("OOPS, no statement at all, no test results");
+		}
 		for (SourceLocation sourceLocation : testListPerStatement.keySet()) {
 			n++;
 			List<TestResult> tests = testListPerStatement.get(sourceLocation);
@@ -261,7 +264,10 @@ public class NoPol {
 		try {
 			executor.shutdown();
 			return (List) nopolExecution.get(nopolContext.getMaxTimeEachTypeOfFixInMinutes(), TimeUnit.MINUTES);
-		} catch (ExecutionException | InterruptedException | TimeoutException exception) {
+		} catch (ExecutionException exception) {
+			LoggerFactory.getLogger(this.getClass()).error("Error ExecutionException "+ exception.toString());
+			return Collections.emptyList();
+		} catch (InterruptedException | TimeoutException exception) {
 			LoggerFactory.getLogger(this.getClass()).error("Timeout: execution time > " + nopolContext.getMaxTimeEachTypeOfFixInMinutes() + " " + TimeUnit.MINUTES, exception);
 			return Collections.emptyList();
 		}
