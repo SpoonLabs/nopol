@@ -23,6 +23,7 @@ import fr.inria.lille.localization.metric.Metric;
 import fr.inria.lille.localization.metric.Ochiai;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
+import gov.nasa.jpf.tool.Run;
 import xxl.java.junit.TestCase;
 
 import java.io.IOException;
@@ -48,16 +49,27 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class GZoltarFaultLocalizer extends GZoltar implements FaultLocalizer {
 
+	private static final String dir = System.getProperty("user.dir");
 	private Metric metric;
 
 	private List<StatementExt> statements;
 
-	public GZoltarFaultLocalizer(NopolContext nopolContext) throws IOException {
+	// encapsulates the try/catcch forced by gzoltar
+	public static GZoltarFaultLocalizer createInstance(NopolContext nopolContext) {
+		try {
+			return new GZoltarFaultLocalizer(nopolContext);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/** uses {@link #createInstance(NopolContext)} */
+	private GZoltarFaultLocalizer(NopolContext nopolContext) throws IOException {
 		this(nopolContext.getProjectClasspath(), checkNotNull(Arrays.asList("")), nopolContext.getProjectTests(), new Ochiai());
 	}
 
-	public GZoltarFaultLocalizer(final URL[] classpath, Collection<String> packageNames, String[] test, Metric metric) throws IOException {
-		super(System.getProperty("user.dir"));
+	private GZoltarFaultLocalizer(final URL[] classpath, Collection<String> packageNames, String[] test, Metric metric) throws IOException {
+		super(dir);
 		this.metric = metric;
 		ArrayList<String> classpaths = new ArrayList<>();
 		for (URL url : classpath) {

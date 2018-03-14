@@ -34,7 +34,7 @@ public class GzoltarLocalizerTest {
 		String[] testClasses = new String[]{"nopol_examples.nopol_example_1.NopolExampleTest"};
 
 		NopolContext nopolContext = new NopolContext(sources, classpath, testClasses);
-		GZoltarFaultLocalizer localizer = new GZoltarFaultLocalizer(nopolContext);
+		GZoltarFaultLocalizer localizer = GZoltarFaultLocalizer.createInstance(nopolContext);
 		Map<SourceLocation, List<TestResult>> executedSourceLocationPerTest = localizer.getTestListPerStatement();
 		assertEquals(5, executedSourceLocationPerTest.keySet().size());//Gzoltar does not log in constructor: so there is only 5 logged statement
 

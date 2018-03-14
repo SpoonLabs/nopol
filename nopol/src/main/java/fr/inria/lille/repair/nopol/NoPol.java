@@ -20,11 +20,12 @@ import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.synthesis.operator.Operator;
+import fr.inria.lille.localization.CocoSpoonBasedSpectrumBasedFaultLocalizer;
 import fr.inria.lille.localization.DumbFaultLocalizerImpl;
 import fr.inria.lille.localization.FaultLocalizer;
 import fr.inria.lille.localization.GZoltarFaultLocalizer;
-import fr.inria.lille.localization.OchiaiFaultLocalizer;
 import fr.inria.lille.localization.TestResult;
+import fr.inria.lille.localization.metric.Ochiai;
 import fr.inria.lille.repair.common.BottomTopURLClassLoader;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.finder.TestClassesFinder;
@@ -174,16 +175,13 @@ public class NoPol {
 	private FaultLocalizer createLocalizer() {
 		switch (this.nopolContext.getLocalizer()) {
 			case GZOLTAR:
-				try {
-					return new GZoltarFaultLocalizer(this.nopolContext);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
+				return GZoltarFaultLocalizer.createInstance(this.nopolContext);
 			case DUMB:
 				return new DumbFaultLocalizerImpl(this.nopolContext);
 			case COCOSPOON: // default
+				return new CocoSpoonBasedSpectrumBasedFaultLocalizer(this.nopolContext, new Ochiai());
 			default:
-				return new OchiaiFaultLocalizer(this.nopolContext);
+				return GZoltarFaultLocalizer.createInstance(this.nopolContext);
 		}
 	}
 

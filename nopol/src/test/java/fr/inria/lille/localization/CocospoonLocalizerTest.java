@@ -1,5 +1,6 @@
 package fr.inria.lille.localization;
 
+import fr.inria.lille.localization.metric.Ochiai;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import org.junit.Test;
@@ -15,7 +16,7 @@ import static gov.nasa.jpf.util.test.TestJPF.assertTrue;
 /**
  * Created by bdanglot on 10/4/16.
  */
-public class OchiailocalizerTest {
+public class CocospoonLocalizerTest {
 
     @Test
     public void testOchiaiCoCoSpoonLocalizer() throws Exception {
@@ -28,7 +29,7 @@ public class OchiailocalizerTest {
                 new File("../test-projects/target/test-classes").toURI().toURL()
         };
         String[] testClasses = new String[]{"nopol_examples.nopol_example_1.NopolExampleTest"};
-        OchiaiFaultLocalizer localizer = new OchiaiFaultLocalizer(new NopolContext(sources, classpath, testClasses));
+        CocoSpoonBasedSpectrumBasedFaultLocalizer localizer = new CocoSpoonBasedSpectrumBasedFaultLocalizer(new NopolContext(sources, classpath, testClasses), new Ochiai());
         Map<SourceLocation, List<TestResult>> executedSourceLocationPerTest = localizer.getTestListPerStatement();
         assertEquals(8, executedSourceLocationPerTest.keySet().size());
 

@@ -1,6 +1,11 @@
 package fr.inria.lille.localization;
 
+import fr.inria.lille.commons.synthesis.smt.solver.SolverFactory;
+import fr.inria.lille.repair.TestUtility;
 import fr.inria.lille.repair.common.config.NopolContext;
+import fr.inria.lille.repair.common.synth.RepairType;
+import fr.inria.lille.repair.nopol.NoPol;
+import fr.inria.lille.repair.nopol.NopolResult;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import org.junit.Test;
 
@@ -32,8 +37,31 @@ public class DumbLocalizerTest {
 		DumbFaultLocalizerImpl localizer = new DumbFaultLocalizerImpl(nopolContext);
 
 		Map<SourceLocation, List<TestResult>> executedSourceLocationPerTest = localizer.getTestListPerStatement();
-		assertEquals(8, executedSourceLocationPerTest.keySet().size());
+		assertEquals(2, executedSourceLocationPerTest.keySet().size());
 
-		assertTrue(executedSourceLocationPerTest.keySet().contains(new SourceLocation("nopol_examples.nopol_example_1.NopolExample", 16)));
+		assertTrue(executedSourceLocationPerTest.keySet().contains(new SourceLocation("nopol_examples.nopol_example_1.NopolExample", 15)));
 	}
+
+	@Test
+	public void testDumbLocalizerWithPatch() {
+		NopolContext nopolContext = TestUtility.configForExample("nopol", 2);
+		nopolContext.setLocalizer(NopolContext.NopolLocalizer.DUMB);
+		nopolContext.setType(RepairType.CONDITIONAL);
+		SolverFactory.setSolver("z3", TestUtility.solverPath);
+		NoPol nopol = new NoPol(nopolContext);
+		NopolResult result = nopol.build();
+		assertEquals(1, result.getPatches().size());
+	}
+
+	@Test
+	public void testDumbLocalizerWithPatch3() {
+		NopolContext nopolContext = TestUtility.configForExample("nopol", 3);
+		nopolContext.setLocalizer(NopolContext.NopolLocalizer.DUMB);
+		nopolContext.setType(RepairType.CONDITIONAL);
+		SolverFactory.setSolver("z3", TestUtility.solverPath);
+		NoPol nopol = new NoPol(nopolContext);
+		NopolResult result = nopol.build();
+		assertEquals(1, result.getPatches().size());
+	}
+
 }

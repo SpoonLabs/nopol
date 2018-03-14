@@ -30,11 +30,7 @@ public class Ranking {
 			this.testClasses = new TestClassesFinder().findIn(classpath, false);
 		}
 		// init gzoltar
-		try {
-			gZoltar = new GZoltarFaultLocalizer(nopolContext);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		gZoltar = GZoltarFaultLocalizer.createInstance(nopolContext);
 	}
 
 	public String summary() {

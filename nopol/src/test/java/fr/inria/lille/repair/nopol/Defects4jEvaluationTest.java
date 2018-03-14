@@ -61,16 +61,7 @@ public class Defects4jEvaluationTest {
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
 	}
-
-	// GC OutOfMemoryException
-//	@Test(timeout = TEN_MINUTES_TIMEOUT)
-//	public void test_Time11() throws Exception {
-//		if (!testShouldBeRun()) { return; }
-//		NopolContext nopolContext = nopolConfigFor("Time11");
-//		NopolResult result = new NoPol(nopolContext).build();
-//		assertEquals(1, result.getPatches().size());
-//	}
-
+	
 }
 
 
