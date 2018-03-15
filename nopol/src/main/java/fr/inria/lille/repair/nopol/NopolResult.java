@@ -2,8 +2,10 @@ package fr.inria.lille.repair.nopol;
 
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
+import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,7 +18,6 @@ public class NopolResult {
     private long durationInMilliseconds;
     private long startTime;
     private int nbStatements;
-    private int nbAngelicValues;
     private int nbTests;
     private NopolStatus nopolStatus;
 
@@ -55,11 +56,12 @@ public class NopolResult {
     }
 
     public int getNbAngelicValues() {
-        return nbAngelicValues;
+        return angelicValues.size();
     }
 
-    public void incrementNbAngelicValues() {
-        this.nbAngelicValues++;
+    List<String> angelicValues = new ArrayList<>();
+    public void incrementNbAngelicValues(SourceLocation sourceLocation, NopolProcessor conditionalProcessor) {
+        this.angelicValues.add(sourceLocation.toString()+ " " + conditionalProcessor.getClass().getSimpleName());
     }
 
     public int getNbTests() {
@@ -80,5 +82,9 @@ public class NopolResult {
 
     public long getStartTime() {
         return startTime;
+    }
+
+    public List<String> getAngelicValues() {
+        return Collections.unmodifiableList(angelicValues);
     }
 }

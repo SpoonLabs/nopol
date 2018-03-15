@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static fr.inria.lille.repair.nopol.Defects4jUtils.nopolConfigFor;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -233,7 +234,7 @@ public class NopolTest {
 	}
 
 	@Test
-	public void testIgnoreTestCouldCreateOtherPatches() {
+	public void testAPI() {
 		NopolContext nopolContext = TestUtility.configForExample(executionType, 2);
 		nopolContext.setType(RepairType.CONDITIONAL);
 		SolverFactory.setSolver("z3", TestUtility.solverPath);
@@ -242,9 +243,16 @@ public class NopolTest {
 		NopolResult result = nopol.build();
 
 		assertEquals(1, result.getPatches().size());
-		TestUtility.assertAgainstKnownPatches(result.getPatches().get(0),  "a < b", "-1 < (b - a)", "2 <= (b - a)", "1 < (b - a)");
+		// now we test the angelic values
+		assertEquals(1, result.getNbAngelicValues());
+		assertEquals("SourceLocation nopol_examples.nopol_example_2.NopolExample:11 ConditionalReplacer", result.getAngelicValues().get(0));
 
-		nopolContext = TestUtility.configForExample(executionType, 2);
+		TestUtility.assertAgainstKnownPatches(result.getPatches().get(0), "a < b", "-1 < (b - a)", "2 <= (b - a)", "1 < (b - a)");
+	}
+
+	@Test
+	public void testIgnoreTestCouldCreateOtherPatches() {
+		NopolContext nopolContext = TestUtility.configForExample(executionType, 2);
 		nopolContext.setType(RepairType.CONDITIONAL);
 		List<String> testsToIgnore = new ArrayList<String>();
 		testsToIgnore.add("nopol_examples.nopol_example_2.NopolExampleTest#test2");
@@ -254,6 +262,7 @@ public class NopolTest {
 		testsToIgnore.add("nopol_examples.nopol_example_2.NopolExampleTest#test9");
 
 		nopolContext.setTestMethodsToIgnore(testsToIgnore);
+		NoPol nopol = new NoPol(nopolContext);
 		SolverFactory.setSolver("z3", TestUtility.solverPath);
 
 		nopol = new NoPol(nopolContext);
@@ -262,5 +271,4 @@ public class NopolTest {
 		assertEquals(1, result2.getPatches().size());
 		TestUtility.assertAgainstKnownPatches(result2.getPatches().get(0),  "a == 2", "(b - a) == 2",  "2 == (b - a)", "1 < (b - a)");
 	}
-
 }

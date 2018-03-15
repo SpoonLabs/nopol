@@ -291,7 +291,7 @@ public class NoPol {
 		Synthesizer synth = SynthesizerFactory.build(sourceFiles, spooner, nopolContext, sourceLocation, nopolProcessor, spoonCl);
 
 		// Collecting the patches
-		List<Patch> tmpPatches = synth.findAngelicValuesAndBuildPatch(classpath, tests, failingTestCasesValidated, nopolContext.getMaxTimeBuildPatch());
+		List<Patch> tmpPatches = synth.findAngelicValuesAndBuildPatch(classpath, tests, failingTestCasesValidated, nopolContext.getMaxTimeBuildPatch(), nopolResult);
 
 		// Final check: we recompile the patch and run all tests again
 		List<Patch> finalPatches = new ArrayList<>();

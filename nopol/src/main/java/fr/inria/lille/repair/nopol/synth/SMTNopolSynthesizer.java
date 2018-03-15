@@ -24,6 +24,7 @@ import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.common.patch.StringPatch;
 import fr.inria.lille.repair.common.synth.RepairType;
+import fr.inria.lille.repair.nopol.NopolResult;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import fr.inria.lille.repair.nopol.spoon.NopolProcessor;
 import fr.inria.lille.repair.synthesis.collect.spoon.DefaultConstantCollector;
@@ -60,10 +61,10 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 	/**
 	 *
 	 *
-	 * @see Synthesizer#findAngelicValuesAndBuildPatch(URL[], List, Collection, long)
+	 * @see Synthesizer#findAngelicValuesAndBuildPatch(URL[], List, Collection, long, NopolResult)
 	 */
 	@Override
-	public List<Patch> findAngelicValuesAndBuildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch) {
+	public List<Patch> findAngelicValuesAndBuildPatch(URL[] classpath, List<TestResult> testClasses, Collection<TestCase> failures, long maxTimeBuildPatch, NopolResult nopolResult) {
 
 		final Collection<Specification<T>> data = instrumentedProgram.collectSpecifications(classpath, testClasses, failures);
 
@@ -83,6 +84,7 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 			return Collections.EMPTY_LIST;
 		}
 
+		nopolResult.incrementNbAngelicValues(sourceLocation, conditionalProcessor);
 		nbStatementsWithAngelicValue++;
 
 		//collects available constants
