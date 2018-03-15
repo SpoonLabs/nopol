@@ -265,7 +265,10 @@ public class NoPol {
 		} catch (ExecutionException exception) {
 			LoggerFactory.getLogger(this.getClass()).error("Error ExecutionException "+ exception.toString());
 			return Collections.emptyList();
-		} catch (InterruptedException | TimeoutException exception) {
+		} catch (InterruptedException execption) {
+			LoggerFactory.getLogger(this.getClass()).error("Repair interrupted");
+			return Collections.emptyList();
+		} catch (TimeoutException exception) {
 			LoggerFactory.getLogger(this.getClass()).error("Timeout: execution time > " + nopolContext.getMaxTimeEachTypeOfFixInMinutes() + " " + TimeUnit.MINUTES, exception);
 			return Collections.emptyList();
 		}

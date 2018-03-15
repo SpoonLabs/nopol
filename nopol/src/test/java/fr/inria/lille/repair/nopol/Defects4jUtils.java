@@ -21,7 +21,8 @@ public class Defects4jUtils {
 	private Defects4jUtils(){} // only static methods
 
 	public final static int FIVE_MINUTES_TIMEOUT =5*60*1000;// 5 minutes in millisecs
-	public final static int TEN_MINUTES_TIMEOUT =10*60*1000;// 5 minutes in millisecs
+	public final static int TEN_MINUTES_TIMEOUT =10*60*1000;// 10 minutes in millisecs
+	public final static int FIFTEEN_MINUTES_TIMEOUT =15*60*1000;// 15 minutes in millisecs
 
 	public static boolean testShouldBeRun() {
 		if (System.getenv("NOPOL_EVAL_DEFECTS4J")==null) {

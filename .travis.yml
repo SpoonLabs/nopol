@@ -13,6 +13,7 @@ env:
     - SCRIPT="./.travis_intellij.sh"
     - SCRIPT="./.travis_tse.sh"
     - SCRIPT="./.travis_defects4j_1.sh"
+    - SCRIPT="./.travis_defects4j_math.sh"
 
 script: $SCRIPT
 
