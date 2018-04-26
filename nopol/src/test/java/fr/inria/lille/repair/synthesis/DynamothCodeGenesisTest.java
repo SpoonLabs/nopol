@@ -21,6 +21,23 @@ import static org.junit.Assert.assertEquals;
 public class DynamothCodeGenesisTest {
 
     @Test
+    public void testKaliPatches() {
+        Map<String, Object[]> oracle = new HashMap<>();
+        oracle.put("test1", new Object[]{true});
+        oracle.put("test2", new Object[]{true});
+
+        NopolContext nopolContext = TestUtility.configForExample("nopol",1);
+
+        test(1, oracle, 12, new String[] {"true"}, nopolContext);
+
+        oracle = new HashMap<>();
+        oracle.put("test1", new Object[]{false});
+        oracle.put("test2", new Object[]{false});
+
+        test(1, oracle, 12, new String[] {"false"}, nopolContext);
+    }
+
+    @Test
     public void test1() throws InterruptedException {
         Map<String, Object[]> oracle = new HashMap<>();
         oracle.put("test1", new Object[]{true});

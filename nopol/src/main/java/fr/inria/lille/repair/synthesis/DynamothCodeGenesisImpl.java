@@ -124,31 +124,20 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
 
     @Override
     public Candidates run(long remainingTime) {
-        this.remainingTime = remainingTime;
-        this.startTime = System.currentTimeMillis();
-        Iterator<Object[]> iterator = oracle.values().iterator();
-        Object last = null;
-        boolean same = false;
-        while (iterator.hasNext() && !same) {
-            Object[] next = iterator.next();
-
-            for (int i = 0; i < next.length; i++) {
-                Object o = next[i];
-                if (last == null) {
-                    last = o;
-                    continue;
-                }
-                if (o != last) {
-                    same = false;
-                    break;
-                }
-            }
+        // check if all the expected values are the same in the oracle
+        HashSet<Object> setOfValues = new HashSet<>();
+        for (Object[] values: oracle.values() ) {
+            setOfValues.addAll(Arrays.asList(values));
         }
-        if (same) {
+        if (setOfValues.size() == 1) {
             Candidates candidates = new Candidates();
-            candidates.add(AccessFactory.literal(last, nopolContext));
+            candidates.add(AccessFactory.literal(setOfValues.iterator().next(), nopolContext));
+            validExpressions = candidates;
             return candidates;
         }
+        this.remainingTime = remainingTime;
+        this.startTime = System.currentTimeMillis();
+
         try {
             vm = DebugJUnitRunner.run(tests, classpath, nopolContext);
             watchBuggyClass();
