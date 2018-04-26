@@ -9,6 +9,7 @@ import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtLocalVariable;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtMethod;
@@ -40,6 +41,9 @@ public class PatchGenerator {
 		EarlyTerminatingScanner<CtElement> targetFinder = new EarlyTerminatingScanner<CtElement>() {
 			@Override
 			protected void enter(CtElement e) {
+				if (e.getPosition() instanceof NoSourcePosition) {
+					return;
+				}
 				if (e.getPosition().getSourceStart() == patch.getSourceLocation().getBeginSource()
 						&& e.getPosition().getSourceEnd() == patch.getSourceLocation().getEndSource() && e.isImplicit() == false) {
 					if (patch.getType() == RepairType.CONDITIONAL && e instanceof CtIf) {
