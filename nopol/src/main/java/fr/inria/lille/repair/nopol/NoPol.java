@@ -141,6 +141,7 @@ public class NoPol {
 				final File outputSourceFile = new File("src-gen");
 				final File outputCompiledFile = new File("target-gen");
 				// generate the output file
+				jpfSpoon.dumpedToClassLoader();
 				jpfSpoon.generateOutputFile(outputSourceFile);
 				jpfSpoon.generateOutputCompiledFile(outputCompiledFile);
 			} catch (IOException e) {

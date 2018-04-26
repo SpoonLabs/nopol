@@ -22,6 +22,13 @@ public class BottomTopURLClassLoader extends URLClassLoader {
 	}
 
 	@Override
+	public URL findResource(String name) {
+		return super.findResource(name);
+	}
+
+
+
+	@Override
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
 		if (name.contains("junit") || name.contains("fr.inria.lille") || name.contains("_Instrumenting")) {
 			try {

@@ -43,9 +43,21 @@ import xxl.java.junit.TestSuiteExecution;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
 
 /**
  * Execute
@@ -122,7 +134,49 @@ public final class JPFRunner<T> implements InstrumentedProgram<T> {
 		return new LoggingInstrumenter<>(runtimeValues, processor);
 	}
 
-	private String createClassPath(final URL[] classpath) {
+	/**
+	 * Add JPF library to class path
+	 *
+	 * @param clpath
+	 */
+	private URL[] addJPFLibraryToCassPath(URL[] clpath) {
+		List<URL> classpath = new ArrayList<>();
+		String[] split = System.getProperty("java.class.path").split(File.pathSeparator);
+
+		for (int i = 0; i < split.length; i++) {
+			try {
+				classpath.add(new File(split[i]).toURL());
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		for (int i = 0; i < clpath.length; i++) {
+			classpath.add(clpath[i]);
+		}
+		try {
+			File file = new File("lib/jpf/jpf-classes.jar");
+			if(!classpath.contains(file.toURL())) {
+				classpath.add(file.toURL());
+			}
+			// file = new File("lib/jpf/gov.nasa-0.0.1.jar");
+			// classpath[classpath.length - 3] = file.toURL();
+			file = new File("lib/jpf/jpf-annotations.jar");
+			if(!classpath.contains(file.toURL())) {
+				classpath.add(file.toURL());
+			}
+			file = new File("lib/junit-4.11.jar");
+			if(!classpath.contains(file.toURL())) {
+				classpath.add(file.toURL());
+			}
+		} catch (MalformedURLException e) {
+			throw new RuntimeException("JPF dependencies not found");
+		}
+		return classpath.toArray(new URL[]{});
+	}
+
+	private String createClassPath(URL[] classpath) {
+		classpath = addJPFLibraryToCassPath(classpath);
 		String stringClassPath = outputCompiledFile.getAbsolutePath() + File.pathSeparatorChar;
 		for (int i = 0; i < classpath.length; i++) {
 			URL url = classpath[i];
@@ -151,6 +205,7 @@ public final class JPFRunner<T> implements InstrumentedProgram<T> {
 
 			gov.nasa.jpf.Config conf = JPFUtil.createConfig(args, mainClass, stringClassPath, outputSourceFile.getAbsolutePath());
 			final JPF jpf = new JPF(conf);
+			JPF.getLogger("class").setLevel(Level.ALL);
 
 			// executes JPF
 			JPFListener jpfListener = new JPFListener();

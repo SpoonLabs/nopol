@@ -15,7 +15,6 @@ import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.support.JavaOutputProcessor;
 import spoon.support.RuntimeProcessingManager;
-import spoon.support.StandardEnvironment;
 import xxl.java.compiler.BytecodeClassLoader;
 import xxl.java.compiler.BytecodeClassLoaderBuilder;
 import xxl.java.compiler.DynamicClassCompiler;
@@ -70,7 +69,11 @@ public abstract class SpoonedFile {
     protected abstract Collection<? extends CtType<?>> modelledClasses();
 
     public void generateOutputFile(File destinationFolder) {
-        Processor<?> writer = new JavaOutputProcessor(destinationFolder, new DefaultJavaPrettyPrinter(new StandardEnvironment()));
+        Environment env = factory.getEnvironment();
+        env.setSourceOutputDirectory(destinationFolder);
+        JavaOutputProcessor javaOutputProcessor = new JavaOutputProcessor(prettyPrinter);
+        javaOutputProcessor.setFactory(factory);
+        Processor<?> writer = javaOutputProcessor;
         process(writer);
     }
 
