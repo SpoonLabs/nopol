@@ -1,6 +1,7 @@
 package fr.inria.lille.commons.spoon.filter;
 
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.filter.AbstractFilter;
 import xxl.java.library.FileLibrary;
@@ -18,7 +19,7 @@ public class CodeSnippetFilter extends AbstractFilter<CtElement> {
     @Override
     public boolean matches(CtElement element) {
         SourcePosition position = element.getPosition();
-        if (position != null && position != SourcePosition.NOPOSITION) {
+        if (position != null && !(position instanceof NoSourcePosition)) {
             return FileLibrary.isSameFile(classSourceFile(), position.getFile()) && codeSnippet().equals(element.toString());
         }
         return false;

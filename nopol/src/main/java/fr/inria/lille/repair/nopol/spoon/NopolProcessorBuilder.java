@@ -8,6 +8,7 @@ import fr.inria.lille.repair.nopol.spoon.symbolic.*;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.cu.SourcePosition;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.visitor.filter.LineFilter;
 import xxl.java.library.FileLibrary;
 
@@ -45,7 +46,7 @@ public class NopolProcessorBuilder extends AbstractProcessor<CtStatement> {
     @Override
     public boolean isToBeProcessed(CtStatement candidate) {
         SourcePosition position = candidate.getPosition();
-        if (position == null || position == SourcePosition.NOPOSITION) {
+        if (position == null || position instanceof NoSourcePosition) {
             return false;
         }
         if (!new LineFilter().matches(candidate)) {

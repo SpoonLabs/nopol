@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.cu.position.NoSourcePosition;
 
 public abstract class NopolProcessor extends AbstractProcessor<CtStatement> {
 
@@ -15,6 +16,9 @@ public abstract class NopolProcessor extends AbstractProcessor<CtStatement> {
 
     @Override
     public boolean isToBeProcessed(CtStatement statement) {
+        if (statement.getPosition() instanceof NoSourcePosition || target.getPosition() instanceof NoSourcePosition) {
+            return false;
+        }
         return target.getPosition().getSourceStart() == statement.getPosition().getSourceStart() && target.getPosition().getSourceEnd() == statement.getPosition().getSourceEnd() && statement.equals(target);
     }
 

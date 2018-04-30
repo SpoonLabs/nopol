@@ -8,6 +8,7 @@ import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.code.CtLiteral;
 import spoon.reflect.code.CtVariableAccess;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtTypedElement;
 import spoon.reflect.reference.CtTypeReference;
@@ -36,7 +37,7 @@ public class VariablesInSuspiciousCollector extends AbstractProcessor<CtTypedEle
 
     @Override
     public boolean isToBeProcessed(CtTypedElement<?> candidate) {
-        if (candidate.getPosition() == null) {
+        if (candidate.getPosition() == null || candidate.getPosition() instanceof NoSourcePosition) {
             return false;
         }
         return candidate.getPosition().getLine() == location.getLineNumber();

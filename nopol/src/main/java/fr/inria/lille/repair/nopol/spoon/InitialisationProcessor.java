@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.cu.position.NoSourcePosition;
 import spoon.reflect.declaration.CtElement;
 import xxl.java.library.FileLibrary;
 
@@ -18,12 +19,12 @@ public abstract class InitialisationProcessor extends AbstractProcessor<CtStatem
 
     @Override
     public boolean isToBeProcessed(CtStatement statement) {
-        if (statement.getPosition() != null) {
-            return (statement.getPosition().getLine() == target().getPosition().getLine()) &&
-                    (statement.getPosition().getColumn() == target().getPosition().getColumn()) &&
-                    (FileLibrary.isSameFile(target().getPosition().getFile(), statement.getPosition().getFile()));
+        if (statement.getPosition() == null || statement.getPosition() instanceof NoSourcePosition) {
+            return false;
         }
-        return false;
+        return (statement.getPosition().getLine() == target().getPosition().getLine()) &&
+                (statement.getPosition().getColumn() == target().getPosition().getColumn()) &&
+                (FileLibrary.isSameFile(target().getPosition().getFile(), statement.getPosition().getFile()));
     }
 
     @Override
