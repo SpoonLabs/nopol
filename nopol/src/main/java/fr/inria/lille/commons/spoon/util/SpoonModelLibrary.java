@@ -41,15 +41,16 @@ public class SpoonModelLibrary {
 
     public static Factory modelFor(Factory factory, File[] sourceFiles, URL[] classpath) {
         factory.getEnvironment().setLevel("OFF");
-            SpoonModelBuilder compiler = launcher().createCompiler(factory);
-            if (classpath != null) {
-                compiler.setSourceClasspath(JavaLibrary.asFilePath(classpath));
-            }
-            for (int i = 0; i < sourceFiles.length; i++) {
-                File sourceFile = sourceFiles[i];
-                compiler.addInputSource(sourceFile);
-            }
-            compiler.build();
+        factory.getEnvironment().setCommentEnabled(false);
+        SpoonModelBuilder compiler = launcher().createCompiler(factory);
+        if (classpath != null) {
+            compiler.setSourceClasspath(JavaLibrary.asFilePath(classpath));
+        }
+        for (int i = 0; i < sourceFiles.length; i++) {
+            File sourceFile = sourceFiles[i];
+            compiler.addInputSource(sourceFile);
+        }
+        compiler.build();
         return factory;
     }
 
