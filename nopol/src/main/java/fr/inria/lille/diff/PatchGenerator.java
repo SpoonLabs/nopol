@@ -135,7 +135,12 @@ public class PatchGenerator {
 		int indexOfIntersection = path.indexOf(intersection);
 
 		if (indexOfIntersection != -1) {
-			return path.substring(indexOfIntersection);
+			path = path.substring(indexOfIntersection);
+			if (!path.startsWith("/")) {
+				return "/" + path;
+			} else {
+				return path;
+			}
 		} else {
 			return null;
 		}
