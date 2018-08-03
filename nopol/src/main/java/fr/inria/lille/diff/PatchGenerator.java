@@ -97,9 +97,12 @@ public class PatchGenerator {
 		try {
 			String path = getClassPath(target.getParent(CtType.class));
 			if (path != null) {
+
+				// a and b are used by Git to distinguish the first and the second path
+				// without them we cannot apply the patch apparently
 				diff = com.cloudbees.diff.Diff.diff(r1, r2, false)
-						.toUnifiedDiff(path,
-								path,
+						.toUnifiedDiff("a" + path,
+								"b" + path,
 								new StringReader(classContent),
 								new StringReader(patchedClass), 1);
 			} else {
