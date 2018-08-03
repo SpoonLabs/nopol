@@ -36,8 +36,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, nopolContext);
 
-		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
-				+ "+++ "+projectSourcePath+"/Bar.java\n"
+		Assert.assertEquals("--- a/"+projectSourcePath+"/Bar.java\n"
+				+ "+++ b/"+projectSourcePath+"/Bar.java\n"
 				+ "@@ -5,4 +5,4 @@\n"
 				+ " \tpublic void m() {\n"
 				+ "-\t\tif (true) {\n"
@@ -68,8 +68,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, nopolContext);
 
-		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
-				+ "+++ "+projectSourcePath+"/Bar.java\n"
+		Assert.assertEquals("--- a/"+projectSourcePath+"/Bar.java\n"
+				+ "+++ b/"+projectSourcePath+"/Bar.java\n"
 				+ "@@ -11,4 +11,4 @@\n"
 				+ " \n"
 				+ "-\t\t} else if (true) {\n"
@@ -101,8 +101,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, nopolContext);
 
-		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
-				+ "+++ "+projectSourcePath+"/Bar.java\n"
+		Assert.assertEquals("--- a/"+projectSourcePath+"/Bar.java\n"
+				+ "+++ b/"+projectSourcePath+"/Bar.java\n"
 				+ "@@ -5,4 +5,6 @@\n"
 				+ " \tpublic void m() {\n"
 				+ "-\t\tif (true) {\n"
@@ -135,8 +135,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, nopolContext);
 
-		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
-				+ "+++ "+projectSourcePath+"/Bar.java\n"
+		Assert.assertEquals("--- a/"+projectSourcePath+"/Bar.java\n"
+				+ "+++ b/"+projectSourcePath+"/Bar.java\n"
 				+ "@@ -11,4 +11,8 @@\n"
 				+ " \n"
 				+ "-\t\t} else if (true) {\n"
@@ -171,8 +171,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, nopolContext);
 
-		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
-				+ "+++ "+projectSourcePath+"/Bar.java\n"
+		Assert.assertEquals("--- a/"+projectSourcePath+"/Bar.java\n"
+				+ "+++ b/"+projectSourcePath+"/Bar.java\n"
 				+ "@@ -15,3 +15,5 @@\n"
 				+ " \n"
 				+ "-\t\tSystem.out.println(\"test\");\n"
@@ -204,8 +204,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, nopolContext);
 
-		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
-				+ "+++ "+projectSourcePath+"/Bar.java\n"
+		Assert.assertEquals("--- a/"+projectSourcePath+"/Bar.java\n"
+				+ "+++ b/"+projectSourcePath+"/Bar.java\n"
 				+ "@@ -17,5 +17,7 @@\n"
 				+ " \n"
 				+ "-\t\tthrow new RuntimeException(\"FirstLine\" +\n"
@@ -241,8 +241,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, nopolContext);
 
-		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
-				+ "+++ "+projectSourcePath+"/Bar.java\n"
+		Assert.assertEquals("--- a/"+projectSourcePath+"/Bar.java\n"
+				+ "+++ b/"+projectSourcePath+"/Bar.java\n"
 				+ "@@ -24,3 +24,5 @@\n"
 				+ " \t\tif (true) {\n"
 				+ "-\t\t\tSystem.out.println(\"test\");\n"
@@ -273,8 +273,8 @@ public class PatchGeneratorTest {
 				patch,
 				factory, nopolContext);
 
-		Assert.assertEquals("--- "+projectSourcePath+"/Bar.java\n"
-				+ "+++ "+projectSourcePath+"/Bar.java\n"
+		Assert.assertEquals("--- a/"+projectSourcePath+"/Bar.java\n"
+				+ "+++ b/"+projectSourcePath+"/Bar.java\n"
 				+ "@@ -33,3 +33,5 @@\n"
 				+ " \t\t\tSystem.out.println(\"test1\");\n"
 				+ "-\t\t\tSystem.out.println(\"test2\");\n"
