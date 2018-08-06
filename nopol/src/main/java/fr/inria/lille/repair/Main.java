@@ -69,6 +69,10 @@ public class Main {
 
 			final NopolContext nopolContext = main.getNopolContext();
 
+			// use currentDir to compute diff path
+			File currentDir = new File(".");
+			nopolContext.setRootProject(currentDir.getCanonicalFile().toPath().toAbsolutePath());
+
 			//For using Dynamoth, you must add tools.jar in the classpath
 			if (nopolContext.getSynthesis() == NopolContext.NopolSynthesis.DYNAMOTH) {
 				URLClassLoader loader = (URLClassLoader) ClassLoader.getSystemClassLoader();
