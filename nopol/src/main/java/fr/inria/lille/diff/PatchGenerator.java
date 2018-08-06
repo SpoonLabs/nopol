@@ -124,21 +124,38 @@ public class PatchGenerator {
 		}
 	}
 
+	/**
+	 * Compute a relative path according to the given root project path
+	 * or according to the input source. If no relative path can be computed
+	 * it returns an absolute path.
+	 */
 	private String computePathForType(CtType type) {
 		String path = type.getPosition().getFile().getAbsolutePath();
 		String relativePath = null;
 
+		// if root project is specified we use it to compute the relative path
 		if (nopolContext.getRootProject() != null) {
 			String absolutePath = nopolContext.getRootProject().toAbsolutePath().toString();
+
+			// we compare the absolute path against the root path
 			if (path.startsWith(absolutePath)) {
+
+				// then we take only the relative path
 				relativePath = path.substring(absolutePath.length());
 			}
+
+		// if root project is not specified
+		// we get a relative path according to the given input source(s)
 		} else {
 			File[] inputSources = nopolContext.getProjectSources();
 			for (File inputSource : inputSources) {
+				// use the absolute path for comparison
 				String absolutePath = inputSource.getAbsolutePath();
+
+				// keep the relative (given) path for final output
 				String prefixPath = inputSource.getPath();
 
+				// we don't want to keep a "./" in the final path
 				if (prefixPath.startsWith("./")) {
 					prefixPath = prefixPath.substring(1);
 				}

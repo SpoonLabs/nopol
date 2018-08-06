@@ -541,6 +541,9 @@ public class NopolContext implements Serializable {
 		return rootProject;
 	}
 
+	/**
+	 * Specify the root path for computing the relative paths in produced patches
+	 */
 	public void setRootProject(Path rootProject) {
 		this.rootProject = rootProject;
 	}
