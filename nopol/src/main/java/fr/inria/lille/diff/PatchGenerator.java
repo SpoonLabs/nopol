@@ -95,7 +95,7 @@ public class PatchGenerator {
 		StringReader r2 = new StringReader(patchedClass);
 		String diff = null;
 		try {
-			String path = getClassPath(target.getParent(CtType.class));
+			String path = computePathForType(target.getParent(CtType.class));
 			if (path != null) {
 
 				// a and b are used by Git to distinguish the first and the second path
@@ -116,59 +116,47 @@ public class PatchGenerator {
 		return diff.replaceAll("\n\\\\ No newline at end of file", "");
 	}
 
-	private String getClassPath(CtType type) {
-		String path = type.getPosition().getFile().getPath();
-		String intersection = null;
-		File[] inputSources = nopolContext.getProjectSources();
-		for (int i = 0; i < inputSources.length; i++) {
-			File inputSource = inputSources[i];
-			String filePath = inputSource.getPath();
-			if (filePath.startsWith("./")) {
-				filePath = filePath.substring(2);
-			}
-			if (intersection == null) {
-				intersection = filePath;
-			} else {
-				intersection = intersection(intersection, filePath);
-			}
-		}
-		int indexOfIntersection = path.indexOf(intersection);
-
-		if (indexOfIntersection != -1) {
-			path = path.substring(indexOfIntersection);
-			if (!path.startsWith("/")) {
-				return "/" + path;
-			} else {
-				return path;
-			}
+	private String putFirstSlash(String path) {
+		if (path.startsWith("/")) {
+			return path;
 		} else {
-			return null;
+			return "/" + path;
 		}
 	}
 
-	/**
-	 * Get the intersection of two paths
-	 * @param s1
-	 * @param s2
-	 * @return
-	 */
-	private String intersection(String s1, String s2) {
-		String[] split1 = s1.split("/");
-		String[] split2 = s2.split("/");
+	private String computePathForType(CtType type) {
+		String path = type.getPosition().getFile().getAbsolutePath();
+		String relativePath = null;
 
-		StringBuilder output = new StringBuilder();
+		if (nopolContext.getRootProject() != null) {
+			String absolutePath = nopolContext.getRootProject().toAbsolutePath().toString();
+			if (path.startsWith(absolutePath)) {
+				relativePath = path.substring(absolutePath.length());
+			}
+		} else {
+			File[] inputSources = nopolContext.getProjectSources();
+			for (File inputSource : inputSources) {
+				String absolutePath = inputSource.getAbsolutePath();
+				String prefixPath = inputSource.getPath();
 
-		for (int i = 0; i < split1.length && i < split2.length; i++) {
-			String path1 = split1[i];
-			String path2 = split2[i];
-			if (path1.equals(path2)) {
-				output.append(path1);
-				output.append("/");
-			} else {
-				break;
+				if (prefixPath.startsWith("./")) {
+					prefixPath = prefixPath.substring(1);
+				}
+				if (!prefixPath.endsWith("/")) {
+					prefixPath += "/";
+				}
+				if (path.startsWith(absolutePath)) {
+					relativePath = prefixPath + path.substring(absolutePath.length() + 1);
+					break;
+				}
 			}
 		}
-		return output.toString();
+
+		if (relativePath != null) {
+			return this.putFirstSlash(relativePath);
+		} else {
+			return this.putFirstSlash(path);
+		}
 	}
 
 	private String generateStringPatch() {
