@@ -153,7 +153,7 @@ public final class GZoltarFaultLocalizer extends GZoltar implements FaultLocaliz
 		StringBuilder cl = new StringBuilder();
 		for (int i = 0; i < deps.length; i++) {
 			String dep = deps[i];
-			if (dep.contains("jre") || dep.contains("gzoltar")) {
+			if (dep.contains("jre") || dep.contains("gzoltar") || dep.contains("nopol")) {
 				cl.append(dep).append(":");
 			}
 		}
