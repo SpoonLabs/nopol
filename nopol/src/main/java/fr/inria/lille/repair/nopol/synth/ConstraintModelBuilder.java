@@ -142,18 +142,21 @@ public final class ConstraintModelBuilder implements InstrumentedProgram<Boolean
 
 
     private boolean determineViability(final Result firstResult, final Result secondResult) {
-        Collection<Description> firstFailures = TestSuiteExecution.collectDescription(firstResult.getFailures());
-        Collection<Description> secondFailures = TestSuiteExecution.collectDescription(secondResult.getFailures());
-        firstFailures.retainAll(secondFailures);
-        viablePatch = firstFailures.isEmpty();
-        int nbFirstSuccess = firstResult.getRunCount() - firstResult.getFailureCount();
-        int nbSecondSuccess = secondResult.getRunCount() - secondResult.getFailureCount();
-        if (!viablePatch || (nbFirstSuccess == 0 && nbSecondSuccess == 0)) {
-            logger.debug("Failing test(s): {}\n{}", sourceLocation, firstFailures);
-            Logger testsOutput = LoggerFactory.getLogger("tests.output");
-            testsOutput.debug("First set: \n{}", firstResult.getFailures());
-            testsOutput.debug("Second set: \n{}", secondResult.getFailures());
+        Collection<Description> firstFailuresWithFalse = TestSuiteExecution.collectDescription(firstResult.getFailures());
+        Collection<Description> secondFailuresWithTrue = TestSuiteExecution.collectDescription(secondResult.getFailures());
+        //firstFailuresWithFalse.retainAll(secondFailuresWithTrue);
+
+        // always `true` or always `false` enables to pass all tests
+        viablePatch = firstFailuresWithFalse.isEmpty() || secondFailuresWithTrue.isEmpty();
+
+        if (firstFailuresWithFalse.isEmpty()) {
+            logger.debug("if(false" +
+                    ") is a solution in the failing test case: \n{}", firstFailuresWithFalse);
         }
+        if (secondFailuresWithTrue.isEmpty()) {
+            logger.debug("if(true) is a solution in the failing test case: \n{}", secondFailuresWithTrue);
+        }
+
         return viablePatch;
     }
 
