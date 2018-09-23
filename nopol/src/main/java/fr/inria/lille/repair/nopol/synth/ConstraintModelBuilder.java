@@ -86,9 +86,6 @@ public final class ConstraintModelBuilder implements InstrumentedProgram<Boolean
         // come back to default mode
         AngelicExecution.disable();
 
-        if (!determineViability(firstResult, secondResult)) {
-            return Collections.emptyList();
-        }
         /* to collect information for passing tests */
         class PassingListener extends TestCasesListener {
             @Override
@@ -139,31 +136,4 @@ public final class ConstraintModelBuilder implements InstrumentedProgram<Boolean
         return finalSpec;
     }
 
-
-
-    private boolean determineViability(final Result firstResult, final Result secondResult) {
-        Collection<Description> firstFailuresWithFalse = TestSuiteExecution.collectDescription(firstResult.getFailures());
-        Collection<Description> secondFailuresWithTrue = TestSuiteExecution.collectDescription(secondResult.getFailures());
-        //firstFailuresWithFalse.retainAll(secondFailuresWithTrue);
-
-        // always `true` or always `false` enables to pass all tests
-        viablePatch = firstFailuresWithFalse.isEmpty() || secondFailuresWithTrue.isEmpty();
-
-        if (firstFailuresWithFalse.isEmpty()) {
-            logger.debug("if(false" +
-                    ") is a solution in the failing test case: \n{}", firstFailuresWithFalse);
-        }
-        if (secondFailuresWithTrue.isEmpty()) {
-            logger.debug("if(true) is a solution in the failing test case: \n{}", secondFailuresWithTrue);
-        }
-
-        return viablePatch;
-    }
-
-    /**
-     * @see InstrumentedProgram#isAViablePatch()
-     */
-    public boolean isAViablePatch() {
-        return viablePatch;
-    }
 }
