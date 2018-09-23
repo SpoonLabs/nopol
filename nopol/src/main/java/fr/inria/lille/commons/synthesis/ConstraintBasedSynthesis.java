@@ -84,8 +84,7 @@ public class ConstraintBasedSynthesis {
     }
 
     private <T> Collection<Map<String, Object>> synthesisInputValues(Collection<Specification<T>> specifications, Expression<?> outputExpression) {
-        // two long constraints is too much for Travis
-        logCollection(logger(), "Specifications:", new LinkedList<>(specifications).subList(0, Math.max(Math.min(20, specifications.size()-1), specifications.size()-1)));
+        // logCollection(logger(), "Specifications:", new LinkedList<>(specifications).subList(0, Math.max(Math.min(20, specifications.size()-1), specifications.size()-1)));
         Collection<Map<String, Object>> synthesisInputs = MetaList.newLinkedList();
         for (Specification<T> specification : specifications) {
             Map<String, Object> newMap = specification.inputs();
