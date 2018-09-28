@@ -36,16 +36,6 @@ public class Defects4jUtils {
 	}
 	public static NopolContext nopolConfigFor(String bug_id, String mvn_option) throws Exception {
 		String folder = "unknown";
-		if (!new File(bug_id).exists()) {
-			String command = "mkdir " + bug_id +";\n cd " + bug_id + ";\n git init;\n git fetch https://github.com/Spirals-Team/defects4j-repair " + bug_id + ":" + bug_id + ";\n git checkout "+bug_id+";\n mvn -q test -DskipTests "+mvn_option+";\n mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt";
-			System.out.println(command);
-			Process p = Runtime.getRuntime().exec(new String[]{"sh", "-c", command});
-			p.waitFor();
-			String output = IOUtils.toString(p.getInputStream());
-			String errorOutput = IOUtils.toString(p.getErrorStream());
-			System.out.println(output);
-			System.err.println(errorOutput);
-		}
 		if (bug_id.startsWith("Chart") && !new File(bug_id).exists()) {
 			// here we use maven to compile
 			String command = "mkdir " + bug_id +";\n cd " + bug_id + ";\n git init;\n git fetch https://github.com/Spirals-Team/defects4j-repair " + bug_id + ":" + bug_id + ";\n git checkout "+bug_id+";\n"
@@ -63,6 +53,15 @@ public class Defects4jUtils {
 			System.out.println(output);
 			System.err.println(errorOutput);
 
+		} else if (!new File(bug_id).exists()) {
+			String command = "mkdir " + bug_id +";\n cd " + bug_id + ";\n git init;\n git fetch https://github.com/Spirals-Team/defects4j-repair " + bug_id + ":" + bug_id + ";\n git checkout "+bug_id+";\n mvn -q test -DskipTests "+mvn_option+";\n mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt";
+			System.out.println(command);
+			Process p = Runtime.getRuntime().exec(new String[]{"sh", "-c", command});
+			p.waitFor();
+			String output = IOUtils.toString(p.getInputStream());
+			String errorOutput = IOUtils.toString(p.getErrorStream());
+			System.out.println(output);
+			System.err.println(errorOutput);
 		}
 
 		Properties prop = new Properties();
