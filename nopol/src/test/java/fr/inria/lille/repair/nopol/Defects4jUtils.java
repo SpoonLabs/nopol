@@ -36,10 +36,12 @@ public class Defects4jUtils {
 	}
 	public static NopolContext nopolConfigFor(String bug_id, String mvn_option) throws Exception {
 		String folder = "unknown";
+
+		// for Chart, we use ant
 		if (bug_id.startsWith("Chart") && !new File(bug_id).exists()) {
 			// here we use maven to compile
 			String command = "mkdir " + bug_id +";\n cd " + bug_id + ";\n git init;\n git fetch https://github.com/Spirals-Team/defects4j-repair " + bug_id + ":" + bug_id + ";\n git checkout "+bug_id+";\n"
-			+"sed '/delete dir/ d' ant/build.xml;\n"
+			+"sed -i -e '/delete dir/ d' ant/build.xml;\n"
 			+"ant -f ant/build.xml compile compile-tests;\n"
 			+"echo -n `pwd`/lib/iText-2.1.4.jar:`pwd`/lib/junit.jar:`pwd`/lib/servlet.jar > cp.txt;\n"
 
@@ -54,6 +56,7 @@ public class Defects4jUtils {
 			System.err.println(errorOutput);
 
 		} else if (!new File(bug_id).exists()) {
+			// for the rest we use Maven
 			String command = "mkdir " + bug_id +";\n cd " + bug_id + ";\n git init;\n git fetch https://github.com/Spirals-Team/defects4j-repair " + bug_id + ":" + bug_id + ";\n git checkout "+bug_id+";\n mvn -q test -DskipTests "+mvn_option+";\n mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt";
 			System.out.println(command);
 			Process p = Runtime.getRuntime().exec(new String[]{"sh", "-c", command});
