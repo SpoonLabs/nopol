@@ -95,11 +95,14 @@ public class PatchGenerator {
 		StringReader r2 = new StringReader(patchedClass);
 		String diff = null;
 		try {
-			String path = getClassPath(target.getParent(CtType.class));
+			String path = computePathForType(target.getParent(CtType.class));
 			if (path != null) {
+
+				// a and b are used by Git to distinguish the first and the second path
+				// without them we cannot apply the patch apparently
 				diff = com.cloudbees.diff.Diff.diff(r1, r2, false)
-						.toUnifiedDiff(path,
-								path,
+						.toUnifiedDiff("a" + path,
+								"b" + path,
 								new StringReader(classContent),
 								new StringReader(patchedClass), 1);
 			} else {
@@ -113,54 +116,64 @@ public class PatchGenerator {
 		return diff.replaceAll("\n\\\\ No newline at end of file", "");
 	}
 
-	private String getClassPath(CtType type) {
-		String path = type.getPosition().getFile().getPath();
-		String intersection = null;
-		File[] inputSources = nopolContext.getProjectSources();
-		for (int i = 0; i < inputSources.length; i++) {
-			File inputSource = inputSources[i];
-			String filePath = inputSource.getPath();
-			if (filePath.startsWith("./")) {
-				filePath = filePath.substring(2);
-			}
-			if (intersection == null) {
-				intersection = filePath;
-			} else {
-				intersection = intersection(intersection, filePath);
-			}
-		}
-		int indexOfIntersection = path.indexOf(intersection);
-
-		if (indexOfIntersection != -1) {
-			return path.substring(indexOfIntersection);
+	private String putFirstSlash(String path) {
+		if (path.startsWith("/")) {
+			return path;
 		} else {
-			return null;
+			return "/" + path;
 		}
 	}
 
 	/**
-	 * Get the intersection of two paths
-	 * @param s1
-	 * @param s2
-	 * @return
+	 * Compute a relative path according to the given root project path
+	 * or according to the input source. If no relative path can be computed
+	 * it returns an absolute path.
 	 */
-	private String intersection(String s1, String s2) {
-		String[] split1 = s1.split("/");
-		String[] split2 = s2.split("/");
+	private String computePathForType(CtType type) {
+		String path = type.getPosition().getFile().getAbsolutePath();
+		String relativePath = null;
 
-		StringBuilder output = new StringBuilder();
+		// if root project is specified we use it to compute the relative path
+		if (nopolContext.getRootProject() != null) {
+			String absolutePath = nopolContext.getRootProject().toAbsolutePath().toString();
 
-		for (int i = 0; i < split1.length && i < split2.length; i++) {
-			String path1 = split1[i];
-			String path2 = split2[i];
-			if (path1.equals(path2)) {
-				output.append(path1);
-				output.append("/");
-			} else {
-				break;
+			// we compare the absolute path against the root path
+			if (path.startsWith(absolutePath)) {
+
+				// then we take only the relative path
+				relativePath = path.substring(absolutePath.length());
+			}
+
+		// if root project is not specified
+		// we get a relative path according to the given input source(s)
+		} else {
+			File[] inputSources = nopolContext.getProjectSources();
+			for (File inputSource : inputSources) {
+				// use the absolute path for comparison
+				String absolutePath = inputSource.getAbsolutePath();
+
+				// keep the relative (given) path for final output
+				String prefixPath = inputSource.getPath();
+
+				// we don't want to keep a "./" in the final path
+				if (prefixPath.startsWith("./")) {
+					prefixPath = prefixPath.substring(1);
+				}
+				if (!prefixPath.endsWith("/")) {
+					prefixPath += "/";
+				}
+				if (path.startsWith(absolutePath)) {
+					relativePath = prefixPath + path.substring(absolutePath.length() + 1);
+					break;
+				}
 			}
 		}
-		return output.toString();
+
+		if (relativePath != null) {
+			return this.putFirstSlash(relativePath);
+		} else {
+			return this.putFirstSlash(path);
+		}
 	}
 
 	private String generateStringPatch() {
