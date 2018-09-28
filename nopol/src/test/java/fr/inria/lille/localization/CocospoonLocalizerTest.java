@@ -3,6 +3,7 @@ package fr.inria.lille.localization;
 import fr.inria.lille.localization.metric.Ochiai;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -65,4 +66,38 @@ public class CocospoonLocalizerTest {
 
         assertEquals(sourceLocation5, sortedStatements.get(0).getLocation());
     }
+
+    @Test
+    public void test2() throws Exception {
+
+        // specifc tests (eg #test2) works
+
+        File[] sources = new File[]{new File("../test-projects/src/main/java/nopol_examples/nopol_example_1/NopolExample.java")};
+        URL[] classpath = new URL[]{
+                new File("../test-projects/target/classes").toURI().toURL(),
+                new File("../test-projects/target/test-classes").toURI().toURL()
+        };
+        String[] testClasses = new String[]{"nopol_examples.nopol_example_1.NopolExampleTest#test1"};
+
+        NopolContext nopolContext = new NopolContext(sources, classpath, testClasses);
+        FaultLocalizer localizer = new CocoSpoonBasedSpectrumBasedFaultLocalizer(nopolContext);
+        Map<SourceLocation, List<TestResult>> executedSourceLocationPerTest = localizer.getTestListPerStatement();
+        Assert.assertEquals(5, executedSourceLocationPerTest.keySet().size());
+
+        SourceLocation sourceLocation2 = new SourceLocation("nopol_examples.nopol_example_1.NopolExample", 13);
+        SourceLocation sourceLocation3 = new SourceLocation("nopol_examples.nopol_example_1.NopolExample", 12);
+
+        for (SourceLocation loc : executedSourceLocationPerTest.keySet()) {
+            for (TestResult res : executedSourceLocationPerTest.get(loc)) {
+                Assert.assertEquals("nopol_examples.nopol_example_1.NopolExampleTest#test1", res.getTestCase().toString());
+            }
+        }
+
+        System.out.println(executedSourceLocationPerTest);
+        Assert.assertTrue(executedSourceLocationPerTest.keySet().contains(sourceLocation2));
+        Assert.assertTrue(executedSourceLocationPerTest.keySet().contains(sourceLocation3));
+
+
+    }
+
 }
