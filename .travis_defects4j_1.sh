@@ -5,6 +5,6 @@ mvn -q versions:set -DnewVersion=TRAVIS
 # creating target/nopol-TRAVIS-jar-with-dependencies.jar
 mvn -q clean package -DskipTests
 
-env NOPOL_EVAL_DEFECTS4J=1 mvn test -Dtest="fr.inria.lille.repair.nopol.Defects4jEvaluationTest#test_Chart3"
+env NOPOL_EVAL_DEFECTS4J=1 mvn -q test -Dtest="fr.inria.lille.repair.nopol.Defects4jEvaluationTest"
 
 
