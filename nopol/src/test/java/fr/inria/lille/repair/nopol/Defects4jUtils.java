@@ -46,6 +46,24 @@ public class Defects4jUtils {
 			System.out.println(output);
 			System.err.println(errorOutput);
 		}
+		if (bug_id.startsWith("Chart") && !new File(bug_id).exists()) {
+			// here we use maven to compile
+			String command = "mkdir " + bug_id +";\n cd " + bug_id + ";\n git init;\n git fetch https://github.com/Spirals-Team/defects4j-repair " + bug_id + ":" + bug_id + ";\n git checkout "+bug_id+";\n"
+			+"sed '/delete dir/ d' ant/build.xml;\n"
+			+"ant -f ant/build.xml compile compile-tests;\n"
+			+"echo -n `pwd`/lib/junit.jar:`pwd`/lib/iText-2.1.4.jar:`pwd`/lib/junit.jar:`pwd`/lib/servlet.jar > cp.txt;\n"
+
+
+					;
+			System.out.println(command);
+			Process p = Runtime.getRuntime().exec(new String[]{"sh", "-c", command});
+			p.waitFor();
+			String output = IOUtils.toString(p.getInputStream());
+			String errorOutput = IOUtils.toString(p.getErrorStream());
+			System.out.println(output);
+			System.err.println(errorOutput);
+
+		}
 
 		Properties prop = new Properties();
 		prop.load(new FileInputStream(bug_id+"/defects4j.build.properties"));
@@ -60,8 +78,23 @@ public class Defects4jUtils {
 		for (String entry : FileUtils.readFileToString(new File(bug_id+"/cp.txt")).split(new String(new char[]{File.pathSeparatorChar}))) {
 			cp.add(new File(entry).toURL());
 		}
-		cp.add(new File(bug_id+"/target/classes").toURL());
-		cp.add(new File(bug_id+"/target/test-classes").toURL());
+
+		File maven_app = new File(bug_id + "/target/classes");
+		if (maven_app.exists()) {
+			cp.add(maven_app.toURL());
+		}
+		File maven_test = new File(bug_id + "/target/test-classes");
+		if (maven_test.exists()) {
+			cp.add(maven_test.toURL());
+		}
+		File ant_app = new File(bug_id + "/build");
+		if (ant_app.exists()) {
+			cp.add(ant_app.toURL());
+		}
+		File ant_test = new File(bug_id + "/build-tests");
+		if (ant_test.exists()) {
+			cp.add(ant_test.toURL());
+		}
 		System.out.println(cp);
 //
 		nopolContext.setProjectClasspath(cp.toArray(new URL[0]));

@@ -61,7 +61,19 @@ public class Defects4jEvaluationTest {
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
 	}
-	
+
+	@Test(timeout = FIVE_MINUTES_TIMEOUT)
+	public void test_Chart3() throws Exception {
+		if (!testShouldBeRun()) { return; }
+		// many resources on the internet say it's "maven.compiler.source", but it's actually maven.compile.source"
+		NopolContext nopolContext = nopolConfigFor("Chart3", "");
+		// we took the full test class, but not the other ones
+		nopolContext.setLocalizer(NopolContext.NopolLocalizer.COCOSPOON);
+		nopolContext.setProjectTests(new String[]{"org.jfree.data.time.junit.DataTimePackageTests#testCreateCopy3"});
+		NopolResult result = new NoPol(nopolContext).build();
+		assertEquals(1, result.getPatches().size());
+	}
+
 }
 
 
