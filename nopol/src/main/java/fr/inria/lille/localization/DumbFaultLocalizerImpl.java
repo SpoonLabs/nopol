@@ -45,10 +45,10 @@ public class DumbFaultLocalizerImpl implements FaultLocalizer {
 
 		List<TestResult> res = new ArrayList<>();
 
-		for (String test : nopolContext.getProjectTests()) {
+		for (String testClass : nopolContext.getProjectTests()) {
 			try {
 				URLClassLoader urlClassLoader = new URLClassLoader(nopolContext.getProjectClasspath(), this.getClass().getClassLoader());
-				Class klass = urlClassLoader.loadClass(test);
+				Class klass = urlClassLoader.loadClass(testClass);
 
 				// does not work, see https://stackoverflow.com/a/29865611
 				//for (FrameworkMethod desc : new BlockJUnit4ClassRunner(klass).getChildren()) {
@@ -56,10 +56,10 @@ public class DumbFaultLocalizerImpl implements FaultLocalizer {
 				// so we get the methods ourselves
 				// only support basic Junit4
 				for (String m : getTestMethods(klass)) {
-							res.add(new TestResultImpl(TestCase.from(test, m), false));
+					res.add(new TestResultImpl(TestCase.from(m), false));
 				}
 		} catch (Exception e) {
-				System.out.println(test);
+				System.out.println(testClass);
 			}
 		}
 		for(SourcePosition pos : l) {
