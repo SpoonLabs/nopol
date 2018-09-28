@@ -36,12 +36,12 @@ public class FaultLocalizerUtils {
 
 				// so we do name-based
 				if (a.annotationType().getCanonicalName().equals("org.junit.Test")) {
-					methodsNames.add(method.getName());
+					methodsNames.add(classOfTestCase.getName()+"#"+method.getName());
 				}
 			}
 
 			if (isJunit3TestMethod(method) && !methodsNames.contains(method.getName())) {
-				methodsNames.add(method.getName());
+				methodsNames.add(classOfTestCase.getName()+"#"+method.getName());
 			}
 		}
 
