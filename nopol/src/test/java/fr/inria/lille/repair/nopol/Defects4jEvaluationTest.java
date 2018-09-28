@@ -69,7 +69,7 @@ public class Defects4jEvaluationTest {
 		NopolContext nopolContext = nopolConfigFor("Chart3", "");
 		// we took the full test class, but not the other ones
 		nopolContext.setLocalizer(NopolContext.NopolLocalizer.COCOSPOON);
-		nopolContext.setProjectTests(new String[]{"org.jfree.data.time.junit.DataTimePackageTests#testCreateCopy3"});
+		nopolContext.setProjectTests(new String[]{"org.jfree.data.time.junit.TimeSeriesTests#testCreateCopy3"});
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
 	}
