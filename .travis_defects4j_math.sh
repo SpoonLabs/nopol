@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
-# executing all tests in Defects4jEvaluationTest
+# executing all tests of Commons Math in Defects4J
+
+# fails if any command fails
+set -e
+
 cd nopol
-mvn -q versions:set -DnewVersion=TRAVIS
-# creating target/nopol-TRAVIS-jar-with-dependencies.jar
-mvn -q clean package -DskipTests
 
-env NOPOL_EVAL_DEFECTS4J=1 mvn -q test -Dtest="Defects4jEvaluationMathTest"
+NOPOL_EVAL_DEFECTS4J=1 mvn -q test -Dtest="fr.inria.lille.repair.nopol.Defects4jEvaluationMathTest#test_Math42"
 
+NOPOL_EVAL_DEFECTS4J=1 mvn -q test -Dtest="fr.inria.lille.repair.nopol.Defects4jEvaluationMathTest#test_Math49"
 
+NOPOL_EVAL_DEFECTS4J=1 mvn -q test -Dtest="fr.inria.lille.repair.nopol.Defects4jEvaluationMathTest#test_Math69"
+
+# NOPOL_EVAL_DEFECTS4J=1 mvn -q test -Dtest="fr.inria.lille.repair.nopol.Defects4jEvaluationMathTest#test_Math32"
+
+NOPOL_EVAL_DEFECTS4J=1 mvn -q test -Dtest="fr.inria.lille.repair.nopol.Defects4jEvaluationMathTest#test_Math33"
 
