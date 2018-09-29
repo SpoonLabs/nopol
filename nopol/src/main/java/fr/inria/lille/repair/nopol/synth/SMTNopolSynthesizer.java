@@ -78,12 +78,6 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 		}
 
 
-		// and it should be a viable patch, ie. fix the bug
-		if (!instrumentedProgram.isAViablePatch()) {
-			LoggerFactory.getLogger(this.getClass()).info("Changing only this statement does not solve the bug. {}", sourceLocation);
-			return Collections.EMPTY_LIST;
-		}
-
 		nopolResult.incrementNbAngelicValues(sourceLocation, conditionalProcessor);
 		nbStatementsWithAngelicValue++;
 

@@ -12,18 +12,20 @@ import static org.junit.Assert.assertEquals;
 
 public class Defects4jEvaluationMathTest {
 
-	@Test(timeout = FIVE_MINUTES_TIMEOUT *2)
+	@Test(timeout = FIFTEEN_MINUTES_TIMEOUT)
 	public void test_Math32() throws Exception {
 		// On Travis 454sec
+		// Sep 30: 2018 timeout on Travis with ten minutes (600 seconds), moving to 15 minutes
 		if (!testShouldBeRun()) { return; }
 		NopolContext nopolContext = nopolConfigFor("Math32");
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
 	}
 
-	@Test(timeout = FIVE_MINUTES_TIMEOUT *2)
+	@Test(timeout = FIFTEEN_MINUTES_TIMEOUT)
 	public void test_Math33() throws Exception {
 		// on Travis: 458sec
+		// Sep 30: 2018 timeout on Travis with ten minutes (600 seconds), moving to 15 minutes
 		if (!testShouldBeRun()) { return; }
 		NopolContext nopolContext = nopolConfigFor("Math33");
 		NopolResult result = new NoPol(nopolContext).build();
@@ -57,14 +59,14 @@ public class Defects4jEvaluationMathTest {
 		assertEquals(1, result.getPatches().size());
 	}
 
-	@Test(timeout = FIFTEEN_MINUTES_TIMEOUT)
-	public void test_Math50() throws Exception {
-		// on Travis: 8 minutes, sometimes more than 10 minutes
-		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Math50");
-		NopolResult result = new NoPol(nopolContext).build();
-		assertEquals(1, result.getPatches().size());
-	}
+//	@Test(timeout = FIFTEEN_MINUTES_TIMEOUT)
+//	public void test_Math50() throws Exception {
+//		// on Travis: 8 minutes, sometimes more than 10 minutes
+//		if (!testShouldBeRun()) { return; }
+//		NopolContext nopolContext = nopolConfigFor("Math50");
+//		NopolResult result = new NoPol(nopolContext).build();
+//		assertEquals(1, result.getPatches().size());
+//	}
 
 //	@Test(timeout = FIVE_MINUTES_TIMEOUT *2)
 //	public void test_Math57() throws Exception {
@@ -84,15 +86,15 @@ public class Defects4jEvaluationMathTest {
 //		assertEquals(1, result.getPatches().size());
 //	}
 
-//	@Test(timeout = FIVE_MINUTES_TIMEOUT *2)
-//	public void test_Math69() throws Exception {
-//		// on Travis: 22sec
-//		if (!testShouldBeRun()) { return; }
-//		NopolContext nopolContext = nopolConfigFor("Math69");
-//		NopolResult result = new NoPol(nopolContext).build();
-//		assertEquals(1, result.getPatches().size());
-//	}
-//
+		@Test(timeout = FIVE_MINUTES_TIMEOUT *2)
+		public void test_Math69() throws Exception {
+			// on Travis: 22sec
+			if (!testShouldBeRun()) { return; }
+			NopolContext nopolContext = nopolConfigFor("Math69");
+			NopolResult result = new NoPol(nopolContext).build();
+			assertEquals(1, result.getPatches().size());
+		}
+
 //	@Test(timeout = FIVE_MINUTES_TIMEOUT *2)
 //	public void test_Math71() throws Exception {
 //		if (!testShouldBeRun()) { return; }

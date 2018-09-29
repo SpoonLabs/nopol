@@ -22,5 +22,4 @@ public interface InstrumentedProgram<T> {
      */
     Collection<Specification<T>> collectSpecifications(final URL[] classpath, List<TestResult> testClasses, final Collection<TestCase> failures);
 
-    boolean isAViablePatch();
 }
