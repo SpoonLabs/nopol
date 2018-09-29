@@ -102,7 +102,6 @@ public final class ConstraintModelBuilder implements InstrumentedProgram<Boolean
         AngelicExecution.enable();
         AngelicExecution.setBooleanValue(false);
         TestSuiteExecution.runTestResult(testClasses, classLoader, passingListenerWithFalse, nopolContext);
-        Collection<TestCase> testCasesPassingWithFalse = passingListenerWithFalse.successfulTests();
 
         AngelicExecution.setBooleanValue(true);
         PassingListener passingListenerWithTrue  = new PassingListener();
@@ -115,7 +114,7 @@ public final class ConstraintModelBuilder implements InstrumentedProgram<Boolean
             TestResult testResult = testClasses.get(i);
             TestCase testCase = testResult.getTestCase();
             boolean isOblivious = passingListenerWithTrue.successfulTests().contains(testCase) && passingListenerWithFalse.successfulTests().contains(testCase);
-            if (!isOblivious) {
+            if (!isOblivious && !failures.contains(testCase)) {
                 tmp.add(testResult);
             }
         }
