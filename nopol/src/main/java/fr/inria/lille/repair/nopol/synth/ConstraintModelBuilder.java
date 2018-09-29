@@ -38,7 +38,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -47,7 +46,6 @@ import java.util.List;
 public final class ConstraintModelBuilder implements InstrumentedProgram<Boolean> {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private boolean viablePatch;
     private final ClassLoader classLoader;
     private RuntimeValues<Boolean> runtimeValues;
     private SourceLocation sourceLocation;
@@ -86,6 +84,9 @@ public final class ConstraintModelBuilder implements InstrumentedProgram<Boolean
         // come back to default mode
         AngelicExecution.disable();
 
+        if (!isSynthesisPossible(firstResult, secondResult)) {
+            return Collections.emptyList();
+        }
         /* to collect information for passing tests */
         class PassingListener extends TestCasesListener {
             @Override
@@ -134,6 +135,35 @@ public final class ConstraintModelBuilder implements InstrumentedProgram<Boolean
         finalSpec.addAll(listenerPassing.specificationsForAllTests());
 
         return finalSpec;
+    }
+
+
+
+    private boolean isSynthesisPossible(final Result firstResultWithFalse, final Result secondResultWithTrue) {
+    	// this method is a key optimization in Nopol
+		// it enables to not start the synthesis when we are sure that it is not possible
+		// only based on the observed test outcomes with angelic values
+
+        Collection<Description> testFailuresWithFalse = TestSuiteExecution.collectDescription(firstResultWithFalse.getFailures());
+        Collection<Description> testFailuresWithTrue = TestSuiteExecution.collectDescription(secondResultWithTrue.getFailures());
+
+        // contract: all test failures must either in testFailuresWithFalse or in secondFailures
+		// removes from testFailuresWithFalse all of its elements that are not contained in testFailuresWithTrue
+		// consequently, it remains the elements that are always failing
+		Collection<Description> testsThatAreAlwasyFailing = new ArrayList<>(testFailuresWithFalse);
+		testsThatAreAlwasyFailing.retainAll(testFailuresWithTrue);
+
+        boolean synthesisIsPossible = testsThatAreAlwasyFailing.isEmpty();
+
+        // some logging
+        int nbFirstSuccess = firstResultWithFalse.getRunCount() - firstResultWithFalse.getFailureCount();
+        int nbSecondSuccess = secondResultWithTrue.getRunCount() - secondResultWithTrue.getFailureCount();
+        if (!synthesisIsPossible || (nbFirstSuccess == 0 && nbSecondSuccess == 0)) {
+            Logger testsOutput = LoggerFactory.getLogger("tests.output");
+            testsOutput.debug("Failing tests with false: \n{}", firstResultWithFalse.getFailures());
+            testsOutput.debug("Failing tests with true: \n{}", secondResultWithTrue.getFailures());
+        }
+        return synthesisIsPossible;
     }
 
 }
