@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -109,6 +110,9 @@ public class NopolContext implements Serializable {
 	private URL[] projectClasspath;
 	private String[] projectTests;
 	private List<String> testMethodsToIgnore; // tst methods
+
+	// this define the root path to compute the diff pathes (see PatchGenerator)
+	private Path rootProject;
 
 
 	public NopolContext() {
@@ -531,6 +535,17 @@ public class NopolContext implements Serializable {
 
 	public void setTestMethodsToIgnore(List<String> testMethodsToIgnore) {
 		this.testMethodsToIgnore = testMethodsToIgnore;
+	}
+
+	public Path getRootProject() {
+		return rootProject;
+	}
+
+	/**
+	 * Specify the root path for computing the relative paths in produced patches
+	 */
+	public void setRootProject(Path rootProject) {
+		this.rootProject = rootProject;
 	}
 
 	@Override

@@ -32,6 +32,11 @@ public class SpoonElementsCollector {
         this.nopolContext = nopolContext;
     }
 
+    /**
+     * Collect the runtime value of literal and variable
+     * @param threadRef the reference to the runtime environment
+     * @return
+     */
     public Candidates collect(ThreadReference threadRef) {
         Candidates candidates = new Candidates();
         Iterator<CtTypedElement> it = elements.iterator();
@@ -39,34 +44,33 @@ public class SpoonElementsCollector {
             StackFrame stackFrame = threadRef.frame(0);
             while (it.hasNext()) {
                 CtElement ctElement = it.next();
-                if (ctElement instanceof CtLiteral) {
-                    CtLiteral ctLiteral = (CtLiteral) ctElement;
-                    Object value = ctLiteral.getValue();
-                    Class type = null;
-                    if (value != null) {
-                        type = value.getClass();
-                    } else {
-                        continue;
+                try {
+                    if (ctElement instanceof CtLiteral) {
+                        CtLiteral ctLiteral = (CtLiteral) ctElement;
+                        Object value = ctLiteral.getValue();
+                        if (value == null) {
+                            continue;
+                        }
+                        Expression expression = AccessFactory.literal(value, nopolContext);
+                        logger.debug("[data] " + expression + "=" + expression.getValue());
+                        candidates.add(expression);
+                    } else if (ctElement instanceof CtVariableAccess) {
+                        CtVariableAccess ctVariableAccess = (CtVariableAccess) ctElement;
+                        LocalVariable localVariable = stackFrame.visibleVariableByName(ctVariableAccess.toString());
+                        if (localVariable == null) {
+                            continue;
+                        }
+                        Value value = stackFrame.getValue(localVariable);
+                        Expression expression = AccessFactory.variable(localVariable.name(), value, nopolContext);
+                        logger.debug("[data] " + expression + "=" + expression.getValue());
+                        candidates.add(expression);
                     }
-                    Expression expression = AccessFactory.literal(value, nopolContext);
-                    logger.debug("[data] " + expression + "=" + expression.getValue());
-                    candidates.add(expression);
-                } else if (ctElement instanceof CtVariableAccess) {
-                    CtVariableAccess ctVariableAccess = (CtVariableAccess) ctElement;
-                    LocalVariable localVariable = stackFrame.visibleVariableByName(ctVariableAccess.toString());
-                    if (localVariable == null) {
-                        continue;
-                    }
-                    Value value = stackFrame.getValue(localVariable);
-                    Expression expression = AccessFactory.variable(localVariable.name(), value, nopolContext);
-                    logger.debug("[data] " + expression + "=" + expression.getValue());
-                    candidates.add(expression);
+                } catch (Exception e) {
+                    logger.debug("Unable to collect the runtime value for " + ctElement, e);
                 }
             }
-        } catch (IncompatibleThreadStateException e) {
-            e.printStackTrace();
-        } catch (AbsentInformationException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.debug("Unable to access the stack frame", e);
         }
         return candidates;
     }

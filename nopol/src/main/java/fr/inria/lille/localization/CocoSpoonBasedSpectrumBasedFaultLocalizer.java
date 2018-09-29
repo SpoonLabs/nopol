@@ -3,6 +3,7 @@ package fr.inria.lille.localization;
 import fil.iagl.opl.cocospoon.processors.WatcherProcessor;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.localization.metric.Metric;
+import fr.inria.lille.localization.metric.Ochiai;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
 import instrumenting._Instrumenting;
@@ -26,6 +27,9 @@ public class CocoSpoonBasedSpectrumBasedFaultLocalizer implements FaultLocalizer
 
 	private List<StatementSourceLocation> statements;
 
+	public CocoSpoonBasedSpectrumBasedFaultLocalizer(NopolContext nopolContext) {
+		this(nopolContext, new Ochiai());
+	}
 	public CocoSpoonBasedSpectrumBasedFaultLocalizer(NopolContext nopolContext, Metric metric) {
 		runTests(nopolContext.getProjectTests(), nopolContext, new SpoonedProject(nopolContext.getProjectSources(), nopolContext),  new WatcherProcessor());
 		this.metric = metric;
@@ -78,8 +82,13 @@ public class CocoSpoonBasedSpectrumBasedFaultLocalizer implements FaultLocalizer
 		nbSucceedTest = 0;
 		for (int i = 0; i < testClasses.length; i++) {
 			try {
-				for (String methodName : getTestMethods(cl.loadClass(testClasses[i]))) {
-					String testMethod = testClasses[i] + "#" + methodName;
+				List<String> testMethods = new ArrayList<>();
+				if (testClasses[i].contains("#")) {
+					testMethods.add(testClasses[i]);
+				} else {
+					testMethods.addAll(getTestMethods(cl.loadClass(testClasses[i])));
+				}
+				for (String testMethod : testMethods) {
 					TestSuiteExecution.runTest(testMethod, cl, listener, nopolContext);
 					//Since we executed one test at the time, the listener contains one and only one TestCase
 					boolean testSucceed = listener.numberOfFailedTests() == 0;

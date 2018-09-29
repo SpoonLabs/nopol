@@ -41,6 +41,7 @@ public class VMAcquirer {
             IOException {
         Map<String, Connector.Argument> args = connector.defaultArguments();
         Connector.Argument pidArgument = args.get("port");
+        args.get("hostname").setValue("localhost");
         if (pidArgument == null) {
             throw new IllegalStateException();
         }

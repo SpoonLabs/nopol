@@ -61,7 +61,20 @@ public class Defects4jEvaluationTest {
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
 	}
-	
+
+	@Test(timeout = FIVE_MINUTES_TIMEOUT)
+	public void test_Chart3() throws Exception {
+		if (!testShouldBeRun()) { return; }
+		NopolContext nopolContext = nopolConfigFor("Chart3", "");
+		nopolContext.setLocalizer(NopolContext.NopolLocalizer.COCOSPOON);
+
+		// we take only the failing test case
+		nopolContext.setProjectTests(new String[]{"org.jfree.data.time.junit.TimeSeriesTests#testCreateCopy3"});
+
+		NopolResult result = new NoPol(nopolContext).build();
+		assertEquals(1, result.getPatches().size());
+	}
+
 }
 
 
