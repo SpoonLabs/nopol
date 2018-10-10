@@ -175,8 +175,30 @@ Usage: java -jar nopol.jar
 Notes: For using Dynamoth (`-y dynamoth`), you must add tools.jar in the classpath of Nopol, and use java with `-cp` (and not `-jar`):
 
     java -cp $JAVA_HOME/lib/tools.jar:../nopol/target/nopol-SNAPSHOT-jar-with-dependencies.jar fr.inria.lille.repair.Main <nopol arguments>
- 
+    
+## Examples of Real Bugs Targeted by Nopol:
+
+Apache Commons Math:
+
+* CM1 https://github.com/apache/commons-math/commit/eb4d267f51ff192b928be1d85ccb5f56015f19d3 (Percentile)
+* CM2 http://svn.apache.org/viewvc?view=revision&revision=141217 (MathUtils)
+* CM3 http://svn.apache.org/viewvc?view=revision&revision=141473 (MathUtils, "Changed factorial methods to return 1 for argument = 0.")
+* CM3 https://github.com/apache/commons-math/commit/dabf3a5beb9ab697d570154b9961078a8586c787 (MathUtils, "fixed overflow error in gdc computation, JIRA: MATH-238)
+* CM7 https://github.com/apache/commons-math/commit/0596e3145c1a8a9c42185fe688c42b0830b64516 (RandomDataImp, "Fixed parameter test in RandomDataImpl#nextExponential. JIRA: MATH-309.")
+* CM10 https://github.com/apache/commons-math/commit/49444ee6a56caee4eddc32c24dd960dd3195f7fa (Covariance, "Allow covariance to be computed for one-dimensional variables. JIRA: MATH-939")
+* PM2 https://github.com/apache/commons-math/commit/318d66e1b170a3b57d54d7175cfb3e495f6d7fda (MessageFactory, "allow either specific or generic formats to be null")
+
+Apache Commons Lang:
+
+* CL2 https://github.com/apache/commons-lang/commit/80da42a808874e691f70654446477421edf53e46 (StringUtils, "Handles empty string now as well.")
+* CL3 https://github.com/apache/commons-lang/commit/9a51cf5efc8b2b345a02f4d18e5800ca498d82cd (StringUtils, "Relax exceptions in left(), right() and mid()")
+* CL4 https://github.com/apache/commons-lang/commit/2f6b0b2c69b626d6a669aa8add3223417b3b274e (StrBuilder, "Fix indexOf and lastIndexOf with null input")
+
+Google GSON:
+
+* https://github.com/google/gson/commit/9a24219 (Apr 19, 2017, "negative zero test and fix")
+
 ## Contact
 
-For questions and feedback , please contact martin.monperrus@univ-lille1.fr
+For questions and feedback , please contact @monperrus
 
