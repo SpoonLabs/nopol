@@ -25,11 +25,11 @@ public class CocospoonLocalizerTest {
 
     @Test
     public void testOchiaiCoCoSpoonLocalizer() throws Exception {
-        File[] sources = new File[]{new File("/home/apr/environment/buggyPrograms/NopolRepairPrograms/Math/Math_58/src/main/java")}; // This is the source file of Math_58 
+        File[] sources = new File[]{new File("../Math_58/src/main/java")}; // This is the source file of Math_58 
 	String tests="org.apache.commons.math.distribution.HypergeometricDistributionTest"; // This test is the targeted test that can expose the problem of cocospoon.
         URL[] classpath = new URL[]{
-                new File("/home/apr/environment/buggyPrograms/NopolRepairPrograms/Math/Math_58/target/classes/").toURI().toURL(),
-                new File("/home/apr/environment/buggyPrograms/NopolRepairPrograms/Math/Math_58/target/test-classes/").toURI().toURL()
+                new File("../Math_58/target/classes/").toURI().toURL(),
+                new File("../Math_58/target/test-classes/").toURI().toURL()
         }; // This corresponds to the paths of java classes files.
 	String[] testClasses = tests.split(", ");
         CocoSpoonBasedSpectrumBasedFaultLocalizer localizer = new CocoSpoonBasedSpectrumBasedFaultLocalizer(new NopolContext(sources, classpath, testClasses), new Ochiai());
