@@ -1,0 +1,94 @@
+It was necessary to reorganize the files because the directories didn't match the classes' packages.
+
+GZoltar falla con la test suite RandomDataTest:
+
+java.lang.NoClassDefFoundError: com/gzoltar/core/instr/logging/Logger
+	at sun.security.ec.SunEC$1.<init>(Unknown Source)
+	at sun.security.ec.SunEC.<clinit>(Unknown Source)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:57)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:526)
+	at java.lang.Class.newInstance(Class.java:374)
+	at sun.security.jca.ProviderConfig$2.run(ProviderConfig.java:221)
+	at sun.security.jca.ProviderConfig$2.run(ProviderConfig.java:206)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at sun.security.jca.ProviderConfig.doLoadProvider(ProviderConfig.java:206)
+	at sun.security.jca.ProviderConfig.getProvider(ProviderConfig.java:187)
+	at sun.security.jca.ProviderList.getProvider(ProviderList.java:232)
+	at sun.security.jca.ProviderList.get
+15:10:20.869 f.i.l.jefix.sps.gzoltar.GZoltarJava7 - Index(ProviderList.java:262)
+	at sun.security.jca.ProviderList.getProviderConfig(ProviderList.java:246)
+	at sun.security.jca.ProviderList.getProvider(ProviderList.java:252)
+	at sun.security.jca.GetInstance.getService(GetInstance.java:81)
+	at sun.security.jca.GetInstance.getInstance(GetInstance.java:206)
+	at java.security.SecureRandom.getInstance(SecureRandom.java:327)
+	at org.apache.commons.math.random.RandomDataImpl.setSecureAlgorithm(Unknown Source)
+	at org.apache.commons.math.random.RandomDataTest.testConfig(RandomDataTest.java:478)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at junit.framework.TestCase.runTest(TestCase.java:176)
+	at junit.framework.TestCase.runBare(TestCase.java:141)
+	at junit.framework.TestResult$1.protect(TestResult.java:122)
+	at junit.framework
+15:10:20.869 f.i.l.jefix.sps.gzoltar.GZoltarJava7 - .TestResult.runProtected(TestResult.java:142)
+	at junit.framework.TestResult.run(TestResult.java:125)
+	at junit.framework.TestCase.run(TestCase.java:129)
+	at junit.framework.TestSuite.runTest(TestSuite.java:255)
+	at junit.framework.TestSuite.run(TestSuite.java:250)
+	at org.junit.internal.runners.JUnit38ClassRunner.run(JUnit38ClassRunner.java:84)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:160)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:138)
+	at com.gzoltar.core.instr.testing.junit.JUnitRunner.run(Unknown Source)
+	at com.gzoltar.core.instr.Runner.main(Unknown Source)
+Caused by: java.lang.ClassNotFoundException: com.gzoltar.core.instr.logging.Logger
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:366)
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:355)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:354)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:
+15:10:20.869 f.i.l.jefix.sps.gzoltar.GZoltarJava7 - 357)
+	... 38 more
+
+El test representativo prueba ambos branches del if.
+Failing test(s): [testPercentiles(org.apache.commons.math.stat.StoreUnivariateImplTest)]
+
+Fue separado en varios tests y con todos estos cambios encuentra una solución "equivalente":
+
+16:48:44.206 f.i.lille.jefix.test.junit.TestPatch - Applying patch: org.apache.commons.math.stat.univariate.rank.Percentile:149: CONDITIONAL sorted.length<=fpos
+16:48:44.208 f.i.l.j.s.c.ConditionalReplacer - Replacing:
+if (pos > n) {
+    return sorted[(length - 1)];
+} 
+
+Adding floating point support changes the operator: length==fpos
+
+11:41:07.426 code.synthesis - Candidate: length==fpos
+11:41:07.480 code.synthesis - Candidate: length==fpos
+11:41:07.517 f.i.lille.nopol.test.junit.TestPatch - Applying patch: org.apache.commons.math.stat.univariate.rank.Percentile:151: CONDITIONAL length==fpos
+11:41:07.519 f.i.l.n.s.c.ConditionalReplacer - Replacing:
+if (pos > n) {
+    return sorted[(length - 1)];
+}
+
+---- src/java/org/apache/commons/math/stat/univariate/rank/Percentile.java ----
+index 99dbd64..e3d8da6 100644
+@@ -57,7 +57,7 @@ import java.util.Arrays;
+ import org.apache.commons.math.stat.univariate.AbstractUnivariateStatistic;
+ 
+ /**
+- * @version $Revision: 1.6 $ $Date: 2003/10/13 08:10:58 $
++ * @version $Revision: 1.7 $ $Date: 2003/10/16 15:15:04 $
+  */
+ public class Percentile extends AbstractUnivariateStatistic {
+ 
+@@ -145,7 +145,7 @@ public class Percentile extends AbstractUnivariateStatistic {
+         if (pos < 1) {
+             return sorted[0];
+         }
+-        if (pos > n) {
++        if (pos >= n) {
+

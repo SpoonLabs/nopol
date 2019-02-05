@@ -1,0 +1,14 @@
+diff --git a/src/test/org/apache/commons/math/util/MathUtilsTest.java b/src/test/org/apache/commons/math/util/MathUtilsTest.java
+index dd99e91..de88117 100644
+--- a/src/test/org/apache/commons/math/util/MathUtilsTest.java
++++ b/src/test/org/apache/commons/math/util/MathUtilsTest.java
+@@ -291,7 +291,8 @@ public final class MathUtilsTest extends TestCase {
+         assertEquals(1, MathUtils.gcd(-a, c));
+         assertEquals(1, MathUtils.gcd(a, -c));
+         assertEquals(1, MathUtils.gcd(-a, -c));
+-
++    }
++    public void testGcd_1() {
+         assertEquals(3 * (1<<15), MathUtils.gcd(3 * (1<<20), 9 * (1<<15)));
+ 
+     }

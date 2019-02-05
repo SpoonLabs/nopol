@@ -1,0 +1,9 @@
+Cannot solve float point issues?
+
++++ src/java/org/apache/commons/math/analysis/solvers/UnivariateRealSolverUtils.java    (working copy)
+@@ -195,7 +195,8 @@
+         } while ((fa * fb > 0.0) && (numIterations < maximumIterations) && 
+                 ((a > lowerBound) || (b < upperBound)));
+-        if (fa * fb >= 0.0 ) {
++        if (fa * fb > 0.0 ) {
+

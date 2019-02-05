@@ -1,0 +1,45 @@
+diff --git a/src/test/org/apache/commons/math/util/MathUtilsTest.java b/src/test/org/apache/commons/math/util/MathUtilsTest.java
+index ca0b296..7517386 100644
+--- a/src/test/org/apache/commons/math/util/MathUtilsTest.java
++++ b/src/test/org/apache/commons/math/util/MathUtilsTest.java
+@@ -125,31 +125,39 @@ public final class MathUtilsTest extends TestCase {
+         assertEquals("0", 0.0d, MathUtils.factorialLog(0), 1E-14);
+     }
+ 
+-    public void testFactorialFail() {
++    public void testFactorialFail_1() {
+         try {
+             long x = MathUtils.factorial(-1);
+             fail ("expecting IllegalArgumentException");
+         } catch (IllegalArgumentException ex) {
+             ;
+         }
++    }
++    public void testFactorialFail_2() {
+         try {
+             double x = MathUtils.factorialDouble(-1);
+             fail ("expecting IllegalArgumentException");
+         } catch (IllegalArgumentException ex) {
+             ;
+         }
++    }
++    public void testFactorialFail_3() {
+         try {
+             double x = MathUtils.factorialLog(-1);
+             fail ("expecting IllegalArgumentException");
+         } catch (IllegalArgumentException ex) {
+             ;
+         }
++    }
++    public void testFactorialFail_4() {
+         try {
+             double x = MathUtils.factorial(21);
+             fail ("expecting ArithmeticException");
+         } catch (ArithmeticException ex) {
+             ;
+         }
++    }
++    public void testFactorialFail_5() {
+         assertTrue("expecting infinite factorial value",
+             Double.isInfinite(MathUtils.factorialDouble(171)));
+     }

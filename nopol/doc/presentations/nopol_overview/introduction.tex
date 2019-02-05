@@ -1,0 +1,111 @@
+\begin{frame}  
+\frametitle{Bugs?}
+\begin{quotation}
+The difference between the right word and the almost right word is the difference between lightning and a lightning bug.
+\end{quotation}
+-- Mark Twain
+\end{frame}
+ 
+\begin{frame}
+\frametitle{Motivation}
+\framesubtitle{The Six Stages of Debugging}
+\begin{enumerate}
+\item  That can’t happen.
+\item  That doesn’t happen on my machine.
+\item  That shouldn’t happen.
+\item  Why does that happen?
+\item  Oh, I see.
+\item  How did that ever work?
+\end{enumerate}
+\end{frame}
+
+ 
+ 
+\begin{frame}[fragile]
+\frametitle{What are conditional expression bugs?}
+\begin{lstlisting}[escapeinside=\[\]]
+[\textbf{boolean expression}] ? someValue : someOtherValue;
+
+if ([\textbf{boolean expression}]) {
+...
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Change of If Condition Expression (IF-CC)}
+Kai Pan et al.\footnote{Toward an understanding of bug fix patterns}:
+\begin{quotation}
+This bug fix change fixes the bug by changing the condition expression of an if
+condition. The previous code has a bug in the if condition logic.
+\end{quotation}
+
+\vspace{1em}
+
+\begin{lstlisting}
+- if (getView().countSelected() == 0) {
++ if (getView().countSelected() <= 1) {
+\end{lstlisting}
+\end{frame}
+  
+\begin{frame}[fragile]
+\frametitle{What are conditional expression bugs?}
+\framesubtitle{Commons Math - MathUtils class}
+    
+\begin{lstlisting}[escapeinside=\[\]]
+411: public static int gcd(int u, int v) {
+412:   if ([\textbf{u * v == 0}]) {
+413:     return (Math.abs(u) + Math.abs(v));
+414:   }
+...
+\end{lstlisting}
+
+\vspace{2em}
+
+\centering What about \texttt{u=0x00110000} and  \texttt{v=0x01100000}?
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Problem I}
+\framesubtitle{How does the tool know something is \textit{wrong}?}
+\begin{center}
+\Huge{404}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Problem I}
+\framesubtitle{How does the tool know something is \textit{wrong}?}
+Some kind of specification:
+\begin{itemize}
+ \item Model
+ \item Contracts
+ \item \textbf{Unit tests}
+ \item \dots
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{How does the tool know something is \textit{wrong}?}
+\framesubtitle{At least one failing test}
+      
+      \begin{lstlisting}[escapeinside=\[\]]
+assertEquals([\textbf{3 * (1$<<$15)}]
+            , gcd(3 * (1<<20), 9 * (1<<15)));
+	\end{lstlisting}
+\end{frame}
+
+\begin{frame}
+\frametitle{No-Pol input}
+\begin{itemize}
+ \item Java source code.
+ \item Unit tests with at least one failing test case.
+ \item Dependencies (\textit{classpath}).
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{No-Pol output}
+Patched Java source file.
+\end{frame}

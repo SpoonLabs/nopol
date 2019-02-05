@@ -1,0 +1,22 @@
+diff --git a/src/test/org/apache/commons/math/util/MathUtilsTest.java b/src/test/org/apache/commons/math/util/MathUtilsTest.java
+index dd99e91..d3f2b69 100644
+--- a/src/test/org/apache/commons/math/util/MathUtilsTest.java
++++ b/src/test/org/apache/commons/math/util/MathUtilsTest.java
+@@ -295,8 +291,17 @@ public final class MathUtilsTest extends TestCase {
+     public void testGcd_1() {
+         assertEquals(3 * (1<<15), MathUtils.gcd(3 * (1<<20), 9 * (1<<15)));
+ 
+     }
+ 
++    public void testGcd_2(){
++        assertEquals(4 * (1<<15), MathUtils.gcd(-8 * (1<<20), -4 * (1<<15)));
++    }
++
++    public void testGcd_3(){
++        assertEquals(3 * (1<<15), MathUtils.gcd(-6 * (1<<20), -3 * (1<<15)));
++    }
++
++
+     public void testHash() {
+         double[] testArray = {
+             Double.NaN,

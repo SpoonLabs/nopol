@@ -1,0 +1,43 @@
+Buildfile: /home/fav/workspace/commons-lang/build.xml
+
+init:
+     [echo] -------- commons-lang 2.0-dev --------
+
+prepare:
+
+static:
+
+compile:
+    [javac] /home/fav/workspace/commons-lang/build.xml:41: warning: 'includeantruntime' was not set, defaulting to build.sysclasspath=last; set to false for repeatable builds
+    [javac] Compiling 64 source files to /home/fav/workspace/commons-lang/target/classes
+    [javac] /home/fav/workspace/commons-lang/src/java/org/apache/commons/lang/enum/Enum.java:54: error: as of release 5, 'enum' is a keyword, and may not be used as an identifier
+    [javac] package org.apache.commons.lang.enum;
+    [javac]                                 ^
+    [javac]   (use -source 1.4 or lower to use 'enum' as an identifier)
+    [javac] /home/fav/workspace/commons-lang/src/java/org/apache/commons/lang/enum/EnumUtils.java:54: error: as of release 5, 'enum' is a keyword, and may not be used as an identifier
+    [javac] package org.apache.commons.lang.enum;
+    [javac]                                 ^
+    [javac]   (use -source 1.4 or lower to use 'enum' as an identifier)
+    [javac] /home/fav/workspace/commons-lang/src/java/org/apache/commons/lang/enum/ValuedEnum.java:54: error: as of release 5, 'enum' is a keyword, and may not be used as an identifier
+    [javac] package org.apache.commons.lang.enum;
+    [javac]                                 ^
+    [javac]   (use -source 1.4 or lower to use 'enum' as an identifier)
+    [javac] /home/fav/workspace/commons-lang/src/java/org/apache/commons/lang/enum/ValuedEnum.java:168: error: as of release 5, 'enum' is a keyword, and may not be used as an identifier
+    [javac]             ValuedEnum enum = (ValuedEnum) it.next();
+    [javac]                        ^
+    [javac]   (use -source 1.4 or lower to use 'enum' as an identifier)
+    [javac] /home/fav/workspace/commons-lang/src/java/org/apache/commons/lang/enum/ValuedEnum.java:169: error: as of release 5, 'enum' is a keyword, and may not be used as an identifier
+    [javac]             if (enum.getValue() == value) {
+    [javac]                 ^
+    [javac]   (use -source 1.4 or lower to use 'enum' as an identifier)
+    [javac] /home/fav/workspace/commons-lang/src/java/org/apache/commons/lang/enum/ValuedEnum.java:170: error: as of release 5, 'enum' is a keyword, and may not be used as an identifier
+    [javac]                 return enum;
+    [javac]                        ^
+    [javac]   (use -source 1.4 or lower to use 'enum' as an identifier)
+    [javac] 6 errors
+
+BUILD FAILED
+/home/fav/workspace/commons-lang/build.xml:41: Compile failed; see the compiler error output for details.
+
+Total time: 0 seconds
+

@@ -1,0 +1,11 @@
+Hasta hoy no existen tests para este cambio.
+
+------- src/java/org/apache/commons/math/linear/QRDecompositionImpl.java -------
+index af47bab..1e01798 100644
+@@ -205,7 +205,7 @@ public class QRDecompositionImpl implements QRDecomposition {
+     public RealMatrix getQT()
+         throws IllegalStateException {
+ 
+-            if (cachedQ == null) {
++            if (cachedQT == null) {
+

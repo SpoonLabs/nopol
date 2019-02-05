@@ -1,0 +1,32 @@
+Spoon no funciona con clases anónimas porque JDT les pone como nombre "" en lugar del número que les pone javac y CtSimpleTypeImpl.NestedTypeScanner.checkType compara por ese nombre.
+Tampoco funciona nombrando la clase anónima porque javac le prependea el número al nombre...
+
+Exception in thread "main" java.lang.IllegalStateException: java.lang.ClassNotFoundException: org.apache.commons.collections.SequencedHashMap$1CachoSet
+	at fr.inria.lille.nopol.synth.ConstraintModelBuilder.<init>(ConstraintModelBuilder.java:74)
+	at fr.inria.lille.nopol.synth.SynthesizerFactory.getFor(SynthesizerFactory.java:77)
+	at fr.inria.lille.nopol.NoPol.buildPatch(NoPol.java:91)
+	at fr.inria.lille.nopol.NoPol.build(NoPol.java:76)
+	at fr.inria.lille.nopol.Main.run(Main.java:85)
+	at fr.inria.lille.nopol.Main.main(Main.java:53)
+Caused by: java.lang.ClassNotFoundException: org.apache.commons.collections.SequencedHashMap$1CachoSet
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:366)
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:355)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:354)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:308)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+	at java.lang.ClassLoader.findSystemClass(ClassLoader.java:1051)
+	at spoon.SpoonClassLoader.loadClass(SpoonClassLoader.java:166)
+	at fr.inria.lille.nopol.synth.ConstraintModelBuilder.<init>(ConstraintModelBuilder.java:72)
+	... 5 more
+
+Se solucionó cargando la clase contenedora.
+
+src/java/org/apache/commons/collections/SequencedHashMap.java View file @ 9064684
+...	...	 @@ -587,7 +587,7 @@ private Entry findEntry(Object o) {
+587	587	          
+588	588	          Map.Entry e = (Map.Entry)o;
+589	589	          Entry entry = (Entry)entries.get(e.getKey());
+590	 	 -        if(entry.equals(e)) return entry;
+ 	590	 +        if(entry != null && entry.equals(e)) return entry;

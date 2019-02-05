@@ -1,0 +1,68 @@
+La clase modificada por spoon es inválida:
+
+Exception in thread "main" java.lang.VerifyError: Bad instruction: a8
+Exception Details:
+  Location:
+    org/apache/commons/collections/ExtendedProperties.<init>(Ljava/lang/String;Ljava/lang/String;)V @100: jsr
+  Reason:
+    Error exists in the bytecode
+  Bytecode:
+    0000000: 2ab7 00a3 2a12 a4b8 00a6 b500 aa2a 03b5
+    0000010: 00ac 2a01 b500 ae2a bb00 2659 b700 28b5
+    0000020: 00b0 2a2b b500 b82a bb00 ba59 2bb7 00bc
+    0000030: b600 bdb5 00c0 2a2a b400 c003 2ab4 00c0
+    0000040: 2ab4 00aa b600 c204 60b6 003a b500 c001
+    0000050: 4ebb 00c6 592b b700 c84e 2a2d b600 c9a7
+    0000060: 001b 3a05 a800 0619 05bf 3a04 2dc6 000b
+    0000070: 2db6 00cd a700 0457 a904 a8ff f02c c600
+    0000080: 0f2a bb00 0159 2cb7 00d0 b500 7ab1     
+  Exception Handler Table:
+    bci [81, 98] => handler: 98
+    bci [122, 125] => handler: 98
+    bci [108, 116] => handler: 119
+  Stackmap Table:
+    full_frame(@98,{Object[#1],Object[#50],Object[#50],Object[#198]},{Object[#209]})
+    same_frame(@106)
+    append_frame(@116,Object[#74])
+    same_locals_1_stack_item_frame(@119,Object[#179])
+    same_frame(@120)
+    chop_frame(@122,1)
+    same_frame(@141)
+
+	at java.lang.Class.getDeclaredFields0(Native Method)
+	at java.lang.Class.privateGetDeclaredFields(Class.java:2387)
+	at java.lang.Class.getField0(Class.java:2712)
+	at java.lang.Class.getField(Class.java:1567)
+	at spoon.SpoonClassLoader.injectMetaClass(SpoonClassLoader.java:138)
+	at spoon.SpoonClassLoader.loadClass(SpoonClassLoader.java:174)
+	at fr.inria.lille.nopol.synth.ConstraintModelBuilder.<init>(ConstraintModelBuilder.java:73)
+	at fr.inria.lille.nopol.synth.SynthesizerFactory.getFor(SynthesizerFactory.java:77)
+	at fr.inria.lille.nopol.NoPol.buildPatch(NoPol.java:91)
+	at fr.inria.lille.nopol.NoPol.build(NoPol.java:76)
+	at fr.inria.lille.nopol.Main.run(Main.java:85)
+	at fr.inria.lille.nopol.Main.main(Main.java:53)
+
+
+
+src/java/org/apache/commons/collections/ExtendedProperties.java -------
+index 35245d5..6b11370 100644
+@@ -1708,6 +1708,10 @@ public class ExtendedProperties extends Hashtable {
+      * <p>
+      * NOTE: From Commons Collections 3.2 this method will pick up
+      * any default parent Properties of the specified input object.
++     * <p>
++     * As with java.util.Properties(Properties), any non-String 
++     * values will not be passed on in the new ExtendedProperties 
++     * object.
+      *
+      * @param props  the properties object to convert
+      * @return new ExtendedProperties created from props
+@@ -1717,7 +1721,10 @@ public class ExtendedProperties extends Hashtable {
+ 
+         for (Enumeration e = props.propertyNames(); e.hasMoreElements();) {
+             String s = (String) e.nextElement();
+-            c.setProperty(s, props.getProperty(s));
++            String value = props.getProperty(s);
++            if(value != null) {
++                c.setProperty(s, value);
++            }

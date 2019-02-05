@@ -1,0 +1,40 @@
+Es necesario corregir tres tests para poder correr.
+
+  testReflectionHierarchyArrayList(org.apache.commons.lang3.builder.ToStringBuilderTest)
+  testUPlus(org.apache.commons.lang3.text.translate.UnicodeUnescaperTest)
+  testFormat(org.apache.commons.lang3.time.FastDateFormatTest)
+
+También hay un bug en BasicThreadFactoryTest:
+
+	public void testNewThreadNoDaemonFlag() {
+		ThreadFactory wrapped = EasyMock.createMock(ThreadFactory.class);
+		Runnable r1 = EasyMock.createMock(Runnable.class);
+		Runnable r2 = EasyMock.createMock(Runnable.class);
+		Thread t1 = new Thread();
+		Thread t2 = new Thread();
+		t1.setDaemon(true);
+		EasyMock.expect(wrapped.newThread(r1)).andReturn(t1);
+		EasyMock.expect(wrapped.newThread(r2)).andReturn(t2);
+		EasyMock.replay(wrapped, r1, r2);
+		BasicThreadFactory factory = builder.wrappedFactory(wrapped).build();
+		assertSame("Wrong thread 1", t1, factory.newThread(r1));
+		assertTrue("No daemon thread", t1.isDaemon());
+		assertSame("Wrong thread 2", t2, factory.newThread(r2));
+		assertFalse("A daemon thread", t2.isDaemon());
+		EasyMock.verify(wrapped, r1, r2);
+	}
+
+falta:
+		t2.setDaemon(false);
+
+Pues el flag daemon se hereda del thread padre...
+
+src/main/java/org/apache/commons/lang3/text/translate/NumericEntityUnescaper.java View file @ 8bbab38
+...	...	 @@ -34,8 +34,7 @@
+34	34	       */
+35	35	      @Override
+36	36	      public int translate(CharSequence input, int index, Writer out) throws IOException {
+37	 	 -        // TODO: Protect from ArrayIndexOutOfBounds
+38	 	 -        if(input.charAt(index) == '&' && input.charAt(index + 1) == '#') {
+ 	37	 +        if(input.charAt(index) == '&' && index < (input.length() - 1) && input.charAt(index + 1) == '#') {
+

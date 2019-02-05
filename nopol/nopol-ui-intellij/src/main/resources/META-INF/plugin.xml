@@ -1,0 +1,66 @@
+<idea-plugin version="2">
+    <id>fr.inria.lille.spirals.repair</id>
+    <name>Nopol-Plugin</name>
+    <version>1.0</version>
+    <vendor email="librepair@inria.fr" url="https//github.com/SpoonLabs/nopol-ui-intellij.git">Inria</vendor>
+
+    <description><![CDATA[
+        <strong>Automatic repair of bugs with Nopol</strong>
+
+        <b>What this plugin does?</b>
+        <p>This plugin allows you to automatically fix your program based on the test suite. The fix is done by
+        either changing an if-condition or by adding a pre-condition (adding an if before a statement). The fix search
+        is driven by the failing test case trigerring the bug, and the other successful test cases.</p>
+
+        <b>How to use it?</b>
+        <p>As soon as you have a failing test case, right-click on the test class, and select "Nopol", and then "Fix Me" (the default configuration should work). 
+        The other configuration options are explained in the <a href="https://github.com/SpoonLabs/nopol-ui-intellij">Readme</a>.</p>
+
+        <p>To getting started, you can generate a toy module that contains a failing test case (Right Click >> Nopol >> Preferences >> generate toy project).</p>
+
+        <b>How it works?</b>
+        <p>Nopol performs static and dynamic analysis of the failling and passing test cases.
+        When Nopol succeeds to find a patch, all tests are passing / green.</p>
+
+        <b>Authors</b>
+        <p>The librepair project is a project of the SPIRALS research group at Inria Lille (a French research institute).</p>
+
+        <p>More information: <a href="https://github.com/SpoonLabs/nopol">nopol</a>,<a href="https://github.com/SpoonLabs/nopol-ui-intellij">nopol-ui-intellij</a>,<a href="https://team.inria.fr/spirals/">spirals</a></p>
+
+        <b>Contributions</b>
+        <p>Found a bug? Want to contribute? Any question? Do not hesitate to open issues or pull-requests on the <a href="https://github.com/SpoonLabs/nopol-ui-intellij">github repositories</a>.</p>
+    ]]></description>
+
+    <change-notes><![CDATA[
+        <a href="https://github.com/SpoonLabs/nopol-ui-intellij/commits/master">Change-notes</a>
+    ]]>
+    </change-notes>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="141.0"/>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.platform</depends>
+
+
+    <extensions defaultExtensionNs="com.intellij"></extensions>
+
+    <actions>
+        <group id="nopol-plugin.NoPolMenu" text="Nopol" description="Nopol menu">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <action class="plugin.Plugin" id="nopol-plugin.PluginEditor"
+                    text="Nopol" description="Configure and run Nopol">
+            </action>
+        </group>
+        <group id="nopol-plugin.GeneratorMenu" text="Generate toy-project" description="Generate toy project">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+            <action class="plugin.Generator" id="nopol-plugin.GeneratorProjectView"
+                    text="Generate toy-project" description="Generate a toy-project to try the plugin">
+            </action>
+        </group>
+    </actions>
+
+</idea-plugin>

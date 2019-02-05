@@ -1,0 +1,32 @@
+buildscript {
+    repositories {
+        maven { url 'http://dl.bintray.com/jetbrains/intellij-plugin-service' }
+    }
+}
+
+plugins {
+    id 'java'
+    id "org.jetbrains.intellij" version "0.1.10"
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "http://repo.akka.io/snapshots/"
+    }
+}
+
+dependencies {
+    compile "com.typesafe.akka:akka-actor_2.11:2.3-SNAPSHOT"
+    compile "fr.inria.gforge.spirals:nopol:0.2-SNAPSHOT"
+    compile "fr.inria.gforge.spirals:nopol-server:0.2-SNAPSHOT"
+    compile "com.typesafe.akka:akka-remote_2.11:2.3-SNAPSHOT"
+}
+
+intellij {
+    publish {
+        username "$System.env.USER"
+        password "$System.env.PASSWORD"
+    }
+}

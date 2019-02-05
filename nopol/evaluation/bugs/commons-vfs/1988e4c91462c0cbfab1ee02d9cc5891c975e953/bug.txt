@@ -1,0 +1,10 @@
+
+sandbox/src/main/java/org/apache/commons/vfs/provider/mime/MimeFileObject.java 
+index c7e01e7..1252207 100644
+@@ -142,7 +142,7 @@ public class MimeFileObject
+ 			return FileType.FILE;
+ 		}
+ 		*/
+-		if (part.getContent() != null && part.getContent() instanceof Part)
++		if (isMultipart() || (part.getContent() != null && part.getContent() instanceof Part))
+

@@ -1,0 +1,24 @@
+\begin{tikzpicture}[
+  every matrix/.style={ampersand replacement=\&,column sep=2em,row sep=2em},
+  shadedbox/.style={rounded corners,fill=black!90},
+  nobox/.style={rounded corners,fill=gray,path fading=south},
+  box/.style={nobox, draw, thick},
+  flow/.style={->, very thick},
+  fail/.style={->, thick, dashed},
+  every node/.style={align=center}]
+  
+% Position the nodes using a matrix layout
+\matrix{
+    \node[shadedbox] (faultLocalization) {Fault \\ Localization};
+    \& \node[box] (oracleInquisition) {Oracle \\ Inquisition};
+    \& \node[nobox] (collectionOfTestExecutionData) {Collection \\ of Test Execution \\ Data};
+    \& \node[shadedbox] (empty) {...};
+    \\
+  };
+
+% Draw the arrows between the nodes and label them.
+\draw [flow] (faultLocalization) -- (oracleInquisition);
+\draw [flow] (oracleInquisition) -- (collectionOfTestExecutionData);
+\draw [flow] (collectionOfTestExecutionData) -- (empty);
+
+\end{tikzpicture}

@@ -1,0 +1,60 @@
+diff --git a/src/test/org/apache/commons/lang/StringUtilsSubstringTest.java b/src/test/org/apache/commons/lang/StringUtilsSubstringTest.java
+index 6e3a60c..2a2fb80 100644
+--- a/src/test/org/apache/commons/lang/StringUtilsSubstringTest.java
++++ b/src/test/org/apache/commons/lang/StringUtilsSubstringTest.java
+@@ -165,24 +165,52 @@ public class StringUtilsSubstringTest extends TestCase {
+         assertSame(FOOBAR, StringUtils.right(FOOBAR, 80));
+     }
+     
+-    public void testMid_String() {
++    public void testMid_String_1() {
+         assertSame(null, StringUtils.mid(null, -1, 0));
++    }
++    public void testMid_String_2() {
+         assertSame(null, StringUtils.mid(null, 0, -1));
++    }
++    public void testMid_String_3() {
+         assertSame(null, StringUtils.mid(null, 3, 0));
++    }
++    public void testMid_String_4() {
+         assertSame(null, StringUtils.mid(null, 3, 2));
+-        
++    }
++    public void testMid_String_5() {
+         assertEquals("", StringUtils.mid("", 0, -1));
++    }
++    public void testMid_String_6() {
+         assertEquals("", StringUtils.mid("", 0, 0));
++    }
++    public void testMid_String_7() {
+         assertEquals("", StringUtils.mid("", 0, 2));
+-        
++    }
++    public void testMid_String_8() {
+         assertEquals("", StringUtils.mid(FOOBAR, 3, -1));
++    }
++    public void testMid_String_9() {
+         assertEquals("", StringUtils.mid(FOOBAR, 3, 0));
++    }
++    public void testMid_String_10() {
+         assertEquals("b", StringUtils.mid(FOOBAR, 3, 1));
++    }
++    public void testMid_String_11() {
+         assertEquals(FOO, StringUtils.mid(FOOBAR, 0, 3));
++    }
++    public void testMid_String_12() {
+         assertEquals(BAR, StringUtils.mid(FOOBAR, 3, 3));
++    }
++    public void testMid_String_13() {
+         assertEquals(FOOBAR, StringUtils.mid(FOOBAR, 0, 80));
++    }
++    public void testMid_String_14() {
+         assertEquals(BAR, StringUtils.mid(FOOBAR, 3, 80));
++    }
++    public void testMid_String_15() {
+         assertEquals("", StringUtils.mid(FOOBAR, 9, 3));
++    }
++    public void testMid_String_16() {
+         assertEquals(FOO, StringUtils.mid(FOOBAR, -1, 3));
+     }
+     

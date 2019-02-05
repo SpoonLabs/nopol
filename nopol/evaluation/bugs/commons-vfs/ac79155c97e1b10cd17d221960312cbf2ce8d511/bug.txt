@@ -1,0 +1,9 @@
+--- core/src/main/java/org/apache/commons/vfs2/impl/DefaultFileMonitor.java ---
+index c71242e..8777279 100644
+@@ -388,7 +388,7 @@ public class DefaultFileMonitor implements Runnable, FileMonitor
+ 
+                 if (getChecksPerRun() > 0)
+                 {
+-                    if (iterFileNames % getChecksPerRun() == 0)
++                    if (((iterFileNames + 1) % getChecksPerRun()) == 0)
+

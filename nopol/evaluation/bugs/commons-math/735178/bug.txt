@@ -1,0 +1,9 @@
+------------- src/java/org/apache/commons/math/util/MathUtils.java -------------
+index c5342ae..df71405 100644
+@@ -409,7 +409,7 @@ public final class MathUtils {
+      * @since 1.1
+      */
+     public static int gcd(int u, int v) {
+-        if (u * v == 0) {
++        if ((u == 0) || (v == 0)) {
+

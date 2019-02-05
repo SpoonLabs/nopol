@@ -1,0 +1,36 @@
+<configuration>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n </pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+		<file>debug.log</file>
+		<append>false</append>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+	
+	<appender name="DIAGNOSTICIAN" class="ch.qos.logback.core.FileAppender">
+		<file>diagnostics.log</file>
+		<append>false</append>
+		<encoder>
+			<pattern>%msg</pattern>
+		</encoder>
+	</appender>
+	
+	<logger name="fr.inria.lille.repair.infinitel.InfinitelDiagnostician" additivity="false">
+		<appender-ref ref="DIAGNOSTICIAN" />
+	</logger>
+
+	<logger name="fr.inria.lille.nopol.sps.gzoltar.GZoltarJava7" level="debug" />
+	
+	<logger name="org.apache" level="OFF" />
+
+	<root level="debug">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</root>
+</configuration>

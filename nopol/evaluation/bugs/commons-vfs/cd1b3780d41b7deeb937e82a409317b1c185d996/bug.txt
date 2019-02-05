@@ -1,0 +1,10 @@
+No tests for the bug and tests errors.
+
+--- core/src/main/java/org/apache/commons/vfs2/cache/SoftRefFilesCache.java ---
+index bde79a0..3be5020 100644
+@@ -268,7 +268,7 @@ public class SoftRefFilesCache extends AbstractFilesCache
+                 }
+             }
+ 
+-            if (filesystemCache.size() < 1)
++            if (files.size() < 1)

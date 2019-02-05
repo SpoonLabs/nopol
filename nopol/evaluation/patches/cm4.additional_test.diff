@@ -1,0 +1,47 @@
+diff --git a/src/test/org/apache/commons/math/analysis/PolynomialSplineFunctionTest.java b/src/test/org/apache/commons/math/analysis/PolynomialSplineFunctionTest.java
+index 121c8de..ef651e2 100644
+--- a/src/test/org/apache/commons/math/analysis/PolynomialSplineFunctionTest.java
++++ b/src/test/org/apache/commons/math/analysis/PolynomialSplineFunctionTest.java
+@@ -116,21 +116,35 @@ public class PolynomialSplineFunctionTest extends TestCase {
+             assertEquals("spline function evaluation failed for knot=" + knots[i],
+                     dp.value(0), dSpline.value(knots[i]), tolerance);
+         }
+-        
+-        try { //outside of domain -- under min
+-            x = spline.value(-1.5);
++    }
++    public void testValues1() throws Exception {
++        PolynomialSplineFunction spline = 
++            new PolynomialSplineFunction(knots, polynomials);
++        try { //outside of domain -- over max
++            spline.value(2.5);
+             fail("Expecting IllegalArgumentException");
+         } catch (FunctionEvaluationException ex) {
+             // expected
+         }
+-        
++    } 
++    public void testValues2() throws Exception {
++        PolynomialSplineFunction spline = 
++            new PolynomialSplineFunction(knots, polynomials);
+         try { //outside of domain -- over max
+-            x = spline.value(2.5);
++            spline.value(-1.5);
+             fail("Expecting IllegalArgumentException");
+         } catch (FunctionEvaluationException ex) {
+             // expected
+-        }         
+-    }  
++        }
++    }
++    public void testValues3() throws Exception {
++        PolynomialSplineFunction spline = new PolynomialSplineFunction(new double[] {-4, 0.1, 0.5, 4}, polynomials);
++        spline.value(4);
++    }
++    public void testValues4() throws Exception {
++        PolynomialSplineFunction spline = new PolynomialSplineFunction(new double[] {-4, 0.1, 0.5, 1}, polynomials);
++        spline.value(1);
++    }   
+     
+     /**
+      *  Do linear search to find largest knot point less than or equal to x.

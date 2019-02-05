@@ -1,0 +1,43 @@
+# System
+.DS_Store
+solver*
+
+# Maven
+build/
+dist/
+nbproject/
+target/
+dependency-reduced-pom.xml
+
+# Netbeans
+nb-configuration.xml
+nb-actions.xml
+
+# Eclipse
+.settings/
+.project/
+.classpath
+.externalToolBuilders/
+maven-eclipse.xml
+
+# IntelliJ IDEA
+.idea/
+!.idea/codeStyleSettings.xml
+*.iml
+
+# Spoon
+spooned-classes/
+spooned/
+
+# logs
+*.log
+log
+
+# Nopol
+z3
+nopol/src-gen
+nopol/target-gen
+
+# Nopol-Server
+nopol-server/out
+nopol-server/target

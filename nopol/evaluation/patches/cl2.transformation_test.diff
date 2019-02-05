@@ -1,0 +1,66 @@
+diff --git a/src/test/org/apache/commons/lang/StringUtilsTest.java b/src/test/org/apache/commons/lang/StringUtilsTest.java
+index c885d7c..5514775 100644
+--- a/src/test/org/apache/commons/lang/StringUtilsTest.java
++++ b/src/test/org/apache/commons/lang/StringUtilsTest.java
+@@ -66,7 +66,7 @@ import junit.textui.TestRunner;
+  * @author <a href="mailto:bayard@generationjava.com">Henri Yandell</a>
+  * @author Stephen Colebourne
+  * @author <a href="mailto:ridesmet@users.sourceforge.net">Ringo De Smet</a>
+- * @author <a href="mailto:fredrik@westermarck.com>Fredrik Westermarck</a>
++ * @author <a href="mailto:fredrik@westermarck.com">Fredrik Westermarck</a>
+  * @author Holger Krauth
+  * @author <a href="hps@intermeta.de">Henning P. Schmiedehausen</a>
+  * @version $Id: StringUtilsTest.java,v 1.21 2003/06/23 03:51:13 bayard Exp $
+@@ -333,26 +333,32 @@ public class StringUtilsTest extends TestCase {
+                 "foo", StringUtils.chomp("foo", "foooo"));
+     }
+ 
+-    public void testChopNewLine() {
+-
+-        String[][] newLineCases = {
+-            { FOO + "\r\n", FOO } ,
+-            { FOO + "\n" , FOO } ,
+-            { FOO + "\r", FOO + "\r" },
+-            { FOO, FOO },
+-            { FOO + "\n" + FOO , FOO + "\n" + FOO },
+-            { FOO + "\n\n", FOO + "\n"},
+-            { "\n", "" },
+-            { "", "" },
+-            { "\r\n", "" }
+-      };
+-
+-      for (int i = 0; i < newLineCases.length; i++) {
+-          String original = newLineCases[i][0];
+-          String expectedResult = newLineCases[i][1];
+-          assertEquals("chopNewline(String) failed",
+-                  expectedResult, StringUtils.chopNewline(original));
+-      }
++    public void testChopNewLine_1() {
++      assertEquals("chopNewline(String) failed",FOO, StringUtils.chopNewline(FOO + "\r\n"));
++    }
++    public void testChopNewLine_2() {
++      assertEquals("chopNewline(String) failed",FOO, StringUtils.chopNewline(FOO + "\n"));
++    }
++    public void testChopNewLine_3() {
++      assertEquals("chopNewline(String) failed",FOO + "\r", StringUtils.chopNewline(FOO + "\r"));
++    }
++    public void testChopNewLine_4() {
++      assertEquals("chopNewline(String) failed",FOO, StringUtils.chopNewline(FOO));
++    }
++    public void testChopNewLine_5() {
++      assertEquals("chopNewline(String) failed",FOO + "\n" + FOO, StringUtils.chopNewline(FOO + "\n" + FOO));
++    }
++    public void testChopNewLine_6() {
++      assertEquals("chopNewline(String) failed",FOO + "\n", StringUtils.chopNewline(FOO + "\n\n"));
++    }
++    public void testChopNewLine_7() {
++      assertEquals("chopNewline(String) failed","", StringUtils.chopNewline("\n"));
++    }
++    public void testChopNewLine_8() {
++      assertEquals("chopNewline(String) failed","", StringUtils.chopNewline(""));
++    }
++    public void testChopNewLine_9() {
++      assertEquals("chopNewline(String) failed","", StringUtils.chopNewline("\r\n"));
+     }
+ 
+     public void testSliceFunctions() {

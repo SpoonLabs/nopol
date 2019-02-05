@@ -1,0 +1,52 @@
+Se ignoran dos tests que fallan:
+     [java] 1) testFormat(org.apache.commons.lang.time.FastDateFormatTest)junit.framework.AssertionFailedError: expected:<AD AD AD AD 2003 2003 03 2003 January Jan 01 1 0010 010 10 10 0010 010 10 10 Friday Fri Fri Fri PM PM PM PM Eastern Standard Time EST EST EST> but was:<AD AD AD AD 2003 03 03 03 January Jan 01 1 0010 010 10 10 0010 010 10 10 Friday Fri Fri Fri PM PM PM PM Eastern Standard Time EST EST EST>
+     [java]     at org.apache.commons.lang.time.FastDateFormatTest.testFormat(FastDateFormatTest.java:241)
+     [java]     at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+     [java]     at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+     [java]     at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+
+     [java] 1) testReflectionHierarchyArrayList(org.apache.commons.lang.builder.ToStringBuilderTest)junit.framework.AssertionFailedError: expected:<java.util.ArrayList@303b48c8[elementData={<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>},size=0,modCount=0]> but was:<java.util.ArrayList@303b48c8[elementData={},size=0,modCount=0]>
+     [java]     at org.apache.commons.lang.builder.ToStringBuilderTest.testReflectionHierarchyArrayList(ToStringBuilderTest.java:392)
+     [java]     at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+     [java]     at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+     [java]     at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+
+Falla spoon con el siguiente error:
+
+Exception in thread "main" java.lang.ClassCircularityError: org/apache/commons/lang/builder/ToStringStyle$SimpleToStringStyle
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:792)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:635)
+	at spoon.SpoonClassLoader.processJavaFile(SpoonClassLoader.java:228)
+	at spoon.SpoonClassLoader.createClass(SpoonClassLoader.java:76)
+	at spoon.SpoonClassLoader.loadClass(SpoonClassLoader.java:162)
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:792)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:635)
+	at spoon.SpoonClassLoader.processJavaFile(SpoonClassLoader.java:228)
+	at spoon.SpoonClassLoader.createClass(SpoonClassLoader.java:76)
+	at spoon.SpoonClassLoader.loadClass(SpoonClassLoader.java:162)
+	at fr.inria.lille.nopol.synth.ConstraintModelBuilder.<init>(ConstraintModelBuilder.java:72)
+	at fr.inria.lille.nopol.synth.SynthesizerFactory.getFor(SynthesizerFactory.java:77)
+	at fr.inria.lille.nopol.NoPol.buildPatch(NoPol.java:91)
+	at fr.inria.lille.nopol.NoPol.build(NoPol.java:76)
+	at fr.inria.lille.nopol.Main.run(Main.java:84)
+	at fr.inria.lille.nopol.Main.main(Main.java:53)
+
+
+src/java/org/apache/commons/lang/StringUtils.java View file @ 990e57f
+...	...	 @@ -77,7 +77,7 @@
+77	77	   * @author Arun Mammen Thomas
+78	78	   * @author <a href="mailto:ggregory@seagullsw.com">Gary Gregory</a>
+79	79	   * @since 1.0
+80	 	 - * @version $Id: StringUtils.java,v 1.47 2003/06/21 22:24:55 bayard Exp $
+ 	80	 + * @version $Id: StringUtils.java,v 1.48 2003/06/23 03:51:13 bayard Exp $
+81	81	   */
+82	82	  public class StringUtils {
+83	83	  
+...	...	 @@ -1048,7 +1048,7 @@ public static String chop(String str) {
+1048	1048	       */
+1049	1049	      public static String chopNewline(String str) {
+1050	1050	          int lastIdx = str.length() - 1;
+1051	 	 -        if (lastIdx == 0) {
+ 	1051	 +        if (lastIdx <= 0) {

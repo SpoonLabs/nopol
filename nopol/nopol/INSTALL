@@ -1,0 +1,58 @@
+1. Create a SSH key for gforge.inria.fr
+```
+ssh-keygen -t rsa
+```
+Paste this key in the following link: <http://gforge.inria.fr/account/editsshkeys.php>.
+
+2. Edit the file ~/.ssh/config
+```
+Host gforge scm.gforge.inria.fr
+    User <gforge username>
+    HostName scm.gforge.inria.fr
+    IdentityFile <path to the private gforge key>
+```
+
+3. Install sacha-infrastructure
+```
+git clone git+ssh://scm.gforge.inria.fr//gitroot/sachaproject/sacha-infrastructure.git
+cd sacha-infrastructure
+mvn install
+```
+
+4. Install jsmtlib
+```
+git clone git+ssh://srlm@scm.gforge.inria.fr//gitroot/sachaproject/jsmtlib.git
+cd jsmtlib
+mvn install
+```
+
+5. Get JPF and unzip
+Download JPF: https://drive.google.com/open?id=0B0oN6sVndgG4UHA1S1RDZ1FyVjg&authuser=0
+
+6. create the file site.properties in the folder nopol
+```
+jpf-core = ${user.home}/<path_to_jpf>/jpf-core
+jpf-symbc = ${user.home}/<path_to_jpf>/jpf-symbc
+extensions=${jpf-core},${jpf-symbc}
+```
+
+7. Compile Z3 from MS
+Download: http://z3.codeplex.com/SourceControl/list/changesets?branch=master
+Extract
+Execute:
+```
+   python scripts/mk_make.py --java
+   cd build
+   make
+   sudo make install 
+```
+8. Before execute 
+On linux:
+```
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:<path_to_z3>/build"
+```
+
+On mac:
+```
+export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:<path_to_z3>/build"
+```
