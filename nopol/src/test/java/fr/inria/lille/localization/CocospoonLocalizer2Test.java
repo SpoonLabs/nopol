@@ -21,7 +21,7 @@ import static gov.nasa.jpf.util.test.TestJPF.assertTrue;
  * This test aims to expose the java.lang.RuntimeException when running test cases in Math_58, a real bug from defects4j. But this test file (CocospoonLocalizerTest.java) is created based on the version of Nopol of March 2017.
  * Use `mvn clean package -DskipTests` to build nopol and use `mvn test -Dtest=CocospoonLocalizerTest` to run this test.
  */
-public class CocospoonLocalizerTest {
+public class CocospoonLocalizer2Test {
 
     @Test
     public void testOchiaiCoCoSpoonLocalizer() throws Exception {
