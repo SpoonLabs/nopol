@@ -1,0 +1,2 @@
+Failing tests: 1
+  - org.apache.commons.math.optimization.fitting.GaussianFitterTest::testMath519

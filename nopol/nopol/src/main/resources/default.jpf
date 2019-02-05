@@ -1,3 +1,0 @@
-symbolic.min_int=-100
-symbolic.max_int=100
-symbolic.dp=z3
