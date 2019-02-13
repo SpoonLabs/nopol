@@ -2,10 +2,11 @@
 .DS_Store
 #solver*
 
-# Maven target/
+# Maven
 build/
 dist/
 nbproject/
+target/
 dependency-reduced-pom.xml
 
 # Netbeans
