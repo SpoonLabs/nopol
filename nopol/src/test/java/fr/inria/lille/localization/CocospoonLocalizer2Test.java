@@ -6,12 +6,16 @@ import fr.inria.lille.repair.nopol.SourceLocation;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.FileInputStream;
 import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
 import java.util.*; //added by deheng
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import java.util.Properties;
 
 import static gov.nasa.jpf.util.test.TestJPF.assertEquals;
 import static gov.nasa.jpf.util.test.TestJPF.assertTrue;
@@ -25,6 +29,17 @@ public class CocospoonLocalizer2Test {
 
     @Test
     public void testOchiaiCoCoSpoonLocalizer() throws Exception {
+	String command = "mkdir ../Math_58 && cd ../Math_58 &&  defects4j checkout -p Math -v 58b -w . && cd ../nopol";
+	Process p = Runtime.getRuntime().exec(new String[]{"sh", "-c", command});
+	p.waitFor();
+	if (p.exitValue() != 0) {
+		System.out.println("defects4j download Math_58 failed.");
+	}
+	Process p2 = Runtime.getRuntime().exec(new String[]{"sh", "-c", "cd ../Math_58 && defects4j test && cd ../nopol"});
+        p2.waitFor();
+        if (p2.exitValue() != 0) {
+                System.out.println("defects4j test Math_58 failed.");
+        }
         File[] sources = new File[]{new File("../Math_58/src/main/java")}; // This is the source file of Math_58 
 	String tests="org.apache.commons.math.distribution.HypergeometricDistributionTest"; // This test is the targeted test that can expose the problem of cocospoon.
         URL[] classpath = new URL[]{
