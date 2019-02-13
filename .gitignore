@@ -1,6 +1,6 @@
 # System
 .DS_Store
-#solver*
+solver*
 
 # Maven
 build/
