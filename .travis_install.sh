@@ -4,9 +4,9 @@ cd "test-projects"
 mvn clean package -DskipTests
 
 cd ..
-git clone https://github.com/SpoonLabs/CoCoSpoon.git
+git clone -b compat-java7 https://github.com/SpoonLabs/CoCoSpoon.git
 cd CoCoSpoon
-mvn clean install
+mvn clean install -DskipTests
 
 cd ..
 # compile Nopol
