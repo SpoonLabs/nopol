@@ -1,6 +1,12 @@
 #!/bin/bash
 # script for Travis
 
+# refer to:
+# https://github.com/michaelklishin/jdk_switcher
+# https://docs.travis-ci.com/user/languages/java/#stq=&stp=0
+echo "Swicth to jdk 1.7"
+jdk_switcher use openjdk7
+
 echo "Compiling & testing Nopol"
 cd test-projects
 mvn clean package -DskipTests
