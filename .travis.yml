@@ -1,15 +1,10 @@
 language: java
-jdk: openjdk7
-script:
-  - jdk_switcher use openjdk7
 
 matrix:
   include:
     - os: osx
     - os: linux
       jdk: oraclejdk7
-    - os: linux
-      jdk: oraclejdk8
 
 sudo: true
 
