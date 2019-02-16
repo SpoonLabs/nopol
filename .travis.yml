@@ -2,6 +2,11 @@ language: java
 
 # we don't use sudo to go faster
 #sudo: true
+jdk: openjdk7
+
+script:
+  - jdk_switcher use openjdk7
+
 
 env:
   global:
