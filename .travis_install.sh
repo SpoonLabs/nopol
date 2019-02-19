@@ -11,7 +11,7 @@ cd ..
 git clone https://github.com/SpoonLabs/CoCoSpoon.git
 cd CoCoSpoon
 git checkout -b 975b9b07e04fc8a689f4b4ca2746ccb49b4c380e 975b9b07e04fc8a689f4b4ca2746ccb49b4c380e
-cp -rf ~/.m2/org/eclipse/tycho/* ~/.m2/org/eclipse/jdt/
+#cp -rf ~/.m2/org/eclipse/tycho/* ~/.m2/org/eclipse/jdt/
 mvn clean install
 
 cd ..
