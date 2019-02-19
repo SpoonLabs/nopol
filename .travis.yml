@@ -13,6 +13,7 @@ sudo: true
     #- mvn -X
 install:
     - mvn dependency:get -DrepoUrl=http://download.java.net/maven/2/  -Dartifact=org.eclipse.tycho:org.eclipse.jdt.core:3.12.0.v20160516-2131
+    - mkdir -p $HOME/.m2/repository/org/eclipse/jdt/
     - cp -rf $HOME/.m2/repository/org/eclipse/tycho/* $HOME/.m2/repository/org/eclipse/jdt/
     - "./.travis_install.sh"
 script: "./.travis_run_tests.sh"
