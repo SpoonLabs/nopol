@@ -10,7 +10,9 @@ matrix:
 
 sudo: true
 
-install: "./.travis_install.sh"
+install:
+    - cp -rf ~/.m2/org/eclipse/tycho/* ~/.m2/org/eclipse/jdt/
+    - "./.travis_install.sh"
 script: "./.travis_run_tests.sh"
 
 cache:
