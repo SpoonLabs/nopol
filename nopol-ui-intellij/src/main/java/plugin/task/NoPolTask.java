@@ -71,7 +71,7 @@ public class NoPolTask extends Task.Backgroundable {
 		if (ActorManager.runNopolLocally && !ActorManager.nopolIsRunning) {
 			ActorManager.launchNopol();
 		}
-		Timeout timeout = new Timeout(200000);
+		Timeout timeout = new Timeout(scala.concurrent.duration.Duration.fromNanos(20*1000000000));// nano = 10^9
 		EventSender.send(EventSender.Event.REPAIR_ATTEMPT);
 		try {
 			ConfigActor configActor = new ConfigActorImpl(nopolContext, Files.readAllBytes(Paths.get(outputZip)));

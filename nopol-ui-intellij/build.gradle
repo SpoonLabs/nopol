@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
     id 'java'
-    id "org.jetbrains.intellij" version "0.1.10"
+    id "org.jetbrains.intellij" version "0.3.12"
 }
 
 repositories {
@@ -18,10 +18,10 @@ repositories {
 }
 
 dependencies {
-    compile "com.typesafe.akka:akka-actor_2.11:2.3-SNAPSHOT"
+    compile "com.typesafe.akka:akka-remote_2.11:2.4.17"
+    compile "com.typesafe.akka:akka-actor_2.11:2.4.17"
     compile "fr.inria.gforge.spirals:nopol:0.2-SNAPSHOT"
     compile "fr.inria.gforge.spirals:nopol-server:0.2-SNAPSHOT"
-    compile "com.typesafe.akka:akka-remote_2.11:2.3-SNAPSHOT"
 }
 
 intellij {

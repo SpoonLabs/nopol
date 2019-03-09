@@ -33,7 +33,7 @@ public class NopolActorTest {
 		actorNopol = system.actorOf(Props.create(NoPolActor.class, system), ACTOR_NAME);
 
 		ActorRef actorClient = system.actorOf(Props.create(ActorClient.class, "../test-projects",fullQualifiedNameTest, patchAsString), "Client");
-		Timeout timeout = new Timeout(30000);
+		Timeout timeout = new Timeout(scala.concurrent.duration.Duration.fromNanos(20*1000000000));// nano = 10^9
 		Future<Object> future = Patterns.ask(actorClient, "start", timeout);
 		Patch patch = (Patch) Await.result(future, timeout.duration());
 		assertEquals(patchAsString, patch.asString());
