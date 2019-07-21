@@ -17,6 +17,7 @@ import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtIf;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.Filter;
 import xxl.java.container.classic.MetaMap;
@@ -240,13 +241,13 @@ public class ValuesCollectorTest {
 	@Test
 	public void unreachedVariableInInnerStaticClass() {
 		elementInNopolProject(5, "private java.lang.Integer unreachableFromInnterStaticClass;");
-		CtElement element = elementInNopolProject(5, "!(stringParameter.isEmpty())");
+		CtElement element = elementInNopolProject(5, "!stringParameter.isEmpty()");
 		testReachedVariableNames(element, "stringParameter");
 	}
 
 	@Test
 	public void fieldOfAnonymousClass() {
-		CtElement element = elementInNopolProject(2, "(fieldOfOuterClass) > (limit)");
+		CtElement element = elementInNopolProject(2, "fieldOfOuterClass > limit");
 		testReachedVariableNames(element, "nopol_examples.nopol_example_2.NopolExample.1.this.limit");
 	}
 
@@ -323,7 +324,7 @@ public class ValuesCollectorTest {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Test
 	public void collectSubexpressionValues() {
-		CtElement element = elementInNopolProject(8, "((((a * b) < 11) || (productLowerThan100(a, b))) || (!(a < b))) || ((a = -b) > 0)");
+		CtElement element = elementInNopolProject(8, "((((a * b) < 11) || productLowerThan100(a, b)) || (!(a < b))) || ((a = -b) > 0)");
 		CtIf ifStatement = (CtIf) testReachedVariableNames(element, "a", "b");
 		List<String> expected = asList("0", "11", "a", "b", "-b",
 				"(a * b)",
@@ -441,6 +442,10 @@ public class ValuesCollectorTest {
 	private CtElement elementFromSnippet(File sourceFile, String codeSnippet) {
 		Factory model = SpoonModelLibrary.modelFor(new File[]{sourceFile});
 		Filter filter = new CodeSnippetFilter(sourceFile, codeSnippet);
+		// used to debug when the pretty-printed format of Spoon changes
+		// for (CtType t : model.getModel().getAllTypes()) {
+		//	System.out.println(t);
+		//}
 		List<CtElement> elements = SpoonElementLibrary.filteredElements(model, filter);
 		assertEquals(1, elements.size());
 		return elements.get(0);
