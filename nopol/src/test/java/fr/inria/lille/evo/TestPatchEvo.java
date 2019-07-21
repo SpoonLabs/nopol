@@ -26,7 +26,7 @@ public class TestPatchEvo {
 		String destSrcTestFolder = "src/test/resources/evo/destSrcTest";
 		String destCpTestFolder = "src/test/resources/evo/destCpTest";
 		String newTestFolder = "src/test/resources/evo/generated";
-		String patchSaveFolder = "src/test/resources/evo/patch";
+		String patchSaveFolder = "target/evo/patch";
 		String dependencies = "lib/junit-4.11.jar";
 		boolean generateTest = false;
 		boolean whetherSavePatch=true;
