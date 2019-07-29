@@ -271,4 +271,18 @@ public class NopolTest {
 		assertEquals(1, result2.getPatches().size());
 		TestUtility.assertAgainstKnownPatches(result2.getPatches().get(0),  "a == 2", "(b - a) == 2",  "2 == (b - a)", "1 < (b - a)");
 	}
+
+	@Test
+	public void testDynamoth() {
+		NopolContext nopolContext = TestUtility.configForExample(executionType, 2);
+		nopolContext.setType(RepairType.CONDITIONAL);
+		nopolContext.setSynthesis(NopolContext.NopolSynthesis.DYNAMOTH);
+		nopolContext.setOnlyOneSynthesisResult(false);
+		NoPol nopol;
+
+		// contract: Dynamoth stops after the default max values of patches
+		nopol = new NoPol(nopolContext);
+		assertEquals(10, nopol.build().getPatches().size());
+	}
+
 }

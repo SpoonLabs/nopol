@@ -94,7 +94,6 @@ public class NoPol {
 	private NopolResult nopolResult;
 
 
-
 	public NoPol(NopolContext nopolContext) {
 		this.startTime = System.currentTimeMillis();
 		this.nopolContext = nopolContext;
@@ -297,7 +296,7 @@ public class NoPol {
 		// Final check: we recompile the patch and run all tests again
 		List<Patch> finalPatches = new ArrayList<>();
 		if (tmpPatches.size() > 0) {
-			for (int i = 0; i < tmpPatches.size(); i++) {
+			for (int i = 0; i < tmpPatches.size() && i < nopolContext.getMaxPatches(); i++) {
 				Patch patch = tmpPatches.get(i);
 				if (nopolContext.isSkipRegressionStep() || isOk(patch, tests, synth.getProcessor())) {
 					finalPatches.add(patch);
@@ -305,6 +304,7 @@ public class NoPol {
 					logger.debug("Could not find a valid patch in {}", sourceLocation);
 				}
 			}
+			logger.debug("Skipped {} patches for sake of performance", tmpPatches.size() - nopolContext.getMaxPatches());
 		}
 
 		return finalPatches;

@@ -142,6 +142,7 @@ public class DynamothSynthesizer<T> implements Synthesizer {
             Candidates run = synthesizer.run(remainingTime);
             if (run.size() > 0) {
                 List<Patch> patches = new ArrayList<>();
+                testsOutput.debug("Collected {} potential patches", patches.size());
                 for (Expression expression : run) {
                     patches.add(new ExpressionPatch(expression, sourceLocation, type));
                 }
