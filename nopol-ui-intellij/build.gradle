@@ -25,7 +25,8 @@ dependencies {
 }
 
 intellij {
-    publish {
+   version '182.3911.6' // see https://www.jetbrains.com/intellij-repository/releases 
+   publish {
         username "$System.env.USER"
         password "$System.env.PASSWORD"
     }
