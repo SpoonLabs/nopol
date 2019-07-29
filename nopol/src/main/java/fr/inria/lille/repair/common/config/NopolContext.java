@@ -588,4 +588,15 @@ public class NopolContext implements Serializable {
 				", json=" + json +
 				'}';
 	}
+
+
+	// Dynamoth generates at most 10 patches
+	private int maxPatches = 10;
+	public int getMaxPatches() {
+		return maxPatches;
+	}
+	public void setMaxPatches(int v) {
+		this.maxPatches = v;
+	}
+
 }
