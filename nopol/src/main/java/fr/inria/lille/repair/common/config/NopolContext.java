@@ -596,6 +596,9 @@ public class NopolContext implements Serializable {
 		return maxPatches;
 	}
 	public void setMaxPatches(int v) {
+		if (v>1 && isOnlyOneSynthesisResult()) {
+			throw new IllegalStateException("for more than one patches, isOnlyOneSynthesisResult() should false");
+		}
 		this.maxPatches = v;
 	}
 
