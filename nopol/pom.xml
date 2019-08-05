@@ -391,6 +391,13 @@
 
     <repositories>
         <repository>
+            <!--   required for gov.nasa.jpf:jpf:jar:1154, gov.nasa.jpf:jpf-symbc:jar:576, com.microsoft.z3:z3:jar:0.0.1, org.smtlib:smtlib:jar:0.9.7.1, com.gzoltar:gzoltar:jar:0.1.1:  -->
+            <id>sachaproject.gforge.inria.fr-release</id>
+            <name>Maven Repository for Spoon Release</name>
+            <url>http://sachaproject.gforge.inria.fr/repositories/releases/</url>
+            <snapshots/>
+        </repository>
+        <repository>
             <id>gforge.inria.fr-snapshot</id>
             <name>Maven Repository for Spoon Snapshot</name>
             <url>http://maven.inria.fr/artifactory/spoon-public-snapshot/</url>
