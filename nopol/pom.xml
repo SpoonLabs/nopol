@@ -123,17 +123,6 @@
             <systemPath>${java.home}/../lib/tools.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>sacha</groupId>
-            <artifactId>infra</artifactId>
-            <version>0.1</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>spoon-core</artifactId>
-                    <groupId>fr.inria.gforge.spoon</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>com.gzoltar</groupId>
             <artifactId>gzoltar</artifactId>
             <version>0.1.1</version>
@@ -402,25 +391,9 @@
 
     <repositories>
         <repository>
-            <id>inria</id>
-            <url>http://maven-repo.gforge.inria.fr/releases</url>
-        </repository>
-        <repository>
-            <id>sachaproject.gforge.inria.fr-release</id>
-            <name>Maven Repository for Spoon Release</name>
-            <url>http://sachaproject.gforge.inria.fr/repositories/releases/</url>
-            <snapshots/>
-        </repository>
-        <repository>
             <id>gforge.inria.fr-snapshot</id>
             <name>Maven Repository for Spoon Snapshot</name>
             <url>http://maven.inria.fr/artifactory/spoon-public-snapshot/</url>
-            <snapshots/>
-        </repository>
-        <repository>
-            <id>spoon.gforge.inria.fr-release</id>
-            <name>Maven Repository for Spoon Release</name>
-            <url>http://spoon.gforge.inria.fr/repositories/releases/</url>
             <snapshots/>
         </repository>
         <repository>
