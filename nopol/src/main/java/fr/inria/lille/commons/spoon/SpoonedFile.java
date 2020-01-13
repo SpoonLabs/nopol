@@ -2,7 +2,6 @@ package fr.inria.lille.commons.spoon;
 
 import fr.inria.lille.commons.spoon.util.SpoonModelLibrary;
 import fr.inria.lille.repair.common.config.NopolContext;
-import org.apache.log4j.Level;
 import org.slf4j.Logger;
 import spoon.compiler.Environment;
 import spoon.processing.ProcessInterruption;
@@ -56,7 +55,7 @@ public abstract class SpoonedFile {
         factory = SpoonModelLibrary.newFactory();
         factory.getEnvironment().setComplianceLevel(nopolContext.getComplianceLevel());
         factory.getEnvironment().setCommentEnabled(false);
-        factory.getEnvironment().setLevel(Level.OFF.toString());
+        factory.getEnvironment().setLevel("OFF"); // no logs
 
         factory = SpoonModelLibrary.modelFor(factory, sourceFiles, projectClasspath());
 
