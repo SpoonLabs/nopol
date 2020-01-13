@@ -55,7 +55,7 @@ public abstract class SpoonedFile {
         factory = SpoonModelLibrary.newFactory();
         factory.getEnvironment().setComplianceLevel(nopolContext.getComplianceLevel());
         factory.getEnvironment().setCommentEnabled(false);
-        factory.getEnvironment().setLevel("OFF");
+        factory.getEnvironment().setLevel("OFF"); // no logs
 
         factory = SpoonModelLibrary.modelFor(factory, sourceFiles, projectClasspath());
 
