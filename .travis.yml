@@ -3,6 +3,8 @@ language: java
 # we don't use sudo to go faster
 #sudo: true
 
+jdk: openjdk8
+
 env:
   global:
     # key for deploying automatically after each commit on master
