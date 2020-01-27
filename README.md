@@ -9,6 +9,7 @@ If you use this code for academic research, please cite:
  title = {Nopol: Automatic Repair of Conditional Statement Bugs in Java Programs},
  author = {Xuan, Jifeng and Martinez, Matias and Demarco, Favio and Clément, Maxime and Lamelas, Sebastian and Durieux, Thomas and Le Berre, Daniel and Monperrus, Martin},
  journal = {IEEE Transactions on Software Engineering},
+ doi = {10.1109/TSE.2016.2560811},
  year = {2016},
 }
 ```
