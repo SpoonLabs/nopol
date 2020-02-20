@@ -23,27 +23,18 @@ Others papers about Nopol:
 
 Nopol requires Java and an SMT solver installed on the machine (e.g. Z3)
 
-1) [CoCoSpoon](https://github.com/SpoonLabs/CoCoSpoon):
-
-```
-git clone https://github.com/SpoonLabs/CoCoSpoon.git
-cd CoCoSpoon
-mvn clean install
-cd ..
-```
-
-2) Compile NoPol:
+1) Compile NoPol:
 
 ```
 git clone https://github.com/SpoonLabs/nopol.git
 cd nopol/nopol
-export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
 # -DskipTests is required, to run the tests one needs to compile ../test-projects/ (see below)
 mvn package -DskipTests
 ```
 
-3) Locate the Nopol jar file produced at step 2)
+2) Locate the Nopol jar file produced at step 2)
 
 ```
 $ ls target/*jar
@@ -52,21 +43,21 @@ target/nopol-0.2-SNAPSHOT-jar-with-dependencies.jar # we use this one
 ```
 In the following, `nopol.jar` refers to the jar file with dependencies (`target/nopol-<VERSION>-SNAPSHOT-jar-with-dependencies.jar`)
 
-4) Compile the test-projects
+3) Compile the test-projects
 
 ```
 $ cd ../test-projects/
 # compiling app (in target/classes) and tests (in target/test-classes), but don't run the tests (they obviously fail, because the goal is to repair them)
 $ mvn test -DskipTests 
 ```
-4b) Optional: run the tests of Nopol to check your installation
+3b) Optional: run the tests of Nopol to check your installation
 
 ```
 $ cd ../nopol/
 $ mvn test
 ```
 
-5) Execute Nopol (parameters explained below)
+4) Execute Nopol (parameters explained below)
 
 (Long commands are broken in several lines, separated by a backslash, which means an escaped linebreak in Unix shells.)
 
