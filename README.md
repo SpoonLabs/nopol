@@ -34,7 +34,7 @@ export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 mvn package -DskipTests
 ```
 
-2) Locate the Nopol jar file produced at step 2)
+2) Locate the Nopol jar file produced at step 1)
 
 ```
 $ ls target/*jar
