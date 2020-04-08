@@ -332,7 +332,7 @@ public class Main {
 		testOpt.setShortFlag('t');
 		testOpt.setList(true);
 		testOpt.setStringParser(JSAP.STRING_PARSER);
-		testOpt.setHelp("Define the tests of the project (both failing and passing), fully-qualified, separated with ':' (even if the classpath contains other tests, only those are considered.");
+		testOpt.setHelp("Define the test classes of the project (both failing and passing), fully-qualified, separated with ':' (even if the classpath contains other tests, only those are considered.");
 		jsap.registerParameter(testOpt);
 
 		FlaggedOption complianceLevelOpt = new FlaggedOption("complianceLevel");
