@@ -2,6 +2,8 @@
 
 # Intellij User-Interface for NoPol
 
+Demonstration video: https://www.youtube.com/watch?v=t04_59QZ-hs
+
 ## Installation
 
 run 
