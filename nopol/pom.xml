@@ -119,13 +119,6 @@
             <version>0.9.7.1</version>
         </dependency>
         <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>tools</artifactId>
-            <version>1.4.2</version>
-            <scope>system</scope>
-            <systemPath>${java.home}/../lib/tools.jar</systemPath>
-        </dependency>
-        <dependency>
             <groupId>com.gzoltar</groupId>
             <artifactId>gzoltar</artifactId>
             <version>0.1.1</version>
@@ -269,11 +262,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <excludes>
-                        <exclude>com.sun.tools.jdi.**</exclude>
-                    </excludes>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
