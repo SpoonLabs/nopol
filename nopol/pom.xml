@@ -145,6 +145,13 @@
             <artifactId>json</artifactId>
             <version>20160810</version>
         </dependency>
+        <dependency>
+            <groupId>ca.cgjennings.jvm</groupId>
+            <artifactId>jvm</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/jarloader/jar-loader.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -267,7 +274,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.14.1</version>
                 <configuration>
-                    <argLine>-Xms2048m -Xmx2048m</argLine>
+                    <argLine>-Xms2048m -Xmx2048m -javaagent:${project.basedir}/lib/jarloader/jar-loader.jar</argLine>
                 </configuration>
             </plugin>
             <plugin>
@@ -359,6 +366,9 @@
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.18.1</version>
+                    <configuration>
+                        <argLine>-javaagent:lib/</argLine>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>

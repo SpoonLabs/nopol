@@ -1,5 +1,6 @@
 package xxl.java.library;
 
+import ca.cgjennings.jvm.JarLoader;
 import xxl.java.container.classic.MetaList;
 
 import java.io.File;
@@ -92,18 +93,11 @@ public class JavaLibrary {
     }
 
     public static void extendSystemClassLoaderClasspathWith(URL[] classpaths) {
-        extendClassLoaderClasspathWith((URLClassLoader) ClassLoader.getSystemClassLoader(), classpaths);
-    }
-
-    public static void extendClassLoaderClasspathWith(URLClassLoader classLoader, URL[] classpaths) {
-        Method addURL = ClassLibrary.method("addURL", URLClassLoader.class, URL.class);
-        if (addURL != null) {
+        for (URL classpath : classpaths) {
             try {
-                for (URL classpath : classpaths) {
-                    ClassLibrary.invokeTrespassing(addURL, classLoader, classpath);
-                }
+                JarLoader.addToClassPath(new File(classpath.getPath()));
             } catch (Exception e) {
-                throw new RuntimeException("Failed to extend classpath on class loader with " + classpaths);
+                throw new RuntimeException(e);
             }
         }
     }
