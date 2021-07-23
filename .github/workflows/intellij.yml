@@ -1,4 +1,4 @@
-name: defects4j_1
+name: intellij
 
 on: [push, pull_request]
 
@@ -31,9 +31,17 @@ jobs:
         run: ./.github/install_examples.sh
         shell: bash
 
-      - name: Run tests
+      - name: Install nopol
         run: |
           cd nopol
-          mvn -Dtest="fr.inria.lille.repair.nopol.Defects4jEvaluationTest" test
-        env:
-          NOPOL_EVAL_DEFECTS4J: 1
+          mvn clean install -DskipTests
+
+      - name: Install nopol-server
+        run: |
+          cd nopol-server
+          mvn clean install -DskipTests
+
+      - name: Compile and test nopol-ui-intellij
+        run: |
+          cd nopol-ui-intellij
+          ./gradlew buildPlugin

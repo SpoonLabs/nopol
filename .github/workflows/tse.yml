@@ -83,6 +83,3 @@ jobs:
           mvn -Dtest="fr.inria.lille.repair.nopol.TseEvaluationTest" test
         env:
           NOPOL_EVAL_TSE: 1
-
-      - name: Codecov
-        uses: codecov/codecov-action@v1.5.2

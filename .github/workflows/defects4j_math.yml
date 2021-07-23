@@ -65,6 +65,3 @@ jobs:
           mvn -Dtest="fr.inria.lille.repair.nopol.Defects4jEvaluationMathTest#test_Math33" test
         env:
           NOPOL_EVAL_DEFECTS4J: 1
-
-      - name: Codecov
-        uses: codecov/codecov-action@v1.5.2
