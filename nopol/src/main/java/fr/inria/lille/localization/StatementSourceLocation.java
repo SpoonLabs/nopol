@@ -18,4 +18,12 @@ public class StatementSourceLocation extends AbstractStatement {
 	public SourceLocation getLocation() {
 		return location;
 	}
+
+	@Override
+	public String toString() {
+		return "StatementSourceLocation{" +
+				"suspiciousness=" + getSuspiciousness() +
+				", location=" + location +
+				'}';
+	}
 }
