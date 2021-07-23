@@ -52,12 +52,13 @@ jobs:
         env:
            NOPOL_EVAL_DEFECTS4J: 1
 
-      - name: test_Math32
-        run: |
-          cd nopol
-          mvn -Dtest="fr.inria.lille.repair.nopol.Defects4jEvaluationMathTest#test_Math32" test
-        env:
-          NOPOL_EVAL_DEFECTS4J: 1
+             # this test case was disabled in travis too
+             #      - name: test_Math32
+             #        run: |
+             #          cd nopol
+             #          mvn -Dtest="fr.inria.lille.repair.nopol.Defects4jEvaluationMathTest#test_Math32" test
+             #        env:
+             #          NOPOL_EVAL_DEFECTS4J: 1
 
       - name: test_Math33
         run: |
