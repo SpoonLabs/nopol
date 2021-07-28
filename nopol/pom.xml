@@ -1,9 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>fr.inria.gforge.spirals</groupId>
-    <artifactId>nopol</artifactId>
+<groupId>fr.inria.gforge.spirals</groupId> <artifactId>nopol</artifactId>
     <version>0.2-SNAPSHOT</version>
     <name>Nopol</name>
     <description>Java Program Repair via Conditional Expression Replacement</description>
@@ -413,6 +411,12 @@
             <name>tdurieux.github.io maven-repository</name>
             <url>https://tdurieux.github.io/maven-repository/snapshots/</url>
         </repository>
+       <repository>
+            <id>snapshots-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+       </repository>
     </repositories>
 
     <distributionManagement>
