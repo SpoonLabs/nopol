@@ -50,6 +50,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.spoonlabs</groupId>
+            <artifactId>flacoco</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.1</version>
@@ -146,11 +151,6 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20160810</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.spoonlabs</groupId>
-            <artifactId>flacoco</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
