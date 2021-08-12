@@ -35,7 +35,8 @@ public class FlacocoFaultLocalizer implements FaultLocalizer {
 	}
 
 	private void runFlacoco(NopolContext nopolContext, Metric metric) {
-		// Because Nopol doesn't fit with flacoco's main API, we need to use internal API's
+		// Because Nopol's usage of fault localization requires more information than the one returned by the API
+		// we need to make use of internal APIs
 		FlacocoConfig config = FlacocoConfig.getInstance();
 		config.setClasspath(Arrays.stream(nopolContext.getProjectClasspath()).map(URL::getPath)
 				.reduce((x, y) -> x + File.pathSeparator + y).orElse(""));
@@ -43,6 +44,7 @@ public class FlacocoFaultLocalizer implements FaultLocalizer {
 		System.out.println(nopolContext);
 		// TODO: Fix this
 		config.setProjectPath(new File("../test-projects/").getAbsolutePath());
+		config.setComplianceLevel(nopolContext.getComplianceLevel());
 		config.setTestRunnerVerbose(true);
 
 		// Set tests
