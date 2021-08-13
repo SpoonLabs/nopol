@@ -11,8 +11,7 @@ import fr.spoonlabs.flacoco.core.coverage.framework.JUnit4Strategy;
 import fr.spoonlabs.flacoco.core.coverage.framework.JUnit5Strategy;
 import fr.spoonlabs.flacoco.core.test.TestContext;
 import fr.spoonlabs.flacoco.core.test.TestDetector;
-import fr.spoonlabs.flacoco.core.test.TestMethod;
-import fr.spoonlabs.flacoco.localization.spectrum.SpectrumSuspiciousComputation;
+import fr.spoonlabs.flacoco.core.test.method.TestMethod;
 import xxl.java.junit.TestCase;
 
 import java.io.File;
@@ -57,7 +56,7 @@ public class FlacocoFaultLocalizer implements FaultLocalizer {
 						testContext.getTestMethods().stream()
 								.filter(x -> Arrays.asList(nopolContext.getProjectTests()).contains(x.getFullyQualifiedClassName()))
 								.map(TestMethod::getFullyQualifiedMethodName)
-								.collect(Collectors.toList())
+								.collect(Collectors.toSet())
 				);
 			}
 			if (testContext.getTestFrameworkStrategy() instanceof JUnit5Strategy) {
@@ -65,7 +64,7 @@ public class FlacocoFaultLocalizer implements FaultLocalizer {
 						testContext.getTestMethods().stream()
 								.filter(x -> Arrays.asList(nopolContext.getProjectTests()).contains(x.getFullyQualifiedClassName()))
 								.map(TestMethod::getFullyQualifiedMethodName)
-								.collect(Collectors.toList())
+								.collect(Collectors.toSet())
 				);
 			}
 		}
