@@ -39,6 +39,8 @@ public class FlacocoFaultLocalizer implements FaultLocalizer {
     private void runFlacoco(NopolContext nopolContext, Metric metric) {
         // Because Nopol's usage of fault localization requires more information than the one returned by the API
         // we need to make use of internal APIs
+        // FIXME: hack
+        FlacocoConfig.deleteInstance();
         FlacocoConfig config = FlacocoConfig.getInstance();
 
         Launcher spoon = new Launcher();
