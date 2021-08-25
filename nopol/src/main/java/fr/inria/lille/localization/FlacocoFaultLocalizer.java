@@ -4,6 +4,7 @@ import fr.inria.lille.localization.metric.Metric;
 import fr.inria.lille.localization.metric.Ochiai;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
+import fr.spoonlabs.flacoco.api.result.Location;
 import fr.spoonlabs.flacoco.core.config.FlacocoConfig;
 import fr.spoonlabs.flacoco.core.coverage.CoverageMatrix;
 import fr.spoonlabs.flacoco.core.coverage.CoverageRunner;
@@ -86,10 +87,10 @@ public class FlacocoFaultLocalizer implements FaultLocalizer {
         CoverageRunner coverageRunner = new CoverageRunner();
         CoverageMatrix coverageMatrix = coverageRunner.getCoverageMatrix(new TestDetector().getTests());
 
-        for (String line : coverageMatrix.getResultExecution().keySet()) {
+        for (Location location : coverageMatrix.getResultExecution().keySet()) {
             SourceLocation sourceLocation = new SourceLocation(
-                    line.split("@-@")[0].replace("/", "."),
-                    Integer.parseInt(line.split("@-@")[1])
+                    location.getClassName(),
+                    location.getLineNumber()
             );
             StatementSourceLocation statementSourceLocation = new StatementSourceLocation(metric, sourceLocation);
             int ef = 0;
@@ -98,7 +99,7 @@ public class FlacocoFaultLocalizer implements FaultLocalizer {
             int np = 0;
             for (TestMethod testMethod : coverageMatrix.getTests().keySet()) {
                 boolean iTestPassing = coverageMatrix.getTests().get(testMethod);
-                boolean nrExecuted = coverageMatrix.getResultExecution().get(line).contains(testMethod);
+                boolean nrExecuted = coverageMatrix.getResultExecution().get(location).contains(testMethod);
                 if (iTestPassing && nrExecuted) {
                     ep++;
                 } else if (!iTestPassing && nrExecuted) {
@@ -117,7 +118,7 @@ public class FlacocoFaultLocalizer implements FaultLocalizer {
             statementSourceLocations.add(statementSourceLocation);
             testListPerStatement.put(
                     sourceLocation,
-                    coverageMatrix.getResultExecution().get(line).stream()
+                    coverageMatrix.getResultExecution().get(location).stream()
                             .map(x -> new TestResultImpl(TestCase.from(x.getFullyQualifiedMethodName()), coverageMatrix.getTests().get(x)))
                             .collect(Collectors.toList())
             );
