@@ -56,7 +56,6 @@ public class FlacocoFaultLocalizer implements FaultLocalizer {
                 model.getAllTypes().stream().map(CtTypeInformation::getQualifiedName).collect(Collectors.toSet()));
         config.setComplianceLevel(nopolContext.getComplianceLevel());
         config.setTestRunnerJVMArgs("-Xms2048m -Xmx2048m");
-        config.setTestRunnerVerbose(true);
 
         // Set tests
         TestDetector testDetector = new TestDetector();
