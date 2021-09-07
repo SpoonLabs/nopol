@@ -38,11 +38,7 @@ public class FlacocoFaultLocalizer implements FaultLocalizer {
     }
 
     private void runFlacoco(NopolContext nopolContext, Metric metric) {
-        // Because Nopol's usage of fault localization requires more information than the one returned by the API
-        // we need to make use of internal APIs
-        // FIXME: hack
-        FlacocoConfig.deleteInstance();
-        FlacocoConfig config = FlacocoConfig.getInstance();
+        FlacocoConfig config = new FlacocoConfig();
 
         Launcher spoon = new Launcher();
         for (File file : nopolContext.getProjectSources()) {
@@ -58,7 +54,7 @@ public class FlacocoFaultLocalizer implements FaultLocalizer {
         config.setTestRunnerJVMArgs("-Xms2048m -Xmx2048m");
 
         // Set tests
-        TestDetector testDetector = new TestDetector();
+        TestDetector testDetector = new TestDetector(config);
         List<TestContext> tests = testDetector.getTests();
 
         for (TestContext testContext : tests) {
@@ -83,8 +79,8 @@ public class FlacocoFaultLocalizer implements FaultLocalizer {
         }
 
         // Get CoverageMatrix
-        CoverageRunner coverageRunner = new CoverageRunner();
-        CoverageMatrix coverageMatrix = coverageRunner.getCoverageMatrix(new TestDetector().getTests());
+        CoverageRunner coverageRunner = new CoverageRunner(config);
+        CoverageMatrix coverageMatrix = coverageRunner.getCoverageMatrix(new TestDetector(config).getTests());
 
         for (Location location : coverageMatrix.getResultExecution().keySet()) {
             SourceLocation sourceLocation = new SourceLocation(
