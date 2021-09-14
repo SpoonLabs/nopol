@@ -119,7 +119,15 @@ public class FlacocoFaultLocalizer implements FaultLocalizer {
             );
         }
 
+        statementSourceLocations.sort(Comparator.comparing(x -> x.getLocation().getContainingClassName()));
+        statementSourceLocations.sort((o1, o2) -> Integer.compare(o2.getLocation().getLineNumber(), o1.getLocation().getLineNumber()));
         statementSourceLocations.sort((o1, o2) -> Double.compare(o2.getSuspiciousness(), o1.getSuspiciousness()));
+
+        LinkedHashMap<SourceLocation, List<fr.inria.lille.localization.TestResult>> map = new LinkedHashMap<>();
+        for (StatementSourceLocation source : statementSourceLocations) {
+            map.put(source.getLocation(), testListPerStatement.get(source.getLocation()));
+        }
+        testListPerStatement = map;
     }
 
     @Override
