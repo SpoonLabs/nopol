@@ -64,7 +64,6 @@ public class TseEvaluationTest {
 		}
 
 		nopolContext.setProjectClasspath(cp);
-		//nopolContext.setLocalizer(NopolContext.NopolLocalizer.COCOSPOON);
 		nopolContext.setType(RepairType.PRECONDITION);
 		if ("condition".equals(root.getString("type"))) {
 				nopolContext.setType(RepairType.CONDITIONAL);
