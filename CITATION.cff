@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+preferred-citation:
+  title: "Nopol: Automatic Repair of Conditional Statement Bugs in Java Programs"
+  doi: "10.1109/TSE.2016.2560811"
+  year: "2017"
+  type: article
+  journal: "IEEE Transactions on Software Engineering"
+  authors:
+    - family-names: Xuan
+      given-names: Jifeng
+    - family-names: Martinez
+      given-names: Matias
+    - family-names: Demarco
+      given-names: Favio
+    - family-names: Clément
+      given-names: Maxime
+    - family-names: Lamelas
+      given-names: Sebastian
+    - family-names: Durieux
+      given-names: Thomas
+    - family-names: Le Berre
+      given-names: Daniel
+    - family-names: Monperrus
+      given-names: Martin
