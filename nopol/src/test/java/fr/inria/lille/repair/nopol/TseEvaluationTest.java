@@ -97,9 +97,8 @@ public class TseEvaluationTest {
 
 	@Test(timeout = TIMEOUT)
 	public void test_cm5() throws Exception {
-		// ignored, there is a regression in Gzoltar which crashes with NPE
-		// if (testShouldBeRun())
-		// testTSEBug("cm5");
+		if (testShouldBeRun())
+			testTSEBug("cm5");
 	}
 
 	@Test(timeout = TIMEOUT)
