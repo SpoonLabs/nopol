@@ -42,7 +42,7 @@
         <maven-jar-plugin.version>2.4</maven-jar-plugin.version>
         <maven-release-plugin.version>2.5.1</maven-release-plugin.version>
         <maven-resources-plugin.version>2.6</maven-resources-plugin.version>
-        <maven-jacoco-plugin.version>0.8.3</maven-jacoco-plugin.version>
+        <maven-jacoco-plugin.version>0.8.7</maven-jacoco-plugin.version>
         <maven-coveralls-plugin.version>4.0.0</maven-coveralls-plugin.version>
 
         <github.global.server>github</github.global.server>
