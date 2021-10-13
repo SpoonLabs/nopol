@@ -6,6 +6,7 @@ import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.synth.RepairType;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -75,6 +76,10 @@ public class TseEvaluationTest {
 		assertEquals(1, result.getPatches().size());
 	}
 
+	/**
+	 * Ignored due to issue with flacoco (see https://github.com/SpoonLabs/nopol/pull/220#issuecomment-926641347)
+	 */
+	@Ignore
 	@Test(timeout = TIMEOUT)
 	public void test_cm1() throws Exception {
 		if (testShouldBeRun()) testTSEBug("cm1");
@@ -95,6 +100,10 @@ public class TseEvaluationTest {
 		if (testShouldBeRun()) testTSEBug("cm4");
 	}
 
+	/**
+	 * Ignored due to issue with patch synthesis (see https://github.com/SpoonLabs/nopol/pull/220#issuecomment-925976387)
+	 */
+	@Ignore
 	@Test(timeout = TIMEOUT)
 	public void test_cm5() throws Exception {
 		if (testShouldBeRun())
@@ -125,6 +134,10 @@ public class TseEvaluationTest {
 			testTSEBug("cl1");
 	}
 
+	/**
+	 * Ignored due to issue with flacoco (see https://github.com/SpoonLabs/nopol/pull/220#issuecomment-926641347)
+	 */
+	@Ignore
 	@Test(timeout = TIMEOUT)
 	public void test_cl2() throws Exception {
 		if (testShouldBeRun())
@@ -137,6 +150,10 @@ public class TseEvaluationTest {
 			testTSEBug("cl3");
 	}
 
+	/**
+	 * Ignored due to issue with flacoco (see https://github.com/SpoonLabs/nopol/pull/220#issuecomment-926641347)
+	 */
+	@Ignore
 	@Test(timeout = TIMEOUT)
 	public void test_cl4() throws Exception {
 		if (testShouldBeRun())
