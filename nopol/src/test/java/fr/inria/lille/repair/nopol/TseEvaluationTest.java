@@ -25,7 +25,11 @@ public class TseEvaluationTest {
 		return true;
 	}
 
-	public void testTSEBug(String bug_id) throws Exception {
+	public void testTSEBug(String bud_id) throws Exception {
+		testTSEBug(bud_id, NopolContext.NopolLocalizer.FLACOCO);
+	}
+
+	public void testTSEBug(String bug_id, NopolContext.NopolLocalizer localizer) throws Exception {
 		String folder = "unknown";
 		if (bug_id.startsWith("cm") || bug_id.startsWith("pm")) {
 			folder = "math";
@@ -70,6 +74,7 @@ public class TseEvaluationTest {
 				nopolContext.setType(RepairType.CONDITIONAL);
 		}
 		SolverFactory.setSolver("z3", TestUtility.solverPath);
+		nopolContext.setLocalizer(localizer);
 		NoPol nopol = new NoPol(nopolContext);
 		NopolResult result = nopol.build();
 
@@ -77,12 +82,11 @@ public class TseEvaluationTest {
 	}
 
 	/**
-	 * Ignored due to issue with flacoco (see https://github.com/SpoonLabs/nopol/pull/220#issuecomment-926641347)
+	 * Uses GZoltar due to issue with flacoco (see https://github.com/SpoonLabs/nopol/pull/220#issuecomment-926641347)
 	 */
-	@Ignore
 	@Test(timeout = TIMEOUT)
 	public void test_cm1() throws Exception {
-		if (testShouldBeRun()) testTSEBug("cm1");
+		if (testShouldBeRun()) testTSEBug("cm1", NopolContext.NopolLocalizer.GZOLTAR);
 	}
 
 	@Test(timeout = TIMEOUT)
@@ -135,13 +139,12 @@ public class TseEvaluationTest {
 	}
 
 	/**
-	 * Ignored due to issue with flacoco (see https://github.com/SpoonLabs/nopol/pull/220#issuecomment-926641347)
+	 * Uses GZoltar due to issue with flacoco (see https://github.com/SpoonLabs/nopol/pull/220#issuecomment-926641347)
 	 */
-	@Ignore
 	@Test(timeout = TIMEOUT)
 	public void test_cl2() throws Exception {
 		if (testShouldBeRun())
-			testTSEBug("cl2");
+			testTSEBug("cl2", NopolContext.NopolLocalizer.GZOLTAR);
 	}
 
 	@Test(timeout = TIMEOUT)
@@ -151,13 +154,12 @@ public class TseEvaluationTest {
 	}
 
 	/**
-	 * Ignored due to issue with flacoco (see https://github.com/SpoonLabs/nopol/pull/220#issuecomment-926641347)
+	 * Uses GZoltar due to issue with flacoco (see https://github.com/SpoonLabs/nopol/pull/220#issuecomment-926641347)
 	 */
-	@Ignore
 	@Test(timeout = TIMEOUT)
 	public void test_cl4() throws Exception {
 		if (testShouldBeRun())
-			testTSEBug("cl4");
+			testTSEBug("cl4", NopolContext.NopolLocalizer.GZOLTAR);
 	}
 
 	@Test(timeout = TIMEOUT)
