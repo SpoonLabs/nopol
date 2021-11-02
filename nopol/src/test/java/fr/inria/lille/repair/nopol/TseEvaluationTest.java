@@ -86,7 +86,7 @@ public class TseEvaluationTest {
 	 */
 	@Test(timeout = TIMEOUT)
 	public void test_cm1() throws Exception {
-		if (testShouldBeRun()) testTSEBug("cm1", NopolContext.NopolLocalizer.GZOLTAR);
+		if (testShouldBeRun()) testTSEBug("cm1", NopolContext.NopolLocalizer.FLACOCO);
 	}
 
 	@Test(timeout = TIMEOUT)
@@ -144,7 +144,7 @@ public class TseEvaluationTest {
 	@Test(timeout = TIMEOUT)
 	public void test_cl2() throws Exception {
 		if (testShouldBeRun())
-			testTSEBug("cl2", NopolContext.NopolLocalizer.GZOLTAR);
+			testTSEBug("cl2", NopolContext.NopolLocalizer.FLACOCO);
 	}
 
 	@Test(timeout = TIMEOUT)
@@ -159,7 +159,7 @@ public class TseEvaluationTest {
 	@Test(timeout = TIMEOUT)
 	public void test_cl4() throws Exception {
 		if (testShouldBeRun())
-			testTSEBug("cl4", NopolContext.NopolLocalizer.GZOLTAR);
+			testTSEBug("cl4", NopolContext.NopolLocalizer.FLACOCO);
 	}
 
 	@Test(timeout = TIMEOUT)

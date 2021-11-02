@@ -13,6 +13,8 @@ import fr.spoonlabs.flacoco.core.coverage.framework.JUnit5Strategy;
 import fr.spoonlabs.flacoco.core.test.TestContext;
 import fr.spoonlabs.flacoco.core.test.TestDetector;
 import fr.spoonlabs.flacoco.core.test.method.TestMethod;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 import spoon.reflect.declaration.CtTypeInformation;
@@ -41,17 +43,25 @@ public class FlacocoFaultLocalizer implements FaultLocalizer {
         FlacocoConfig config = new FlacocoConfig();
 
         Launcher spoon = new Launcher();
+        List<String> javaSources = new ArrayList<>();
         for (File file : nopolContext.getProjectSources()) {
             spoon.addInputResource(file.getAbsolutePath());
+            javaSources.add(file.getAbsolutePath());
         }
         CtModel model = spoon.buildModel();
 
+        List<String> javaBin = new ArrayList<>();
+
+        // Init FlacocoConfig
         config.setClasspath(Arrays.stream(nopolContext.getProjectClasspath()).map(URL::getPath)
                 .reduce((x, y) -> x + File.pathSeparator + y).orElse(""));
         config.setJacocoIncludes(
                 model.getAllTypes().stream().map(CtTypeInformation::getQualifiedName).collect(Collectors.toSet()));
         config.setComplianceLevel(nopolContext.getComplianceLevel());
         config.setTestRunnerJVMArgs("-Xms2048m -Xmx2048m");
+        config.setSrcJavaDir(javaSources);
+
+        System.out.println(nopolContext);
 
         // Set tests
         TestDetector testDetector = new TestDetector(config);
