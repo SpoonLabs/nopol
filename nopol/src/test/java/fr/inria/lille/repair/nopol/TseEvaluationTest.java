@@ -81,12 +81,9 @@ public class TseEvaluationTest {
 		assertEquals(1, result.getPatches().size());
 	}
 
-	/**
-	 * Uses GZoltar due to issue with flacoco (see https://github.com/SpoonLabs/nopol/pull/220#issuecomment-926641347)
-	 */
 	@Test(timeout = TIMEOUT)
 	public void test_cm1() throws Exception {
-		if (testShouldBeRun()) testTSEBug("cm1", NopolContext.NopolLocalizer.FLACOCO);
+		if (testShouldBeRun()) testTSEBug("cm1");
 	}
 
 	@Test(timeout = TIMEOUT)
@@ -138,13 +135,10 @@ public class TseEvaluationTest {
 			testTSEBug("cl1");
 	}
 
-	/**
-	 * Uses GZoltar due to issue with flacoco (see https://github.com/SpoonLabs/nopol/pull/220#issuecomment-926641347)
-	 */
 	@Test(timeout = TIMEOUT)
 	public void test_cl2() throws Exception {
 		if (testShouldBeRun())
-			testTSEBug("cl2", NopolContext.NopolLocalizer.FLACOCO);
+			testTSEBug("cl2");
 	}
 
 	@Test(timeout = TIMEOUT)
@@ -153,13 +147,10 @@ public class TseEvaluationTest {
 			testTSEBug("cl3");
 	}
 
-	/**
-	 * Uses GZoltar due to issue with flacoco (see https://github.com/SpoonLabs/nopol/pull/220#issuecomment-926641347)
-	 */
 	@Test(timeout = TIMEOUT)
 	public void test_cl4() throws Exception {
 		if (testShouldBeRun())
-			testTSEBug("cl4", NopolContext.NopolLocalizer.FLACOCO);
+			testTSEBug("cl4");
 	}
 
 	@Test(timeout = TIMEOUT)
