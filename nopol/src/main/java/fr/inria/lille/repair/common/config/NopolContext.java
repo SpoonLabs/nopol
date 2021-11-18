@@ -53,7 +53,8 @@ public class NopolContext implements Serializable {
 	public enum NopolLocalizer {
 		DUMB,
 		GZOLTAR,
-		COCOSPOON
+		COCOSPOON,
+		FLACOCO
 	}
 
 	private final String filename = "default-nopol-config.ini";
@@ -102,7 +103,7 @@ public class NopolContext implements Serializable {
 	private NopolSynthesis synthesis = NopolSynthesis.SMT;
 	private NopolOracle oracle = NopolOracle.ANGELIC;
 	private NopolSolver solver = NopolSolver.Z3;
-	public final static NopolLocalizer DEFAULT_FAULT_LOCALIZER = NopolLocalizer.GZOLTAR;
+	public final static NopolLocalizer DEFAULT_FAULT_LOCALIZER = NopolLocalizer.FLACOCO;
 	private NopolLocalizer localizer = DEFAULT_FAULT_LOCALIZER;
 
 

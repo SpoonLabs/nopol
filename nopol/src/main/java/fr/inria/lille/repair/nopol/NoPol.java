@@ -20,11 +20,7 @@ import fr.inria.lille.commons.spoon.SpoonedClass;
 import fr.inria.lille.commons.spoon.SpoonedProject;
 import fr.inria.lille.commons.synthesis.ConstraintBasedSynthesis;
 import fr.inria.lille.commons.synthesis.operator.Operator;
-import fr.inria.lille.localization.CocoSpoonBasedSpectrumBasedFaultLocalizer;
-import fr.inria.lille.localization.DumbFaultLocalizerImpl;
-import fr.inria.lille.localization.FaultLocalizer;
-import fr.inria.lille.localization.GZoltarFaultLocalizer;
-import fr.inria.lille.localization.TestResult;
+import fr.inria.lille.localization.*;
 import fr.inria.lille.localization.metric.Ochiai;
 import fr.inria.lille.repair.common.BottomTopURLClassLoader;
 import fr.inria.lille.repair.common.config.NopolContext;
@@ -180,8 +176,9 @@ public class NoPol {
 				return new DumbFaultLocalizerImpl(this.nopolContext);
 			case COCOSPOON: // default
 				return new CocoSpoonBasedSpectrumBasedFaultLocalizer(this.nopolContext, new Ochiai());
+			case FLACOCO:
 			default:
-				return GZoltarFaultLocalizer.createInstance(this.nopolContext);
+				return new FlacocoFaultLocalizer(this.nopolContext);
 		}
 	}
 

@@ -6,6 +6,7 @@ import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.synth.RepairType;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -24,7 +25,11 @@ public class TseEvaluationTest {
 		return true;
 	}
 
-	public void testTSEBug(String bug_id) throws Exception {
+	public void testTSEBug(String bud_id) throws Exception {
+		testTSEBug(bud_id, NopolContext.NopolLocalizer.FLACOCO);
+	}
+
+	public void testTSEBug(String bug_id, NopolContext.NopolLocalizer localizer) throws Exception {
 		String folder = "unknown";
 		if (bug_id.startsWith("cm") || bug_id.startsWith("pm")) {
 			folder = "math";
@@ -64,12 +69,12 @@ public class TseEvaluationTest {
 		}
 
 		nopolContext.setProjectClasspath(cp);
-		//nopolContext.setLocalizer(NopolContext.NopolLocalizer.COCOSPOON);
 		nopolContext.setType(RepairType.PRECONDITION);
 		if ("condition".equals(root.getString("type"))) {
 				nopolContext.setType(RepairType.CONDITIONAL);
 		}
 		SolverFactory.setSolver("z3", TestUtility.solverPath);
+		nopolContext.setLocalizer(localizer);
 		NoPol nopol = new NoPol(nopolContext);
 		NopolResult result = nopol.build();
 
@@ -96,11 +101,14 @@ public class TseEvaluationTest {
 		if (testShouldBeRun()) testTSEBug("cm4");
 	}
 
+	/**
+	 * Ignored due to issue with patch synthesis (see https://github.com/SpoonLabs/nopol/pull/220#issuecomment-925976387)
+	 */
+	@Ignore
 	@Test(timeout = TIMEOUT)
 	public void test_cm5() throws Exception {
-		// ignored, there is a regression in Gzoltar which crashes with NPE
-		// if (testShouldBeRun())
-		// testTSEBug("cm5");
+		if (testShouldBeRun())
+			testTSEBug("cm5");
 	}
 
 	@Test(timeout = TIMEOUT)

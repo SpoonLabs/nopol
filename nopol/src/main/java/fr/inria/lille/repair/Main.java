@@ -237,8 +237,11 @@ public class Main {
 			return NopolContext.NopolLocalizer.GZOLTAR;
 		} else if (str.equals("dumb")) {
 			return NopolContext.NopolLocalizer.DUMB;
-		} else
+		} else if (str.equals("cocospoon")) {
 			return NopolContext.NopolLocalizer.COCOSPOON;
+		} else /* it can only be flacoco */{
+			return NopolContext.NopolLocalizer.FLACOCO;
+		}
 	}
 
 	private void initJSAP() throws JSAPException {
@@ -365,7 +368,7 @@ public class Main {
 		faultLocalization.setAllowMultipleDeclarations(false);
 		faultLocalization.setLongFlag("flocal");
 		faultLocalization.setShortFlag('z');
-		faultLocalization.setUsageName(" cocospoon|dumb|gzoltar");//TODO ADD PARAMETIZED FAULT LOCALIZER
+		faultLocalization.setUsageName("cocospoon|dumb|gzoltar|flacoco");//TODO ADD PARAMETIZED FAULT LOCALIZER
 		faultLocalization.setStringParser(JSAP.STRING_PARSER);
 		faultLocalization.setDefault(NopolContext.DEFAULT_FAULT_LOCALIZER.name().toLowerCase());
 		faultLocalization.setHelp("Define the fault localizer to be used.");

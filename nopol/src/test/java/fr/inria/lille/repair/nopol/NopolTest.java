@@ -132,7 +132,8 @@ public class NopolTest {
 				"(intermediaire == 0) && (2 < a)",
 				"(intermediaire == 0) && ((a) != (2))",
 				"((2) != (a)) && (intermediaire == 0)",
-				"(intermediaire == 0) && (3 < a)"
+				"(intermediaire == 0) && (3 < a)",
+				"(((2) != (a)) && (!(0 < intermediaire))) || (2 == intermediaire)"
 				);
 	}
 
