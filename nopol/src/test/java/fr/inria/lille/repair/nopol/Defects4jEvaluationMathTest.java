@@ -17,7 +17,7 @@ public class Defects4jEvaluationMathTest {
 		// On Travis 454sec
 		// Sep 30: 2018 timeout on Travis with ten minutes (600 seconds), moving to 15 minutes
 		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Math32");
+		NopolContext nopolContext = nopolConfigFor("Math32", "-Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
 	}
@@ -27,7 +27,7 @@ public class Defects4jEvaluationMathTest {
 		// on Travis: 458sec
 		// Sep 30: 2018 timeout on Travis with ten minutes (600 seconds), moving to 15 minutes
 		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Math33");
+		NopolContext nopolContext = nopolConfigFor("Math33", "-Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
 	}
@@ -45,7 +45,7 @@ public class Defects4jEvaluationMathTest {
 	public void test_Math42() throws Exception {
 		// on Travis: 215sec
 		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Math42");
+		NopolContext nopolContext = nopolConfigFor("Math42", "-Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
 	}
@@ -90,7 +90,7 @@ public class Defects4jEvaluationMathTest {
 		public void test_Math69() throws Exception {
 			// on Travis: 22sec
 			if (!testShouldBeRun()) { return; }
-			NopolContext nopolContext = nopolConfigFor("Math69");
+			NopolContext nopolContext = nopolConfigFor("Math69", "-Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
 			NopolResult result = new NoPol(nopolContext).build();
 			assertEquals(1, result.getPatches().size());
 		}
