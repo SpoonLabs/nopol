@@ -54,7 +54,7 @@ public class Defects4jEvaluationMathTest {
 	public void test_Math49() throws Exception {
 		// on Travis: 179sec
 		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Math49");
+		NopolContext nopolContext = nopolConfigFor("Math49", "-Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
 	}
