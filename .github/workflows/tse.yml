@@ -52,12 +52,15 @@ jobs:
       - name: commons math
         run: |
           cd nopol-experiments
+          # Java 11 needs min target 1.6
+          sed -i -e 's/"1.4"/"1.6"/' data/projects/lang/bugs/*json
           python src/compile.py -project math -id cm1
           python2 src/reproduce.py -bug cm1
           python src/compile.py -project math -id cm2
           python2 src/reproduce.py -bug cm2
-          #python2 src/reproduce.py -bug cm3  || true
-          #python2 src/reproduce.py -bug cm4  || true
+          python src/compile.py -project math -id cm3
+          #python2 src/reproduce.py -bug cm3
+          #python2 src/reproduce.py -bug cm4
           #python2 src/reproduce.py -bug cm5  || true
           #python2 src/reproduce.py -bug cm6  || true
           #python2 src/reproduce.py -bug cm7  || true
@@ -70,7 +73,7 @@ jobs:
           cd nopol-experiments
           python src/compile.py -project lang -id cl1
           python2 src/reproduce.py -bug cl1
-          #python2 src/reproduce.py -bug cl2  || true
+          #python2 src/reproduce.py -bug cl2
           #python2 src/reproduce.py -bug cl3  || true
           #python2 src/reproduce.py -bug cl4  || true
           #python2 src/reproduce.py -bug cl5  || true
