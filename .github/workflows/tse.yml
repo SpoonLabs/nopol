@@ -54,16 +54,16 @@ jobs:
           cd nopol-experiments
           # Java 11 needs min target 1.6
           sed -i -e 's/"1.4"/"1.6"/' data/projects/lang/bugs/*json
+          python2 src/reproduce.py -bug cm7
+          python2 src/reproduce.py -bug cm10
+          python2 src/reproduce.py -bug pm1
+          python2 src/reproduce.py -bug pm2
           python2 src/reproduce.py -bug cm1
           python2 src/reproduce.py -bug cm2
           python2 src/reproduce.py -bug cm3
           python2 src/reproduce.py -bug cm4
           #python2 src/reproduce.py -bug cm5
-          python2 src/reproduce.py -bug cm6
-          python2 src/reproduce.py -bug cm7
-          python2 src/reproduce.py -bug cm10
-          python2 src/reproduce.py -bug pm1
-          python2 src/reproduce.py -bug pm2
+          #python2 src/reproduce.py -bug cm6
 
       - name: commons lang
         run: |
