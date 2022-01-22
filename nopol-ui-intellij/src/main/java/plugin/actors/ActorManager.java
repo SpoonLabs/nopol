@@ -37,7 +37,8 @@ public class ActorManager {
     public static void launchNopol() {
         try {
             final String pathToNopolJar = new File(ActorManager.class.getResource(String.valueOf(Plugin.properties.get("pathToNopolServerJar"))).getPath()).getCanonicalPath();
-            final String pathToToolsJar = System.getProperty("java.home") + "/../lib/tools.jar";
+            // final String pathToToolsJar = System.getProperty("java.home") + "/../lib/tools.jar"; // for Java 8
+            final String pathToToolsJar = System.getProperty("java.home") + "/../jmods/jdk.jdi.jmod"; // for Java 11+
             final String fullQualifiedNameMain = String.valueOf(Plugin.properties.get("fullQualifiedOfMainClass"));
             final String cmd = "java -cp " + pathToToolsJar + ":" + pathToNopolJar + " " + fullQualifiedNameMain;
             nopolProcess = Runtime.getRuntime().exec(cmd);
