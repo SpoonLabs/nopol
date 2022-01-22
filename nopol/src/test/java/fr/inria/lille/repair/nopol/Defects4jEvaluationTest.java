@@ -27,7 +27,7 @@ public class Defects4jEvaluationTest {
 	@Test(timeout = FIVE_MINUTES_TIMEOUT)
 	public void test_Lang44() throws Exception {
 		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Lang44");
+		NopolContext nopolContext = nopolConfigFor("Lang44", "-Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6");
 		nopolContext.setComplianceLevel(4);
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
