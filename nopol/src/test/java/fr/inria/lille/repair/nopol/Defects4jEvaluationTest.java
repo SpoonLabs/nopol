@@ -37,7 +37,7 @@ public class Defects4jEvaluationTest {
 	@Test(timeout = FIVE_MINUTES_TIMEOUT)
 	public void test_Lang51() throws Exception {
 		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Lang51");
+		NopolContext nopolContext = nopolConfigFor("Lang51", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
 		nopolContext.setComplianceLevel(4);
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
@@ -46,7 +46,7 @@ public class Defects4jEvaluationTest {
 	@Test(timeout = FIVE_MINUTES_TIMEOUT)
 	public void test_Lang53() throws Exception {
 		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Lang53");
+		NopolContext nopolContext = nopolConfigFor("Lang53", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
 		nopolContext.setComplianceLevel(4);
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
@@ -66,7 +66,7 @@ public class Defects4jEvaluationTest {
 	@Test(timeout = FIVE_MINUTES_TIMEOUT)
 	public void test_Chart3() throws Exception {
 		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Chart3", "");
+		NopolContext nopolContext = nopolConfigFor("Chart3", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
 		nopolContext.setLocalizer(NopolContext.NopolLocalizer.COCOSPOON);
 
 		// we take only the failing test case
