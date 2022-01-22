@@ -150,8 +150,7 @@
             <artifactId>jvm</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/jarloader/jar-loader.jar</systemPath>
-            <systemPath>${java.home.openjdk11}/jmods/jdk.jdi.jmod</systemPath>
+            <systemPath>${project.basedir}/lib/jarloader/jar-loader.jar:${java.home.openjdk11}/jmods/jdk.jdi.jmod</systemPath>
         </dependency>
     </dependencies>
 
