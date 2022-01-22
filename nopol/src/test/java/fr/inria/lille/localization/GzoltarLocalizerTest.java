@@ -4,6 +4,8 @@ import fr.inria.lille.localization.metric.Metric;
 import fr.inria.lille.localization.metric.Ochiai;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assume;
 import org.junit.Test;
 
 import java.io.File;
@@ -15,12 +17,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by bdanglot on 10/4/16.
+ * GZoltar only works until Java 8
+ * For Java 11 support deployed on Maven Central, see https://github.com/GZoltar/gzoltar/pull/41
  */
 public class GzoltarLocalizerTest {
 
 	@Test
 	public void testGzoltarLocalizer() throws Exception {
+
+		// see top level comment
+		Assume.assumeThat(System.getProperty("java.version"), CoreMatchers.startsWith("1.8"));
 
 		/* test GzoltarLocalizer : the SourceLocation must be sorted following the Ochiai metric (default metric)*/
 
@@ -65,6 +71,7 @@ public class GzoltarLocalizerTest {
 	@Test
 	public void testGzoltarLocalizer2() throws Exception {
 
+		Assume.assumeThat(System.getProperty("java.version"), CoreMatchers.startsWith("1.8"));
 
 		File[] sources = new File[]{new File("../test-projects/src/main/java/nopol_examples/nopol_example_1/NopolExample.java")};
 		URL[] classpath = new URL[]{
