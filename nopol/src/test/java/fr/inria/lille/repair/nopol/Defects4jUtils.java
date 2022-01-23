@@ -102,7 +102,7 @@ public class Defects4jUtils {
 		nopolContext.setProjectClasspath(cp.toArray(new URL[0]));
 
 		nopolContext.setType(RepairType.PRE_THEN_COND);
-
+		nopolContext.setComplianceLevel(6);
 		SolverFactory.setSolver("z3", TestUtility.solverPath);
 
 		return nopolContext;
