@@ -2,7 +2,6 @@ package actor;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
-import com.google.common.io.Files;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.common.patch.Patch;
 import fr.inria.lille.repair.nopol.NoPol;
@@ -10,6 +9,7 @@ import fr.inria.lille.repair.nopol.NopolResult;
 import xxl.java.library.JavaLibrary;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class InternalNopolActor extends UntypedActor {
 			ConfigActor configActor = (ConfigActor) message;
 
 			NopolContext nopolContext = configActor.getNopolContext();
-			File tempDirectory = Files.createTempDir();
+			File tempDirectory = Files.createTempDirectory("tmp").toFile();
 			UnZiper.unZipIt(configActor.getContent(), tempDirectory.getAbsolutePath());
 			ActorRef client = configActor.getClient();
 
