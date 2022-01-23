@@ -36,16 +36,18 @@ public class Defects4jEvaluationTest {
 
 	@Test(timeout = FIVE_MINUTES_TIMEOUT)
 	public void test_Lang51() throws Exception {
+		// Defects4J Lang51 has been manually ported to Java 6 by Martin
 		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Lang51", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
+		NopolContext nopolContext = nopolConfigFor("Lang51-Java6", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
 	}
 
 	@Test(timeout = FIVE_MINUTES_TIMEOUT)
 	public void test_Lang53() throws Exception {
+		// Defects4J Lang53 has been manually ported to Java 6 by Martin
 		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Lang53", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
+		NopolContext nopolContext = nopolConfigFor("Lang53-Java6", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
 	}
@@ -53,6 +55,7 @@ public class Defects4jEvaluationTest {
 
 	@Test(timeout = FIVE_MINUTES_TIMEOUT)
 	public void test_Lang58() throws Exception {
+		// Defects4J Lang58 has been manually ported to Java 6 by Martin
 		if (!testShouldBeRun()) { return; }
 		// many resources on the internet say it's "maven.compiler.source", but it's actually maven.compile.source"
 		NopolContext nopolContext = nopolConfigFor("Lang58-Java6", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
