@@ -67,6 +67,9 @@ jobs:
 
       - name: commons lang
         run: |
+          # they are all discarded because all these versions of Commons Lang use the old "enum" syntax
+          # we don't port the TSE benchmark, but we have ported some of the old Lang bugs in Defects4j
+          # see Defects4jEvaluationTest
           cd nopol-experiments
           #python2 src/reproduce.py -bug cl1
           #python2 src/reproduce.py -bug cl2
@@ -74,14 +77,8 @@ jobs:
           #python2 src/reproduce.py -bug cl4
           #python2 src/reproduce.py -bug cl5
           #python2 src/reproduce.py -bug cl6
-          python2 src/reproduce.py -bug pl1 
+          #python2 src/reproduce.py -bug pl1 
           #python2 src/reproduce.py -bug pl2
           #python2 src/reproduce.py -bug pl3
           #python2 src/reproduce.py -bug pl4
 
-      - name: TseEvaluationTest
-        run: |
-          cd nopol
-          mvn -Dtest="fr.inria.lille.repair.nopol.TseEvaluationTest" test
-        env:
-          NOPOL_EVAL_TSE: 1
