@@ -24,15 +24,15 @@ import static org.junit.Assert.assertEquals;
 // to be run on Travis should be in less than 45 minutes
 public class Defects4jEvaluationTest {
 
-// Code too old with "enum" as identifier cannot do anything
-//	@Test(timeout = FIVE_MINUTES_TIMEOUT)
-//	public void test_Lang44() throws Exception {
-//		if (!testShouldBeRun()) { return; }
-//		NopolContext nopolContext = nopolConfigFor("Lang44-Java1.6");
-//		nopolContext.setComplianceLevel(4);
-//		NopolResult result = new NoPol(nopolContext).build();
-//		assertEquals(1, result.getPatches().size());
-//	}
+	@Test(timeout = FIVE_MINUTES_TIMEOUT)
+	public void test_Lang44() throws Exception {
+		// Defects4J Lang44 has been manually ported to Java 6 by Martin
+		if (!testShouldBeRun()) { return; }
+		NopolContext nopolContext = nopolConfigFor("Lang44-Java1.6", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
+		nopolContext.setComplianceLevel(4);
+		NopolResult result = new NoPol(nopolContext).build();
+		assertEquals(1, result.getPatches().size());
+	}
 
 	@Test(timeout = FIVE_MINUTES_TIMEOUT)
 	public void test_Lang51() throws Exception {
@@ -63,18 +63,20 @@ public class Defects4jEvaluationTest {
 		assertEquals(1, result.getPatches().size());
 	}
 
-	@Test(timeout = FIVE_MINUTES_TIMEOUT)
-	public void test_Chart3() throws Exception {
-		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Chart3", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
-		nopolContext.setLocalizer(NopolContext.NopolLocalizer.COCOSPOON);
-
-		// we take only the failing test case
-		nopolContext.setProjectTests(new String[]{"org.jfree.data.time.junit.TimeSeriesTests#testCreateCopy3"});
-
-		NopolResult result = new NoPol(nopolContext).build();
-		assertEquals(1, result.getPatches().size());
-	}
+	// we don't support Chart3 anymore because it is based on Ant, and
+	// porting Ant to a newer Java version is useless
+//	@Test(timeout = FIVE_MINUTES_TIMEOUT)
+//	public void test_Chart3() throws Exception {
+//		if (!testShouldBeRun()) { return; }
+//		NopolContext nopolContext = nopolConfigFor("Chart3", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
+//		nopolContext.setLocalizer(NopolContext.NopolLocalizer.COCOSPOON);
+//
+//		// we take only the failing test case
+//		nopolContext.setProjectTests(new String[]{"org.jfree.data.time.junit.TimeSeriesTests#testCreateCopy3"});
+//
+//		NopolResult result = new NoPol(nopolContext).build();
+//		assertEquals(1, result.getPatches().size());
+//	}
 
 }
 
