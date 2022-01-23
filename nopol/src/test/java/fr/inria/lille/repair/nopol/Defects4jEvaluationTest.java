@@ -25,16 +25,6 @@ import static org.junit.Assert.assertEquals;
 public class Defects4jEvaluationTest {
 
 	@Test(timeout = FIVE_MINUTES_TIMEOUT)
-	public void test_Lang44() throws Exception {
-		// Defects4J Lang44 has been manually ported to Java 6 by Martin
-		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Lang44-Java6", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
-		nopolContext.setComplianceLevel(4);
-		NopolResult result = new NoPol(nopolContext).build();
-		assertEquals(1, result.getPatches().size());
-	}
-
-	@Test(timeout = FIVE_MINUTES_TIMEOUT)
 	public void test_Lang51() throws Exception {
 		// Defects4J Lang51 has been manually ported to Java 6 by Martin
 		if (!testShouldBeRun()) { return; }
