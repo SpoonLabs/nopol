@@ -274,7 +274,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.14.1</version>
                 <configuration>
-                    <argLine>-Xms2048m -Xmx2048m -javaagent:${project.basedir}/lib/jarloader/jar-loader.jar -cp ${java.home.openjdk11}/jmods/jdk.jdi.jmod</argLine>
+                    <argLine>-Xms2048m -Xmx2048m -cp ${java.home.openjdk11}/jmods/jdk.jdi.jmod</argLine>
                 </configuration>
             </plugin>
             <plugin>
