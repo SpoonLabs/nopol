@@ -57,7 +57,7 @@ jobs:
           python2 src/reproduce.py -bug cm7
           python2 src/reproduce.py -bug cm10
           #python2 src/reproduce.py -bug pm1
-          python2 src/reproduce.py -bug pm2
+          #python2 src/reproduce.py -bug pm2
           python2 src/reproduce.py -bug cm1
           python2 src/reproduce.py -bug cm2
           python2 src/reproduce.py -bug cm3
