@@ -25,8 +25,7 @@ public class Defects4jUtils {
 	public final static int FIFTEEN_MINUTES_TIMEOUT =15*60*1000;// 15 minutes in millisecs
 
 	public static boolean testShouldBeRun() {
-		if (System.getenv("GITHUB_HEAD_REF") != null) {
-			// we don't run in pull request CI, but this would be run locally
+		if (System.getenv("NOPOL_EVAL_DEFECTS4J")==null) {
 			return false;
 		}
 		return true;
