@@ -1,6 +1,5 @@
 package fr.inria.lille.repair.synthesis;
 
-import ca.cgjennings.jvm.JarLoader;
 import fr.inria.lille.repair.TestUtility;
 import fr.inria.lille.repair.common.config.NopolContext;
 import fr.inria.lille.repair.nopol.SourceLocation;
