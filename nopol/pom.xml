@@ -145,13 +145,6 @@
             <artifactId>json</artifactId>
             <version>20160810</version>
         </dependency>
-        <dependency>
-            <groupId>ca.cgjennings.jvm</groupId>
-            <artifactId>jvm</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/jarloader/jar-loader.jar</systemPath>
-        </dependency>
     </dependencies>
 
     <dependencyManagement>

@@ -1,6 +1,5 @@
 package xxl.java.library;
 
-import ca.cgjennings.jvm.JarLoader;
 import xxl.java.container.classic.MetaList;
 
 import java.io.File;
@@ -63,20 +62,6 @@ public class JavaLibrary {
         return classpathFrom(systemClasspath());
     }
 
-    public static void extendSystemClasspathWith(URL[] classpaths) {
-        StringBuilder newClasspath = new StringBuilder(systemClasspath());
-        for (URL classpath : classpaths) {
-            newClasspath.append(classpathSeparator() + classpath.getPath());
-        }
-        setClasspath(newClasspath.toString());
-    }
-
-    public static URL[] extendClasspathWith(String classpath, URL[] destination) {
-        List<URL> extended = MetaList.newLinkedList(destination);
-        extended.addAll(asList(classpathFrom(classpath)));
-        return extended.toArray(new URL[extended.size()]);
-    }
-
     public static URL[] classpathFrom(String classpath) {
         List<String> folderNames = StringLibrary.split(classpath, classpathSeparator());
         URL[] folders = new URL[folderNames.size()];
@@ -90,16 +75,6 @@ public class JavaLibrary {
 
     public static void setClasspath(String newClasspath) {
         setProperty("java.class.path", newClasspath);
-    }
-
-    public static void extendSystemClassLoaderClasspathWith(URL[] classpaths) {
-        for (URL classpath : classpaths) {
-            try {
-                JarLoader.addToClassPath(new File(classpath.getPath()));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     public static Class<?> classFromClasspath(URL classpath, String qualifiedName) {
