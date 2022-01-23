@@ -45,4 +45,4 @@ jobs:
         run: |
           cd nopol-ui-intellij
           # the tests don't run anymore since bumping to Java 11, need for porting
-          ./gradlew buildPlugin -x test 
+          ./gradlew jar
