@@ -19,8 +19,9 @@ dependencies {
 }
 
 intellij {
-// //      localPath 'gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/182.3911.6/'
-      version '2018.1.4' 
+    version '2018.1.4' 
+    // https://blog.jetbrains.com/platform/2019/06/java-functionality-extracted-as-a-plugin/
+    plugins = ['com.intellij.java']
 }
 
 
