@@ -23,6 +23,8 @@ Others papers about Nopol:
 
 Nopol requires Java and an SMT solver installed on the machine (e.g. Z3)
 
+Up to commit 80130c4c, Nopol required Java 8. Now it also works on Java 11, see https://github.com/SpoonLabs/nopol/pull/214
+
 1) Compile NoPol:
 
 ```

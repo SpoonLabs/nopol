@@ -57,14 +57,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>tools</artifactId>
-            <version>1.4.2</version>
-            <scope>system</scope>
-            <systemPath>${java.home}/../lib/tools.jar</systemPath>
-        </dependency>
-
-        <dependency>
             <groupId>fr.inria.gforge.spirals</groupId>
             <artifactId>nopol</artifactId>
             <version>0.2-SNAPSHOT</version>
@@ -97,6 +89,13 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <encoding>${default.encoding}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.14.1</version>
+                <configuration>
+                    <argLine>-Xms2048m -Xmx2048m -cp ${java.home.openjdk11}/jmods/jdk.jdi.jmod</argLine>
                 </configuration>
             </plugin>
             <plugin>

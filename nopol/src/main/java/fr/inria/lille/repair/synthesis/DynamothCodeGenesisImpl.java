@@ -103,7 +103,7 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
         this.classes = new ArrayList<>();
         ClassLoader cl = ClassLoader.getSystemClassLoader();
 
-        URL[] urls = ((URLClassLoader) cl).getURLs();
+        String[] pathElements = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
         ArrayList<URL> liClasspath = new ArrayList<>();
         for (int i = 0; i < classpath.length; i++) {
             URL url = classpath[i];
@@ -112,11 +112,14 @@ public class DynamothCodeGenesisImpl implements DynamothCodeGenesis {
                 liClasspath.add(url);
             }
         }
-        for (int i = 0; i < urls.length; i++) {
-            URL url = urls[i];
-            File file = new File(url.getFile());
-            if (file.exists()) {
-                liClasspath.add(url);
+        for (int i = 0; i < pathElements.length; i++) {
+            try {
+                File file = new File(pathElements[i]);
+                if (file.exists()) {
+                    liClasspath.add(file.toURI().toURL());
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
         this.classpath = liClasspath.toArray(new URL[0]);

@@ -1,33 +1,28 @@
-buildscript {
-    repositories {
-        maven { url 'http://dl.bintray.com/jetbrains/intellij-plugin-service' }
-    }
-}
+
+
 
 plugins {
     id 'java'
-    id "org.jetbrains.intellij" version "0.3.12"
+    id "org.jetbrains.intellij" version "1.1"
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
-    maven {
-        url "http://repo.akka.io/snapshots/"
-    }
 }
 
 dependencies {
-    compile "com.typesafe.akka:akka-remote_2.11:2.4.17"
-    compile "com.typesafe.akka:akka-actor_2.11:2.4.17"
-    compile "fr.inria.gforge.spirals:nopol:0.2-SNAPSHOT"
-    compile "fr.inria.gforge.spirals:nopol-server:0.2-SNAPSHOT"
+    implementation "com.typesafe.akka:akka-remote_2.11:2.4.17"
+    implementation "com.typesafe.akka:akka-actor_2.11:2.4.17"
+    implementation "fr.inria.gforge.spirals:nopol:0.2-SNAPSHOT"
+    implementation "fr.inria.gforge.spirals:nopol-server:0.2-SNAPSHOT"
 }
 
 intellij {
-   version '182.3911.6' // see https://www.jetbrains.com/intellij-repository/releases 
-   publish {
-        username "$System.env.USER"
-        password "$System.env.PASSWORD"
-    }
+    version '2018.1.4' 
+    // https://blog.jetbrains.com/platform/2019/06/java-functionality-extracted-as-a-plugin/
+    plugins = ['com.intellij.java']
 }
+
+
+

@@ -475,20 +475,10 @@ public class DynamicClassCompilerTest {
 		File jarFile = jarFileFor(adHocMap(qualifiedName, compilation), "DynamicClass");
 		
 		URL[] newClasspath = new URL[] { jarFile.toURI().toURL() };
-		ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
-		
-		/**Class cannot be loaded because the system ClassLoader cannot find it*/
-		checkException(true, systemClassLoader, qualifiedName);
-		
-		/** Setting the classpath is not the solution */
-		String originalClasspath = JavaLibrary.systemClasspath();
-		JavaLibrary.extendSystemClasspathWith(newClasspath);
-		checkException(true, systemClassLoader, qualifiedName);
-		JavaLibrary.setClasspath(originalClasspath);
+		URLClassLoader classLoader = new URLClassLoader(newClasspath, getClass().getClassLoader());
 		
 		/** Changing the classpath of the system ClassLoader is the solution */
-		JavaLibrary.extendSystemClassLoaderClasspathWith(newClasspath);
-		Class<?> loaded = checkException(false, systemClassLoader, qualifiedName);
+		Class<?> loaded = checkException(false, classLoader, qualifiedName);
 		jarFile.delete();
 		Object newInstance = loaded.newInstance();
 		assertEquals("Successfully loaded in system", newInstance.toString());
@@ -692,6 +682,7 @@ public class DynamicClassCompilerTest {
 		try {
 			loaded = loader.loadClass(qualifiedName);
 		} catch (ClassNotFoundException cnfe) {
+			System.out.println(cnfe);
 			wasThrown = true;
 		}
 		assertEquals(thrown, wasThrown);

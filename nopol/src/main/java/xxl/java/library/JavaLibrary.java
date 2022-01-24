@@ -62,20 +62,6 @@ public class JavaLibrary {
         return classpathFrom(systemClasspath());
     }
 
-    public static void extendSystemClasspathWith(URL[] classpaths) {
-        StringBuilder newClasspath = new StringBuilder(systemClasspath());
-        for (URL classpath : classpaths) {
-            newClasspath.append(classpathSeparator() + classpath.getPath());
-        }
-        setClasspath(newClasspath.toString());
-    }
-
-    public static URL[] extendClasspathWith(String classpath, URL[] destination) {
-        List<URL> extended = MetaList.newLinkedList(destination);
-        extended.addAll(asList(classpathFrom(classpath)));
-        return extended.toArray(new URL[extended.size()]);
-    }
-
     public static URL[] classpathFrom(String classpath) {
         List<String> folderNames = StringLibrary.split(classpath, classpathSeparator());
         URL[] folders = new URL[folderNames.size()];
@@ -89,23 +75,6 @@ public class JavaLibrary {
 
     public static void setClasspath(String newClasspath) {
         setProperty("java.class.path", newClasspath);
-    }
-
-    public static void extendSystemClassLoaderClasspathWith(URL[] classpaths) {
-        extendClassLoaderClasspathWith((URLClassLoader) ClassLoader.getSystemClassLoader(), classpaths);
-    }
-
-    public static void extendClassLoaderClasspathWith(URLClassLoader classLoader, URL[] classpaths) {
-        Method addURL = ClassLibrary.method("addURL", URLClassLoader.class, URL.class);
-        if (addURL != null) {
-            try {
-                for (URL classpath : classpaths) {
-                    ClassLibrary.invokeTrespassing(addURL, classLoader, classpath);
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to extend classpath on class loader with " + classpaths);
-            }
-        }
     }
 
     public static Class<?> classFromClasspath(URL classpath, String qualifiedName) {

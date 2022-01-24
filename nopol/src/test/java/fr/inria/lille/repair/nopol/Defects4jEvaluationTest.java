@@ -21,32 +21,32 @@ import static fr.inria.lille.repair.nopol.Defects4jUtils.nopolConfigFor;
 import static fr.inria.lille.repair.nopol.Defects4jUtils.testShouldBeRun;
 import static org.junit.Assert.assertEquals;
 
-// to be run on Travis should be in less than 45 minutes
+// this is not run in CI because the memory is too small on Github actions
 public class Defects4jEvaluationTest {
 
 	@Test(timeout = FIVE_MINUTES_TIMEOUT)
 	public void test_Lang44() throws Exception {
-		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Lang44");
-		nopolContext.setComplianceLevel(4);
+		// Defects4J Lang44 has been manually ported to Java 6 by Martin
+		if (System.getenv("GITHUB_HEAD_REF") != null) { return; } // avoiding Java heap space error in GithubAction
+		NopolContext nopolContext = nopolConfigFor("Lang44-Java6", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
 	}
 
 	@Test(timeout = FIVE_MINUTES_TIMEOUT)
 	public void test_Lang51() throws Exception {
-		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Lang51");
-		nopolContext.setComplianceLevel(4);
+		// Defects4J Lang51 has been manually ported to Java 6 by Martin
+		if (System.getenv("GITHUB_HEAD_REF") != null) { return; } // avoiding Java heap space error in GithubAction
+		NopolContext nopolContext = nopolConfigFor("Lang51-Java6", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
 	}
 
 	@Test(timeout = FIVE_MINUTES_TIMEOUT)
 	public void test_Lang53() throws Exception {
-		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Lang53");
-		nopolContext.setComplianceLevel(4);
+		// Defects4J Lang53 has been manually ported to Java 6 by Martin
+		if (System.getenv("GITHUB_HEAD_REF") != null) { return; } // avoiding Java heap space error in GithubAction
+		NopolContext nopolContext = nopolConfigFor("Lang53-Java6", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
 	}
@@ -54,26 +54,28 @@ public class Defects4jEvaluationTest {
 
 	@Test(timeout = FIVE_MINUTES_TIMEOUT)
 	public void test_Lang58() throws Exception {
-		if (!testShouldBeRun()) { return; }
+		// Defects4J Lang58 has been manually ported to Java 6 by Martin
+		if (System.getenv("GITHUB_HEAD_REF") != null) { return; } // Java Heap Space error in GithubAction
 		// many resources on the internet say it's "maven.compiler.source", but it's actually maven.compile.source"
-		NopolContext nopolContext = nopolConfigFor("Lang58", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.4 -Dmaven.compile.testSource=1.4");
-		nopolContext.setComplianceLevel(4);
+		NopolContext nopolContext = nopolConfigFor("Lang58-Java6", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
 		NopolResult result = new NoPol(nopolContext).build();
 		assertEquals(1, result.getPatches().size());
 	}
 
-	@Test(timeout = FIVE_MINUTES_TIMEOUT)
-	public void test_Chart3() throws Exception {
-		if (!testShouldBeRun()) { return; }
-		NopolContext nopolContext = nopolConfigFor("Chart3", "");
-		nopolContext.setLocalizer(NopolContext.NopolLocalizer.COCOSPOON);
-
-		// we take only the failing test case
-		nopolContext.setProjectTests(new String[]{"org.jfree.data.time.junit.TimeSeriesTests#testCreateCopy3"});
-
-		NopolResult result = new NoPol(nopolContext).build();
-		assertEquals(1, result.getPatches().size());
-	}
+	// we don't support Chart3 anymore because it is based on Ant, and
+	// porting Ant to a newer Java version is useless
+//	@Test(timeout = FIVE_MINUTES_TIMEOUT)
+//	public void test_Chart3() throws Exception {
+//		if (!testShouldBeRun()) { return; }
+//		NopolContext nopolContext = nopolConfigFor("Chart3", "-Dproject.build.sourceEncoding=ISO-8859-1 -Dmaven.compile.source=1.6 -Dmaven.compile.testSource=1.6 -Dmaven.compile.target=1.6");
+//		nopolContext.setLocalizer(NopolContext.NopolLocalizer.COCOSPOON);
+//
+//		// we take only the failing test case
+//		nopolContext.setProjectTests(new String[]{"org.jfree.data.time.junit.TimeSeriesTests#testCreateCopy3"});
+//
+//		NopolResult result = new NoPol(nopolContext).build();
+//		assertEquals(1, result.getPatches().size());
+//	}
 
 }
 

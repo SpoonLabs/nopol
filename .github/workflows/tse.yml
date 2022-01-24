@@ -16,10 +16,10 @@ jobs:
           path: "~/.m2/repository"
           key: ${{ runner.os }}-m2
 
-      - name: Setup JDK8
+      - name: Setup JDK
         uses: actions/setup-java@v2
         with:
-          java-version: 8
+          java-version: 11
           distribution: 'adopt'
 
       - name: Set up Maven
@@ -52,34 +52,33 @@ jobs:
       - name: commons math
         run: |
           cd nopol-experiments
-          python2 src/reproduce.py -bug cm1  || true
-          python2 src/reproduce.py -bug cm2  || true
-          python2 src/reproduce.py -bug cm3  || true
-          python2 src/reproduce.py -bug cm4  || true
-          python2 src/reproduce.py -bug cm5  || true
-          python2 src/reproduce.py -bug cm6  || true
-          python2 src/reproduce.py -bug cm7  || true
-          python2 src/reproduce.py -bug cm10  || true
-          python2 src/reproduce.py -bug pm1  || true
-          python2 src/reproduce.py -bug pm2  || true
+          # Java 11 needs min target 1.6
+          sed -i -e 's/"1.4"/"1.6"/' data/projects/lang/bugs/*json
+          python2 src/reproduce.py -bug cm7
+          python2 src/reproduce.py -bug cm10
+          #python2 src/reproduce.py -bug pm1
+          #python2 src/reproduce.py -bug pm2
+          python2 src/reproduce.py -bug cm1
+          python2 src/reproduce.py -bug cm2
+          python2 src/reproduce.py -bug cm3
+          python2 src/reproduce.py -bug cm4
+          #python2 src/reproduce.py -bug cm5
+          #python2 src/reproduce.py -bug cm6
 
       - name: commons lang
         run: |
+          # they are all discarded because all these versions of Commons Lang use the old "enum" syntax
+          # we don't port the TSE benchmark, but we have ported some of the old Lang bugs in Defects4j
+          # see Defects4jEvaluationTest
           cd nopol-experiments
-          python2 src/reproduce.py -bug cl1  || true
-          python2 src/reproduce.py -bug cl2  || true
-          python2 src/reproduce.py -bug cl3  || true
-          python2 src/reproduce.py -bug cl4  || true
-          python2 src/reproduce.py -bug cl5  || true
-          python2 src/reproduce.py -bug cl6  || true
-          python2 src/reproduce.py -bug pl1  || true
-          python2 src/reproduce.py -bug pl2  || true
-          python2 src/reproduce.py -bug pl3  || true
-          python2 src/reproduce.py -bug pl4  || true
+          #python2 src/reproduce.py -bug cl1
+          #python2 src/reproduce.py -bug cl2
+          #python2 src/reproduce.py -bug cl3 
+          #python2 src/reproduce.py -bug cl4
+          #python2 src/reproduce.py -bug cl5
+          #python2 src/reproduce.py -bug cl6
+          #python2 src/reproduce.py -bug pl1 
+          #python2 src/reproduce.py -bug pl2
+          #python2 src/reproduce.py -bug pl3
+          #python2 src/reproduce.py -bug pl4
 
-      - name: TseEvaluationTest
-        run: |
-          cd nopol
-          mvn -Dtest="fr.inria.lille.repair.nopol.TseEvaluationTest" test
-        env:
-          NOPOL_EVAL_TSE: 1
