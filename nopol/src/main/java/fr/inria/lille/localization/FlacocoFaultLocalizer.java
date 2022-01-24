@@ -60,7 +60,7 @@ public class FlacocoFaultLocalizer implements FaultLocalizer {
         config.setComplianceLevel(nopolContext.getComplianceLevel());
         config.setTestRunnerJVMArgs("-Xms2048m -Xmx2048m");
         config.setSrcJavaDir(javaSources);
-
+        config.setTestRunnerVerbose(true);
         System.out.println(nopolContext);
 
         // Set tests
