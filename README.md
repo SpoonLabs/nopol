@@ -25,7 +25,20 @@ Nopol requires Java and an SMT solver installed on the machine (e.g. Z3)
 
 Up to commit 80130c4c, Nopol required Java 8. Now it also works on Java 11, see https://github.com/SpoonLabs/nopol/pull/214
 
-1) Compile NoPol:
+0) NoPol uses the `com.sun.jdi` that lives in `tools.jar`. Identify where `tools.jar` is and add the depencency in `pom.xml`
+
+```
+        <dependency>
+            <groupId>com.sun</groupId>
+            <artifactId>tools</artifactId>
+            <version>1.6.0</version>
+            <scope>system</scope>
+            <!-- replace this path by yours -->
+            <systemPath>/home/martin/martin-no-backup/jdk1.8.0_40/lib/tools.jar</systemPath>
+        </dependency>
+```
+
+2) Compile NoPol:
 
 ```
 git clone https://github.com/SpoonLabs/nopol.git
