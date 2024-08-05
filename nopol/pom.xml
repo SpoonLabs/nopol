@@ -312,13 +312,6 @@
         </repository>
 	
         <repository>
-            <id>spoon-snapshot</id>
-            <name>Maven Repository for Spoon Snapshots</name>
-            <url>https://repository.ow2.org/nexus/content/repositories/snapshots/</url>
-            <snapshots/>
-        </repository>
-	
-        <repository>
             <id>tdurieux.github.io/maven-repository/snapshots/</id>
             <name>tdurieux.github.io maven-repository</name>
             <url>https://tdurieux.github.io/maven-repository/snapshots/</url>
