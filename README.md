@@ -1,4 +1,4 @@
-# Nopol [![Build Status](https://travis-ci.org/SpoonLabs/nopol.svg?branch=master)](https://travis-ci.org/SpoonLabs/nopol) [![Coverage Status](https://coveralls.io/repos/github/SpoonLabs/nopol/badge.svg?branch=master)](https://coveralls.io/github/SpoonLabs/nopol?branch=master)
+# Nopol 
 
 Nopol is an automatic software repair tool for Java. This code is research code, released under the GPL licence.
 
