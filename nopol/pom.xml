@@ -267,7 +267,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.14.1</version>
                 <configuration>
-                    <argLine>-Xms2048m -Xmx2048m -cp ${java.home.openjdk11}/jmods/jdk.jdi.jmod</argLine>
+<!--                     java.lang.RuntimeException: java.lang.reflect.InaccessibleObjectException: Unable to make abstract boolean com.sun.tools.jdi.ReferenceTypeImpl.isAssignableTo(com.sun.jdi.ReferenceType) accessible: module jdk.jdi does not "opens com.sun.tools.jdi" to unnamed module -->
+<!--                     java.lang.IllegalAccessError: class fr.inria.lille.repair.expression.value.Value$1 (in unnamed module @0x5577140b) cannot access class sun.reflect.generics.reflectiveObjects.NotImplementedException (in module java.base) because module java.base does not export sun.reflect.generics.reflectiveObjects to unnamed module @0x5577140b -->
+                    
+                    <argLine>-Xms2048m -Xmx2048m -cp ${java.home.openjdk11}/jmods/jdk.jdi.jmod --add-opens jdk.jdi/com.sun.tools.jdi=ALL-UNNAMED --add-opens java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
             <plugin>
