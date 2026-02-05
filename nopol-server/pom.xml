@@ -155,7 +155,14 @@
     </build>
 
     <repositories>
-        
+        <repository>
+            <id>tdurieux-maven-repository-snapshot</id>
+            <url>https://tdurieux.github.io/maven-repository/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>        
     </repositories>
 
 </project>
