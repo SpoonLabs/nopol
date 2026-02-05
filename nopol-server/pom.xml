@@ -155,14 +155,6 @@
     </build>
 
     <repositories>
-
-        <repository>
-            <id>akka-snapshots</id>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <url>http://repo.akka.io/snapshots/</url>
-        </repository>
         
     </repositories>
 
