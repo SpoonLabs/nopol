@@ -68,7 +68,8 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 
 		final Collection<Specification<T>> data = instrumentedProgram.collectSpecifications(classpath, testClasses, failures);
 
-		if (data.size() == 0) {
+		int dataSize = data.size();
+		if (dataSize == 0) {
 			LoggerFactory.getLogger(this.getClass()).info("No angelic value for {} ({}).", sourceLocation, type.toString());
 			return Collections.EMPTY_LIST;
 		}
@@ -78,7 +79,6 @@ public final class SMTNopolSynthesizer<T> implements Synthesizer {
 
 		// XXX FIXME TODO move this
 		// there should be at least two sets of values, otherwise the patch would be "true" or "false"
-		int dataSize = data.size();
 		if (dataSize < 2) {
 			LoggerFactory.getLogger(this.getClass()).info("Not enough specifications: {}. A trivial patch is \"true\" or \"false\", please write new tests specifying {}.", dataSize, sourceLocation);
 			// we return so that we can start working on the next statement in the suspicious list
