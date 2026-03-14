@@ -286,4 +286,16 @@ public class NopolTest {
 		assertEquals(10, nopol.build().getPatches().size());
 	}
 
+	@Test
+	public void testNbAngelicValuesWithNotEnoughSpecifications() {
+		NopolContext nopolContext = TestUtility.configForExample(executionType, 14);
+		nopolContext.setType(RepairType.CONDITIONAL);
+		SolverFactory.setSolver("z3", TestUtility.solverPath);
+
+		NoPol nopol = new NoPol(nopolContext);
+		NopolResult result = nopol.build();
+
+		assertEquals(1, result.getNbAngelicValues());
+		assertEquals(NopolStatus.NO_SYNTHESIS, result.getNopolStatus());
+	}
 }
